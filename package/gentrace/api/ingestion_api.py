@@ -14,17 +14,13 @@ from __future__ import absolute_import
 
 import re  # noqa: F401
 
-from pydantic import validate_arguments, ValidationError
+from pydantic import ValidationError, validate_arguments
 from typing_extensions import Annotated
 
+from gentrace.api_client import ApiClient
+from gentrace.exceptions import ApiTypeError, ApiValueError  # noqa: F401
 from gentrace.models.pipeline_run_request import PipelineRunRequest
 from gentrace.models.pipeline_run_response import PipelineRunResponse
-
-from gentrace.api_client import ApiClient
-from gentrace.exceptions import (  # noqa: F401
-    ApiTypeError,
-    ApiValueError
-)
 
 
 class IngestionApi(object):
@@ -40,7 +36,9 @@ class IngestionApi(object):
         self.api_client = api_client
 
     @validate_arguments
-    def pipeline_run_post(self, pipeline_run_request : PipelineRunRequest, **kwargs) -> PipelineRunResponse:  # noqa: E501
+    def pipeline_run_post(
+        self, pipeline_run_request: PipelineRunRequest, **kwargs
+    ) -> PipelineRunResponse:  # noqa: E501
         """Create a pipeline run  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
@@ -66,11 +64,15 @@ class IngestionApi(object):
                  returns the request thread.
         :rtype: PipelineRunResponse
         """
-        kwargs['_return_http_data_only'] = True
-        return self.pipeline_run_post_with_http_info(pipeline_run_request, **kwargs)  # noqa: E501
+        kwargs["_return_http_data_only"] = True
+        return self.pipeline_run_post_with_http_info(
+            pipeline_run_request, **kwargs
+        )  # noqa: E501
 
     @validate_arguments
-    def pipeline_run_post_with_http_info(self, pipeline_run_request : PipelineRunRequest, **kwargs):  # noqa: E501
+    def pipeline_run_post_with_http_info(
+        self, pipeline_run_request: PipelineRunRequest, **kwargs
+    ):  # noqa: E501
         """Create a pipeline run  # noqa: E501
 
         This method makes a synchronous HTTP request by default. To make an
@@ -107,30 +109,28 @@ class IngestionApi(object):
 
         _params = locals()
 
-        _all_params = [
-            'pipeline_run_request'
-        ]
+        _all_params = ["pipeline_run_request"]
         _all_params.extend(
             [
-                'async_req',
-                '_return_http_data_only',
-                '_preload_content',
-                '_request_timeout',
-                '_request_auth',
-                '_content_type',
-                '_headers'
+                "async_req",
+                "_return_http_data_only",
+                "_preload_content",
+                "_request_timeout",
+                "_request_auth",
+                "_content_type",
+                "_headers",
             ]
         )
 
         # validate the arguments
-        for _key, _val in _params['kwargs'].items():
+        for _key, _val in _params["kwargs"].items():
             if _key not in _all_params:
                 raise ApiTypeError(
                     "Got an unexpected keyword argument '%s'"
                     " to method pipeline_run_post" % _key
                 )
             _params[_key] = _val
-        del _params['kwargs']
+        del _params["kwargs"]
 
         _collection_formats = {}
 
@@ -141,7 +141,7 @@ class IngestionApi(object):
         _query_params = []
 
         # process the header parameters
-        _header_params = dict(_params.get('_headers', {}))
+        _header_params = dict(_params.get("_headers", {}))
 
         # process the form parameters
         _form_params = []
@@ -149,31 +149,34 @@ class IngestionApi(object):
 
         # process the body parameter
         _body_params = None
-        if _params['pipeline_run_request']:
-            _body_params = _params['pipeline_run_request']
+        if _params["pipeline_run_request"]:
+            _body_params = _params["pipeline_run_request"]
 
         # set the HTTP header `Accept`
-        _header_params['Accept'] = self.api_client.select_header_accept(
-            ['application/json'])  # noqa: E501
+        _header_params["Accept"] = self.api_client.select_header_accept(
+            ["application/json"]
+        )  # noqa: E501
 
         # set the HTTP header `Content-Type`
-        _content_types_list = _params.get('_content_type',
-            self.api_client.select_header_content_type(
-                ['application/json']))
+        _content_types_list = _params.get(
+            "_content_type",
+            self.api_client.select_header_content_type(["application/json"]),
+        )
         if _content_types_list:
-                _header_params['Content-Type'] = _content_types_list
+            _header_params["Content-Type"] = _content_types_list
 
         # authentication setting
-        _auth_settings = ['bearerAuth']  # noqa: E501
+        _auth_settings = ["bearerAuth"]  # noqa: E501
 
         _response_types_map = {
-            '200': "PipelineRunResponse",
-            '400': None,
-            '500': None,
+            "200": "PipelineRunResponse",
+            "400": None,
+            "500": None,
         }
 
         return self.api_client.call_api(
-            '/pipeline-run', 'POST',
+            "/pipeline-run",
+            "POST",
             _path_params,
             _query_params,
             _header_params,
@@ -182,9 +185,10 @@ class IngestionApi(object):
             files=_files,
             response_types_map=_response_types_map,
             auth_settings=_auth_settings,
-            async_req=_params.get('async_req'),
-            _return_http_data_only=_params.get('_return_http_data_only'),  # noqa: E501
-            _preload_content=_params.get('_preload_content', True),
-            _request_timeout=_params.get('_request_timeout'),
+            async_req=_params.get("async_req"),
+            _return_http_data_only=_params.get("_return_http_data_only"),  # noqa: E501
+            _preload_content=_params.get("_preload_content", True),
+            _request_timeout=_params.get("_request_timeout"),
             collection_formats=_collection_formats,
-            _request_auth=_params.get('_request_auth'))
+            _request_auth=_params.get("_request_auth"),
+        )
