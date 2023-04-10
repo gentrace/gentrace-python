@@ -1,0 +1,12 @@
+[tool.poetry]
+authors = ["Gentrace"]
+description = "Python SDK for the Gentrace API"
+name = "gentrace"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
