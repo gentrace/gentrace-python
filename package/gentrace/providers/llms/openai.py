@@ -3,6 +3,7 @@ import time
 import mustache
 import openai
 import openai.api_resources as api
+from gentrace.providers.step_run import StepRun
 
 class OpenAIPipelineHandler:
     def __init__(self, pipeline = None):
@@ -56,6 +57,59 @@ def intercept_completion(original_completion):
     return wrapper
 
 
+class OpenAICreateCompletionStepRun(StepRun):
+    def __init__(self, elapsed_time, start_time, end_time, inputs, model_params, response):
+        super().__init__(
+            "openai",
+            "openai_createCompletion",
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response
+        )
+        self.inputs = inputs
+        self.model_params = model_params
+        self.response = response
+
+class OpenAICreateChatCompletionStepRun(StepRun):
+    def __init__(self, elapsed_time, start_time, end_time, inputs, model_params, response):
+        super().__init__(
+            "openai",
+            "openai_createChatCompletion",
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response
+        )
+        self.inputs = inputs
+        self.model_params = model_params
+        self.response = response
+
+class OpenAICreateEmbeddingStepRun(StepRun):
+    def __init__(self, elapsed_time, start_time, end_time, inputs, model_params, response):
+        super().__init__(
+            "openai",
+            "openai_createEmbedding",
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response
+        )
+        self.inputs = inputs
+        self.model_params = model_params
+        self.response = response
+
+
+# TODO: must create interception for ChatCompletion
+
+# TODO: must create interception for Embedding
+
 for name, cls in vars(api).items():
     if isinstance(cls, type):
         # Create new class that inherits from the original class, don't directly monkey patch 
@@ -63,6 +117,11 @@ for name, cls in vars(api).items():
         new_class = type(name, (cls,), {})
         if name == 'Completion':
           new_class.create = intercept_completion(new_class.create)
-          # TODO: Must work on a acreate() method and check that streaming works
+        elif name == 'ChatCompletion':
+          new_class.create = intercept_completion(new_class.create)
+        elif name == 'Embedding':
+          new_class.create = intercept_completion(new_class.create)
+
+         # TODO: Must work on a acreate() method and check that streaming works
 
         setattr(OpenAIPipelineHandler, name, new_class)
