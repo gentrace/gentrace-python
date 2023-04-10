@@ -56,6 +56,53 @@ def intercept_completion(original_completion):
         )
     return wrapper
 
+def intercept_chat_completion(original_completion):
+    def wrapper(*args, **kwargs):
+        messages = kwargs.get("messages")
+        user = kwargs.get("user")
+        model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
+
+        start_time = time.time()
+        completion = original_completion(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = int(end_time - start_time)
+
+        self.pipeline_run.add_step_run(
+            OpenAICreateChatCompletionStepRun(
+                elapsed_time,
+                start_time,
+                end_time,
+                {"messages": messages, "user": user},
+                model_params,
+                completion
+            )
+        )
+    return wrapper
+
+def intercept_embedding(original_completion):
+    def wrapper(*args, **kwargs):
+        model = kwargs.get("model")
+        input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
+
+        start_time = time.time()
+        completion = original_completion(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = int(end_time - start_time)
+
+        self.pipeline_run.add_step_run(
+            OpenAICreateEmbeddingStepRun(
+                elapsed_time,
+                start_time,
+                end_time,
+                input_params,
+                { "model": model },
+                completion
+            )
+        )
+    return wrapper
+
 
 class OpenAICreateCompletionStepRun(StepRun):
     def __init__(self, elapsed_time, start_time, end_time, inputs, model_params, response):
@@ -118,9 +165,9 @@ for name, cls in vars(api).items():
         if name == 'Completion':
           new_class.create = intercept_completion(new_class.create)
         elif name == 'ChatCompletion':
-          new_class.create = intercept_completion(new_class.create)
+          new_class.create = intercept_chat_completion(new_class.create)
         elif name == 'Embedding':
-          new_class.create = intercept_completion(new_class.create)
+          new_class.create = intercept_embedding(new_class.create)
 
          # TODO: Must work on a acreate() method and check that streaming works
 
