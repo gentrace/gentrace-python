@@ -13,3 +13,4 @@ lint:
 help:
 	@echo '----'
 	@echo 'lint                - run linters'
+	@echo 'format              - run formatters'
