@@ -1,7 +1,9 @@
 [tool.poetry]
 authors = ["Gentrace"]
 description = "Python SDK for the Gentrace API"
+license = "MIT"
 name = "gentrace"
+repository = "https://github.com/gentrace/gentrace-python"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
