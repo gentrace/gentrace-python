@@ -142,6 +142,10 @@ class PineconePipelineHandler:
 
             return response
 
+# Assign exported member function to PineconePipelineHandler
+for exported_member in dir(pinecone):
+    if not exported_member.startswith("__") and exported_member != "Index":
+        setattr(PineconePipelineHandler, exported_member, getattr(pinecone, exported_member))
 
 class PineconeFetchStepRun(StepRun):
     def __init__(self, elapsed_time: int, start_time: str, end_time: str, inputs: dict, response: dict):
