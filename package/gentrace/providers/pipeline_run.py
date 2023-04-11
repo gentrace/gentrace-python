@@ -1,3 +1,4 @@
+import copy
 from typing import Dict, List
 from gentrace.api import IngestionApi
 from gentrace.providers.step_run import StepRun
@@ -10,19 +11,19 @@ class PipelineRun:
     def get_pipeline(self):
         return self.pipeline
 
-    async def get_openai(self):
+    def get_openai(self):
         if "openai" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("openai")
-            cloned_handler = handler.clone()
+            cloned_handler = copy.deepcopy(handler)
             cloned_handler.set_pipeline_run(self)
             return cloned_handler
         else:
             raise ValueError("Did not find OpenAI handler. Did you call setup() on the pipeline?")
 
-    async def get_pinecone(self):
+    def get_pinecone(self):
         if "pinecone" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("pinecone")
-            cloned_handler = handler.clone()
+            cloned_handler = copy.deepcopy(handler)
             cloned_handler.set_pipeline_run(self)
             return cloned_handler
         else:
@@ -31,7 +32,7 @@ class PipelineRun:
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
 
-    async def submit(self) -> Dict:
+    def submit(self) -> Dict:
         ingestion_api = IngestionApi(self.pipeline.config)
 
         step_runs_data = [
@@ -50,7 +51,7 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_post_response = await ingestion_api.pipeline_run_post(
+        pipeline_post_response = ingestion_api.pipeline_run_post(
             {
                 "name": self.pipeline.id,
                 "stepRuns": step_runs_data

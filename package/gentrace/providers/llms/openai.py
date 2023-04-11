@@ -20,7 +20,7 @@ class OpenAIPipelineHandler:
     def set_pipeline_run(self, pipeline_run):
         self.pipeline_run = pipeline_run
         
-def intercept_completion(original_completion):
+def intercept_completion(original_fn):
     def wrapper(*args, **kwargs):
         prompt_template = kwargs.get("promptTemplate")
         prompt_inputs = kwargs.get("promptInputs")
@@ -37,7 +37,7 @@ def intercept_completion(original_completion):
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
 
         start_time = time.time()
-        completion = original_completion(**new_completion_options)
+        completion = original_fn(**new_completion_options)
         end_time = time.time()
 
         elapsed_time = int(end_time - start_time)
@@ -58,14 +58,14 @@ def intercept_completion(original_completion):
         )
     return wrapper
 
-def intercept_chat_completion(original_completion):
+def intercept_chat_completion(original_fn):
     def wrapper(*args, **kwargs):
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
 
         start_time = time.time()
-        completion = original_completion(**kwargs)
+        completion = original_fn(**kwargs)
         end_time = time.time()
 
         elapsed_time = int(end_time - start_time)
@@ -82,13 +82,13 @@ def intercept_chat_completion(original_completion):
         )
     return wrapper
 
-def intercept_embedding(original_completion):
+def intercept_embedding(original_fn):
     def wrapper(*args, **kwargs):
         model = kwargs.get("model")
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         start_time = time.time()
-        completion = original_completion(**kwargs)
+        completion = original_fn(**kwargs)
         end_time = time.time()
 
         elapsed_time = int(end_time - start_time)
