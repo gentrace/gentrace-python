@@ -14,7 +14,7 @@ class OpenAIPipelineHandler:
     def setup(cls, config):
         if config:
             for key, value in config.items():
-                print(f"Setting OpenAI config : {key} = {value}")
+                print(f"Setting OpenAI config: {key} = {value}")
                 setattr(openai, key, value)
 
     def set_pipeline_run(self, pipeline_run):
