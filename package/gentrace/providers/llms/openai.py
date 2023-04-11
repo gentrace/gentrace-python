@@ -2,9 +2,7 @@ import time
 from typing import Optional
 import pystache
 import openai
-import openai.api_resources as api
 from gentrace.providers.step_run import StepRun
-
 
 class OpenAIPipelineHandler:
     def __init__(self, pipeline = None):
@@ -21,7 +19,8 @@ class OpenAIPipelineHandler:
         self.pipeline_run = pipeline_run
         
 def intercept_completion(original_fn):
-    def wrapper(*args, **kwargs):
+    @classmethod
+    def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("promptTemplate")
         prompt_inputs = kwargs.get("promptInputs")
         base_completion_options = {k: v for k, v in kwargs.items() if k not in ["promptTemplate", "promptInputs"]}
@@ -34,6 +33,8 @@ def intercept_completion(original_fn):
 
         rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
+        print(f"Rendered prompt: {rendered_prompt}")        
+
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
 
         start_time = time.time()
@@ -45,21 +46,31 @@ def intercept_completion(original_fn):
         user = base_completion_options.get("user")
         suffix = base_completion_options.get("suffix")
         partial_model_params = {k: v for k, v in base_completion_options.items() if k not in ["user", "suffix"]}
+        
+        inputs_dict = {"prompt": prompt_inputs}
+        if user is not None:
+            inputs_dict["user"] = user
+        if suffix is not None:
+            inputs_dict["suffix"] = suffix
+            
+        print("model information: ", {**partial_model_params, "promptTemplate": prompt_template})
 
-        self.pipeline_run.add_step_run(
+        cls.pipeline_run.add_step_run(
             OpenAICreateCompletionStepRun(
                 elapsed_time,
                 start_time,
                 end_time,
-                {"prompt": prompt_inputs, "user": user, "suffix": suffix},
+                inputs_dict,
                 {**partial_model_params, "promptTemplate": prompt_template},
                 completion
             )
         )
+        return completion 
     return wrapper
 
 def intercept_chat_completion(original_fn):
-    def wrapper(*args, **kwargs):
+    @classmethod
+    def wrapper(cls, *args, **kwargs):
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
@@ -70,7 +81,7 @@ def intercept_chat_completion(original_fn):
 
         elapsed_time = int(end_time - start_time)
 
-        self.pipeline_run.add_step_run(
+        cls.pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
                 elapsed_time,
                 start_time,
@@ -80,10 +91,12 @@ def intercept_chat_completion(original_fn):
                 completion
             )
         )
+        return completion
     return wrapper
 
 def intercept_embedding(original_fn):
-    def wrapper(*args, **kwargs):
+    @classmethod
+    def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
@@ -93,7 +106,7 @@ def intercept_embedding(original_fn):
 
         elapsed_time = int(end_time - start_time)
 
-        self.pipeline_run.add_step_run(
+        cls.pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
                 elapsed_time,
                 start_time,
@@ -103,6 +116,7 @@ def intercept_embedding(original_fn):
                 completion
             )
         )
+        return completion
     return wrapper
 
 
@@ -153,18 +167,3 @@ class OpenAICreateEmbeddingStepRun(StepRun):
         self.inputs = inputs
         self.model_params = model_params
         self.response = response
-
-for name, cls in vars(api).items():
-    if isinstance(cls, type):
-        # Create new class that inherits from the original class, don't directly monkey patch 
-        # the original class
-        new_class = type(name, (cls,), {})
-        if name == 'Completion':
-          new_class.create = intercept_completion(new_class.create)
-        elif name == 'ChatCompletion':
-          new_class.create = intercept_chat_completion(new_class.create)
-        elif name == 'Embedding':
-          new_class.create = intercept_embedding(new_class.create)
-
-         # TODO: Must work on a acreate() method and check that streaming works
-        setattr(OpenAIPipelineHandler, name, new_class)

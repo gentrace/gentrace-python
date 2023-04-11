@@ -35,10 +35,10 @@ class PipelineRunRequestStepRunsInnerProvider(BaseModel):
     name: Optional[StrictStr] = None
     invocation: Optional[StrictStr] = None
     model_params: Optional[
-        Dict[str, PipelineRunRequestStepRunsInnerProviderModelParamsValue]
+        Dict[str, Any]
     ] = Field(None, alias="modelParams")
     inputs: Optional[
-        Dict[str, PipelineRunRequestStepRunsInnerProviderModelParamsValue]
+        Dict[str, Any]
     ] = None
     outputs: Optional[Dict[str, Any]] = None
     __properties = ["name", "invocation", "modelParams", "inputs", "outputs"]

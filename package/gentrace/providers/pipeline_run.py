@@ -1,4 +1,5 @@
 import copy
+import json
 from typing import Dict, List
 from gentrace.api import IngestionApi
 from gentrace.providers.step_run import StepRun
@@ -6,7 +7,7 @@ from gentrace.providers.step_run import StepRun
 class PipelineRun:
     def __init__(self, pipeline):
         self.pipeline = pipeline
-        self.step_runs = []
+        self.step_runs : List[StepRun] = []
 
     def get_pipeline(self):
         return self.pipeline
@@ -15,6 +16,26 @@ class PipelineRun:
         if "openai" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("openai")
             cloned_handler = copy.deepcopy(handler)
+            import openai.api_resources as api
+            from .llms.openai import intercept_chat_completion, intercept_completion, intercept_embedding
+            for name, cls in vars(api).items():
+                if isinstance(cls, type):
+                    # Create new class that inherits from the original class, don't directly monkey patch 
+                    # the original class
+                    new_class = type(name, (cls,), {})
+                    if name == 'Completion':
+                      new_class.create = intercept_completion(new_class.create)
+                    elif name == 'ChatCompletion':
+                      new_class.create = intercept_chat_completion(new_class.create)
+                    elif name == 'Embedding':
+                      new_class.create = intercept_embedding(new_class.create)
+                      
+                    new_class.pipeline_run = self
+
+                    setattr(cloned_handler, name, new_class)
+
+                    # TODO: Must work on a acreate() method, check that streaming works
+
             cloned_handler.set_pipeline_run(self)
             return cloned_handler
         else:
@@ -34,6 +55,8 @@ class PipelineRun:
 
     def submit(self) -> Dict:
         ingestion_api = IngestionApi(self.pipeline.config)
+        
+        print("Submitting pipeline run: ", [step_run.inputs for step_run in self.step_runs])
 
         step_runs_data = [
             {
