@@ -1,7 +1,6 @@
 import inspect
 from typing import Optional, Any
 
-from gentrace.configuration import Configuration as GentraceConfiguration
 from gentrace.providers.pipeline_run import PipelineRun
 
 
@@ -15,7 +14,10 @@ class Pipeline:
         pinecone_config: Optional[dict] = None,
     ):
         self.id = id
-        self.config = GentraceConfiguration(api_key=api_key, host=host)
+        self.config = {
+            "api_key": api_key,  
+            "host": host
+        }
         
         if openai_config:
           try:

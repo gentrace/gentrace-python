@@ -1,7 +1,9 @@
 import copy
 import json
 from typing import Dict, List
-from gentrace.api import IngestionApi
+from gentrace.apis.tags.ingestion_api import IngestionApi
+from gentrace.configuration import Configuration
+from gentrace.api_client import ApiClient
 from gentrace.providers.step_run import StepRun
 
 class PipelineRun:
@@ -54,9 +56,10 @@ class PipelineRun:
         self.step_runs.append(step_run)
 
     def submit(self) -> Dict:
-        ingestion_api = IngestionApi(self.pipeline.config)
+        configuration = Configuration(host=self.pipeline.config.get("host"))
+        api_client = ApiClient(configuration=configuration, header_name="Authorization", header_value="Bearer " + self.pipeline.config.get("api_key"))
+        ingestion_api = IngestionApi(api_client=api_client)
         
-        print("Submitting pipeline run: ", [step_run.inputs for step_run in self.step_runs])
 
         step_runs_data = [
             {
@@ -74,11 +77,15 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
+        print("Submitting pipeline run: ", [step_run.inputs for step_run in self.step_runs])
+
         pipeline_post_response = ingestion_api.pipeline_run_post(
             {
                 "name": self.pipeline.id,
                 "stepRuns": step_runs_data
             }
         )
+        
+        print("Pipeline run submitted: ", pipeline_post_response.data)
 
         return pipeline_post_response.data
