@@ -1,9 +1,10 @@
-from typing import Optional
 import time
+from typing import Optional
 import mustache
 import openai
 import openai.api_resources as api
 from gentrace.providers.step_run import StepRun
+
 
 class OpenAIPipelineHandler:
     def __init__(self, pipeline = None):
@@ -25,10 +26,10 @@ def intercept_completion(original_completion):
         base_completion_options = {k: v for k, v in kwargs.items() if k not in ["promptTemplate", "promptInputs"]}
 
         if "prompt" in base_completion_options:
-            raise ValueError("The prompt attribute cannot be provided when using the GENTRACE SDK. Use promptTemplate and promptInputs instead.")
+            raise ValueError("The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead.")
 
         if not prompt_template:
-            raise ValueError("The promptTemplate attribute must be provided when using the GENTRACE SDK.")
+            raise ValueError("The promptTemplate attribute must be provided when using the Gentrace SDK.")
 
         rendered_prompt = mustache.render(prompt_template, prompt_inputs)
 
@@ -152,11 +153,6 @@ class OpenAICreateEmbeddingStepRun(StepRun):
         self.model_params = model_params
         self.response = response
 
-
-# TODO: must create interception for ChatCompletion
-
-# TODO: must create interception for Embedding
-
 for name, cls in vars(api).items():
     if isinstance(cls, type):
         # Create new class that inherits from the original class, don't directly monkey patch 
@@ -170,5 +166,4 @@ for name, cls in vars(api).items():
           new_class.create = intercept_embedding(new_class.create)
 
          # TODO: Must work on a acreate() method and check that streaming works
-
         setattr(OpenAIPipelineHandler, name, new_class)
