@@ -43,3 +43,7 @@ from gentrace.models.pipeline_run_request_step_runs_inner_provider_model_params_
     PipelineRunRequestStepRunsInnerProviderModelParamsValue,
 )
 from gentrace.models.pipeline_run_response import PipelineRunResponse
+
+from gentrace.providers.step_run import StepRun
+from gentrace.providers.pipeline_run import PipelineRun
+from gentrace.providers.pipeline import Pipeline

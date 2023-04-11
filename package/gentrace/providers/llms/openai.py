@@ -1,6 +1,6 @@
 import time
 from typing import Optional
-import mustache
+import pystache
 import openai
 import openai.api_resources as api
 from gentrace.providers.step_run import StepRun
@@ -11,9 +11,10 @@ class OpenAIPipelineHandler:
         self.pipeline = pipeline
 
     @classmethod
-    def setup(config):
+    def setup(cls, config):
         if config:
             for key, value in config.items():
+                print(f"Setting OpenAI config: {key} = {value}")
                 setattr(openai, key, value)
 
     def set_pipeline_run(self, pipeline_run):
@@ -31,7 +32,7 @@ def intercept_completion(original_completion):
         if not prompt_template:
             raise ValueError("The promptTemplate attribute must be provided when using the Gentrace SDK.")
 
-        rendered_prompt = mustache.render(prompt_template, prompt_inputs)
+        rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
 

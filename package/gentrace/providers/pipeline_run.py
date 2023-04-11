@@ -1,14 +1,13 @@
 from typing import Dict, List
 from gentrace.api import IngestionApi
-from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 
 class PipelineRun:
-    def __init__(self, pipeline: Pipeline):
+    def __init__(self, pipeline):
         self.pipeline = pipeline
         self.step_runs = []
 
-    def get_pipeline(self) -> Pipeline:
+    def get_pipeline(self):
         return self.pipeline
 
     async def get_openai(self):

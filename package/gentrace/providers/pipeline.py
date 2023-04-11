@@ -10,12 +10,12 @@ class Pipeline:
         self,
         id: str,
         api_key: str,
-        base_path: Optional[str] = None,
+        host: Optional[str] = None,
         openai_config: Any = None,
         pinecone_config: Optional[dict] = None,
     ):
         self.id = id
-        self.config = GentraceConfiguration(api_key=api_key, base_path=base_path)
+        self.config = GentraceConfiguration(api_key=api_key, host=host)
         
         if openai_config:
           try:
@@ -25,12 +25,14 @@ class Pipeline:
                   "Could not import OpenAI python package. "
                   "Please install it with `pip install openai`."
               )
-         
+
           for key in openai_config:
               if key not in openai.__all__:
                   raise ValueError(f"Invalid key ({key}) in supplied OpenAI configuration.")
 
-          self.openAIConfig = openai_config
+          self.openai_config = openai_config
+        else:
+          self.openai_config = None
 
         if pinecone_config:
             try:
@@ -46,29 +48,31 @@ class Pipeline:
             for key in pinecone_config:
                 if key not in pinecone_init_args:
                     raise ValueError(f"Invalid key ({key}) in supplied Pinecone configuration.")
-            self.pineconeConfig = pinecone_config
+            self.pinecone_config = pinecone_config
+        else:
+            self.pinecone_config = None
 
-        self.pipelineHandlers = {}
+        self.pipeline_handlers = {}
 
     def setup(self):
-        if self.pineconeConfig:
+        if self.pinecone_config:
             try:
                 from gentrace.providers.vectorstores.pinecone import PineconePipelineHandler
 
                 pineconeHandler = PineconePipelineHandler(pipeline=self)
-                pineconeHandler.init(**self.pineconeConfig)
-                self.pipelineHandlers["pinecone"] = pineconeHandler
+                pineconeHandler.init(**self.pinecone_config)
+                self.pipeline_handlers["pinecone"] = pineconeHandler
             except ImportError:
                 raise ImportError(
                     "Please install Pinecone as a dependency with, e.g. `pip install pinecone-client`"
                 )
 
-        if self.openAIConfig:
+        if self.openai_config:
             try:
                 from gentrace.providers.llms.openai import OpenAIPipelineHandler
-                OpenAIPipelineHandler.setup(self.openAIConfig)
-                openAIHandler = OpenAIPipelineHandler(pipeline=self)
-                self.pipelineHandlers["openai"] = openAIHandler
+                OpenAIPipelineHandler.setup(self.openai_config)
+                openai_handler = OpenAIPipelineHandler(pipeline=self)
+                self.pipeline_handlers["openai"] = openai_handler
             except ImportError:
                 raise ImportError(
                     "Please install OpenAI as a dependency with, e.g. `pip install openai`"
