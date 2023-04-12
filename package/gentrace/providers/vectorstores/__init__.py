@@ -1,8 +1,8 @@
 from gentrace.providers.vectorstores.pinecone import (
-    PineconePipelineHandler,
+    PineconeDeleteStepRun,
     PineconeFetchStepRun,
+    PineconePipelineHandler,
+    PineconeQueryStepRun,
     PineconeUpdateStepRun,
     PineconeUpsertStepRun,
-    PineconeQueryStepRun,
-    PineconeDeleteStepRun
 )
