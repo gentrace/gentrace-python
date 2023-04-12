@@ -22,7 +22,7 @@ pinecone = runner.get_pinecone()
 
 index = pinecone.Index("openai-trec")
 
-result = index.fetch(ids=["3980"])
+result = index.delete(ids=["3890"])
 
 print("Result: ", result)
 

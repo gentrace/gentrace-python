@@ -1,7 +1,10 @@
 import os
+import random
 
 import gentrace
 from dotenv import load_dotenv
+
+from examples.pinecone.utils import DEFAULT_VECTOR
 
 load_dotenv()
 
@@ -22,7 +25,14 @@ pinecone = runner.get_pinecone()
 
 index = pinecone.Index("openai-trec")
 
-result = index.fetch(ids=["3980"])
+result = index.upsert(
+    [
+        {
+            "id": str(random.randint(0, 9999)),
+            "values": DEFAULT_VECTOR,
+        },
+    ]
+)
 
 print("Result: ", result)
 

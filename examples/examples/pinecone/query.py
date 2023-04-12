@@ -3,6 +3,8 @@ import os
 import gentrace
 from dotenv import load_dotenv
 
+from examples.pinecone.utils import DEFAULT_VECTOR
+
 load_dotenv()
 
 pipeline = gentrace.Pipeline(
@@ -22,7 +24,10 @@ pinecone = runner.get_pinecone()
 
 index = pinecone.Index("openai-trec")
 
-result = index.fetch(ids=["3980"])
+result = index.query(
+    top_k=10,
+    vector=DEFAULT_VECTOR,
+)
 
 print("Result: ", result)
 
