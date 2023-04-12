@@ -1,5 +1,5 @@
 import inspect
-from typing import Optional, Any
+from typing import Any, Optional
 
 from gentrace.providers.pipeline_run import PipelineRun
 
@@ -14,27 +14,26 @@ class Pipeline:
         pinecone_config: Optional[dict] = None,
     ):
         self.id = id
-        self.config = {
-            "api_key": api_key,  
-            "host": host
-        }
-        
+        self.config = {"api_key": api_key, "host": host}
+
         if openai_config:
-          try:
-              import openai
-          except ImportError:
-              raise ValueError(
-                  "Could not import OpenAI python package. "
-                  "Please install it with `pip install openai`."
-              )
+            try:
+                import openai
+            except ImportError:
+                raise ValueError(
+                    "Could not import OpenAI python package. "
+                    "Please install it with `pip install openai`."
+                )
 
-          for key in openai_config:
-              if key not in openai.__all__:
-                  raise ValueError(f"Invalid key ({key}) in supplied OpenAI configuration.")
+            for key in openai_config:
+                if key not in openai.__all__:
+                    raise ValueError(
+                        f"Invalid key ({key}) in supplied OpenAI configuration."
+                    )
 
-          self.openai_config = openai_config
+            self.openai_config = openai_config
         else:
-          self.openai_config = None
+            self.openai_config = None
 
         if pinecone_config:
             try:
@@ -49,7 +48,9 @@ class Pipeline:
 
             for key in pinecone_config:
                 if key not in pinecone_init_args:
-                    raise ValueError(f"Invalid key ({key}) in supplied Pinecone configuration.")
+                    raise ValueError(
+                        f"Invalid key ({key}) in supplied Pinecone configuration."
+                    )
             self.pinecone_config = pinecone_config
         else:
             self.pinecone_config = None
@@ -59,9 +60,12 @@ class Pipeline:
     def setup(self):
         if self.pinecone_config:
             try:
-                from gentrace.providers.vectorstores.pinecone import PineconePipelineHandler
+                from gentrace.providers.vectorstores.pinecone import (
+                    PineconePipelineHandler,
+                )
 
                 pineconeHandler = PineconePipelineHandler(pipeline=self)
+                print("Pinecone config: ", self.pinecone_config)
                 pineconeHandler.init(**self.pinecone_config)
                 self.pipeline_handlers["pinecone"] = pineconeHandler
             except ImportError:
@@ -72,6 +76,7 @@ class Pipeline:
         if self.openai_config:
             try:
                 from gentrace.providers.llms.openai import OpenAIPipelineHandler
+
                 OpenAIPipelineHandler.setup(self.openai_config)
                 openai_handler = OpenAIPipelineHandler(pipeline=self)
                 self.pipeline_handlers["openai"] = openai_handler
@@ -82,4 +87,3 @@ class Pipeline:
 
     def start(self):
         return PipelineRun(pipeline=self)
-

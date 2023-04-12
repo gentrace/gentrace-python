@@ -9,8 +9,8 @@ pipeline = gentrace.Pipeline(
     "test-gentrace-python-pipeline",
     os.getenv("GENTRACE_API_KEY"),
     host="http://localhost:3000/api/v1",
-    openai_config={
-        "api_key": os.getenv("OPENAI_KEY"),
+    pinecone_config={
+        "api_key": os.getenv("PINECONE_API_KEY"),
     },
 )
 
@@ -18,13 +18,17 @@ pipeline.setup()
 
 runner = pipeline.start()
 
-openai = runner.get_openai()
+pinecone = runner.get_pinecone()
 
-result = openai.Embedding.create(
-    input="sample text", model="text-similarity-davinci-001"
-)
+index = pinecone.index("openai-trec")
 
-print("Result: ", result)
+print("Index: ", index)
+
+# result = openai.Embedding.create(
+#     input="sample text", model="text-similarity-davinci-001"
+# )
+
+# print("Result: ", result)
 
 info = runner.submit()
 

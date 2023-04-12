@@ -1,6 +1,15 @@
 class StepRun:
-    def __init__(self, provider: str, invocation: str, elapsed_time: float,
-                 start_time: str, end_time: str, inputs: any, model_params: any, outputs: any):
+    def __init__(
+        self,
+        provider: str,
+        invocation: str,
+        elapsed_time: float,
+        start_time: str,
+        end_time: str,
+        inputs: any,
+        model_params: any,
+        outputs: any,
+    ):
         self.provider = provider
         self.invocation = invocation
         self.elapsed_time = elapsed_time

@@ -1,13 +1,13 @@
 import typing_extensions
 
-from gentrace.paths import PathValues
 from gentrace.apis.paths.pipeline_run import PipelineRun
+from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
-    'PathToApi',
+    "PathToApi",
     {
         PathValues.PIPELINERUN: PipelineRun,
-    }
+    },
 )
 
 path_to_api = PathToApi(
