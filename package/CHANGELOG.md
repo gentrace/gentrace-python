@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/gentrace/gentrace-python/compare/v0.1.2...v0.1.3) (2023-04-12)
+
+
+### Bug Fixes
+
+* workflow deploys to PyPI ([#12](https://github.com/gentrace/gentrace-python/issues/12)) ([89df6c1](https://github.com/gentrace/gentrace-python/commit/89df6c136bd7d51ce788053f189bff1f09dac444))
+
 ## [0.1.2](https://github.com/gentrace/gentrace-python/compare/v0.1.1...v0.1.2) (2023-04-12)
 
 
