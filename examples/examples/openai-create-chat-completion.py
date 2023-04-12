@@ -12,9 +12,9 @@ pipeline.setup()
 
 runner = pipeline.start()
 
-modified_openai = runner.get_openai()
+openai = runner.get_openai()
 
-result = modified_openai.ChatCompletion.create(messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo")
+result = openai.ChatCompletion.create(messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo")
 
 print("Result: ", result)
 

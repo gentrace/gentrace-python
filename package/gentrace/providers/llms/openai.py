@@ -101,8 +101,8 @@ def intercept_chat_completion(original_fn):
         cls.pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
                 elapsed_time,
-                datetime.fromtimestamp(start_time).isoformat(),
-                datetime.fromtimestamp(end_time).isoformat(),
+                to_date_string(start_time),
+                to_date_string(end_time),
                 {"messages": messages, "user": user},
                 model_params,
                 completion,
@@ -128,8 +128,8 @@ def intercept_embedding(original_fn):
         cls.pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
                 elapsed_time,
-                datetime.fromtimestamp(start_time).isoformat(),
-                datetime.fromtimestamp(end_time).isoformat(),
+                to_date_string(start_time),
+                to_date_string(end_time),
                 input_params,
                 {"model": model},
                 completion,

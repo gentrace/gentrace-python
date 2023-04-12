@@ -14,7 +14,7 @@ runner = pipeline.start()
 
 openai = runner.get_openai()
 
-result = openai.Completion.create(model="text-davinci-003", promptTemplate="Hello world {{ name }}", promptInputs={"name": "test"})
+result = openai.Embedding.create(input="sample text", model="text-similarity-davinci-001")
 
 print("Result: ", result)
 
