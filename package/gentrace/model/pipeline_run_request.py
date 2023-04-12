@@ -90,6 +90,7 @@ class PipelineRunRequest(
                                                             any_of_0 = schemas.BoolSchema
                                                             any_of_1 = schemas.StrSchema
                                                             any_of_2 = schemas.NumberSchema
+                                                            any_of_3 = schemas.DictSchema
                                                             
                                                             @classmethod
                                                             @functools.lru_cache()
@@ -105,6 +106,7 @@ class PipelineRunRequest(
                                                                     cls.any_of_0,
                                                                     cls.any_of_1,
                                                                     cls.any_of_2,
+                                                                    cls.any_of_3,
                                                                 ]
                                                     
                                                     
@@ -159,6 +161,7 @@ class PipelineRunRequest(
                                                             any_of_0 = schemas.BoolSchema
                                                             any_of_1 = schemas.StrSchema
                                                             any_of_2 = schemas.NumberSchema
+                                                            any_of_3 = schemas.DictSchema
                                                             
                                                             @classmethod
                                                             @functools.lru_cache()
@@ -174,6 +177,7 @@ class PipelineRunRequest(
                                                                     cls.any_of_0,
                                                                     cls.any_of_1,
                                                                     cls.any_of_2,
+                                                                    cls.any_of_3,
                                                                 ]
                                                     
                                                     

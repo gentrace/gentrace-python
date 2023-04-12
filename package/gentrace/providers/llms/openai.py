@@ -1,8 +1,10 @@
 import time
 from typing import Optional
+from datetime import datetime
 import pystache
 import openai
 from gentrace.providers.step_run import StepRun
+from gentrace.providers.utils import to_date_string
 
 class OpenAIPipelineHandler:
     def __init__(self, pipeline = None):
@@ -53,13 +55,11 @@ def intercept_completion(original_fn):
         if suffix is not None:
             inputs_dict["suffix"] = suffix
             
-        print("model information: ", {**partial_model_params, "promptTemplate": prompt_template})
-
         cls.pipeline_run.add_step_run(
             OpenAICreateCompletionStepRun(
                 elapsed_time,
-                start_time,
-                end_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
                 inputs_dict,
                 {**partial_model_params, "promptTemplate": prompt_template},
                 completion
@@ -84,8 +84,8 @@ def intercept_chat_completion(original_fn):
         cls.pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
                 elapsed_time,
-                start_time,
-                end_time,
+                datetime.fromtimestamp(start_time).isoformat(),
+                datetime.fromtimestamp(end_time).isoformat(),
                 {"messages": messages, "user": user},
                 model_params,
                 completion
@@ -109,8 +109,8 @@ def intercept_embedding(original_fn):
         cls.pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
                 elapsed_time,
-                start_time,
-                end_time,
+                datetime.fromtimestamp(start_time).isoformat(),
+                datetime.fromtimestamp(end_time).isoformat(),
                 input_params,
                 { "model": model },
                 completion

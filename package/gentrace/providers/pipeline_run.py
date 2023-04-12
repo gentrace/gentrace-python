@@ -35,8 +35,8 @@ class PipelineRun:
                     new_class.pipeline_run = self
 
                     setattr(cloned_handler, name, new_class)
-
-                    # TODO: Must work on a acreate() method, check that streaming works
+                    # TODO: get the typing from the underlying model
+                    # TODO: must work on a acreate() method, check that streaming works
 
             cloned_handler.set_pipeline_run(self)
             return cloned_handler
@@ -57,7 +57,8 @@ class PipelineRun:
 
     def submit(self) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
-        api_client = ApiClient(configuration=configuration, header_name="Authorization", header_value="Bearer " + self.pipeline.config.get("api_key"))
+        configuration.access_token = self.pipeline.config.get("api_key")
+        api_client = ApiClient(configuration=configuration)
         ingestion_api = IngestionApi(api_client=api_client)
         
 
@@ -77,7 +78,7 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        print("Submitting pipeline run: ", [step_run.inputs for step_run in self.step_runs])
+        print("Submitting pipeline run: ", step_runs_data)
 
         pipeline_post_response = ingestion_api.pipeline_run_post(
             {
@@ -86,6 +87,6 @@ class PipelineRun:
             }
         )
         
-        print("Pipeline run submitted: ", pipeline_post_response.data)
+        print("Pipeline run submitted: ", pipeline_post_response.body.get_item_oapg("pipelineRunId"))
 
-        return pipeline_post_response.data
+        return pipeline_post_response.body.get_item_oapg("pipelineRunId")

@@ -39,6 +39,7 @@ request_body_pipeline_run_request = api_client.RequestBody(
     },
     required=True,
 )
+SchemaFor200ResponseBodyApplicationJsonCharsetutf8 = PipelineRunResponse
 SchemaFor200ResponseBodyApplicationJson = PipelineRunResponse
 
 
@@ -46,6 +47,7 @@ SchemaFor200ResponseBodyApplicationJson = PipelineRunResponse
 class ApiResponseFor200(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
+        SchemaFor200ResponseBodyApplicationJsonCharsetutf8,
         SchemaFor200ResponseBodyApplicationJson,
     ]
     headers: schemas.Unset = schemas.unset
@@ -54,6 +56,8 @@ class ApiResponseFor200(api_client.ApiResponse):
 _response_for_200 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor200,
     content={
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8),
         'application/json': api_client.MediaType(
             schema=SchemaFor200ResponseBodyApplicationJson),
     },
@@ -83,6 +87,7 @@ _response_for_500 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor500,
 )
 _all_accept_content_types = (
+    'application/json; charset=utf-8',
     'application/json',
 )
 

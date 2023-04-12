@@ -83,6 +83,7 @@ Class Name | Input Type | Accessed Type | Description | Notes
 [any_of_0](#any_of_0) | bool,  | BoolClass,  |  | 
 [any_of_1](#any_of_1) | str,  | str,  |  | 
 [any_of_2](#any_of_2) | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+[any_of_3](#any_of_3) | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
 # any_of_0
 
@@ -104,6 +105,13 @@ str,  | str,  |  |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+
+# any_of_3
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
 # inputs
 
@@ -131,6 +139,7 @@ Class Name | Input Type | Accessed Type | Description | Notes
 [any_of_0](#any_of_0) | bool,  | BoolClass,  |  | 
 [any_of_1](#any_of_1) | str,  | str,  |  | 
 [any_of_2](#any_of_2) | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+[any_of_3](#any_of_3) | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
 # any_of_0
 
@@ -152,6 +161,13 @@ str,  | str,  |  |
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+
+# any_of_3
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
 
 # outputs
 
