@@ -16,6 +16,7 @@ from pinecone.config import init
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun
 from gentrace.providers.step_run import StepRun
+from gentrace.providers.utils import to_date_string
 
 
 class PineconePipelineHandler:
@@ -31,8 +32,20 @@ class PineconePipelineHandler:
     def init(self, *args, **kwargs):
         init(*args, **kwargs)
 
-    class Index(pinecone.Index):
-        def __init__(self, index_name: str, pool_threads=1, *args, **kwargs):
+    def Index(self, *args, **kwargs):
+        modified_index = self.ModifiedIndex(self.pipeline_run, *args, **kwargs)
+        return modified_index
+
+    class ModifiedIndex(pinecone.Index):
+        def __init__(
+            self,
+            pipeline_run: PipelineRun,
+            index_name: str,
+            pool_threads=1,
+            *args,
+            **kwargs
+        ):
+            self.pipeline_run: PipelineRun = pipeline_run
             super().__init__(index_name, pool_threads, *args, **kwargs)
 
         def fetch(
@@ -46,10 +59,10 @@ class PineconePipelineHandler:
             self.pipeline_run.add_step_run(
                 PineconeFetchStepRun(
                     elapsed_time,
-                    datetime.fromtimestamp(start_time).isoformat(),
-                    datetime.fromtimestamp(end_time).isoformat(),
+                    to_date_string(start_time),
+                    to_date_string(end_time),
                     {"ids": ids, "namespace": namespace},
-                    response,
+                    response.to_dict(),
                 )
             )
 
@@ -80,8 +93,8 @@ class PineconePipelineHandler:
             self.pipeline_run.add_step_run(
                 PineconeUpdateStepRun(
                     elapsed_time,
-                    datetime.fromtimestamp(start_time).isoformat(),
-                    datetime.fromtimestamp(end_time).isoformat(),
+                    to_date_string(start_time),
+                    to_date_string(end_time),
                     {
                         "id": id,
                         "values": values,
@@ -143,11 +156,11 @@ class PineconePipelineHandler:
             self.pipeline_run.add_step_run(
                 PineconeQueryStepRun(
                     elapsed_time,
-                    datetime.fromtimestamp(start_time).isoformat(),
-                    datetime.fromtimestamp(end_time).isoformat(),
+                    to_date_string(start_time),
+                    to_date_string(end_time),
                     {**inputs},
                     {**model_params},
-                    response,
+                    response.to_dict(),
                 )
             )
 
@@ -171,15 +184,15 @@ class PineconePipelineHandler:
             self.pipeline_run.add_step_run(
                 PineconeUpsertStepRun(
                     elapsed_time,
-                    datetime.fromtimestamp(start_time).isoformat(),
-                    datetime.fromtimestamp(end_time).isoformat(),
+                    to_date_string(start_time),
+                    to_date_string(end_time),
                     {
                         "vectors": vectors,
                         "namespace": namespace,
                         "batch_size": batch_size,
                         "show_progress": show_progress,
                     },
-                    response,
+                    response.to_dict(),
                 )
             )
 
@@ -203,8 +216,8 @@ class PineconePipelineHandler:
             self.pipeline_run.add_step_run(
                 PineconeDeleteStepRun(
                     elapsed_time,
-                    datetime.fromtimestamp(start_time).isoformat(),
-                    datetime.fromtimestamp(end_time).isoformat(),
+                    to_date_string(start_time),
+                    to_date_string(end_time),
                     {
                         "ids": ids,
                         "delete_all": delete_all,

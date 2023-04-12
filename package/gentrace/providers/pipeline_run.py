@@ -89,6 +89,8 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
+        print("Step run: ", json.dumps(step_runs_data, indent=2))
+
         pipeline_post_response = ingestion_api.pipeline_run_post(
             {"name": self.pipeline.id, "stepRuns": step_runs_data}
         )
