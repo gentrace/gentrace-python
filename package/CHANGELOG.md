@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/gentrace/gentrace-python/compare/v0.1.4...v0.1.5) (2023-04-12)
+
+
+### Bug Fixes
+
+* change name to gentrace-py ([#18](https://github.com/gentrace/gentrace-python/issues/18)) ([0bb41d0](https://github.com/gentrace/gentrace-python/commit/0bb41d00789cd2511febb744dbb121632096ee00))
+
 ## [0.1.4](https://github.com/gentrace/gentrace-python/compare/v0.1.3...v0.1.4) (2023-04-12)
 
 
