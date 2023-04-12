@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/gentrace/gentrace-python/compare/v0.1.1...v0.1.2) (2023-04-12)
+
+
+### Bug Fixes
+
+* add another test fix ([#10](https://github.com/gentrace/gentrace-python/issues/10)) ([d65c520](https://github.com/gentrace/gentrace-python/commit/d65c520817ef405d1995f9ea52fb6b342719d28b))
+
 ## [0.1.1](https://github.com/gentrace/gentrace-python/compare/v0.1.0...v0.1.1) (2023-04-12)
 
 
