@@ -36,7 +36,7 @@ def intercept_completion(original_fn):
 
         if "prompt" in base_completion_options:
             raise ValueError(
-                "The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead. "
+                "The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead."
             )
 
         if not prompt_template:
