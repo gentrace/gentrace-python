@@ -14,7 +14,7 @@ runner = pipeline.start()
 
 modified_openai = runner.get_openai()
 
-result = modified_openai.Completion.create(model="text-davinci-003", promptTemplate="Hello world {{ name }}", promptInputs={"name": "test"})
+result = modified_openai.ChatCompletion.create(messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo")
 
 print("Result: ", result)
 

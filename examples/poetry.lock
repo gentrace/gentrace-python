@@ -436,7 +436,7 @@ category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace-0.1.0.tar.gz", hash = "sha256:c2913b45df10e40ab35cce1639fa2e0bad34d5386d562faca4172de69f075631"},
+    {file = "gentrace-0.1.0.tar.gz", hash = "sha256:2c0ab640d439da35663fb08ab0167697d1a5a4839fe39de91c88dbf30fde3a91"},
 ]
 
 [package.dependencies]

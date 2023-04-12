@@ -85,4 +85,6 @@ class PipelineRun:
             }
         )
         
-        return pipeline_post_response.body.get_item_oapg("pipelineRunId")
+        return {
+            "pipelineRunId": pipeline_post_response.body.get_item_oapg("pipelineRunId")
+        }
