@@ -35,8 +35,6 @@ def intercept_completion(original_fn):
 
         rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
-        print(f"Rendered prompt: {rendered_prompt}")        
-
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
 
         start_time = time.time()

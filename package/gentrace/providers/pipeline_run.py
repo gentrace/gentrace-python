@@ -78,8 +78,6 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        print("Submitting pipeline run: ", step_runs_data)
-
         pipeline_post_response = ingestion_api.pipeline_run_post(
             {
                 "name": self.pipeline.id,
@@ -87,6 +85,4 @@ class PipelineRun:
             }
         )
         
-        print("Pipeline run submitted: ", pipeline_post_response.body.get_item_oapg("pipelineRunId"))
-
         return pipeline_post_response.body.get_item_oapg("pipelineRunId")

@@ -1,4 +1,3 @@
-import openai as original_openai
 import os
 import gentrace
 from dotenv import load_dotenv
