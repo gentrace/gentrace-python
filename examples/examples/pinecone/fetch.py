@@ -3,6 +3,8 @@ import os
 import gentrace
 from dotenv import load_dotenv
 
+from examples.pinecone.utils import DEFAULT_VECTOR
+
 load_dotenv()
 
 pipeline = gentrace.Pipeline(
@@ -20,15 +22,16 @@ runner = pipeline.start()
 
 pinecone = runner.get_pinecone()
 
-index = pinecone.index("openai-trec")
+index = pinecone.Index("openai-trec")
 
 print("Index: ", index)
 
-# result = openai.Embedding.create(
-#     input="sample text", model="text-similarity-davinci-001"
-# )
+result = index.query(
+    top_k=10,
+    vector=DEFAULT_VECTOR,
+)
 
-# print("Result: ", result)
+print("Result: ", result)
 
 info = runner.submit()
 

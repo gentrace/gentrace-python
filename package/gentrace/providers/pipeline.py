@@ -65,8 +65,7 @@ class Pipeline:
                 )
 
                 pineconeHandler = PineconePipelineHandler(pipeline=self)
-                print("Pinecone config: ", self.pinecone_config)
-                pineconeHandler.init(**self.pinecone_config)
+                pineconeHandler.init(api_key=self.pinecone_config["api_key"])
                 self.pipeline_handlers["pinecone"] = pineconeHandler
             except ImportError:
                 raise ImportError(

@@ -11,6 +11,7 @@ from pinecone import (
     UpsertResponse,
     Vector,
 )
+from pinecone.config import init
 
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun
@@ -26,6 +27,9 @@ class PineconePipelineHandler:
 
     def set_pipeline_run(self, pipeline_run):
         self.pipeline_run: Optional[PipelineRun] = pipeline_run
+
+    def init(self, *args, **kwargs):
+        init(*args, **kwargs)
 
     class Index(pinecone.Index):
         def __init__(self, index_name: str, pool_threads=1, *args, **kwargs):
@@ -216,7 +220,11 @@ class PineconePipelineHandler:
 
 # Assign exported member function to PineconePipelineHandler
 for exported_member in dir(pinecone):
-    if not exported_member.startswith("__") and exported_member != "Index":
+    if (
+        not exported_member.startswith("__")
+        and exported_member != "Index"
+        and exported_member != "init"
+    ):
         setattr(
             PineconePipelineHandler, exported_member, getattr(pinecone, exported_member)
         )
