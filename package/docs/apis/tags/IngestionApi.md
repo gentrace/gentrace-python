@@ -50,9 +50,7 @@ with gentrace.ApiClient(configuration) as api_client:
                 provider=dict(
                     name="name_example",
                     invocation="invocation_example",
-                    model_params=dict(
-                        "key": None,
-                    ),
+                    model_params=dict(),
                     inputs=dict(),
                     outputs=dict(),
                 ),
