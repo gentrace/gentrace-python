@@ -16,7 +16,7 @@ Gentrace Python SDK
 
 The Gentrace Python library provides convenient access to the Gentrace API from Python applications. Most of the code in this library is generated from our [OpenAPI specification](https://github.com/gentrace/gentrace-openapi).
 
-**Important note: this library is meant for server-side usage only, as using it in client-side browser code will expose your secret API key.**
+**Important note: this library is meant for server-side usage only.**
 
 ## Installation
 
