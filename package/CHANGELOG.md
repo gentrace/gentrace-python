@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v0.2.0) (2023-04-14)
+
+
+### Features
+
+* add ChatCompletion async streaming coverage ([#30](https://github.com/gentrace/gentrace-python/issues/30)) ([7128f53](https://github.com/gentrace/gentrace-python/commit/7128f5369652c39ed9b1d825f5eb57c58bcf10ca))
+
+
+### Bug Fixes
+
+* create OpenAI embedding ([#32](https://github.com/gentrace/gentrace-python/issues/32)) ([13f0917](https://github.com/gentrace/gentrace-python/commit/13f0917eaba6dbb50d5fe65f35ec0446b2feb2b2))
+
 ## [0.1.7](https://github.com/gentrace/gentrace-python/compare/v0.1.6...v0.1.7) (2023-04-14)
 
 
