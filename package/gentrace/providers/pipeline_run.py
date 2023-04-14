@@ -25,7 +25,9 @@ class PipelineRun:
 
             from .llms.openai import (
                 intercept_chat_completion,
+                intercept_chat_completion_async,
                 intercept_completion,
+                intercept_completion_async,
                 intercept_embedding,
             )
 
@@ -36,8 +38,14 @@ class PipelineRun:
                     new_class = type(name, (cls,), {})
                     if name == "Completion":
                         new_class.create = intercept_completion(new_class.create)
+                        new_class.acreate = intercept_completion_async(
+                            new_class.acreate
+                        )
                     elif name == "ChatCompletion":
                         new_class.create = intercept_chat_completion(new_class.create)
+                        new_class.acreate = intercept_chat_completion_async(
+                            new_class.acreate
+                        )
                     elif name == "Embedding":
                         new_class.create = intercept_embedding(new_class.create)
 
@@ -93,8 +101,6 @@ class PipelineRun:
             }
             for step_run in self.step_runs
         ]
-
-        print("Step run: ", json.dumps(step_runs_data, indent=2))
 
         pipeline_post_response = ingestion_api.pipeline_run_post(
             {"name": self.pipeline.id, "stepRuns": step_runs_data}
