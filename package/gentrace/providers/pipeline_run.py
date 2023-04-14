@@ -25,6 +25,7 @@ class PipelineRun:
 
             from .llms.openai import (
                 intercept_chat_completion,
+                intercept_chat_completion_async,
                 intercept_completion,
                 intercept_completion_async,
                 intercept_embedding,
@@ -42,6 +43,9 @@ class PipelineRun:
                         )
                     elif name == "ChatCompletion":
                         new_class.create = intercept_chat_completion(new_class.create)
+                        new_class.acreate = intercept_chat_completion_async(
+                            new_class.acreate
+                        )
                     elif name == "Embedding":
                         new_class.create = intercept_embedding(new_class.create)
 

@@ -223,6 +223,85 @@ def intercept_chat_completion(original_fn):
     return wrapper
 
 
+def intercept_chat_completion_async(original_fn):
+    @classmethod
+    async def wrapper(cls, *args, **kwargs):
+        messages = kwargs.get("messages")
+        user = kwargs.get("user")
+        stream = kwargs.get("stream")
+        model_params = {
+            k: v for k, v in kwargs.items() if k not in ["messages", "user"]
+        }
+
+        start_time = time.time()
+        completion = await original_fn(**kwargs)
+
+        if stream:
+
+            async def profiled_completion():
+                modified_response = []
+                async for value in completion:
+                    modified_response.append(value)
+                    yield value
+
+                end_time = time.time()
+
+                text_list = []
+                for stream_result in modified_response:
+                    if (
+                        "choices" in stream_result
+                        and stream_result["choices"][0].get("text")
+                        and stream_result["choices"][0].get("finish_reason") != "stop"
+                    ):
+                        text_list.append(stream_result["choices"][0]["text"])
+
+                # Major hack by creating a resolved version of the streamed result.
+                final_response_string = " ".join(text_list)
+                final_response = {
+                    "choices": [
+                        {
+                            "finish_reason": None,
+                            "index": 0,
+                            "logprobs": None,
+                            "text": final_response_string,
+                        }
+                    ]
+                }
+
+                elapsed_time = int(end_time - start_time)
+
+                cls.pipeline_run.add_step_run(
+                    OpenAICreateChatCompletionStepRun(
+                        elapsed_time,
+                        to_date_string(start_time),
+                        to_date_string(end_time),
+                        {"messages": messages, "user": user},
+                        model_params,
+                        final_response,
+                    )
+                )
+
+            return profiled_completion()
+
+        end_time = time.time()
+
+        elapsed_time = int(end_time - start_time)
+
+        cls.pipeline_run.add_step_run(
+            OpenAICreateChatCompletionStepRun(
+                elapsed_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
+                {"messages": messages, "user": user},
+                model_params,
+                completion,
+            )
+        )
+        return completion
+
+    return wrapper
+
+
 def intercept_embedding(original_fn):
     @classmethod
     def wrapper(cls, *args, **kwargs):
