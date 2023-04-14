@@ -32,7 +32,7 @@ def create_step_run(
     prompt_inputs,
     completion,
 ):
-    elapsed_time = int(end_time - start_time)
+    elapsed_time = int((end_time - start_time) * 1000)
 
     user = base_completion_options.get("user")
     suffix = base_completion_options.get("suffix")
@@ -206,7 +206,7 @@ def intercept_chat_completion(original_fn):
         completion = original_fn(**kwargs)
         end_time = time.time()
 
-        elapsed_time = int(end_time - start_time)
+        elapsed_time = int((end_time - start_time) * 1000)
 
         cls.pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
@@ -268,7 +268,7 @@ def intercept_chat_completion_async(original_fn):
                     ]
                 }
 
-                elapsed_time = int(end_time - start_time)
+                elapsed_time = int((end_time - start_time) * 1000)
 
                 cls.pipeline_run.add_step_run(
                     OpenAICreateChatCompletionStepRun(
@@ -285,7 +285,7 @@ def intercept_chat_completion_async(original_fn):
 
         end_time = time.time()
 
-        elapsed_time = int(end_time - start_time)
+        elapsed_time = int((end_time - start_time) * 1000)
 
         cls.pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
@@ -312,7 +312,7 @@ def intercept_embedding(original_fn):
         completion = original_fn(**kwargs)
         end_time = time.time()
 
-        elapsed_time = int(end_time - start_time)
+        elapsed_time = int((end_time - start_time) * 1000)
 
         cls.pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
@@ -339,7 +339,7 @@ def intercept_embedding_async(original_fn):
         completion = await original_fn(**kwargs)
         end_time = time.time()
 
-        elapsed_time = int(end_time - start_time)
+        elapsed_time = int((end_time - start_time) * 1000)
 
         cls.pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
