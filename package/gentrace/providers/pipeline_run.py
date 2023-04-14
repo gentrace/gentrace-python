@@ -1,10 +1,11 @@
 import copy
 import json
-from typing import Dict, List
+from typing import Dict, List, Type, Union, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.ingestion_api import IngestionApi
 from gentrace.configuration import Configuration
+from gentrace.providers.llms.openai import OpenAIPipelineHandler
 from gentrace.providers.step_run import StepRun
 
 
@@ -20,7 +21,7 @@ class PipelineRun:
         if "openai" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("openai")
             cloned_handler = copy.deepcopy(handler)
-            import openai.api_resources as api
+            import openai
 
             from .llms.openai import (
                 intercept_chat_completion,
@@ -28,7 +29,7 @@ class PipelineRun:
                 intercept_embedding,
             )
 
-            for name, cls in vars(api).items():
+            for name, cls in vars(openai.api_resources).items():
                 if isinstance(cls, type):
                     # Create new class that inherits from the original class, don't directly monkey patch
                     # the original class
@@ -43,11 +44,13 @@ class PipelineRun:
                     new_class.pipeline_run = self
 
                     setattr(cloned_handler, name, new_class)
-                    # TODO: get the typing from the underlying model
                     # TODO: must work on a acreate() method, check that streaming works
 
             cloned_handler.set_pipeline_run(self)
-            return cloned_handler
+
+            # TODO: Could not find an easy way to create a union type with openai and
+            # OpenAIPipelineHandler, so we just use openai.
+            return cast(openai, cloned_handler)
         else:
             raise ValueError(
                 "Did not find OpenAI handler. Did you call setup() on the pipeline?"
@@ -58,7 +61,9 @@ class PipelineRun:
             handler = self.pipeline.pipeline_handlers.get("pinecone")
             cloned_handler = copy.deepcopy(handler)
             cloned_handler.set_pipeline_run(self)
-            return cloned_handler
+            import pinecone
+
+            return cast(pinecone, cloned_handler)
         else:
             raise ValueError(
                 "Did not find Pinecone handler. Did you call setup() on the pipeline?"
