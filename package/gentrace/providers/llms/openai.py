@@ -23,6 +23,41 @@ class OpenAIPipelineHandler:
         self.pipeline_run = pipeline_run
 
 
+def create_step_run(
+    cls,
+    start_time,
+    end_time,
+    base_completion_options,
+    prompt_template,
+    prompt_inputs,
+    completion,
+):
+    elapsed_time = int(end_time - start_time)
+
+    user = base_completion_options.get("user")
+    suffix = base_completion_options.get("suffix")
+    partial_model_params = {
+        k: v for k, v in base_completion_options.items() if k not in ["user", "suffix"]
+    }
+
+    inputs_dict = {"prompt": prompt_inputs}
+    if user is not None:
+        inputs_dict["user"] = user
+    if suffix is not None:
+        inputs_dict["suffix"] = suffix
+
+    cls.pipeline_run.add_step_run(
+        OpenAICreateCompletionStepRun(
+            elapsed_time,
+            to_date_string(start_time),
+            to_date_string(end_time),
+            inputs_dict,
+            {**partial_model_params, "promptTemplate": prompt_template},
+            completion,
+        )
+    )
+
+
 def intercept_completion(original_fn):
     @classmethod
     def wrapper(cls, *args, **kwargs):
@@ -52,33 +87,15 @@ def intercept_completion(original_fn):
         completion = original_fn(**new_completion_options)
         end_time = time.time()
 
-        elapsed_time = int(end_time - start_time)
-
-        user = base_completion_options.get("user")
-        suffix = base_completion_options.get("suffix")
-        partial_model_params = {
-            k: v
-            for k, v in base_completion_options.items()
-            if k not in ["user", "suffix"]
-        }
-
-        inputs_dict = {"prompt": prompt_inputs}
-        if user is not None:
-            inputs_dict["user"] = user
-        if suffix is not None:
-            inputs_dict["suffix"] = suffix
-
-        cls.pipeline_run.add_step_run(
-            OpenAICreateCompletionStepRun(
-                elapsed_time,
-                to_date_string(start_time),
-                to_date_string(end_time),
-                inputs_dict,
-                {**partial_model_params, "promptTemplate": prompt_template},
-                completion,
-            )
+        create_step_run(
+            cls,
+            start_time,
+            end_time,
+            base_completion_options,
+            prompt_template,
+            prompt_inputs,
+            completion,
         )
-        return completion
 
     return wrapper
 
@@ -122,6 +139,8 @@ def intercept_completion_async(original_fn):
                     modified_response.append(value)
                     yield value
 
+                end_time = time.time()
+
                 text_list = [
                     obj["choices"][0]["text"]
                     for obj in modified_response
@@ -141,32 +160,14 @@ def intercept_completion_async(original_fn):
                     ]
                 }
 
-                end_time = time.time()
-                elapsed_time = int(end_time - start_time)
-
-                user = base_completion_options.get("user")
-                suffix = base_completion_options.get("suffix")
-                partial_model_params = {
-                    k: v
-                    for k, v in base_completion_options.items()
-                    if k not in ["user", "suffix"]
-                }
-
-                inputs_dict = {"prompt": prompt_inputs}
-                if user is not None:
-                    inputs_dict["user"] = user
-                if suffix is not None:
-                    inputs_dict["suffix"] = suffix
-
-                cls.pipeline_run.add_step_run(
-                    OpenAICreateCompletionStepRun(
-                        elapsed_time,
-                        to_date_string(start_time),
-                        to_date_string(end_time),
-                        inputs_dict,
-                        {**partial_model_params, "promptTemplate": prompt_template},
-                        final_response,
-                    )
+                create_step_run(
+                    cls,
+                    start_time,
+                    end_time,
+                    base_completion_options,
+                    prompt_template,
+                    prompt_inputs,
+                    final_response,
                 )
 
             return profiled_completion()
@@ -178,32 +179,14 @@ def intercept_completion_async(original_fn):
         start_time = time.time()
         completion = await original_fn(**new_completion_options)
         end_time = time.time()
-
-        elapsed_time = int(end_time - start_time)
-
-        user = base_completion_options.get("user")
-        suffix = base_completion_options.get("suffix")
-        partial_model_params = {
-            k: v
-            for k, v in base_completion_options.items()
-            if k not in ["user", "suffix"]
-        }
-
-        inputs_dict = {"prompt": prompt_inputs}
-        if user is not None:
-            inputs_dict["user"] = user
-        if suffix is not None:
-            inputs_dict["suffix"] = suffix
-
-        cls.pipeline_run.add_step_run(
-            OpenAICreateCompletionStepRun(
-                elapsed_time,
-                to_date_string(start_time),
-                to_date_string(end_time),
-                inputs_dict,
-                {**partial_model_params, "promptTemplate": prompt_template},
-                completion,
-            )
+        create_step_run(
+            cls,
+            start_time,
+            end_time,
+            base_completion_options,
+            prompt_template,
+            prompt_inputs,
+            completion,
         )
         return completion
 
