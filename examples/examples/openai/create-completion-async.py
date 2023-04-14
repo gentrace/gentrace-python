@@ -27,8 +27,8 @@ async def main():
 
     result = await openai.Completion.acreate(
         model="text-davinci-003",
-        promptTemplate="Hello world {{ name }}",
-        promptInputs={"name": "Vivek"},
+        prompt_template="Hello world {{ name }}",
+        prompt_inputs={"name": "Vivek"},
         stream=True,
     )
 

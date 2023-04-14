@@ -22,8 +22,8 @@ openai = runner.get_openai()
 
 result = openai.Completion.create(
     model="text-davinci-003",
-    promptTemplate="Hello world {{ name }}",
-    promptInputs={"name": "test"},
+    prompt_template="Hello world {{ name }}",
+    prompt_inputs={"name": "test"},
 )
 
 print("Result: ", result)
