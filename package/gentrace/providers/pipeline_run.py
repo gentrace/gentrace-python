@@ -54,13 +54,14 @@ class PipelineRun:
                     new_class.pipeline_run = self
 
                     setattr(cloned_handler, name, new_class)
-                    # TODO: must work on a acreate() method, check that streaming works
 
             cloned_handler.set_pipeline_run(self)
 
             # TODO: Could not find an easy way to create a union type with openai and
             # OpenAIPipelineHandler, so we just use openai.
-            return cast(openai, cloned_handler)
+            typed_cloned_handler = cast(openai, cloned_handler)
+
+            return typed_cloned_handler
         else:
             raise ValueError(
                 "Did not find OpenAI handler. Did you call setup() on the pipeline?"
@@ -104,10 +105,16 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_post_response = ingestion_api.pipeline_run_post(
-            {"name": self.pipeline.id, "stepRuns": step_runs_data}
-        )
+        try:
+            pipeline_post_response = ingestion_api.pipeline_run_post(
+                {"name": self.pipeline.id, "stepRuns": step_runs_data}
+            )
+            return {
+                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
+                    "pipelineRunId"
+                )
+            }
 
-        return {
-            "pipelineRunId": pipeline_post_response.body.get_item_oapg("pipelineRunId")
-        }
+        except Exception as e:
+            print(f"Error submitting to Gentrace: {e}")
+            return {"pipelineRunId": None}
