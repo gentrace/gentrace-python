@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/gentrace/gentrace-python/compare/v0.1.6...v0.1.7) (2023-04-14)
+
+
+### Miscellaneous Chores
+
+* release 0.1.7 ([#28](https://github.com/gentrace/gentrace-python/issues/28)) ([bedc759](https://github.com/gentrace/gentrace-python/commit/bedc7599fc2f620ef12a8603f314328f8a41f1ed))
+
 ## [0.1.6](https://github.com/gentrace/gentrace-python/compare/v0.1.5...v0.1.6) (2023-04-14)
 
 
