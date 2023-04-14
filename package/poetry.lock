@@ -1148,8 +1148,8 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [extras]
-all = ["openai", "pinecone-client"]
-llms = ["openai"]
+all = ["pinecone-client"]
+llms = []
 vectorstores = ["pinecone-client"]
 
 [metadata]
