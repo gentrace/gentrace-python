@@ -835,7 +835,7 @@ name = "pyyaml"
 version = "6.0"
 description = "YAML parser and emitter for Python"
 category = "main"
-optional = true
+optional = false
 python-versions = ">=3.6"
 files = [
     {file = "PyYAML-6.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:d4db7c7aef085872ef65a8fd7d6d09a14ae91f691dec3e87ee5ee0539d516f53"},
@@ -1155,4 +1155,4 @@ vectorstores = ["pinecone-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "bf738b7ed915e64bd20b3380ab9a2a7258100d9f53a13fd26c62a9a6a1859bf9"
+content-hash = "b045ca7fd3fcf73625db2f6aba4dffa541bf21a2fe9ff21020e66217537604b0"
