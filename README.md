@@ -32,7 +32,7 @@ poetry install
 poetry shell
 ```
 
-If you want to run examples, install the examples directory Packages and activate the Poetry shellhe. You'll also need to configure a .env file with the necessary services to run the application
+If you want to run examples, install the dependencies in the examples directory and activate the Poetry shell. You'll also need to configure a .env file with the necessary services to run the application
 
 ```bash
 cd examples
