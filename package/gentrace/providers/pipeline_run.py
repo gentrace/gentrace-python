@@ -29,6 +29,7 @@ class PipelineRun:
                 intercept_completion,
                 intercept_completion_async,
                 intercept_embedding,
+                intercept_embedding_async,
             )
 
             for name, cls in vars(openai.api_resources).items():
@@ -48,6 +49,7 @@ class PipelineRun:
                         )
                     elif name == "Embedding":
                         new_class.create = intercept_embedding(new_class.create)
+                        new_class.acreate = intercept_embedding_async(new_class.acreate)
 
                     new_class.pipeline_run = self
 

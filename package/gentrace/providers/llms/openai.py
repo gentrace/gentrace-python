@@ -329,6 +329,33 @@ def intercept_embedding(original_fn):
     return wrapper
 
 
+def intercept_embedding_async(original_fn):
+    @classmethod
+    async def wrapper(cls, *args, **kwargs):
+        model = kwargs.get("model")
+        input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
+
+        start_time = time.time()
+        completion = await original_fn(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = int(end_time - start_time)
+
+        cls.pipeline_run.add_step_run(
+            OpenAICreateEmbeddingStepRun(
+                elapsed_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
+                input_params,
+                {"model": model},
+                completion,
+            )
+        )
+        return completion
+
+    return wrapper
+
+
 class OpenAICreateCompletionStepRun(StepRun):
     def __init__(
         self, elapsed_time, start_time, end_time, inputs, model_params, response
