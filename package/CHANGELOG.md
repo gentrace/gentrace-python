@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/gentrace/gentrace-python/compare/v0.2.0...v0.2.1) (2023-04-14)
+
+
+### Bug Fixes
+
+* elapsed time is computed in the correct way ([#34](https://github.com/gentrace/gentrace-python/issues/34)) ([88bdf0c](https://github.com/gentrace/gentrace-python/commit/88bdf0c074fae1ab8829d144b440bd8e947cf8e5))
+
 ## [0.2.0](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v0.2.0) (2023-04-14)
 
 
