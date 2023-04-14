@@ -21,7 +21,30 @@ The Gentrace Python library provides convenient access to the Gentrace API from 
 ## Installation
 
 ```bash
-$ pip install gentrace
+$ pip install gentrace-py
+```
+
+Install package dependencies and activate the Poetry shell:
+
+```bash
+cd package
+poetry install
+poetry shell
+```
+
+If you want to run examples, install the examples directory Packages and activate the Poetry shellhe. You'll also need to configure a .env file with the necessary services to run the application
+
+```bash
+cd examples
+
+# Dependency installation
+poetry install
+poetry shell
+
+cp .env.example .env
+# Make modifications to .env
+
+python examples/pinecone/fetch.py
 ```
 
 ## Getting started
