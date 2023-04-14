@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/gentrace/gentrace-python/compare/v0.2.1...v0.2.2) (2023-04-14)
+
+
+### Bug Fixes
+
+* modify prompt templating to be more Pythonic ([#37](https://github.com/gentrace/gentrace-python/issues/37)) ([0c96b84](https://github.com/gentrace/gentrace-python/commit/0c96b847e10cfa2ec1f4d5eac425d1d6bc78776a))
+
 ## [0.2.1](https://github.com/gentrace/gentrace-python/compare/v0.2.0...v0.2.1) (2023-04-14)
 
 
