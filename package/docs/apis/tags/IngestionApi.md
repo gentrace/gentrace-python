@@ -67,7 +67,7 @@ with gentrace.ApiClient(configuration) as api_client:
         )
         pprint(api_response)
     except gentrace.ApiException as e:
-        print("Exception when calling IngestionApi->pipeline_run_post: %s\n" % e)
+        print("Exception when calling IngestionApi->pipeline_run_post : %s\n" % e)
 ```
 ### Parameters
 
