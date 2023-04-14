@@ -105,6 +105,72 @@ def intercept_completion_async(original_fn):
                 "The promptTemplate attribute must be provided when using the Gentrace SDK."
             )
 
+        if stream:
+            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+
+            new_completion_options = {
+                **base_completion_options,
+                "prompt": rendered_prompt,
+            }
+
+            start_time = time.time()
+            completion = await original_fn(**new_completion_options)
+
+            async def profiled_completion():
+                modified_response = []
+                async for value in completion:
+                    modified_response.append(value)
+                    yield value
+
+                text_list = [
+                    obj["choices"][0]["text"]
+                    for obj in modified_response
+                    if "choices" in obj and obj["choices"]
+                ]
+
+                # Major hack by creating a resolved version of the streamed result.
+                final_response_string = " ".join(text_list)
+                final_response = {
+                    "choices": [
+                        {
+                            "finish_reason": None,
+                            "index": 0,
+                            "logprobs": None,
+                            "text": final_response_string,
+                        }
+                    ]
+                }
+
+                end_time = time.time()
+                elapsed_time = int(end_time - start_time)
+
+                user = base_completion_options.get("user")
+                suffix = base_completion_options.get("suffix")
+                partial_model_params = {
+                    k: v
+                    for k, v in base_completion_options.items()
+                    if k not in ["user", "suffix"]
+                }
+
+                inputs_dict = {"prompt": prompt_inputs}
+                if user is not None:
+                    inputs_dict["user"] = user
+                if suffix is not None:
+                    inputs_dict["suffix"] = suffix
+
+                cls.pipeline_run.add_step_run(
+                    OpenAICreateCompletionStepRun(
+                        elapsed_time,
+                        to_date_string(start_time),
+                        to_date_string(end_time),
+                        inputs_dict,
+                        {**partial_model_params, "promptTemplate": prompt_template},
+                        final_response,
+                    )
+                )
+
+            return profiled_completion()
+
         rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}

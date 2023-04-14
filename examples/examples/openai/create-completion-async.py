@@ -25,18 +25,12 @@ async def main():
 
     asyncio.get_event_loop()
 
-    result = await openai.Completion.acreate(
+    await openai.Completion.acreate(
         model="text-davinci-003",
         promptTemplate="Hello world {{ name }}",
         promptInputs={"name": "Vivek"},
+        stream=True,
     )
-
-    # TODO: Can we figure out a way to profile how long it takes to pull all values from
-    # the result?
-    # async for chunk in result:
-    #     print("Chunk: ", chunk)
-
-    print("Result: ", result)
 
     info = runner.submit()
 
