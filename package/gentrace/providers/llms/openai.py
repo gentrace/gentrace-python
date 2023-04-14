@@ -83,6 +83,67 @@ def intercept_completion(original_fn):
     return wrapper
 
 
+def intercept_completion_async(original_fn):
+    @classmethod
+    async def wrapper(cls, *args, **kwargs):
+        prompt_template = kwargs.get("promptTemplate")
+        prompt_inputs = kwargs.get("promptInputs")
+        stream = kwargs.get("stream")
+        base_completion_options = {
+            k: v
+            for k, v in kwargs.items()
+            if k not in ["promptTemplate", "promptInputs"]
+        }
+
+        if "prompt" in base_completion_options:
+            raise ValueError(
+                "The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead."
+            )
+
+        if not prompt_template:
+            raise ValueError(
+                "The promptTemplate attribute must be provided when using the Gentrace SDK."
+            )
+
+        rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+
+        new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
+
+        start_time = time.time()
+        completion = await original_fn(**new_completion_options)
+        end_time = time.time()
+
+        elapsed_time = int(end_time - start_time)
+
+        user = base_completion_options.get("user")
+        suffix = base_completion_options.get("suffix")
+        partial_model_params = {
+            k: v
+            for k, v in base_completion_options.items()
+            if k not in ["user", "suffix"]
+        }
+
+        inputs_dict = {"prompt": prompt_inputs}
+        if user is not None:
+            inputs_dict["user"] = user
+        if suffix is not None:
+            inputs_dict["suffix"] = suffix
+
+        cls.pipeline_run.add_step_run(
+            OpenAICreateCompletionStepRun(
+                elapsed_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
+                inputs_dict,
+                {**partial_model_params, "promptTemplate": prompt_template},
+                completion,
+            )
+        )
+        return completion
+
+    return wrapper
+
+
 def intercept_chat_completion(original_fn):
     @classmethod
     def wrapper(cls, *args, **kwargs):
