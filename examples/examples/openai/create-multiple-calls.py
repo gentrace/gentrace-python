@@ -28,8 +28,8 @@ print("Embedding result: ", embedding_result)
 
 completion_result = openai.Completion.create(
     model="text-davinci-003",
-    promptTemplate="Hello world {{ name }}",
-    promptInputs={"name": "test"},
+    prompt_template="Hello world {{ name }}",
+    prompt_inputs={"name": "test"},
 )
 
 print("Completion result: ", completion_result)

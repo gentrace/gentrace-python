@@ -61,22 +61,22 @@ def create_step_run(
 def intercept_completion(original_fn):
     @classmethod
     def wrapper(cls, *args, **kwargs):
-        prompt_template = kwargs.get("promptTemplate")
-        prompt_inputs = kwargs.get("promptInputs")
+        prompt_template = kwargs.get("prompt_template")
+        prompt_inputs = kwargs.get("prompt_inputs")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["promptTemplate", "promptInputs"]
+            if k not in ["prompt_template", "prompt_inputs"]
         }
 
         if "prompt" in base_completion_options:
             raise ValueError(
-                "The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead."
+                "The prompt attribute cannot be provided when using the Gentrace SDK. Use prompt_template and prompt_inputs instead."
             )
 
         if not prompt_template:
             raise ValueError(
-                "The promptTemplate attribute must be provided when using the Gentrace SDK."
+                "The prompt_template attribute must be provided when using the Gentrace SDK."
             )
 
         rendered_prompt = pystache.render(prompt_template, prompt_inputs)
@@ -103,23 +103,23 @@ def intercept_completion(original_fn):
 def intercept_completion_async(original_fn):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
-        prompt_template = kwargs.get("promptTemplate")
-        prompt_inputs = kwargs.get("promptInputs")
+        prompt_template = kwargs.get("prompt_template")
+        prompt_inputs = kwargs.get("prompt_inputs")
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["promptTemplate", "promptInputs"]
+            if k not in ["prompt_template", "prompt_inputs"]
         }
 
         if "prompt" in base_completion_options:
             raise ValueError(
-                "The prompt attribute cannot be provided when using the Gentrace SDK. Use promptTemplate and promptInputs instead."
+                "The prompt attribute cannot be provided when using the Gentrace SDK. Use prompt_template and prompt_inputs instead."
             )
 
         if not prompt_template:
             raise ValueError(
-                "The promptTemplate attribute must be provided when using the Gentrace SDK."
+                "The prompt_template attribute must be provided when using the Gentrace SDK."
             )
 
         if stream:
