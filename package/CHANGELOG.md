@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/gentrace/gentrace-python/compare/v0.2.2...v0.3.0) (2023-04-16)
+
+
+### Features
+
+* add asubmit (async submit) ([#39](https://github.com/gentrace/gentrace-python/issues/39)) ([dc3253f](https://github.com/gentrace/gentrace-python/commit/dc3253f2c74204df069f309f9aecdddc9701ddc9))
+
 ## [0.2.2](https://github.com/gentrace/gentrace-python/compare/v0.2.1...v0.2.2) (2023-04-14)
 
 
