@@ -7,6 +7,7 @@ from gentrace.apis.tags.ingestion_api import IngestionApi
 from gentrace.configuration import Configuration
 from gentrace.providers.llms.openai import OpenAIPipelineHandler
 from gentrace.providers.step_run import StepRun
+from gentrace.providers.utils import pipeline_run_post_async
 
 
 class PipelineRun:
@@ -82,6 +83,41 @@ class PipelineRun:
 
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
+
+    async def asubmit(self) -> Dict:
+        configuration = Configuration(host=self.pipeline.config.get("host"))
+        configuration.access_token = self.pipeline.config.get("api_key")
+        api_client = ApiClient(configuration=configuration)
+        ingestion_api = IngestionApi(api_client=api_client)
+
+        step_runs_data = [
+            {
+                "provider": {
+                    "name": step_run.provider,
+                    "invocation": step_run.invocation,
+                    "modelParams": step_run.model_params,
+                    "inputs": step_run.inputs,
+                    "outputs": step_run.outputs,
+                },
+                "elapsedTime": step_run.elapsed_time,
+                "startTime": step_run.start_time,
+                "endTime": step_run.end_time,
+            }
+            for step_run in self.step_runs
+        ]
+
+        try:
+            pipeline_post_response = await pipeline_run_post_async(
+                ingestion_api, {"name": self.pipeline.id, "stepRuns": step_runs_data}
+            )
+            return {
+                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
+                    "pipelineRunId"
+                )
+            }
+        except Exception as e:
+            print(f"Error submitting to Gentrace: {e}")
+            return {"pipelineRunId": None}
 
     def submit(self) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
