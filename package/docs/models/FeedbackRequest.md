@@ -8,8 +8,8 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
+**score** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | value must be a 32 bit float
 **pipelineRunId** | str, uuid.UUID,  | str,  |  | value must be a uuid
-**rating** | str,  | str,  |  | must be one of ["positive", "negative", "neutral", ] 
 **recordedTime** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
 **details** | None, str,  | NoneClass, str,  |  | [optional] 
 
