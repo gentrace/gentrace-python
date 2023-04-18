@@ -44,6 +44,7 @@ with gentrace.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     body = PipelineRunRequest(
+        id="id_example",
         name="name_example",
         step_runs=[
             dict(
