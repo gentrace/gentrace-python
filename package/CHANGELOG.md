@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/gentrace/gentrace-python/compare/v0.3.0...v0.4.0) (2023-04-19)
+
+
+### Features
+
+* add in gentrace.flush ([#44](https://github.com/gentrace/gentrace-python/issues/44)) ([f896cc2](https://github.com/gentrace/gentrace-python/commit/f896cc295cc59d3c525748bb2700bb5f70b0b967))
+
 ## [0.3.0](https://github.com/gentrace/gentrace-python/compare/v0.2.2...v0.3.0) (2023-04-16)
 
 
