@@ -94,7 +94,7 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = uuid.uuid4()
+        pipeline_run_id = str(uuid.uuid4())
 
         try:
             pipeline_post_response = await pipeline_run_post_background(
@@ -140,7 +140,7 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = uuid.uuid4()
+        pipeline_run_id = str(uuid.uuid4())
 
         if not wait_for_server:
             self.pipeline_run_post_background_sync(
