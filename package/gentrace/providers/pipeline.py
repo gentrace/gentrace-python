@@ -1,8 +1,6 @@
 import inspect
 from typing import Any, Optional
 
-from gentrace.providers.pipeline_run import PipelineRun
-
 
 class Pipeline:
     def __init__(
@@ -77,7 +75,9 @@ class Pipeline:
                 from gentrace.providers.llms.openai import OpenAIPipelineHandler
 
                 OpenAIPipelineHandler.setup(self.openai_config)
-                openai_handler = OpenAIPipelineHandler(pipeline=self)
+                openai_handler = OpenAIPipelineHandler(
+                    self.config, self.openai_config, pipeline=self
+                )
                 self.pipeline_handlers["openai"] = openai_handler
             except ImportError:
                 raise ImportError(
@@ -85,4 +85,6 @@ class Pipeline:
                 )
 
     def start(self):
+        from gentrace.providers.pipeline_run import PipelineRun
+
         return PipelineRun(pipeline=self)

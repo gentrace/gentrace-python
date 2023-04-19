@@ -23,13 +23,14 @@ async def main():
 
     openai = runner.get_openai()
 
-    result = await openai.Embedding.acreate(
-        input="sample text", model="text-similarity-davinci-001"
+    result = await openai.ChatCompletion.acreate(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
     )
 
     print("Result: ", result)
 
-    info = await runner.asubmit()
+    info = runner.submit()
 
     print("Response: ", info["pipelineRunId"])
 

@@ -1,18 +1,44 @@
+import asyncio
+import concurrent
 import copy
-import json
-from typing import Dict, List, Type, Union, cast
+import inspect
+import threading
+import uuid
+from typing import Dict, List, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.ingestion_api import IngestionApi
 from gentrace.configuration import Configuration
-from gentrace.providers.llms.openai import OpenAIPipelineHandler
+from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import pipeline_run_post_async
+from gentrace.providers.utils import pipeline_run_post_background
+
+_pipeline_run_loop = None
+_pipeline_tasks = []
+
+
+# https://stackoverflow.com/a/63110035/1057411
+def fire_and_forget(coro):
+    global _pipeline_run_loop, _pipeline_tasks
+    if _pipeline_run_loop is None:
+        _pipeline_run_loop = asyncio.new_event_loop()
+        threading.Thread(target=_pipeline_run_loop.run_forever, daemon=True).start()
+    if inspect.iscoroutine(coro):
+        task = asyncio.run_coroutine_threadsafe(coro, _pipeline_run_loop)
+        _pipeline_tasks.append(task)
+
+
+def flush():
+    global _pipeline_tasks
+    if _pipeline_tasks:
+        # Wait for all tasks to complete
+        concurrent.futures.wait(_pipeline_tasks)
+        _pipeline_tasks.clear()
 
 
 class PipelineRun:
     def __init__(self, pipeline):
-        self.pipeline = pipeline
+        self.pipeline: Pipeline = pipeline
         self.step_runs: List[StepRun] = []
 
     def get_pipeline(self):
@@ -22,45 +48,18 @@ class PipelineRun:
         if "openai" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("openai")
             cloned_handler = copy.deepcopy(handler)
-            import openai
 
-            from .llms.openai import (
-                intercept_chat_completion,
-                intercept_chat_completion_async,
-                intercept_completion,
-                intercept_completion_async,
-                intercept_embedding,
-                intercept_embedding_async,
+            from .llms.openai import annotate_pipeline_handler
+
+            annotated_handler = annotate_pipeline_handler(
+                cloned_handler, self.pipeline.openai_config, self
             )
 
-            for name, cls in vars(openai.api_resources).items():
-                if isinstance(cls, type):
-                    # Create new class that inherits from the original class, don't directly monkey patch
-                    # the original class
-                    new_class = type(name, (cls,), {})
-                    if name == "Completion":
-                        new_class.create = intercept_completion(new_class.create)
-                        new_class.acreate = intercept_completion_async(
-                            new_class.acreate
-                        )
-                    elif name == "ChatCompletion":
-                        new_class.create = intercept_chat_completion(new_class.create)
-                        new_class.acreate = intercept_chat_completion_async(
-                            new_class.acreate
-                        )
-                    elif name == "Embedding":
-                        new_class.create = intercept_embedding(new_class.create)
-                        new_class.acreate = intercept_embedding_async(new_class.acreate)
-
-                    new_class.pipeline_run = self
-
-                    setattr(cloned_handler, name, new_class)
-
-            cloned_handler.set_pipeline_run(self)
+            import openai
 
             # TODO: Could not find an easy way to create a union type with openai and
             # OpenAIPipelineHandler, so we just use openai.
-            typed_cloned_handler = cast(openai, cloned_handler)
+            typed_cloned_handler = cast(openai, annotated_handler)
 
             return typed_cloned_handler
         else:
@@ -106,9 +105,16 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
+        pipeline_run_id = str(uuid.uuid4())
+
         try:
-            pipeline_post_response = await pipeline_run_post_async(
-                ingestion_api, {"name": self.pipeline.id, "stepRuns": step_runs_data}
+            pipeline_post_response = await pipeline_run_post_background(
+                ingestion_api,
+                {
+                    "id": pipeline_run_id,
+                    "name": self.pipeline.id,
+                    "stepRuns": step_runs_data,
+                },
             )
             return {
                 "pipelineRunId": pipeline_post_response.body.get_item_oapg(
@@ -119,7 +125,7 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
-    def submit(self) -> Dict:
+    def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
@@ -141,16 +147,37 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        try:
-            pipeline_post_response = ingestion_api.pipeline_run_post(
-                {"name": self.pipeline.id, "stepRuns": step_runs_data}
-            )
-            return {
-                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
-                    "pipelineRunId"
-                )
-            }
+        pipeline_run_id = str(uuid.uuid4())
 
-        except Exception as e:
-            print(f"Error submitting to Gentrace: {e}")
-            return {"pipelineRunId": None}
+        if not wait_for_server:
+            fire_and_forget(
+                pipeline_run_post_background(
+                    ingestion_api,
+                    {
+                        "id": pipeline_run_id,
+                        "name": self.pipeline.id,
+                        "stepRuns": step_runs_data,
+                    },
+                )
+            )
+
+            return {"pipelineRunId": pipeline_run_id}
+
+        if wait_for_server:
+            try:
+                pipeline_post_response = ingestion_api.pipeline_run_post(
+                    {
+                        "id": pipeline_run_id,
+                        "name": self.pipeline.id,
+                        "stepRuns": step_runs_data,
+                    }
+                )
+                return {
+                    "pipelineRunId": pipeline_post_response.body.get_item_oapg(
+                        "pipelineRunId"
+                    )
+                }
+
+            except Exception as e:
+                print(f"Error submitting to Gentrace: {e}")
+                return {"pipelineRunId": None}

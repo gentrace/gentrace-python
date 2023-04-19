@@ -14,7 +14,7 @@ def to_date_string(time_value):
     )
 
 
-async def pipeline_run_post_async(
+async def pipeline_run_post_background(
     api_instance: IngestionApi, pipeline_run_data: PipelineRunRequest
 ):
     with ThreadPoolExecutor() as executor:
