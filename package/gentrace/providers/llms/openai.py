@@ -84,12 +84,46 @@ def create_step_run(
         )
 
 
+def create_stream_response(stream_list):
+    final_response_string = ""
+    for value in stream_list:
+        if "choices" in value and value["choices"]:
+            first_choice = value["choices"][0]
+            if "text" in first_choice:
+                final_response_string += first_choice["text"]
+            elif (
+                "delta" in first_choice
+                and first_choice["delta"]
+                and "content" in first_choice["delta"]
+            ):
+                final_response_string += first_choice["delta"]["content"]
+            elif (
+                "finish_reason" in first_choice
+                and first_choice["finish_reason"] == "stop"
+            ):
+                break
+
+    final_response = {
+        "choices": [
+            {
+                "finish_reason": None,
+                "index": 0,
+                "logprobs": None,
+                "text": final_response_string,
+            }
+        ]
+    }
+
+    return final_response
+
+
 def intercept_completion(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
         pipeline_id = kwargs.get("pipeline_id")
+        stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
@@ -112,6 +146,10 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
         start_time = time.time()
         completion = original_fn(**new_completion_options)
+
+        if stream:
+            completion = create_stream_response(completion)
+
         end_time = time.time()
 
         create_step_run(
@@ -125,6 +163,8 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             prompt_inputs,
             completion,
         )
+
+        return completion
 
     return wrapper
 
@@ -171,24 +211,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
                 end_time = time.time()
 
-                text_list = [
-                    obj["choices"][0]["text"]
-                    for obj in modified_response
-                    if "choices" in obj and obj["choices"]
-                ]
-
-                # Major hack by creating a resolved version of the streamed result.
-                final_response_string = " ".join(text_list)
-                final_response = {
-                    "choices": [
-                        {
-                            "finish_reason": None,
-                            "index": 0,
-                            "logprobs": None,
-                            "text": final_response_string,
-                        }
-                    ]
-                }
+                full_response = create_stream_response(modified_response)
 
                 create_step_run(
                     cls,
@@ -199,7 +222,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
                     base_completion_options,
                     prompt_template,
                     prompt_inputs,
-                    final_response,
+                    full_response,
                 )
 
             return profiled_completion()
@@ -234,12 +257,18 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         pipeline_id = kwargs.get("pipeline_id")
+        stream = kwargs.get("stream")
+
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
 
         start_time = time.time()
         completion = original_fn(**kwargs)
+
+        if stream:
+            completion = create_stream_response(completion)
+
         end_time = time.time()
 
         elapsed_time = int((end_time - start_time) * 1000)
@@ -298,27 +327,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 end_time = time.time()
 
-                text_list = []
-                for stream_result in modified_response:
-                    if (
-                        "choices" in stream_result
-                        and stream_result["choices"][0].get("text")
-                        and stream_result["choices"][0].get("finish_reason") != "stop"
-                    ):
-                        text_list.append(stream_result["choices"][0]["text"])
-
-                # Major hack by creating a resolved version of the streamed result.
-                final_response_string = " ".join(text_list)
-                final_response = {
-                    "choices": [
-                        {
-                            "finish_reason": None,
-                            "index": 0,
-                            "logprobs": None,
-                            "text": final_response_string,
-                        }
-                    ]
-                }
+                full_response = create_stream_response(modified_response)
 
                 elapsed_time = int((end_time - start_time) * 1000)
 
@@ -343,7 +352,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                             to_date_string(end_time),
                             {"messages": messages, "user": user},
                             model_params,
-                            final_response,
+                            full_response,
                         )
                     )
 

@@ -24,6 +24,9 @@ result = openai.ChatCompletion.create(
     messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo", stream=True
 )
 
+for completion in result:
+    pass
+
 print("Result: ", result)
 
 info = runner.submit()

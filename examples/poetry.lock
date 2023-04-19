@@ -512,10 +512,12 @@ description = "Python SDK for the Gentrace API"
 files = [
   {file = "gentrace_py-0.2.2.tar.gz", hash = "sha256:2694b737a18a10a1056f9b7f3d3a69ae2cfd9e9a9bad9b179079a8aa72a6c0e2"},
 ]
+files = [
+  {file = "gentrace_py-0.2.2.tar.gz", hash = "sha256:024376afe160e807f9e731fede2db222036b44c3d381ff1cb8a7a6d742ba8a91"},
+]
 name = "gentrace-py"
 optional = false
 python-versions = ">=3.8.1,<4.0"
-version = "0.2.2"
 
 [package.dependencies]
 aenum = ">=3.1.11"

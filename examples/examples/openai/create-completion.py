@@ -24,6 +24,7 @@ result = openai.Completion.create(
     model="text-davinci-003",
     prompt_template="Hello world {{ name }}",
     prompt_inputs={"name": "test"},
+    stream=True,
 )
 
 print("Result: ", result)
