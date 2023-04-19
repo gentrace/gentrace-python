@@ -1,18 +1,18 @@
 import copy
-import json
-from typing import Dict, List, Type, Union, cast
+import uuid
+from typing import Dict, List, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.ingestion_api import IngestionApi
 from gentrace.configuration import Configuration
-from gentrace.providers.llms.openai import OpenAIPipelineHandler
+from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import pipeline_run_post_async
 
 
 class PipelineRun:
     def __init__(self, pipeline):
-        self.pipeline = pipeline
+        self.pipeline: Pipeline = pipeline
         self.step_runs: List[StepRun] = []
 
     def get_pipeline(self):
@@ -25,8 +25,10 @@ class PipelineRun:
 
             from .llms.openai import annotate_pipeline_handler
 
-            annotated_handler = annotate_pipeline_handler(cloned_handler)
-            annotated_handler.pipeline_run = self
+            annotated_handler = annotate_pipeline_handler(
+                cloned_handler, self.pipeline.openai_config, self
+            )
+
             return annotated_handler
         else:
             raise ValueError(
@@ -108,7 +110,7 @@ class PipelineRun:
 
         try:
             pipeline_post_response = ingestion_api.pipeline_run_post(
-                {"name": self.pipeline.id, "stepRuns": step_runs_data}
+                { "id": uuid.uuid4(), "name": self.pipeline.id, "stepRuns": step_runs_data}
             )
             return {
                 "pipelineRunId": pipeline_post_response.body.get_item_oapg(

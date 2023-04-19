@@ -1,8 +1,6 @@
 import inspect
 from typing import Any, Optional
 
-from gentrace.providers.pipeline_run import PipelineRun
-
 
 class Pipeline:
     def __init__(
@@ -87,4 +85,6 @@ class Pipeline:
                 )
 
     def start(self):
+        from gentrace.providers.pipeline_run import PipelineRun
+
         return PipelineRun(pipeline=self)
