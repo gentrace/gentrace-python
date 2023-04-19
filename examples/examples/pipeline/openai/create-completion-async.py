@@ -23,8 +23,6 @@ async def main():
 
     openai = runner.get_openai()
 
-    asyncio.get_event_loop()
-
     await openai.Completion.acreate(
         model="text-davinci-003",
         prompt_template="Hello world {{ name }}",

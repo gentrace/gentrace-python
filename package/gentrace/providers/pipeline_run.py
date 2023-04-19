@@ -24,7 +24,6 @@ def fire_and_forget(coro):
         _pipeline_run_loop = asyncio.new_event_loop()
         threading.Thread(target=_pipeline_run_loop.run_forever, daemon=True).start()
     if inspect.iscoroutine(coro):
-        print("is coroutine", coro)
         task = asyncio.run_coroutine_threadsafe(coro, _pipeline_run_loop)
         _pipeline_tasks.append(task)
 
