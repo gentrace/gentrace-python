@@ -25,18 +25,6 @@ def background(f):
     return wrapped
 
 
-async def coroutine_2():
-    print("coroutine_2 started")
-    await asyncio.sleep(2)
-    print("coroutine_2 finished")
-
-
-async def coroutine_3():
-    print("coroutine_3 started")
-    await asyncio.sleep(3)
-    print("coroutine_3 finished")
-
-
 class PipelineRun:
     def __init__(self, pipeline):
         self.pipeline: Pipeline = pipeline
@@ -126,6 +114,10 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
+    @background
+    def pipeline_run_post_background_sync(self, ingestion_api, pipeline_run_data):
+        return ingestion_api.pipeline_run_post(pipeline_run_data)
+
     def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
@@ -151,10 +143,15 @@ class PipelineRun:
         pipeline_run_id = uuid.uuid4()
 
         if not wait_for_server:
-            print("Submitting to Gentrace asynchronously...")
-            self.pipeline_run_post_background(
-                ingestion_api, pipeline_run_id, step_runs_data
+            self.pipeline_run_post_background_sync(
+                ingestion_api,
+                {
+                    "id": pipeline_run_id,
+                    "name": self.pipeline.id,
+                    "stepRuns": step_runs_data,
+                },
             )
+
             return {"pipelineRunId": pipeline_run_id}
 
         if wait_for_server:
