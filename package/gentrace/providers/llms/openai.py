@@ -1,17 +1,28 @@
 import time
 from datetime import datetime
-from typing import Optional
+from typing import Dict, Optional
 
 import openai
 import pystache
 
+from gentrace.configuration import Configuration
+from gentrace.providers.pipeline import Pipeline
+from gentrace.providers.pipeline_run import PipelineRun
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import to_date_string
 
 
 class OpenAIPipelineHandler:
-    def __init__(self, pipeline=None):
+    pipeline_run: Optional[PipelineRun] = None
+    pipeline: Optional[Pipeline] = None
+    gentrace_config: Dict
+    config: Dict
+
+    def __init__(self, gentrace_config, config, pipeline=None, pipeline_run=None):
         self.pipeline = pipeline
+        self.pipeline_run = pipeline_run
+        self.gentrace_config = gentrace_config
+        self.config = config
 
     @classmethod
     def setup(cls, config):
@@ -25,6 +36,7 @@ class OpenAIPipelineHandler:
 
 def create_step_run(
     cls,
+    gentrace_config: Configuration,
     start_time,
     end_time,
     base_completion_options,
@@ -46,7 +58,20 @@ def create_step_run(
     if suffix is not None:
         inputs_dict["suffix"] = suffix
 
-    cls.pipeline_run.add_step_run(
+    pipeline_run = cls.pipeline_run
+
+    if not pipeline_run:
+        pipeline = Pipeline(
+            id="test-pipeline-id",
+            api_key=gentrace_config.api_key,
+            host=gentrace_config.host,
+        )
+
+        pipeline_run = PipelineRun(
+            pipeline=pipeline,
+        )
+
+    pipeline_run.add_step_run(
         OpenAICreateCompletionStepRun(
             elapsed_time,
             to_date_string(start_time),
@@ -58,7 +83,7 @@ def create_step_run(
     )
 
 
-def intercept_completion(original_fn):
+def intercept_completion(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
@@ -89,6 +114,7 @@ def intercept_completion(original_fn):
 
         create_step_run(
             cls,
+            gentrace_config,
             start_time,
             end_time,
             base_completion_options,
@@ -100,7 +126,7 @@ def intercept_completion(original_fn):
     return wrapper
 
 
-def intercept_completion_async(original_fn):
+def intercept_completion_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
@@ -162,6 +188,7 @@ def intercept_completion_async(original_fn):
 
                 create_step_run(
                     cls,
+                    gentrace_config,
                     start_time,
                     end_time,
                     base_completion_options,
@@ -181,6 +208,7 @@ def intercept_completion_async(original_fn):
         end_time = time.time()
         create_step_run(
             cls,
+            gentrace_config,
             start_time,
             end_time,
             base_completion_options,
@@ -193,7 +221,7 @@ def intercept_completion_async(original_fn):
     return wrapper
 
 
-def intercept_chat_completion(original_fn):
+def intercept_chat_completion(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         messages = kwargs.get("messages")
@@ -208,7 +236,20 @@ def intercept_chat_completion(original_fn):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        cls.pipeline_run.add_step_run(
+        pipeline_run = cls.pipeline_run
+
+        if not pipeline_run:
+            pipeline = Pipeline(
+                id="test-pipeline-id",
+                api_key=gentrace_config.api_key,
+                host=gentrace_config.host,
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+            )
+
+        pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
                 elapsed_time,
                 to_date_string(start_time),
@@ -223,7 +264,7 @@ def intercept_chat_completion(original_fn):
     return wrapper
 
 
-def intercept_chat_completion_async(original_fn):
+def intercept_chat_completion_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
         messages = kwargs.get("messages")
@@ -270,7 +311,20 @@ def intercept_chat_completion_async(original_fn):
 
                 elapsed_time = int((end_time - start_time) * 1000)
 
-                cls.pipeline_run.add_step_run(
+                pipeline_run = cls.pipeline_run
+
+                if not pipeline_run:
+                    pipeline = Pipeline(
+                        id="test-pipeline-id",
+                        api_key=gentrace_config.api_key,
+                        host=gentrace_config.host,
+                    )
+
+                    pipeline_run = PipelineRun(
+                        pipeline=pipeline,
+                    )
+
+                pipeline_run.add_step_run(
                     OpenAICreateChatCompletionStepRun(
                         elapsed_time,
                         to_date_string(start_time),
@@ -287,7 +341,20 @@ def intercept_chat_completion_async(original_fn):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        cls.pipeline_run.add_step_run(
+        pipeline_run = cls.pipeline_run
+
+        if not pipeline_run:
+            pipeline = Pipeline(
+                id="test-pipeline-id",
+                api_key=gentrace_config.api_key,
+                host=gentrace_config.host,
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+            )
+
+        pipeline_run.add_step_run(
             OpenAICreateChatCompletionStepRun(
                 elapsed_time,
                 to_date_string(start_time),
@@ -302,7 +369,7 @@ def intercept_chat_completion_async(original_fn):
     return wrapper
 
 
-def intercept_embedding(original_fn):
+def intercept_embedding(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
@@ -314,7 +381,20 @@ def intercept_embedding(original_fn):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        cls.pipeline_run.add_step_run(
+        pipeline_run = cls.pipeline_run
+
+        if not pipeline_run:
+            pipeline = Pipeline(
+                id="test-pipeline-id",
+                api_key=gentrace_config.api_key,
+                host=gentrace_config.host,
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+            )
+
+        pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
                 elapsed_time,
                 to_date_string(start_time),
@@ -329,7 +409,7 @@ def intercept_embedding(original_fn):
     return wrapper
 
 
-def intercept_embedding_async(original_fn):
+def intercept_embedding_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
@@ -341,7 +421,20 @@ def intercept_embedding_async(original_fn):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        cls.pipeline_run.add_step_run(
+        pipeline_run = cls.pipeline_run
+
+        if not pipeline_run:
+            pipeline = Pipeline(
+                id="test-pipeline-id",
+                api_key=gentrace_config.api_key,
+                host=gentrace_config.host,
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+            )
+
+        pipeline_run.add_step_run(
             OpenAICreateEmbeddingStepRun(
                 elapsed_time,
                 to_date_string(start_time),
@@ -354,6 +447,43 @@ def intercept_embedding_async(original_fn):
         return completion
 
     return wrapper
+
+
+def annotate_pipeline_handler(
+    handler: OpenAIPipelineHandler, gentrace_config: Configuration
+):
+    import openai
+
+    for name, cls in vars(openai.api_resources).items():
+        if isinstance(cls, type):
+            # Create new class that inherits from the original class, don't directly monkey patch
+            # the original class
+            new_class = type(name, (cls,), {})
+            if name == "Completion":
+                new_class.create = intercept_completion(
+                    new_class.create, gentrace_config
+                )
+                new_class.acreate = intercept_completion_async(
+                    new_class.acreate, gentrace_config
+                )
+            elif name == "ChatCompletion":
+                new_class.create = intercept_chat_completion(
+                    new_class.create, gentrace_config
+                )
+                new_class.acreate = intercept_chat_completion_async(
+                    new_class.acreate, gentrace_config
+                )
+            elif name == "Embedding":
+                new_class.create = intercept_embedding(
+                    new_class.create, gentrace_config
+                )
+                new_class.acreate = intercept_embedding_async(
+                    new_class.acreate, gentrace_config
+                )
+
+            setattr(handler, name, new_class)
+
+    return handler
 
 
 class OpenAICreateCompletionStepRun(StepRun):

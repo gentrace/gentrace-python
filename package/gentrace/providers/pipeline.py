@@ -77,7 +77,9 @@ class Pipeline:
                 from gentrace.providers.llms.openai import OpenAIPipelineHandler
 
                 OpenAIPipelineHandler.setup(self.openai_config)
-                openai_handler = OpenAIPipelineHandler(pipeline=self)
+                openai_handler = OpenAIPipelineHandler(
+                    self.config, self.openai_config, pipeline=self
+                )
                 self.pipeline_handlers["openai"] = openai_handler
             except ImportError:
                 raise ImportError(

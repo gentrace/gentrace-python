@@ -22,47 +22,12 @@ class PipelineRun:
         if "openai" in self.pipeline.pipeline_handlers:
             handler = self.pipeline.pipeline_handlers.get("openai")
             cloned_handler = copy.deepcopy(handler)
-            import openai
 
-            from .llms.openai import (
-                intercept_chat_completion,
-                intercept_chat_completion_async,
-                intercept_completion,
-                intercept_completion_async,
-                intercept_embedding,
-                intercept_embedding_async,
-            )
+            from .llms.openai import annotate_pipeline_handler
 
-            for name, cls in vars(openai.api_resources).items():
-                if isinstance(cls, type):
-                    # Create new class that inherits from the original class, don't directly monkey patch
-                    # the original class
-                    new_class = type(name, (cls,), {})
-                    if name == "Completion":
-                        new_class.create = intercept_completion(new_class.create)
-                        new_class.acreate = intercept_completion_async(
-                            new_class.acreate
-                        )
-                    elif name == "ChatCompletion":
-                        new_class.create = intercept_chat_completion(new_class.create)
-                        new_class.acreate = intercept_chat_completion_async(
-                            new_class.acreate
-                        )
-                    elif name == "Embedding":
-                        new_class.create = intercept_embedding(new_class.create)
-                        new_class.acreate = intercept_embedding_async(new_class.acreate)
-
-                    new_class.pipeline_run = self
-
-                    setattr(cloned_handler, name, new_class)
-
-            cloned_handler.set_pipeline_run(self)
-
-            # TODO: Could not find an easy way to create a union type with openai and
-            # OpenAIPipelineHandler, so we just use openai.
-            typed_cloned_handler = cast(openai, cloned_handler)
-
-            return typed_cloned_handler
+            annotated_handler = annotate_pipeline_handler(cloned_handler)
+            annotated_handler.pipeline_run = self
+            return annotated_handler
         else:
             raise ValueError(
                 "Did not find OpenAI handler. Did you call setup() on the pipeline?"
