@@ -1,7 +1,5 @@
 import asyncio
-import concurrent.futures
 import copy
-import time
 import uuid
 from typing import Dict, List, cast
 
@@ -10,7 +8,21 @@ from gentrace.apis.tags.ingestion_api import IngestionApi
 from gentrace.configuration import Configuration
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import pipeline_run_post_async
+from gentrace.providers.utils import pipeline_run_post_background
+
+
+def background(f):
+    from functools import wraps
+
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        loop = asyncio.get_event_loop()
+        if callable(f):
+            return loop.run_in_executor(None, f, *args, **kwargs)
+        else:
+            raise TypeError("Task must be a callable")
+
+    return wrapped
 
 
 class PipelineRun:
@@ -83,7 +95,7 @@ class PipelineRun:
         ]
 
         try:
-            pipeline_post_response = await pipeline_run_post_async(
+            pipeline_post_response = await pipeline_run_post_background(
                 ingestion_api, {"name": self.pipeline.id, "stepRuns": step_runs_data}
             )
             return {
@@ -95,9 +107,11 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
-    def pipeline_run_post_async(self, ingestion_api, pipeline_run_id, step_runs_data):
-        print("Starting this ")
-        ingestion_api.pipeline_run_post(
+    @background
+    def pipeline_run_post_background(
+        self, ingestion_api, pipeline_run_id, step_runs_data
+    ):
+        return ingestion_api.pipeline_run_post(
             {
                 "id": pipeline_run_id,
                 "name": self.pipeline.id,
@@ -127,19 +141,17 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = uuid.uuid4()
-
-        # if not wait_for_server:
-        #     print("Submitting to Gentrace asynchronously...")
-        #     with concurrent.futures.ThreadPoolExecutor() as executor:
-        #         # Purposefully don't wait for the future's result
-        #         executor.submit(self.pipeline_run_post_async, "https://www.example.com")
-        #     time.sleep(5)
-        #     return {"pipelineRunId": pipeline_run_id}
+        pipeline_run_id = str(uuid.uuid4())
 
         if not wait_for_server:
+            print("Submitting to Gentrace asynchronously...")
+            self.pipeline_run_post_background(
+                ingestion_api, pipeline_run_id, step_runs_data
+            )
+            return {"pipelineRunId": pipeline_run_id}
+
+        if wait_for_server:
             try:
-                print("Submitting to Gentrace synchronously...", pipeline_run_id)
                 pipeline_post_response = ingestion_api.pipeline_run_post(
                     {
                         "id": pipeline_run_id,
