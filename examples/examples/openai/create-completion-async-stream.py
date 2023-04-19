@@ -23,9 +23,13 @@ async def main():
 
     openai = runner.get_openai()
 
-    result = await openai.ChatCompletion.acreate(
-        messages=[{"role": "user", "content": "Hello!"}],
-        model="gpt-3.5-turbo",
+    asyncio.get_event_loop()
+
+    result = await openai.Completion.acreate(
+        model="text-davinci-003",
+        prompt_template="Hello world {{ name }}",
+        prompt_inputs={"name": "Vivek"},
+        stream=True,
     )
 
     async for completion in result:

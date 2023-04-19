@@ -20,13 +20,11 @@ runner = pipeline.start()
 
 openai = runner.get_openai()
 
-result = openai.Completion.create(
-    model="text-davinci-003",
-    prompt_template="Hello world {{ name }}",
-    prompt_inputs={"name": "test"},
+result = openai.ChatCompletion.create(
+    messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo", stream=True
 )
 
-for value in result:
+for completion in result:
     pass
 
 print("Result: ", result)

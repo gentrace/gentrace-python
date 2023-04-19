@@ -21,11 +21,8 @@ runner = pipeline.start()
 openai = runner.get_openai()
 
 result = openai.ChatCompletion.create(
-    messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo", stream=True
+    messages=[{"role": "user", "content": "Hello!"}], model="gpt-3.5-turbo"
 )
-
-for completion in result:
-    pass
 
 print("Result: ", result)
 

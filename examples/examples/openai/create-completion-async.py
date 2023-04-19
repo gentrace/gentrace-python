@@ -25,15 +25,11 @@ async def main():
 
     asyncio.get_event_loop()
 
-    result = await openai.Completion.acreate(
+    await openai.Completion.acreate(
         model="text-davinci-003",
         prompt_template="Hello world {{ name }}",
         prompt_inputs={"name": "Vivek"},
-        stream=True,
     )
-
-    async for completion in result:
-        pass
 
     info = runner.submit()
 

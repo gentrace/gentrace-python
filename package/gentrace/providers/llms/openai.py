@@ -140,15 +140,47 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
                 "The prompt_template attribute must be provided when using the Gentrace SDK."
             )
 
+        if stream:
+            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+
+            new_completion_options = {
+                **base_completion_options,
+                "prompt": rendered_prompt,
+            }
+
+            start_time = time.time()
+            completion = original_fn(**new_completion_options)
+
+            def profiled_completion():
+                modified_response = []
+                for value in completion:
+                    modified_response.append(value)
+                    yield value
+
+                end_time = time.time()
+
+                full_response = create_stream_response(modified_response)
+
+                create_step_run(
+                    cls,
+                    pipeline_id,
+                    gentrace_config,
+                    start_time,
+                    end_time,
+                    base_completion_options,
+                    prompt_template,
+                    prompt_inputs,
+                    full_response,
+                )
+
+            return profiled_completion()
+
         rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
         new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
 
         start_time = time.time()
         completion = original_fn(**new_completion_options)
-
-        if stream:
-            completion = create_stream_response(completion)
 
         end_time = time.time()
 
@@ -263,11 +295,51 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
 
+        if stream:
+            start_time = time.time()
+            completion = original_fn(**kwargs)
+
+            def profiled_completion():
+                modified_response = []
+                for value in completion:
+                    modified_response.append(value)
+                    yield value
+
+                end_time = time.time()
+
+                elapsed_time = int((end_time - start_time) * 1000)
+
+                pipeline_run = cls.pipeline_run
+
+                full_response = create_stream_response(modified_response)
+
+                if not pipeline_run and pipeline_id:
+                    pipeline = Pipeline(
+                        id=pipeline_id,
+                        api_key=gentrace_config.api_key,
+                        host=gentrace_config.host,
+                    )
+
+                    pipeline_run = PipelineRun(
+                        pipeline=pipeline,
+                    )
+
+                if pipeline_run:
+                    pipeline_run.add_step_run(
+                        OpenAICreateChatCompletionStepRun(
+                            elapsed_time,
+                            to_date_string(start_time),
+                            to_date_string(end_time),
+                            {"messages": messages, "user": user},
+                            model_params,
+                            full_response,
+                        )
+                    )
+
+            return profiled_completion()
+
         start_time = time.time()
         completion = original_fn(**kwargs)
-
-        if stream:
-            completion = create_stream_response(completion)
 
         end_time = time.time()
 

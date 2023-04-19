@@ -26,6 +26,7 @@ async def main():
     result = await openai.ChatCompletion.acreate(
         messages=[{"role": "user", "content": "Hello!"}],
         model="gpt-3.5-turbo",
+        stream=True,
     )
 
     async for completion in result:
