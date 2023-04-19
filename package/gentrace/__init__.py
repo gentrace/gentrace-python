@@ -28,9 +28,11 @@ from gentrace.exceptions import ApiKeyError
 from gentrace.exceptions import ApiException
 
 from gentrace.providers.pipeline import Pipeline
-from gentrace.providers.pipeline_run import PipelineRun
+from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import to_date_string
 
 from gentrace.providers.getters import providers
-from gentrace.providers.global_creds import api_key, host
+
+api_key = ""
+host = ""

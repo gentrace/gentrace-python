@@ -18,4 +18,6 @@ result = openai.Embedding.create(
     pipeline_id="testing-value",
 )
 
-print("Result: ", result)
+gentrace.flush()
+
+print("Result: ", result.pipeline_run_id)

@@ -1,7 +1,6 @@
 from typing import Any, Dict, Optional, cast
 
 from gentrace.configuration import Configuration as GentraceConfiguration
-from gentrace.providers.global_creds import api_key, host
 
 
 class ProvidersGetter:
@@ -14,12 +13,12 @@ class ProvidersGetter:
             return self.openai_handle
 
         try:
+            from gentrace import api_key, host
+
             from .llms.openai import OpenAIPipelineHandler
 
             gentrace_config = GentraceConfiguration(host=host)
             gentrace_config.access_token = api_key
-
-            print("self.openai_config", self.openai_config)
 
             OpenAIPipelineHandler.setup(self.openai_config)
             openai_handler = OpenAIPipelineHandler(

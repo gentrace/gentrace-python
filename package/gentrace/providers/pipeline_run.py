@@ -1,5 +1,8 @@
 import asyncio
+import concurrent
 import copy
+import inspect
+import threading
 import uuid
 from typing import Dict, List, cast
 
@@ -10,19 +13,28 @@ from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import pipeline_run_post_background
 
+_pipeline_run_loop = None
+_pipeline_tasks = []
 
-def background(f):
-    from functools import wraps
 
-    @wraps(f)
-    def wrapped(*args, **kwargs):
-        loop = asyncio.get_event_loop()
-        if callable(f):
-            return loop.run_in_executor(None, f, *args, **kwargs)
-        else:
-            raise TypeError("Task must be a callable")
+# https://stackoverflow.com/a/63110035/1057411
+def fire_and_forget(coro):
+    global _pipeline_run_loop, _pipeline_tasks
+    if _pipeline_run_loop is None:
+        _pipeline_run_loop = asyncio.new_event_loop()
+        threading.Thread(target=_pipeline_run_loop.run_forever, daemon=True).start()
+    if inspect.iscoroutine(coro):
+        print("is coroutine", coro)
+        task = asyncio.run_coroutine_threadsafe(coro, _pipeline_run_loop)
+        _pipeline_tasks.append(task)
 
-    return wrapped
+
+def flush():
+    global _pipeline_tasks
+    if _pipeline_tasks:
+        # Wait for all tasks to complete
+        concurrent.futures.wait(_pipeline_tasks)
+        _pipeline_tasks.clear()
 
 
 class PipelineRun:
@@ -114,10 +126,6 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
-    @background
-    def pipeline_run_post_background_sync(self, ingestion_api, pipeline_run_data):
-        return ingestion_api.pipeline_run_post(pipeline_run_data)
-
     def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
@@ -143,13 +151,15 @@ class PipelineRun:
         pipeline_run_id = str(uuid.uuid4())
 
         if not wait_for_server:
-            self.pipeline_run_post_background_sync(
-                ingestion_api,
-                {
-                    "id": pipeline_run_id,
-                    "name": self.pipeline.id,
-                    "stepRuns": step_runs_data,
-                },
+            fire_and_forget(
+                pipeline_run_post_background(
+                    ingestion_api,
+                    {
+                        "id": pipeline_run_id,
+                        "name": self.pipeline.id,
+                        "stepRuns": step_runs_data,
+                    },
+                )
             )
 
             return {"pipelineRunId": pipeline_run_id}
