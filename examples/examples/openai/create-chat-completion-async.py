@@ -28,8 +28,7 @@ async def main():
         model="gpt-3.5-turbo",
     )
 
-    async for completion in result:
-        pass
+    print("Result: ", result)
 
     info = runner.submit()
 
