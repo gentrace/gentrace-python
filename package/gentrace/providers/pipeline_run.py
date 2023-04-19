@@ -1,4 +1,7 @@
+import asyncio
+import concurrent.futures
 import copy
+import time
 import uuid
 from typing import Dict, List, cast
 
@@ -29,7 +32,13 @@ class PipelineRun:
                 cloned_handler, self.pipeline.openai_config, self
             )
 
-            return annotated_handler
+            import openai
+
+            # TODO: Could not find an easy way to create a union type with openai and
+            # OpenAIPipelineHandler, so we just use openai.
+            typed_cloned_handler = cast(openai, annotated_handler)
+
+            return typed_cloned_handler
         else:
             raise ValueError(
                 "Did not find OpenAI handler. Did you call setup() on the pipeline?"
@@ -86,7 +95,17 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
-    def submit(self) -> Dict:
+    def pipeline_run_post_async(self, ingestion_api, pipeline_run_id, step_runs_data):
+        print("Starting this ")
+        ingestion_api.pipeline_run_post(
+            {
+                "id": pipeline_run_id,
+                "name": self.pipeline.id,
+                "stepRuns": step_runs_data,
+            }
+        )
+
+    def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
@@ -108,16 +127,32 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        try:
-            pipeline_post_response = ingestion_api.pipeline_run_post(
-                { "id": uuid.uuid4(), "name": self.pipeline.id, "stepRuns": step_runs_data}
-            )
-            return {
-                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
-                    "pipelineRunId"
-                )
-            }
+        pipeline_run_id = uuid.uuid4()
 
-        except Exception as e:
-            print(f"Error submitting to Gentrace: {e}")
-            return {"pipelineRunId": None}
+        # if not wait_for_server:
+        #     print("Submitting to Gentrace asynchronously...")
+        #     with concurrent.futures.ThreadPoolExecutor() as executor:
+        #         # Purposefully don't wait for the future's result
+        #         executor.submit(self.pipeline_run_post_async, "https://www.example.com")
+        #     time.sleep(5)
+        #     return {"pipelineRunId": pipeline_run_id}
+
+        if not wait_for_server:
+            try:
+                print("Submitting to Gentrace synchronously...", pipeline_run_id)
+                pipeline_post_response = ingestion_api.pipeline_run_post(
+                    {
+                        "id": pipeline_run_id,
+                        "name": self.pipeline.id,
+                        "stepRuns": step_runs_data,
+                    }
+                )
+                return {
+                    "pipelineRunId": pipeline_post_response.body.get_item_oapg(
+                        "pipelineRunId"
+                    )
+                }
+
+            except Exception as e:
+                print(f"Error submitting to Gentrace: {e}")
+                return {"pipelineRunId": None}

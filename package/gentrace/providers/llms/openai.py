@@ -63,7 +63,7 @@ def create_step_run(
     if not pipeline_run and pipeline_id:
         pipeline = Pipeline(
             id=pipeline_id,
-            api_key=gentrace_config.api_key,
+            api_key=gentrace_config.access_token,
             host=gentrace_config.host,
         )
 
@@ -316,7 +316,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                 if not pipeline_run and pipeline_id:
                     pipeline = Pipeline(
                         id=pipeline_id,
-                        api_key=gentrace_config.api_key,
+                        api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
 
@@ -350,7 +350,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         if not pipeline_run and pipeline_id:
             pipeline = Pipeline(
                 id=pipeline_id,
-                api_key=gentrace_config.api_key,
+                api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
 
@@ -408,7 +408,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                 if not pipeline_run and pipeline_id:
                     pipeline = Pipeline(
                         id=pipeline_id,
-                        api_key=gentrace_config.api_key,
+                        api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
 
@@ -439,7 +439,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         if not pipeline_run and pipeline_id:
             pipeline = Pipeline(
                 id=pipeline_id,
-                api_key=gentrace_config.api_key,
+                api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
 
@@ -481,7 +481,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
         if not pipeline_run and pipeline_id:
             pipeline = Pipeline(
                 id=pipeline_id,
-                api_key=gentrace_config.api_key,
+                api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
 
@@ -525,7 +525,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         if not pipeline_run and pipeline_id:
             pipeline = Pipeline(
                 id=pipeline_id,
-                api_key=gentrace_config.api_key,
+                api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
 
