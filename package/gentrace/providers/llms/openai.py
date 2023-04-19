@@ -60,7 +60,9 @@ def create_step_run(
 
     pipeline_run = cls.pipeline_run
 
-    if not pipeline_run and pipeline_id:
+    is_self_contained = not pipeline_run and pipeline_id
+
+    if is_self_contained:
         pipeline = Pipeline(
             id=pipeline_id,
             api_key=gentrace_config.access_token,
@@ -82,6 +84,9 @@ def create_step_run(
                 completion,
             )
         )
+
+        if is_self_contained:
+            pipeline_run.submit()
 
 
 def create_stream_response(stream_list):
@@ -313,7 +318,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
                 full_response = create_stream_response(modified_response)
 
-                if not pipeline_run and pipeline_id:
+                is_self_contained = not pipeline_run and pipeline_id
+
+                if is_self_contained:
                     pipeline = Pipeline(
                         id=pipeline_id,
                         api_key=gentrace_config.access_token,
@@ -336,6 +343,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                         )
                     )
 
+                    if is_self_contained:
+                        pipeline_run.submit()
+
             return profiled_completion()
 
         start_time = time.time()
@@ -347,7 +357,8 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
         pipeline_run = cls.pipeline_run
 
-        if not pipeline_run and pipeline_id:
+        is_self_contained = not pipeline_run and pipeline_id
+        if is_self_contained:
             pipeline = Pipeline(
                 id=pipeline_id,
                 api_key=gentrace_config.access_token,
@@ -369,6 +380,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     completion,
                 )
             )
+
+            if is_self_contained:
+                pipeline_run.submit()
 
         return completion
 
@@ -405,7 +419,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 pipeline_run = cls.pipeline_run
 
-                if not pipeline_run and pipeline_id:
+                is_self_contained = not pipeline_run and pipeline_id
+
+                if is_self_contained:
                     pipeline = Pipeline(
                         id=pipeline_id,
                         api_key=gentrace_config.access_token,
@@ -428,6 +444,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                         )
                     )
 
+                    if is_self_contained:
+                        pipeline_run.submit()
+
             return profiled_completion()
 
         end_time = time.time()
@@ -436,7 +455,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
         pipeline_run = cls.pipeline_run
 
-        if not pipeline_run and pipeline_id:
+        is_self_contained = not pipeline_run and pipeline_id
+
+        if is_self_contained:
             pipeline = Pipeline(
                 id=pipeline_id,
                 api_key=gentrace_config.access_token,
@@ -458,6 +479,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                     completion,
                 )
             )
+
+            if is_self_contained:
+                pipeline_run.submit()
         return completion
 
     return wrapper
@@ -478,7 +502,9 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
         pipeline_run = cls.pipeline_run
 
-        if not pipeline_run and pipeline_id:
+        is_self_contained = not pipeline_run and pipeline_id
+
+        if is_self_contained:
             pipeline = Pipeline(
                 id=pipeline_id,
                 api_key=gentrace_config.access_token,
@@ -500,6 +526,9 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
                     completion,
                 )
             )
+
+            if is_self_contained:
+                pipeline_run.submit()
         return completion
 
     return wrapper
@@ -522,7 +551,9 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
 
         print("pipeline_run", pipeline_run)
 
-        if not pipeline_run and pipeline_id:
+        is_self_contained = not pipeline_run and pipeline_id
+
+        if is_self_contained:
             pipeline = Pipeline(
                 id=pipeline_id,
                 api_key=gentrace_config.access_token,
@@ -544,6 +575,10 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
                     completion,
                 )
             )
+
+            if is_self_contained:
+                pipeline_run.submit()
+
         return completion
 
     return wrapper
