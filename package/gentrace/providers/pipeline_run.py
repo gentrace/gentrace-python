@@ -25,6 +25,18 @@ def background(f):
     return wrapped
 
 
+async def coroutine_2():
+    print("coroutine_2 started")
+    await asyncio.sleep(2)
+    print("coroutine_2 finished")
+
+
+async def coroutine_3():
+    print("coroutine_3 started")
+    await asyncio.sleep(3)
+    print("coroutine_3 finished")
+
+
 class PipelineRun:
     def __init__(self, pipeline):
         self.pipeline: Pipeline = pipeline
@@ -94,9 +106,16 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
+        pipeline_run_id = uuid.uuid4()
+
         try:
             pipeline_post_response = await pipeline_run_post_background(
-                ingestion_api, {"name": self.pipeline.id, "stepRuns": step_runs_data}
+                ingestion_api,
+                {
+                    "id": pipeline_run_id,
+                    "name": self.pipeline.id,
+                    "stepRuns": step_runs_data,
+                },
             )
             return {
                 "pipelineRunId": pipeline_post_response.body.get_item_oapg(
@@ -106,18 +125,6 @@ class PipelineRun:
         except Exception as e:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
-
-    @background
-    def pipeline_run_post_background(
-        self, ingestion_api, pipeline_run_id, step_runs_data
-    ):
-        return ingestion_api.pipeline_run_post(
-            {
-                "id": pipeline_run_id,
-                "name": self.pipeline.id,
-                "stepRuns": step_runs_data,
-            }
-        )
 
     def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
@@ -141,7 +148,7 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = str(uuid.uuid4())
+        pipeline_run_id = uuid.uuid4()
 
         if not wait_for_server:
             print("Submitting to Gentrace asynchronously...")

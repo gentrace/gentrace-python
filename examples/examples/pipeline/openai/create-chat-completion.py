@@ -26,6 +26,6 @@ result = openai.ChatCompletion.create(
 
 print("Result: ", result)
 
-info = runner.submit()
+info = runner.asubmit()
 
 print("Response: ", info["pipelineRunId"])
