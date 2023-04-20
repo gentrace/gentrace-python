@@ -268,6 +268,8 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             async def profiled_completion():
                 modified_response = []
                 async for value in completion:
+                    if value and is_self_contained:
+                        value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
