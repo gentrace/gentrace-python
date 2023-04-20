@@ -4,7 +4,7 @@ import copy
 import inspect
 import threading
 import uuid
-from typing import Dict, List, cast
+from typing import Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.ingestion_api import IngestionApi
@@ -37,8 +37,9 @@ def flush():
 
 
 class PipelineRun:
-    def __init__(self, pipeline):
+    def __init__(self, pipeline, id: Optional[str] = None):
         self.pipeline: Pipeline = pipeline
+        self.pipeline_run_id: str = id or str(uuid.uuid4())
         self.step_runs: List[StepRun] = []
 
     def get_pipeline(self):
@@ -147,27 +148,25 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = str(uuid.uuid4())
-
         if not wait_for_server:
             fire_and_forget(
                 pipeline_run_post_background(
                     ingestion_api,
                     {
-                        "id": pipeline_run_id,
+                        "id": self.pipeline_run_id,
                         "name": self.pipeline.id,
                         "stepRuns": step_runs_data,
                     },
                 )
             )
 
-            return {"pipelineRunId": pipeline_run_id}
+            return {"pipelineRunId": self.pipeline_run_id}
 
         if wait_for_server:
             try:
                 pipeline_post_response = ingestion_api.pipeline_run_post(
                     {
-                        "id": pipeline_run_id,
+                        "id": self.pipeline_run_id,
                         "name": self.pipeline.id,
                         "stepRuns": step_runs_data,
                     }

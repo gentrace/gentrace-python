@@ -1,4 +1,5 @@
 import time
+import uuid
 from typing import Dict, Optional
 
 import openai
@@ -309,9 +310,15 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**kwargs)
 
+            is_self_contained = not cls.pipeline_run and pipeline_id
+            if is_self_contained:
+                pipeline_run_id = str(uuid.uuid4())
+
             def profiled_completion():
                 modified_response = []
                 for value in completion:
+                    if value:
+                        value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -323,8 +330,6 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
                 full_response = create_stream_response(modified_response)
 
-                is_self_contained = not pipeline_run and pipeline_id
-
                 if is_self_contained:
                     pipeline = Pipeline(
                         id=pipeline_id,
@@ -332,9 +337,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                         host=gentrace_config.host,
                     )
 
-                    pipeline_run = PipelineRun(
-                        pipeline=pipeline,
-                    )
+                    pipeline_run = PipelineRun(pipeline=pipeline, id=pipeline_run_id)
 
                 if pipeline_run:
                     pipeline_run.add_step_run(
@@ -349,14 +352,10 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     )
 
                     if is_self_contained:
-                        submit_result = pipeline_run.submit()
-                        completion.pipeline_run_id = (
-                            submit_result["pipelineRunId"]
-                            if "pipelineRunId" in submit_result
-                            else None
-                        )
+                        pipeline_run.submit()
 
-            return profiled_completion()
+            stream_gen = profiled_completion()
+            return stream_gen
 
         start_time = time.time()
         completion = original_fn(**kwargs)
