@@ -32,7 +32,7 @@ from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import to_date_string
 
-from gentrace.providers.getters import providers
+from gentrace.providers.getters import openai
 
 api_key = ""
 host = ""

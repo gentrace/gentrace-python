@@ -2,15 +2,14 @@ import os
 
 import gentrace
 from dotenv import load_dotenv
-from gentrace import providers
+from gentrace import openai
 
 load_dotenv()
 
 gentrace.api_key = os.getenv("GENTRACE_API_KEY")
 gentrace.host = "http://localhost:3000/api/v1"
 
-providers.openai_api_key = os.getenv("OPENAI_KEY")
-openai = providers.openai
+openai.api_key = os.getenv("OPENAI_KEY")
 
 result = openai.ChatCompletion.create(
     pipeline_id="testing-chat-completion-value",
