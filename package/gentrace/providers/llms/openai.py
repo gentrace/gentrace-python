@@ -34,7 +34,7 @@ class OpenAIPipelineHandler:
         self.pipeline_run = pipeline_run
 
 
-def create_step_run(
+def create_completion_step_run(
     cls,
     pipeline_id: str,
     gentrace_config: Configuration,
@@ -44,6 +44,8 @@ def create_step_run(
     prompt_template,
     prompt_inputs,
     completion,
+    pipeline_run_id: Optional[str] = None,
+    stream=False,
 ):
     elapsed_time = int((end_time - start_time) * 1000)
 
@@ -72,6 +74,7 @@ def create_step_run(
 
         pipeline_run = PipelineRun(
             pipeline=pipeline,
+            id=pipeline_run_id,
         )
 
     if pipeline_run:
@@ -88,11 +91,13 @@ def create_step_run(
 
         if is_self_contained:
             submit_result = pipeline_run.submit()
-            completion.pipeline_run_id = (
-                submit_result["pipelineRunId"]
-                if "pipelineRunId" in submit_result
-                else None
-            )
+
+            if not stream:
+                completion.pipeline_run_id = (
+                    submit_result["pipelineRunId"]
+                    if "pipelineRunId" in submit_result
+                    else None
+                )
 
 
 def create_stream_response(stream_list):
@@ -162,9 +167,15 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**new_completion_options)
 
+            is_self_contained = not cls.pipeline_run and pipeline_id
+            if is_self_contained:
+                pipeline_run_id = str(uuid.uuid4())
+
             def profiled_completion():
                 modified_response = []
                 for value in completion:
+                    if value and is_self_contained:
+                        value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -172,7 +183,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
                 full_response = create_stream_response(modified_response)
 
-                create_step_run(
+                create_completion_step_run(
                     cls,
                     pipeline_id,
                     gentrace_config,
@@ -182,6 +193,8 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
                     prompt_template,
                     prompt_inputs,
                     full_response,
+                    pipeline_run_id,
+                    stream,
                 )
 
             return profiled_completion()
@@ -195,7 +208,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
         end_time = time.time()
 
-        create_step_run(
+        create_completion_step_run(
             cls,
             pipeline_id,
             gentrace_config,
@@ -205,6 +218,8 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             prompt_template,
             prompt_inputs,
             completion,
+            None,
+            stream,
         )
 
         return completion
@@ -246,6 +261,10 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = await original_fn(**new_completion_options)
 
+            is_self_contained = not cls.pipeline_run and pipeline_id
+            if is_self_contained:
+                pipeline_run_id = str(uuid.uuid4())
+
             async def profiled_completion():
                 modified_response = []
                 async for value in completion:
@@ -256,7 +275,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
                 full_response = create_stream_response(modified_response)
 
-                create_step_run(
+                create_completion_step_run(
                     cls,
                     pipeline_id,
                     gentrace_config,
@@ -266,6 +285,8 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
                     prompt_template,
                     prompt_inputs,
                     full_response,
+                    pipeline_run_id,
+                    stream,
                 )
 
             return profiled_completion()
@@ -278,7 +299,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
         completion = await original_fn(**new_completion_options)
         end_time = time.time()
 
-        create_step_run(
+        create_completion_step_run(
             cls,
             pipeline_id,
             gentrace_config,
@@ -288,6 +309,8 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             prompt_template,
             prompt_inputs,
             completion,
+            None,
+            stream,
         )
         return completion
 
@@ -317,7 +340,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             def profiled_completion():
                 modified_response = []
                 for value in completion:
-                    if value:
+                    if value and is_self_contained:
                         value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
@@ -354,8 +377,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     if is_self_contained:
                         pipeline_run.submit()
 
-            stream_gen = profiled_completion()
-            return stream_gen
+            return profiled_completion()
 
         start_time = time.time()
         completion = original_fn(**kwargs)
@@ -418,10 +440,15 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         completion = await original_fn(**kwargs)
 
         if stream:
+            is_self_contained = not cls.pipeline_run and pipeline_id
+            if is_self_contained:
+                pipeline_run_id = str(uuid.uuid4())
 
             async def profiled_completion():
                 modified_response = []
                 async for value in completion:
+                    if value and is_self_contained:
+                        value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -433,8 +460,6 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 pipeline_run = cls.pipeline_run
 
-                is_self_contained = not pipeline_run and pipeline_id
-
                 if is_self_contained:
                     pipeline = Pipeline(
                         id=pipeline_id,
@@ -444,6 +469,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                     pipeline_run = PipelineRun(
                         pipeline=pipeline,
+                        id=pipeline_run_id,
                     )
 
                 if pipeline_run:
@@ -459,12 +485,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                     )
 
                     if is_self_contained:
-                        submit_result = pipeline_run.submit()
-                        completion.pipeline_run_id = (
-                            submit_result["pipelineRunId"]
-                            if "pipelineRunId" in submit_result
-                            else None
-                        )
+                        pipeline_run.submit()
 
             return profiled_completion()
 
