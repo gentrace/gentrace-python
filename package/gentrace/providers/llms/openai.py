@@ -31,27 +31,6 @@ class OpenAIPipelineHandler:
             for key, value in config.items():
                 setattr(openai, key, value)
 
-    @property
-    def api_key(self):
-        return self.config.get("api_key")
-
-    @api_key.setter
-    def api_key(self, value):
-        self.config["api_key"] = value
-        OpenAIPipelineHandler.setup(self.config)
-
-    @property
-    def organization(self):
-        return self.config.get("organization")
-
-    @organization.setter
-    def organization(self, value):
-        self.config["organization"] = value
-        OpenAIPipelineHandler.setup(self.config)
-
-    def set_pipeline_run(self, pipeline_run):
-        self.pipeline_run = pipeline_run
-
 
 def create_completion_step_run(
     cls,
@@ -80,7 +59,7 @@ def create_completion_step_run(
     if suffix is not None:
         inputs_dict["suffix"] = suffix
 
-    pipeline_run = cls.pipeline_run
+    pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
     is_self_contained = not pipeline_run and pipeline_id
 
@@ -186,7 +165,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**new_completion_options)
 
-            is_self_contained = not cls.pipeline_run and pipeline_id
+            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -280,7 +259,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = await original_fn(**new_completion_options)
 
-            is_self_contained = not cls.pipeline_run and pipeline_id
+            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -354,7 +333,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**kwargs)
 
-            is_self_contained = not cls.pipeline_run and pipeline_id
+            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -370,7 +349,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
                 elapsed_time = int((end_time - start_time) * 1000)
 
-                pipeline_run = cls.pipeline_run
+                pipeline_run = (
+                    cls.pipeline_run if hasattr(cls, "pipeline_run") else None
+                )
 
                 full_response = create_stream_response(modified_response)
 
@@ -407,7 +388,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        pipeline_run = cls.pipeline_run
+        pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
         is_self_contained = not pipeline_run and pipeline_id
         if is_self_contained:
@@ -461,7 +442,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         completion = await original_fn(**kwargs)
 
         if stream:
-            is_self_contained = not cls.pipeline_run and pipeline_id
+            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -479,7 +460,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 elapsed_time = int((end_time - start_time) * 1000)
 
-                pipeline_run = cls.pipeline_run
+                pipeline_run = (
+                    cls.pipeline_run if hasattr(cls, "pipeline_run") else None
+                )
 
                 if is_self_contained:
                     pipeline = Pipeline(
@@ -514,7 +497,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        pipeline_run = cls.pipeline_run
+        pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
         is_self_contained = not pipeline_run and pipeline_id
 
@@ -566,7 +549,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        pipeline_run = cls.pipeline_run
+        pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
         is_self_contained = not pipeline_run and pipeline_id
 
@@ -656,6 +639,28 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         return completion
 
     return wrapper
+
+
+def annotate_openai_module(
+    gentrace_config: Configuration,
+):
+    import openai
+
+    for name, cls in vars(openai.api_resources).items():
+        if isinstance(cls, type):
+            if name == "Completion":
+                cls.create = intercept_completion(cls.create, gentrace_config)
+                cls.acreate = intercept_completion_async(cls.acreate, gentrace_config)
+            elif name == "ChatCompletion":
+                cls.create = intercept_chat_completion(cls.create, gentrace_config)
+                cls.acreate = intercept_chat_completion_async(
+                    cls.acreate, gentrace_config
+                )
+            elif name == "Embedding":
+                cls.create = intercept_embedding(cls.create, gentrace_config)
+                cls.acreate = intercept_embedding_async(cls.acreate, gentrace_config)
+
+            setattr(openai.api_resources, name, cls)
 
 
 def annotate_pipeline_handler(

@@ -1,15 +1,16 @@
 import os
 
 import gentrace
+import openai
 from dotenv import load_dotenv
-from gentrace import providers
 
 load_dotenv()
 
 gentrace.api_key = os.getenv("GENTRACE_API_KEY")
 gentrace.host = "http://localhost:3000/api/v1"
 
-openai = providers.openai
+gentrace.configure()
+
 openai.api_key = os.getenv("OPENAI_KEY")
 
 result = openai.ChatCompletion.create(
@@ -18,6 +19,6 @@ result = openai.ChatCompletion.create(
     model="gpt-3.5-turbo",
 )
 
-gentrace.flush()
+print(result)
 
-print("Result: ", result.pipeline_run_id)
+gentrace.flush()

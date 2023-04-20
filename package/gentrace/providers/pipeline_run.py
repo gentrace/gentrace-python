@@ -148,6 +148,9 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
+        if len(step_runs_data) == 0:
+            return {"pipelineRunId": None}
+
         if not wait_for_server:
             fire_and_forget(
                 pipeline_run_post_background(

@@ -3,7 +3,7 @@ import os
 import gentrace
 from dotenv import load_dotenv
 
-from examples.pinecone.utils import DEFAULT_VECTOR
+from examples.utils import DEFAULT_VECTOR
 
 load_dotenv()
 
