@@ -9,6 +9,7 @@ class OpenAIGetter:
     openai_handle: Any = None
 
     def __getattr__(self, name):
+        print("Getting", name)
         if not self.annotated:
             from gentrace import api_key, host
 
@@ -17,10 +18,14 @@ class OpenAIGetter:
 
             from .llms.openai import annotate_pipeline_handler
 
-            annotate_pipeline_handler(self, gentrace_config)
             self.annotated = True
+            annotate_pipeline_handler(self, gentrace_config)
 
         return getattr(self, name)
+
+    def __setattr__(self, __name: str, __value: Any) -> None:
+        print("Setting", __name, __value)
+        pass
 
     @property
     def api_key(self):
