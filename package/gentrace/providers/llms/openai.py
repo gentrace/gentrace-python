@@ -16,19 +16,29 @@ class OpenAIPipelineHandler:
     pipeline_run: Optional[PipelineRun] = None
     pipeline: Optional[Pipeline] = None
     gentrace_config: Dict
-    config: Dict
+    config: Dict = {}
 
-    def __init__(self, gentrace_config, config, pipeline=None, pipeline_run=None):
+    def __init__(self, gentrace_config, config=None, pipeline=None, pipeline_run=None):
         self.pipeline = pipeline
         self.pipeline_run = pipeline_run
         self.gentrace_config = gentrace_config
-        self.config = config
+        if config:
+            self.config = config
 
     @classmethod
     def setup(cls, config):
         if config:
             for key, value in config.items():
                 setattr(openai, key, value)
+
+    @property
+    def api_key(self):
+        return self.config.get("api_key")
+
+    @api_key.setter
+    def api_key(self, value):
+        self.config["api_key"] = value
+        OpenAIPipelineHandler.setup(self.config)
 
     def set_pipeline_run(self, pipeline_run):
         self.pipeline_run = pipeline_run

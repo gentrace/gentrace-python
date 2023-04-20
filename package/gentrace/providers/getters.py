@@ -4,8 +4,6 @@ from gentrace.configuration import Configuration as GentraceConfiguration
 
 
 class ProvidersGetter:
-    openai_config: Dict = {}
-
     openai_handle: Any = None
 
     def get_openai(self):
@@ -20,10 +18,8 @@ class ProvidersGetter:
             gentrace_config = GentraceConfiguration(host=host)
             gentrace_config.access_token = api_key
 
-            OpenAIPipelineHandler.setup(self.openai_config)
             openai_handler = OpenAIPipelineHandler(
                 gentrace_config=gentrace_config,
-                config=self.openai_config,
             )
 
             from .llms.openai import annotate_pipeline_handler
@@ -40,6 +36,7 @@ class ProvidersGetter:
             self.openai_handle = typed_cloned_handler
             return typed_cloned_handler
         except Exception as e:
+            print(e)
             raise ImportError(
                 "Please install OpenAI as a dependency with, e.g. `pip install openai`"
             )
@@ -47,12 +44,6 @@ class ProvidersGetter:
     def __getattr__(self, name):
         if name == "openai":
             return self.get_openai()
-
-    def __setattr__(self, name, value):
-        if name.startswith("openai_"):
-            self.openai_config[name[7:]] = value
-        else:
-            raise AttributeError("Invalid attribute")
 
 
 providers = ProvidersGetter()
