@@ -132,12 +132,12 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
     def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["prompt_template", "prompt_inputs"]
+            if k not in ["prompt_template", "prompt_inputs", "pipeline_id"]
         }
 
         if "prompt" in base_completion_options:
@@ -216,12 +216,12 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
     async def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["prompt_template", "prompt_inputs"]
+            if k not in ["prompt_template", "prompt_inputs", "pipeline_id"]
         }
 
         if "prompt" in base_completion_options:
@@ -298,7 +298,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
     def wrapper(cls, *args, **kwargs):
         messages = kwargs.get("messages")
         user = kwargs.get("user")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         stream = kwargs.get("stream")
 
         model_params = {
@@ -410,7 +410,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         stream = kwargs.get("stream")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
@@ -516,7 +516,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         start_time = time.time()
@@ -568,7 +568,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
-        pipeline_id = kwargs.get("pipeline_id")
+        pipeline_id = kwargs.pop("pipeline_id", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         start_time = time.time()
@@ -578,8 +578,6 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         elapsed_time = int((end_time - start_time) * 1000)
 
         pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
-
-        print("pipeline_run", pipeline_run)
 
         is_self_contained = not pipeline_run and pipeline_id
 
