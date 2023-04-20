@@ -193,7 +193,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
                     prompt_template,
                     prompt_inputs,
                     full_response,
-                    pipeline_run_id,
+                    pipeline_run_id if is_self_contained else None,
                     stream,
                 )
 
@@ -287,7 +287,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
                     prompt_template,
                     prompt_inputs,
                     full_response,
-                    pipeline_run_id,
+                    pipeline_run_id if is_self_contained else None,
                     stream,
                 )
 
