@@ -12,8 +12,8 @@ async def main():
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
 
-    providers.openai_api_key = os.getenv("OPENAI_KEY")
     openai = providers.openai
+    openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.ChatCompletion.acreate(
         pipeline_id="testing-chat-completion-value",
