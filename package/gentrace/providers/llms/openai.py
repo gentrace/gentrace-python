@@ -137,7 +137,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["prompt_template", "prompt_inputs", "pipeline_id"]
+            if k not in ["prompt_template", "prompt_inputs"]
         }
 
         if "prompt" in base_completion_options:
@@ -221,7 +221,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
-            if k not in ["prompt_template", "prompt_inputs", "pipeline_id"]
+            if k not in ["prompt_template", "prompt_inputs"]
         }
 
         if "prompt" in base_completion_options:
