@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/gentrace/gentrace-python/compare/v0.4.0...v0.4.1) (2023-04-20)
+
+
+### Bug Fixes
+
+* make stream work with returned pipeline_run_id ([#48](https://github.com/gentrace/gentrace-python/issues/48)) ([ffa60ad](https://github.com/gentrace/gentrace-python/commit/ffa60ada5023d0ee32e8ad5b4407c4f05979d218))
+
 ## [0.4.0](https://github.com/gentrace/gentrace-python/compare/v0.3.0...v0.4.0) (2023-04-19)
 
 
