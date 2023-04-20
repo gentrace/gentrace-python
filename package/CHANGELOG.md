@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/gentrace/gentrace-python/compare/v0.4.1...v0.5.0) (2023-04-20)
+
+
+### Features
+
+* simplify the OpenAI interface syntax ([#50](https://github.com/gentrace/gentrace-python/issues/50)) ([0932029](https://github.com/gentrace/gentrace-python/commit/0932029f84600326326f846ca698916ce0f527f6))
+
 ## [0.4.1](https://github.com/gentrace/gentrace-python/compare/v0.4.0...v0.4.1) (2023-04-20)
 
 
