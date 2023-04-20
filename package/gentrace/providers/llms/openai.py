@@ -40,6 +40,15 @@ class OpenAIPipelineHandler:
         self.config["api_key"] = value
         OpenAIPipelineHandler.setup(self.config)
 
+    @property
+    def organization(self):
+        return self.config.get("organization")
+
+    @organization.setter
+    def organization(self, value):
+        self.config["organization"] = value
+        OpenAIPipelineHandler.setup(self.config)
+
     def set_pipeline_run(self, pipeline_run):
         self.pipeline_run = pipeline_run
 
