@@ -1,6 +1,7 @@
 import http.client
 import json
 import os
+import re
 import uuid
 from unittest.mock import create_autospec
 
@@ -8,10 +9,10 @@ import aiohttp
 import openai
 import pytest
 import requests
+from aioresponses import CallbackResult, aioresponses
 from urllib3.response import HTTPResponse
 
 import gentrace
-from tests.utils import MockResponse
 
 
 def test_openai_embedding_self_contained_pipeline_id(
@@ -241,6 +242,8 @@ def test_openai_embedding_pipeline(
         input="sample text", model="text-similarity-davinci-001"
     )
 
+    print("Step runs: ", runner.step_runs)
+
     assert len(runner.step_runs) == 1
 
     print("Result: ", result)
@@ -287,22 +290,15 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async():
 
 @pytest.mark.asyncio
 async def test_openai_embedding_pipeline_async(
-    mocker, embedding_response, gentrace_pipeline_run_response
+    mocker, mockaio, embedding_response, gentrace_pipeline_run_response
 ):
     # Setup OpenAI mocked request
-    openai_api_key_getter = mocker.patch.object(openai.util, "default_api_key")
-    openai_api_key_getter.return_value = "test-key"
-
-    openai_request = mocker.patch.object(requests.sessions.Session, "request")
-
-    response = requests.Response()
-    response.status_code = 200
-    response.headers["Content-Type"] = "application/json"
-    response._content = json.dumps(embedding_response, ensure_ascii=False).encode(
-        "utf-8"
+    pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
+    mockaio.post(
+        pattern,
+        status=200,
+        body=json.dumps(embedding_response, ensure_ascii=False).encode("utf-8"),
     )
-
-    openai_request.return_value = response
 
     # Setup Gentrace mocked response
     headers = http.client.HTTPMessage()
@@ -322,10 +318,6 @@ async def test_openai_embedding_pipeline_async(
         enforce_content_length=True,
     )
 
-    resp = MockResponse(json.dumps(embedding_response), 200)
-
-    mocker.patch.object(aiohttp.ClientSession, "request", side_effect=resp)
-
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
@@ -334,7 +326,7 @@ async def test_openai_embedding_pipeline_async(
         os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
         openai_config={
-            "api_key": os.getenv("OPENAI_KEY"),
+            "api_key": "test-api-key",
         },
     )
 
@@ -344,13 +336,11 @@ async def test_openai_embedding_pipeline_async(
 
     openai_handle = runner.get_openai()
 
-    result = await openai_handle.Embedding.acreate(
+    await openai_handle.Embedding.acreate(
         input="sample text", model="text-similarity-davinci-001"
     )
 
     assert len(runner.step_runs) == 1
-
-    print("Result: ", result)
 
     info = await runner.asubmit()
 
