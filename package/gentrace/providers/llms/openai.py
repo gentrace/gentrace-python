@@ -592,6 +592,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 def intercept_embedding_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
+        print("Vivek 2: Invoking the async wrapper")
         model = kwargs.get("model")
         pipeline_id = kwargs.pop("pipeline_id", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
@@ -607,6 +608,11 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         is_self_contained = not pipeline_run and pipeline_id
 
         if is_self_contained:
+            print(
+                "Vivek 3: Creating a pipeline run with config",
+                gentrace_config.access_token,
+                gentrace_config.host,
+            )
             pipeline = Pipeline(
                 id=pipeline_id,
                 api_key=gentrace_config.access_token,
@@ -659,6 +665,7 @@ def annotate_openai_module(
                 )
             elif name == "Embedding":
                 cls.create = intercept_embedding(cls.create, gentrace_config)
+                print("Vivek 2: Assigning acreate")
                 cls.acreate = intercept_embedding_async(cls.acreate, gentrace_config)
 
             setattr(openai.api_resources, name, cls)

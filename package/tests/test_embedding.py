@@ -14,6 +14,11 @@ from urllib3.response import HTTPResponse
 
 import gentrace
 
+gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+gentrace.host = "http://localhost:3000/api/v1"
+
+gentrace.configure_openai()
+
 # TODO: must move back into test once GEN-143 is resolved
 
 
@@ -133,6 +138,8 @@ def test_openai_embedding_self_contained_pipeline_id_server(mocker):
         model="text-similarity-davinci-001",
         pipeline_id="testing-value",
     )
+
+    print("Pipeline run result: ", result.pipeline_run_id)
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
@@ -269,11 +276,14 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async():
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
+    print("Vivek 1: about to enter")
+
     result = await openai.Embedding.acreate(
         input="sample text",
         model="text-similarity-davinci-001",
         pipeline_id="testing-value",
     )
+    print("Vivek 2: about to enter", result.pipeline_run_id)
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 

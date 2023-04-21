@@ -14,6 +14,8 @@ def configure_openai():
 
     from .llms.openai import annotate_openai_module
 
+    print("Configuring OpenAI module with host: ", host, api_key)
+
     gentrace_config = GentraceConfiguration(host=host)
     gentrace_config.access_token = api_key
 
