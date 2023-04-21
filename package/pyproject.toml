@@ -12,14 +12,15 @@ version = "0.5.1"
 [tool.poetry.dependencies]
 aenum = ">=3.1.11"
 frozendict = "^2.3.7"
+openai = {version = "^0.27.4", optional = true}
+pinecone-client = {version = "^2.2.1", optional = true}
 pydantic = ">=1.10.2"
 pystache = "^0.6.0"
 python = ">=3.8.1,<4.0"
 python_dateutil = ">=2.5.3"
 setuptools = ">=21.0.0"
 urllib3 = ">=1.25.3"
-pinecone-client = {version = "^2.2.1", optional = true}
-openai = {version = "^0.27.4", optional = true}
+python-dotenv = "^1.0.0"
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
@@ -31,6 +32,12 @@ types-urllib3 = "^1.26.25.10"
 
 [tool.poetry.group.dev.dependencies]
 pyyaml = "^6.0"
+
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.3.1"
+pytest-mock = "^3.10.0"
 
 [tool.poetry.extras]
 all = [

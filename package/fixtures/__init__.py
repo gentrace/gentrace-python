@@ -1,0 +1,1 @@
+from fixtures.embedding import embedding_response
