@@ -8,8 +8,16 @@ from gentrace.configuration import Configuration as GentraceConfiguration
 
 openai.api_key = os.getenv("OPENAI_KEY")
 
+configured = False
+
 
 def configure_openai():
+    global configured
+
+    if configured:
+        return
+
+    configured = True
     from gentrace import api_key, host
 
     from .llms.openai import annotate_openai_module

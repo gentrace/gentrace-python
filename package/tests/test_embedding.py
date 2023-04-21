@@ -17,9 +17,8 @@ import gentrace
 gentrace.api_key = os.getenv("GENTRACE_API_KEY")
 gentrace.host = "http://localhost:3000/api/v1"
 
-gentrace.configure_openai()
-
 # TODO: must move back into test once GEN-143 is resolved
+gentrace.configure_openai()
 
 
 def test_openai_embedding_self_contained_pipeline_id(
