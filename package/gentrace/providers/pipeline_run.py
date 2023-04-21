@@ -126,11 +126,12 @@ class PipelineRun:
             print(f"Error submitting to Gentrace: {e}")
             return {"pipelineRunId": None}
 
-    def submit(self, wait_for_server=False) -> Dict:
+    def submit(self, wait_for_server=True) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
         ingestion_api = IngestionApi(api_client=api_client)
+        print("Submitting vivek")
 
         step_runs_data = [
             {
@@ -147,6 +148,8 @@ class PipelineRun:
             }
             for step_run in self.step_runs
         ]
+
+        print("Submitting vivek2", step_runs_data)
 
         if len(step_runs_data) == 0:
             return {"pipelineRunId": None}
@@ -173,6 +176,10 @@ class PipelineRun:
                         "name": self.pipeline.id,
                         "stepRuns": step_runs_data,
                     }
+                )
+                print(
+                    "Submitting vivek3",
+                    pipeline_post_response.body.get_item_oapg("pipelineRunId"),
                 )
                 return {
                     "pipelineRunId": pipeline_post_response.body.get_item_oapg(

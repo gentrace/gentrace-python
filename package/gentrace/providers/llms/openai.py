@@ -578,6 +578,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
             if is_self_contained:
                 submit_result = pipeline_run.submit()
+                print("vivek submit", submit_result)
                 completion.pipeline_run_id = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result

@@ -1208,6 +1208,7 @@ class ApiClient:
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         host: typing.Optional[str] = None,
     ) -> urllib3.HTTPResponse:
+        print("Calling API vivek")
         """Makes the HTTP request (synchronous) and returns deserialized data.
 
         To make an async_req request, set the async_req parameter.
@@ -1241,6 +1242,8 @@ class ApiClient:
             If parameter async_req is False or missing,
             then the method will return the response directly.
         """
+
+        print("Calling here")
 
         if not async_req:
             return self.__call_api(
