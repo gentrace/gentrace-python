@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/gentrace/gentrace-python/compare/v0.5.0...v0.5.1) (2023-04-21)
+
+
+### Bug Fixes
+
+* add in simple SDK refactors ([#52](https://github.com/gentrace/gentrace-python/issues/52)) ([94a2ab9](https://github.com/gentrace/gentrace-python/commit/94a2ab98846956970230f84323fdc0d80fa77152))
+
 ## [0.5.0](https://github.com/gentrace/gentrace-python/compare/v0.4.1...v0.5.0) (2023-04-20)
 
 
