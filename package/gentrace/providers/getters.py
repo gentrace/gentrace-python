@@ -1,100 +1,29 @@
+import importlib.util
+import os
 from typing import Any, Dict, Optional, cast
+
+import openai
 
 from gentrace.configuration import Configuration as GentraceConfiguration
 
-
-class ProvidersGetter:
-    openai_handle: Any = None
-
-    def get_openai(self):
-        if self.openai_handle:
-            return self.openai_handle
-
-        try:
-            from gentrace import api_key, host
-
-            from .llms.openai import OpenAIPipelineHandler
-
-            gentrace_config = GentraceConfiguration(host=host)
-            gentrace_config.access_token = api_key
-
-            openai_handler = OpenAIPipelineHandler(
-                gentrace_config=gentrace_config,
-            )
-
-            from .llms.openai import annotate_pipeline_handler
-
-            annotated_handler = annotate_pipeline_handler(
-                openai_handler, gentrace_config
-            )
-
-            import openai
-
-            # TODO: Could not find an easy way to create a union type with openai and
-            # OpenAIPipelineHandler, so we just use openai.
-            typed_cloned_handler = cast(openai, annotated_handler)
-            self.openai_handle = typed_cloned_handler
-            return typed_cloned_handler
-        except Exception as e:
-            print(e)
-            raise ImportError(
-                "Please install OpenAI as a dependency with, e.g. `pip install openai`"
-            )
-
-    def __getattr__(self, name):
-        if name == "openai":
-            return self.get_openai()
+openai.api_key = os.getenv("OPENAI_KEY")
 
 
-providers = ProvidersGetter()
+def configure_openai():
+    from gentrace import api_key, host
 
-__all__ = ["providers"]
+    from .llms.openai import annotate_openai_module
 
-# def openai(
-#     gentrace_api_key: str,
-#     gentrace_base_path: Optional[str] = None,
-#     config: Dict = None,
-# ) -> Any:
-#     try:
-#         from .llms.openai import OpenAIPipelineHandler
+    gentrace_config = GentraceConfiguration(host=host)
+    gentrace_config.access_token = api_key
 
-#         gentrace_config = GentraceConfiguration(
-#             api_key=gentrace_api_key, base_path=gentrace_base_path
-#         )
-
-#         OpenAIPipelineHandler.setup(config)
-#         openai_handler = OpenAIPipelineHandler(
-#             gentrace_config=gentrace_config,
-#             config=config,
-#         )
-
-#         # TODO: problem is that this needs to be annotated every time a method
-#         # is invoked.
-#         from .llms.openai import annotate_pipeline_handler
-
-#         return annotate_pipeline_handler(openai_handler, gentrace_config)
-#     except Exception as e:
-#         raise ImportError(
-#             "Please install OpenAI as a dependency with, e.g. `pip install openai`"
-#         )
+    annotate_openai_module(gentrace_config=gentrace_config)
 
 
-# def pinecone(
-#     config: Dict,
-#     gentrace_api_key: str,
-#     gentrace_base_path: Optional[str] = None,
-# ) -> Any:
-#     try:
-#         from .vectorstores.pinecone import PineconePipelineHandler
+def configure_pinecone():
+    from .vectorstores.pinecone import annotate_pinecone_module
 
-#         pinecone_handler = PineconePipelineHandler(
-#             gentrace_config=GentraceConfiguration(
-#                 api_key=gentrace_api_key, base_path=gentrace_base_path
-#             ),
-#             config=config,
-#         )
-#         return pinecone_handler
-#     except Exception as e:
-#         raise ImportError(
-#             "Please install Pinecone as a dependency with, e.g. `pip install pinecone`"
-#         )
+    annotate_pinecone_module()
+
+
+__all__ = ["configure_openai", "configure_pinecone"]

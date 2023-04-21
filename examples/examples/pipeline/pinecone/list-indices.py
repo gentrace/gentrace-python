@@ -1,10 +1,7 @@
 import os
-import random
 
 import gentrace
 from dotenv import load_dotenv
-
-from examples.utils import DEFAULT_VECTOR
 
 load_dotenv()
 
@@ -23,18 +20,10 @@ runner = pipeline.start()
 
 pinecone = runner.get_pinecone()
 
-index = pinecone.Index("openai-trec")
+active_indexes = pinecone.list_indexes()
 
-result = index.upsert(
-    [
-        {
-            "id": str(random.randint(0, 9999)),
-            "values": DEFAULT_VECTOR,
-        },
-    ]
-)
+print("Active indexes: ", active_indexes)
 
-print("Result: ", result)
 
 info = runner.submit()
 
