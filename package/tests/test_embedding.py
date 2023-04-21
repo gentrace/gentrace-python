@@ -14,14 +14,14 @@ from urllib3.response import HTTPResponse
 
 import gentrace
 
+# TODO: must move back into test once GEN-143 is resolved
+
 
 def test_openai_embedding_self_contained_pipeline_id(
     mocker, embedding_response, gentrace_pipeline_run_response
 ):
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -76,8 +76,6 @@ def test_openai_embedding_self_contained_no_pipeline_id(
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
 
-    gentrace.configure_openai()
-
     openai.api_key = os.getenv("OPENAI_KEY")
 
     # Setup OpenAI mocked request
@@ -128,8 +126,6 @@ def test_openai_embedding_self_contained_pipeline_id_server(mocker):
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
 
-    gentrace.configure_openai()
-
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = openai.Embedding.create(
@@ -144,8 +140,6 @@ def test_openai_embedding_self_contained_pipeline_id_server(mocker):
 def test_openai_embedding_self_contained_no_pipeline_id_server(mocker):
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -258,8 +252,6 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async():
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
 
-    gentrace.configure_openai()
-
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.Embedding.acreate(
@@ -274,8 +266,6 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async():
 async def test_openai_embedding_self_contained_pipeline_id_server_async():
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
