@@ -171,7 +171,9 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
             def profiled_completion():
                 modified_response = []
+                print("completion in profiled_completion", completion)
                 for value in completion:
+                    print("value in profiled_completion", value)
                     if value and is_self_contained:
                         value["pipeline_run_id"] = pipeline_run_id
                     modified_response.append(value)
