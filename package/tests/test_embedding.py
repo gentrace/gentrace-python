@@ -180,7 +180,7 @@ def test_openai_embedding_pipeline_server(mocker, embedding_response):
 
     info = runner.submit()
 
-    assert uuid.UUID(info["pipeline_run_id"]) is not None
+    assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
 def test_openai_embedding_pipeline(
@@ -241,11 +241,7 @@ def test_openai_embedding_pipeline(
         input="sample text", model="text-similarity-davinci-001"
     )
 
-    print("Step runs: ", runner.step_runs)
-
     assert len(runner.step_runs) == 1
-
-    print("Result: ", result)
 
     info = runner.submit()
 
