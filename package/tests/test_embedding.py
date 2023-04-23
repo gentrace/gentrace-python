@@ -5,11 +5,10 @@ import re
 import uuid
 from unittest.mock import create_autospec
 
-import aiohttp
 import openai
 import pytest
 import requests
-from aioresponses import CallbackResult, aioresponses
+import responses
 from urllib3.response import HTTPResponse
 
 import gentrace
@@ -132,6 +131,8 @@ def test_openai_embedding_self_contained_pipeline_id_server(mocker):
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
+    responses.add_passthru("https://api.openai.com/v1/")
+
     result = openai.Embedding.create(
         input="sample text",
         model="text-similarity-davinci-001",
@@ -149,6 +150,8 @@ def test_openai_embedding_self_contained_no_pipeline_id_server(mocker):
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
+    responses.add_passthru("https://api.openai.com/v1/")
+
     result = openai.Embedding.create(
         input="sample text",
         model="text-similarity-davinci-001",
@@ -158,6 +161,8 @@ def test_openai_embedding_self_contained_no_pipeline_id_server(mocker):
 
 
 def test_openai_embedding_pipeline_server(mocker, embedding_response):
+    responses.add_passthru("https://api.openai.com/v1/")
+
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
         os.getenv("GENTRACE_API_KEY"),
