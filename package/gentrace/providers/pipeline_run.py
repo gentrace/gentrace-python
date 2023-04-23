@@ -129,6 +129,7 @@ class PipelineRun:
     def submit(self, wait_for_server=False) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
+
         api_client = ApiClient(configuration=configuration)
         ingestion_api = IngestionApi(api_client=api_client)
 

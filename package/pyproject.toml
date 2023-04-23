@@ -12,14 +12,15 @@ version = "0.5.1"
 [tool.poetry.dependencies]
 aenum = ">=3.1.11"
 frozendict = "^2.3.7"
+openai = {version = "^0.27.4", optional = true}
+pinecone-client = {version = "^2.2.1", optional = true}
 pydantic = ">=1.10.2"
 pystache = "^0.6.0"
 python = ">=3.8.1,<4.0"
+python-dotenv = "^1.0.0"
 python_dateutil = ">=2.5.3"
 setuptools = ">=21.0.0"
 urllib3 = ">=1.25.3"
-pinecone-client = {version = "^2.2.1", optional = true}
-openai = {version = "^0.27.4", optional = true}
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
@@ -30,7 +31,17 @@ types-python-dateutil = "^2.8.19.12"
 types-urllib3 = "^1.26.25.10"
 
 [tool.poetry.group.dev.dependencies]
+openai = "^0.27.4"
+pinecone-client = "^2.2.1"
 pyyaml = "^6.0"
+
+[tool.poetry.group.test.dependencies]
+aioresponses = "^0.7.4"
+pytest = "^7.3.1"
+pytest-asyncio = "^0.21.0"
+pytest-mock = "^3.10.0"
+pytest-responses = "^0.5.1"
+responses = "^0.23.1"
 
 [tool.poetry.extras]
 all = [
@@ -47,6 +58,7 @@ secondary = true
 url = "https://test.pypi.org/legacy/"
 
 [tool.ruff]
+exclude = [".venv"]
 # TODO: Figure out how to solve these by changing Mustache templates.
 ignore = [
   "F401",
