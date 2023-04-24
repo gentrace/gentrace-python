@@ -641,6 +641,17 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
     return wrapper
 
 
+def swap_methods(cls, attribute: str, gentrace_config: Configuration, intercept_fn):
+    has_old_sync_saved = hasattr(cls, attribute + "_old")
+    original_create = getattr(cls, attribute)
+    if has_old_sync_saved:
+        original_create = getattr(cls, attribute + "_old")
+    else:
+        setattr(cls, attribute + "_old", getattr(cls, attribute))
+
+    setattr(cls, attribute, intercept_fn(original_create, gentrace_config))
+
+
 def annotate_openai_module(
     gentrace_config: Configuration,
 ):
@@ -649,40 +660,19 @@ def annotate_openai_module(
     for name, cls in vars(openai.api_resources).items():
         if isinstance(cls, type):
             if name == "Completion":
-                original_create = (
-                    cls.create_old if hasattr(cls, "create_old") else cls.create
-                )
-                cls.create = intercept_completion(original_create, gentrace_config)
-
-                original_acreate = (
-                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
-                )
-                cls.acreate = intercept_completion_async(
-                    original_acreate, gentrace_config
+                swap_methods(cls, "create", gentrace_config, intercept_completion)
+                swap_methods(
+                    cls, "acreate", gentrace_config, intercept_completion_async
                 )
             elif name == "ChatCompletion":
-                original_create = (
-                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                swap_methods(cls, "create", gentrace_config, intercept_chat_completion)
+                swap_methods(
+                    cls, "acreate", gentrace_config, intercept_chat_completion_async
                 )
-                cls.create = intercept_chat_completion(original_create, gentrace_config)
 
-                original_acreate = (
-                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
-                )
-                cls.acreate = intercept_chat_completion_async(
-                    original_acreate, gentrace_config
-                )
             elif name == "Embedding":
-                original_create = (
-                    cls.create_old if hasattr(cls, "create_old") else cls.create
-                )
-                cls.create = intercept_embedding(original_create, gentrace_config)
-                original_acreate = (
-                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
-                )
-                cls.acreate = intercept_embedding_async(
-                    original_acreate, gentrace_config
-                )
+                swap_methods(cls, "create", gentrace_config, intercept_embedding)
+                swap_methods(cls, "acreate", gentrace_config, intercept_embedding_async)
 
             setattr(openai.api_resources, name, cls)
 
