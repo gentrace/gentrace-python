@@ -22,7 +22,12 @@ def configure_openai():
 
 
 def configure_pinecone():
+    from gentrace import api_key, host
+
     from .vectorstores.pinecone import annotate_pinecone_module
+
+    if not api_key:
+        raise ValueError("Gentrace API key not set")
 
     annotate_pinecone_module()
 

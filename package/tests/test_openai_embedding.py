@@ -15,7 +15,7 @@ import gentrace
 
 
 def test_openai_embedding_self_contained_pipeline_id(
-    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardownOpenAI
+    mocker, embedding_response, gentrace_pipeline_run_response, setup_teardown_openai
 ):
     # Setup OpenAI mocked request
     openai_api_key_getter = mocker.patch.object(openai.util, "default_api_key")
@@ -61,11 +61,11 @@ def test_openai_embedding_self_contained_pipeline_id(
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 def test_openai_embedding_self_contained_no_pipeline_id(
-    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardownOpenAI
+    mocker, embedding_response, gentrace_pipeline_run_response, setup_teardown_openai
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -111,11 +111,11 @@ def test_openai_embedding_self_contained_no_pipeline_id(
     )
 
     assert not hasattr(result, "pipeline_run_id")
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 def test_openai_embedding_self_contained_pipeline_id_server(
-    mocker, setupTeardownOpenAI
+    mocker, setup_teardown_openai
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -128,10 +128,10 @@ def test_openai_embedding_self_contained_pipeline_id_server(
     )
 
     assert uuid.UUID(result.pipeline_run_id) is not None
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
-def test_openai_embedding_self_contained_no_pipeline_id_server(setupTeardownOpenAI):
+def test_openai_embedding_self_contained_no_pipeline_id_server(setup_teardown_openai):
     openai.api_key = os.getenv("OPENAI_KEY")
 
     responses.add_passthru("https://api.openai.com/v1/")
@@ -142,10 +142,10 @@ def test_openai_embedding_self_contained_no_pipeline_id_server(setupTeardownOpen
     )
 
     assert not hasattr(result, "pipeline_run_id")
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
-def test_openai_embedding_pipeline_server(setupTeardownOpenAI):
+def test_openai_embedding_pipeline_server(setup_teardown_openai):
     responses.add_passthru("https://api.openai.com/v1/")
 
     pipeline = gentrace.Pipeline(
@@ -168,12 +168,12 @@ def test_openai_embedding_pipeline_server(setupTeardownOpenAI):
     info = runner.submit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 @responses.activate
 def test_openai_embedding_pipeline(
-    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardownOpenAI
+    mocker, embedding_response, gentrace_pipeline_run_response, setup_teardown_openai
 ):
     # Setup OpenAI mocked request
     responses.add(
@@ -228,12 +228,12 @@ def test_openai_embedding_pipeline(
     info = runner.submit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 @pytest.mark.asyncio
 async def test_openai_embedding_self_contained_no_pipeline_id_server_async(
-    setupTeardownOpenAI,
+    setup_teardown_openai,
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -243,12 +243,12 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async(
     )
 
     assert not hasattr(result, "pipeline_run_id")
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 @pytest.mark.asyncio
 async def test_openai_embedding_self_contained_pipeline_id_server_async(
-    setupTeardownOpenAI,
+    setup_teardown_openai,
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -260,7 +260,7 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async(
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
 
 
 @pytest.mark.asyncio
@@ -269,7 +269,7 @@ async def test_openai_embedding_pipeline_async(
     mockaio,
     embedding_response,
     gentrace_pipeline_run_response,
-    setupTeardownOpenAI,
+    setup_teardown_openai,
 ):
     # Setup OpenAI mocked request
     mockaio.post(
@@ -324,4 +324,4 @@ async def test_openai_embedding_pipeline_async(
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
-    print(setupTeardownOpenAI)
+    print(setup_teardown_openai)
