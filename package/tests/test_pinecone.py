@@ -7,6 +7,7 @@ import re
 import uuid
 
 import openai
+import pinecone
 import pytest
 import requests
 import responses
@@ -17,7 +18,7 @@ import gentrace
 PINECONE_API_PATTERN = re.compile("^https?:\/\/.*pinecone\.io\/.*")
 
 
-def test_pinecone_fetch_server():
+def test_pinecone_pipeline_fetch_server():
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -44,7 +45,7 @@ def test_pinecone_fetch_server():
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
-def test_pinecone_query_server(vector):
+def test_pinecone_pipeline_query_server(vector):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -71,7 +72,7 @@ def test_pinecone_query_server(vector):
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
-def test_pinecone_list_indices_server():
+def test_pinecone_pipeline_list_indices_server():
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -97,7 +98,7 @@ def test_pinecone_list_indices_server():
     assert info["pipelineRunId"] is None
 
 
-def test_pinecone_upsert_server(vector):
+def test_pinecone_pipeline_upsert_server(vector):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -129,3 +130,50 @@ def test_pinecone_upsert_server(vector):
     info = runner.submit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
+
+
+def test_pinecone_self_contained_fetch_server(setup_teardown_pinecone):
+    responses.add_passthru(PINECONE_API_PATTERN)
+
+    pinecone.init(
+        api_key=os.getenv("PINECONE_API_KEY"),
+    )
+
+    result = pinecone.Index("openai-trec").fetch(
+        ids=["3980"], pipeline_id="self-contained-pinecone-fetch"
+    )
+
+    assert uuid.UUID(result.pipeline_run_id) is not None
+    print(setup_teardown_pinecone)
+
+
+def test_pinecone_self_contained_query_server(setup_teardown_pinecone, vector):
+    responses.add_passthru(PINECONE_API_PATTERN)
+
+    pinecone.init(
+        api_key=os.getenv("PINECONE_API_KEY"),
+    )
+
+    index = pinecone.Index("openai-trec")
+    result = index.query(
+        top_k=10, vector=vector, pipeline_id="self-contained-pinecone-query"
+    )
+
+    assert uuid.UUID(result.pipeline_run_id) is not None
+    print(setup_teardown_pinecone)
+
+
+def test_pinecone_self_contained_query_server_no_pipeline_id(
+    setup_teardown_pinecone, vector
+):
+    responses.add_passthru(PINECONE_API_PATTERN)
+
+    pinecone.init(
+        api_key=os.getenv("PINECONE_API_KEY"),
+    )
+
+    index = pinecone.Index("openai-trec")
+    result = index.query(top_k=10, vector=vector)
+
+    assert result.pipeline_run_id is None
+    print(setup_teardown_pinecone)

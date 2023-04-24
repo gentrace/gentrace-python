@@ -56,10 +56,11 @@ class ModifiedIndex(pinecone.Index):
 
             pipeline_run = PipelineRun(pipeline=pipeline, id=pipeline_run_id)
 
-        pipeline_run.add_step_run(step_run)
+        if pipeline_run:
+            pipeline_run.add_step_run(step_run)
 
-        if is_self_contained:
-            pipeline_run.submit()
+            if is_self_contained:
+                pipeline_run.submit()
 
         return pipeline_run_id
 
