@@ -15,13 +15,8 @@ import gentrace
 
 
 def test_openai_embedding_self_contained_pipeline_id(
-    mocker, embedding_response, gentrace_pipeline_run_response
+    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardown
 ):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
     # Setup OpenAI mocked request
     openai_api_key_getter = mocker.patch.object(openai.util, "default_api_key")
     openai_api_key_getter.return_value = "test-key"
@@ -65,16 +60,13 @@ def test_openai_embedding_self_contained_pipeline_id(
     )
 
     assert uuid.UUID(result.pipeline_run_id) is not None
+
+    print(setupTeardown)
 
 
 def test_openai_embedding_self_contained_no_pipeline_id(
-    mocker, embedding_response, gentrace_pipeline_run_response
+    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardown
 ):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
     openai.api_key = os.getenv("OPENAI_KEY")
 
     # Setup OpenAI mocked request
@@ -119,14 +111,10 @@ def test_openai_embedding_self_contained_no_pipeline_id(
     )
 
     assert not hasattr(result, "pipeline_run_id")
+    print(setupTeardown)
 
 
-def test_openai_embedding_self_contained_pipeline_id_server(mocker):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
+def test_openai_embedding_self_contained_pipeline_id_server(mocker, setupTeardown):
     openai.api_key = os.getenv("OPENAI_KEY")
 
     responses.add_passthru("https://api.openai.com/v1/")
@@ -138,14 +126,10 @@ def test_openai_embedding_self_contained_pipeline_id_server(mocker):
     )
 
     assert uuid.UUID(result.pipeline_run_id) is not None
+    print(setupTeardown)
 
 
-def test_openai_embedding_self_contained_no_pipeline_id_server(mocker):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
+def test_openai_embedding_self_contained_no_pipeline_id_server(setupTeardown):
     openai.api_key = os.getenv("OPENAI_KEY")
 
     responses.add_passthru("https://api.openai.com/v1/")
@@ -156,14 +140,10 @@ def test_openai_embedding_self_contained_no_pipeline_id_server(mocker):
     )
 
     assert not hasattr(result, "pipeline_run_id")
+    print(setupTeardown)
 
 
-def test_openai_embedding_pipeline_server(mocker, embedding_response):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
+def test_openai_embedding_pipeline_server(setupTeardown):
     responses.add_passthru("https://api.openai.com/v1/")
 
     pipeline = gentrace.Pipeline(
@@ -186,17 +166,13 @@ def test_openai_embedding_pipeline_server(mocker, embedding_response):
     info = runner.submit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
+    print(setupTeardown)
 
 
 @responses.activate
 def test_openai_embedding_pipeline(
-    mocker, embedding_response, gentrace_pipeline_run_response
+    mocker, embedding_response, gentrace_pipeline_run_response, setupTeardown
 ):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
     # Setup OpenAI mocked request
     responses.add(
         responses.POST,
@@ -250,15 +226,13 @@ def test_openai_embedding_pipeline(
     info = runner.submit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
+    print(setupTeardown)
 
 
 @pytest.mark.asyncio
-async def test_openai_embedding_self_contained_no_pipeline_id_server_async():
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
+async def test_openai_embedding_self_contained_no_pipeline_id_server_async(
+    setupTeardown,
+):
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.Embedding.acreate(
@@ -267,18 +241,11 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async():
     )
 
     assert not hasattr(result, "pipeline_run_id")
+    print(setupTeardown)
 
 
 @pytest.mark.asyncio
-async def test_openai_embedding_self_contained_pipeline_id_server_async():
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
+async def test_openai_embedding_self_contained_pipeline_id_server_async(setupTeardown):
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.Embedding.acreate(
@@ -289,16 +256,13 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async():
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
+    print(setupTeardown)
+
 
 @pytest.mark.asyncio
 async def test_openai_embedding_pipeline_async(
-    mocker, mockaio, embedding_response, gentrace_pipeline_run_response
+    mocker, mockaio, embedding_response, gentrace_pipeline_run_response, setupTeardown
 ):
-    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-    gentrace.host = "http://localhost:3000/api/v1"
-
-    gentrace.configure_openai()
-
     # Setup OpenAI mocked request
     mockaio.post(
         "https://api.openai.com/v1/embeddings",
@@ -351,3 +315,5 @@ async def test_openai_embedding_pipeline_async(
     info = await runner.asubmit()
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
+
+    print(setupTeardown)
