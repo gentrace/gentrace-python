@@ -71,7 +71,7 @@ def test_pinecone_query_server(vector):
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
-def test_pinecone_list_indices():
+def test_pinecone_list_indices_server():
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -97,7 +97,7 @@ def test_pinecone_list_indices():
     assert info["pipelineRunId"] is None
 
 
-def test_pinecone_upsert(vector):
+def test_pinecone_upsert_server(vector):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
