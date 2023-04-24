@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.3](https://github.com/gentrace/gentrace-python/compare/v0.5.2...v0.5.3) (2023-04-24)
+
+
+### Bug Fixes
+
+* add more tests around proper usage patterns ([#60](https://github.com/gentrace/gentrace-python/issues/60)) ([fe8970c](https://github.com/gentrace/gentrace-python/commit/fe8970cf4539bedddf74fa1f6956ef24f93c13e4))
+* store old create/acreate functions ([#58](https://github.com/gentrace/gentrace-python/issues/58)) ([b7414c6](https://github.com/gentrace/gentrace-python/commit/b7414c65071b061f560f5e2ec351bdc9237309b4))
+
 ## [0.5.2](https://github.com/gentrace/gentrace-python/compare/v0.5.1...v0.5.2) (2023-04-23)
 
 
