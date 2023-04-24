@@ -2,8 +2,7 @@
 
 # flake8: noqa
 
-"""
-    Gentrace API
+""" Gentrace API
 
     These API routes are designed to ingest events from clients.  # noqa: E501
 

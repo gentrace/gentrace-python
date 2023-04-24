@@ -649,16 +649,40 @@ def annotate_openai_module(
     for name, cls in vars(openai.api_resources).items():
         if isinstance(cls, type):
             if name == "Completion":
-                cls.create = intercept_completion(cls.create, gentrace_config)
-                cls.acreate = intercept_completion_async(cls.acreate, gentrace_config)
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
+                cls.create = intercept_completion(original_create, gentrace_config)
+
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
+                )
+                cls.acreate = intercept_completion_async(
+                    original_acreate, gentrace_config
+                )
             elif name == "ChatCompletion":
-                cls.create = intercept_chat_completion(cls.create, gentrace_config)
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
+                cls.create = intercept_chat_completion(original_create, gentrace_config)
+
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
+                )
                 cls.acreate = intercept_chat_completion_async(
-                    cls.acreate, gentrace_config
+                    original_acreate, gentrace_config
                 )
             elif name == "Embedding":
-                cls.create = intercept_embedding(cls.create, gentrace_config)
-                cls.acreate = intercept_embedding_async(cls.acreate, gentrace_config)
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
+                cls.create = intercept_embedding(original_create, gentrace_config)
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
+                )
+                cls.acreate = intercept_embedding_async(
+                    original_acreate, gentrace_config
+                )
 
             setattr(openai.api_resources, name, cls)
 
@@ -676,25 +700,41 @@ def annotate_pipeline_handler(
             # the original class
             new_class = type(name, (cls,), {})
             if name == "Completion":
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
                 new_class.create = intercept_completion(
-                    new_class.create, gentrace_config
+                    original_create, gentrace_config
+                )
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
                 )
                 new_class.acreate = intercept_completion_async(
-                    new_class.acreate, gentrace_config
+                    original_acreate, gentrace_config
                 )
             elif name == "ChatCompletion":
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
                 new_class.create = intercept_chat_completion(
-                    new_class.create, gentrace_config
+                    original_create, gentrace_config
+                )
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
                 )
                 new_class.acreate = intercept_chat_completion_async(
-                    new_class.acreate, gentrace_config
+                    original_acreate, gentrace_config
                 )
             elif name == "Embedding":
-                new_class.create = intercept_embedding(
-                    new_class.create, gentrace_config
+                original_create = (
+                    cls.create_old if hasattr(cls, "create_old") else cls.create
+                )
+                new_class.create = intercept_embedding(original_create, gentrace_config)
+                original_acreate = (
+                    cls.acreate_old if hasattr(cls, "acreate_old") else cls.acreate
                 )
                 new_class.acreate = intercept_embedding_async(
-                    new_class.acreate, gentrace_config
+                    original_acreate, gentrace_config
                 )
 
             new_class.pipeline_run = pipeline_run
