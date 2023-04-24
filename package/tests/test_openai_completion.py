@@ -15,7 +15,7 @@ import gentrace
 
 
 def test_openai_completion_self_contained_pipeline_id(
-    mocker, completion_response, gentrace_pipeline_run_response, setupTeardown
+    mocker, completion_response, gentrace_pipeline_run_response, setupTeardownOpenAI
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -64,11 +64,11 @@ def test_openai_completion_self_contained_pipeline_id(
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
 
 
 def test_openai_completion_self_contained_no_pipeline_id(
-    mocker, completion_response, gentrace_pipeline_run_response, setupTeardown
+    mocker, completion_response, gentrace_pipeline_run_response, setupTeardownOpenAI
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -115,12 +115,16 @@ def test_openai_completion_self_contained_no_pipeline_id(
     )
 
     assert not hasattr(result, "pipeline_run_id")
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
 
 
 @pytest.mark.asyncio
 async def test_openai_completion_self_contained_no_pipeline_id_async(
-    mocker, mockaio, completion_response, gentrace_pipeline_run_response, setupTeardown
+    mocker,
+    mockaio,
+    completion_response,
+    gentrace_pipeline_run_response,
+    setupTeardownOpenAI,
 ):
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
@@ -159,12 +163,16 @@ async def test_openai_completion_self_contained_no_pipeline_id_async(
 
     assert not hasattr(result, "pipeline_run_id")
 
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
 
 
 @pytest.mark.asyncio
 async def test_openai_completion_self_contained_pipeline_id_async(
-    mocker, mockaio, completion_response, gentrace_pipeline_run_response, setupTeardown
+    mocker,
+    mockaio,
+    completion_response,
+    gentrace_pipeline_run_response,
+    setupTeardownOpenAI,
 ):
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
@@ -204,12 +212,12 @@ async def test_openai_completion_self_contained_pipeline_id_async(
 
     assert uuid.UUID(result.pipeline_run_id) is not None
 
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
 
 
 @responses.activate
 def test_openai_completion_self_contained_pipeline_id_stream(
-    mocker, completion_response, gentrace_pipeline_run_response, setupTeardown
+    mocker, completion_response, gentrace_pipeline_run_response, setupTeardownOpenAI
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -260,11 +268,13 @@ def test_openai_completion_self_contained_pipeline_id_stream(
 
     assert uuid.UUID(pipeline_run_id) is not None
 
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
 
 
 @pytest.mark.asyncio
-async def test_openai_completion_self_contained_pipeline_id_stream_async(setupTeardown):
+async def test_openai_completion_self_contained_pipeline_id_stream_async(
+    setupTeardownOpenAI,
+):
     responses.add_passthru("https://api.openai.com/v1/")
 
     openai.api_key = os.getenv("OPENAI_KEY")
@@ -283,4 +293,4 @@ async def test_openai_completion_self_contained_pipeline_id_stream_async(setupTe
 
     assert uuid.UUID(pipeline_run_id) is not None
 
-    print(setupTeardown)
+    print(setupTeardownOpenAI)
