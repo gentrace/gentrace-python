@@ -13,15 +13,15 @@ from urllib3.response import HTTPResponse
 
 import gentrace
 
-gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-gentrace.host = "http://localhost:3000/api/v1"
-
-gentrace.configure_openai()
-
 
 def test_openai_completion_self_contained_pipeline_id(
     mocker, completion_response, gentrace_pipeline_run_response
 ):
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     openai.api_key = os.getenv("OPENAI_KEY")
 
     # Setup OpenAI mocked request
@@ -73,6 +73,11 @@ def test_openai_completion_self_contained_pipeline_id(
 def test_openai_completion_self_contained_no_pipeline_id(
     mocker, completion_response, gentrace_pipeline_run_response
 ):
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     openai.api_key = os.getenv("OPENAI_KEY")
 
     # Setup OpenAI mocked request
@@ -124,6 +129,11 @@ def test_openai_completion_self_contained_no_pipeline_id(
 async def test_openai_completion_self_contained_no_pipeline_id_async(
     mocker, mockaio, completion_response, gentrace_pipeline_run_response
 ):
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
     mockaio.post(
@@ -166,6 +176,11 @@ async def test_openai_completion_self_contained_no_pipeline_id_async(
 async def test_openai_completion_self_contained_pipeline_id_async(
     mocker, mockaio, completion_response, gentrace_pipeline_run_response
 ):
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
     mockaio.post(
@@ -209,6 +224,11 @@ async def test_openai_completion_self_contained_pipeline_id_async(
 def test_openai_completion_self_contained_pipeline_id_stream(
     mocker, completion_response, gentrace_pipeline_run_response
 ):
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     openai.api_key = os.getenv("OPENAI_KEY")
 
     # Setup OpenAI mocked request
@@ -261,6 +281,11 @@ def test_openai_completion_self_contained_pipeline_id_stream(
 
 @pytest.mark.asyncio
 async def test_openai_completion_self_contained_pipeline_id_stream_async():
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "http://localhost:3000/api/v1"
+
+    gentrace.configure_openai()
+
     responses.add_passthru("https://api.openai.com/v1/")
 
     openai.api_key = os.getenv("OPENAI_KEY")
