@@ -183,23 +183,17 @@ def test_openai_embedding_pipeline_server(mocker, embedding_response):
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
+@responses.activate
 def test_openai_embedding_pipeline(
     mocker, embedding_response, gentrace_pipeline_run_response
 ):
     # Setup OpenAI mocked request
-    openai_api_key_getter = mocker.patch.object(openai.util, "default_api_key")
-    openai_api_key_getter.return_value = "test-key"
-
-    openai_request = mocker.patch.object(requests.sessions.Session, "request")
-
-    response = requests.Response()
-    response.status_code = 200
-    response.headers["Content-Type"] = "application/json"
-    response._content = json.dumps(embedding_response, ensure_ascii=False).encode(
-        "utf-8"
+    responses.add(
+        responses.POST,
+        "https://api.openai.com/v1/embeddings",
+        body=json.dumps(embedding_response, ensure_ascii=False),
+        content_type="application/json",
     )
-
-    openai_request.return_value = response
 
     # Setup Gentrace mocked response
     headers = http.client.HTTPMessage()
@@ -284,9 +278,8 @@ async def test_openai_embedding_pipeline_async(
     mocker, mockaio, embedding_response, gentrace_pipeline_run_response
 ):
     # Setup OpenAI mocked request
-    pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
     mockaio.post(
-        pattern,
+        "https://api.openai.com/v1/embeddings",
         status=200,
         body=json.dumps(embedding_response, ensure_ascii=False).encode("utf-8"),
     )
