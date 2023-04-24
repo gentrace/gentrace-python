@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.4](https://github.com/gentrace/gentrace-python/compare/v0.5.3...v0.5.4) (2023-04-24)
+
+
+### Bug Fixes
+
+* add Pinecone tests ([#61](https://github.com/gentrace/gentrace-python/issues/61)) ([5828612](https://github.com/gentrace/gentrace-python/commit/58286129fa46fae4bf08ff73413cc0141f7932f5))
+* don't throw if pipeline ID isn't specified ([#63](https://github.com/gentrace/gentrace-python/issues/63)) ([6a06ed3](https://github.com/gentrace/gentrace-python/commit/6a06ed3d3ebcbb672c8103eeaa1273a9d01c971d))
+
 ## [0.5.3](https://github.com/gentrace/gentrace-python/compare/v0.5.2...v0.5.3) (2023-04-24)
 
 
