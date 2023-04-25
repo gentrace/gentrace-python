@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.5.5](https://github.com/gentrace/gentrace-python/compare/v0.5.4...v0.5.5) (2023-04-25)
+
+
+### Bug Fixes
+
+* add validity check for Pinecone ([#67](https://github.com/gentrace/gentrace-python/issues/67)) ([22fd42c](https://github.com/gentrace/gentrace-python/commit/22fd42c954e74291f005ef91913cbb3eabd411cf))
+* check hostname validity, throw exception if not correct ([#65](https://github.com/gentrace/gentrace-python/issues/65)) ([6429350](https://github.com/gentrace/gentrace-python/commit/6429350c32a11304749213de6951702ec771c111))
+
 ## [0.5.4](https://github.com/gentrace/gentrace-python/compare/v0.5.3...v0.5.4) (2023-04-24)
 
 
