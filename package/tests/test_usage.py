@@ -1,9 +1,7 @@
 import os
-import re
 from unittest.mock import create_autospec
 
 import pytest
-from urllib3.response import HTTPResponse
 
 import gentrace
 
