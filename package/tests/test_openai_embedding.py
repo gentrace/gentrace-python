@@ -124,10 +124,12 @@ def test_openai_embedding_self_contained_pipeline_id_server(
     result = openai.Embedding.create(
         input="sample text",
         model="text-similarity-davinci-001",
-        pipeline_id="testing-value",
+        pipeline_id="testing-value-vivek",
     )
 
     assert uuid.UUID(result.pipeline_run_id) is not None
+
+    print("pipeline_id: ", result.pipeline_run_id)
     print(setup_teardown_openai)
 
 
