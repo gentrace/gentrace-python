@@ -128,6 +128,7 @@ async def pipeline_run_post_background(
             return result
         except Exception as e:
             log_exception("Error submitting to Gentrace: ")
+            return None
 
     with ThreadPoolExecutor() as executor:
         result = await asyncio.get_event_loop().run_in_executor(
