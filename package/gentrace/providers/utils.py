@@ -9,9 +9,9 @@ __all__ = ["to_date_string"]
 
 
 def to_date_string(time_value):
-    return (
-        datetime.fromtimestamp(time_value).strftime("%Y-%m-%dT%H:%M:%S.%fZ")[:-4] + "Z"
-    )
+    utc_time = datetime.utcfromtimestamp(time_value)
+    utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+    return utc_time_str[:-4] + "Z"
 
 
 async def pipeline_run_post_background(

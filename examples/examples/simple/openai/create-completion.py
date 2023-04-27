@@ -14,7 +14,7 @@ gentrace.configure_openai()
 openai.api_key = os.getenv("OPENAI_KEY")
 
 result = openai.Completion.create(
-    pipeline_id="text-generation",
+    pipeline_id="text-generation-test",
     model="text-davinci-003",
     prompt_template="Hello world {{ name }}",
     prompt_inputs={"name": "test"},
