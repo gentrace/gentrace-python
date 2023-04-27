@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/gentrace/gentrace-python/compare/v0.6.0...v0.6.1) (2023-04-27)
+
+
+### Bug Fixes
+
+* datetime invalidity in Python ([#72](https://github.com/gentrace/gentrace-python/issues/72)) ([e67d4b8](https://github.com/gentrace/gentrace-python/commit/e67d4b8fcf94db1a65014f60e4ac89c32e30384f))
+
 ## [0.6.0](https://github.com/gentrace/gentrace-python/compare/v0.5.6...v0.6.0) (2023-04-27)
 
 
