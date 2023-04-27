@@ -324,8 +324,6 @@ async def test_openai_embedding_pipeline_async(
 
     info = await runner.asubmit()
 
-    print("info", info)
-
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
     print(setup_teardown_openai)
