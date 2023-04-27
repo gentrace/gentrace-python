@@ -136,6 +136,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
     def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
+        prompt = kwargs.get("prompt")
         pipeline_id = kwargs.pop("pipeline_id", None)
         stream = kwargs.get("stream")
         base_completion_options = {
@@ -144,18 +145,11 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             if k not in ["prompt_template", "prompt_inputs"]
         }
 
-        if "prompt" in base_completion_options:
-            raise ValueError(
-                "The prompt attribute cannot be provided when using the Gentrace SDK. Use prompt_template and prompt_inputs instead."
-            )
-
-        if not prompt_template:
-            raise ValueError(
-                "The prompt_template attribute must be provided when using the Gentrace SDK."
-            )
-
         if stream:
-            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+            rendered_prompt = prompt
+
+            if prompt_template and prompt_inputs:
+                rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
             new_completion_options = {
                 **base_completion_options,
@@ -197,9 +191,15 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
             return profiled_completion()
 
-        rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+        rendered_prompt = prompt
 
-        new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
+        if prompt_template and prompt_inputs:
+            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+
+        new_completion_options = {
+            **base_completion_options,
+            "prompt": rendered_prompt,
+        }
 
         start_time = time.time()
         completion = original_fn(**new_completion_options)
@@ -230,6 +230,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
     async def wrapper(cls, *args, **kwargs):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
+        prompt = kwargs.get("prompt")
         pipeline_id = kwargs.pop("pipeline_id", None)
         stream = kwargs.get("stream")
         base_completion_options = {
@@ -238,18 +239,11 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             if k not in ["prompt_template", "prompt_inputs"]
         }
 
-        if "prompt" in base_completion_options:
-            raise ValueError(
-                "The prompt attribute cannot be provided when using the Gentrace SDK. Use prompt_template and prompt_inputs instead."
-            )
-
-        if not prompt_template:
-            raise ValueError(
-                "The prompt_template attribute must be provided when using the Gentrace SDK."
-            )
-
         if stream:
-            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+            rendered_prompt = prompt
+
+            if prompt_template and prompt_inputs:
+                rendered_prompt = pystache.render(prompt_template, prompt_inputs)
 
             new_completion_options = {
                 **base_completion_options,
@@ -291,9 +285,15 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
             return profiled_completion()
 
-        rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+        rendered_prompt = prompt
 
-        new_completion_options = {**base_completion_options, "prompt": rendered_prompt}
+        if prompt_template and prompt_inputs:
+            rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+
+        new_completion_options = {
+            **base_completion_options,
+            "prompt": rendered_prompt,
+        }
 
         start_time = time.time()
         completion = await original_fn(**new_completion_options)
