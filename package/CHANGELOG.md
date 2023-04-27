@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/gentrace/gentrace-python/compare/v0.5.5...v0.5.6) (2023-04-27)
+
+
+### Bug Fixes
+
+* allow prompt, change to pipelineRunId ([#68](https://github.com/gentrace/gentrace-python/issues/68)) ([8d449cf](https://github.com/gentrace/gentrace-python/commit/8d449cf557965d7992cfbc8f5208bd4f8ec32705))
+
 ## [0.5.5](https://github.com/gentrace/gentrace-python/compare/v0.5.4...v0.5.5) (2023-04-25)
 
 
