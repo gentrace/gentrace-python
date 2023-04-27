@@ -41,4 +41,4 @@ from gentrace.providers.getters import *
 
 api_key = ""
 host = ""
-log_level = "info"
+log_level = "warn"

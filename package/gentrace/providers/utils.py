@@ -17,18 +17,24 @@ __all__ = [
 ]
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # Create a stream handler that writes to stderr
 stdout_handler = logging.StreamHandler()
-stdout_handler.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 stdout_handler.setFormatter(formatter)
 
-
 # Add the handlers to the logger
 logger.addHandler(stdout_handler)
+
+
+def validate_log_level():
+    from gentrace import log_level
+
+    if log_level not in ["info", "warn"]:
+        raise ValueError("Invalid log level: {}".format(log_level))
 
 
 def to_date_string(time_value):
@@ -38,23 +44,45 @@ def to_date_string(time_value):
 
 
 def log_debug(message, **params):
+    validate_log_level()
+    from gentrace import log_level
+
+    library_log_level = logging.INFO if log_level == "info" else logging.WARN
+    logger.setLevel(library_log_level)
+
     msg = logfmt(dict(message=message, **params))
     logger.debug(msg)
 
 
 def log_info(message, **params):
+    validate_log_level()
+    from gentrace import log_level
+
+    library_log_level = logging.INFO if log_level == "info" else logging.WARN
+    logger.setLevel(library_log_level)
+
     msg = logfmt(dict(message=message, **params))
     logger.info(msg)
 
 
 def log_warn(message, **params):
+    validate_log_level()
+    from gentrace import log_level
+
+    library_log_level = logging.INFO if log_level == "info" else logging.WARN
+    logger.setLevel(library_log_level)
+
     msg = logfmt(dict(message=message, **params))
     logger.warn(msg)
 
 
 # Logger exception automatically logs the stack trace
 def log_exception(message, **params):
-    logger.exception(message)
+    validate_log_level()
+    from gentrace import log_level
+
+    library_log_level = logging.INFO if log_level == "info" else logging.WARN
+    logger.setLevel(library_log_level)
 
 
 def logfmt(props):
@@ -80,7 +108,6 @@ async def pipeline_run_post_background(
 ):
     def wrapped_api_invocation():
         try:
-            print("Submitting PipelineRun to Gentrace")
             log_info("Submitting PipelineRun to Gentrace")
             api_instance.pipeline_run_post(pipeline_run_data)
             log_info("Successfully submitted PipelineRun to Gentrace")

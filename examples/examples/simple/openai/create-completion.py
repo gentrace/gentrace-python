@@ -8,6 +8,7 @@ load_dotenv()
 
 gentrace.api_key = os.getenv("GENTRACE_API_KEY")
 gentrace.host = "http://localhost:3000/api/v1"
+gentrace.log_level = "info"
 
 gentrace.configure_openai()
 
