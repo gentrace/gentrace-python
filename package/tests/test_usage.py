@@ -6,7 +6,7 @@ import pytest
 import gentrace
 
 
-def test_gentrace_host_valid():
+def test_gentrace_localhost_host_valid():
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/"
 
@@ -14,6 +14,34 @@ def test_gentrace_host_valid():
         gentrace.configure_openai()
 
     gentrace.host = "http://localhost:3000/api/v1/feedback"
+    with pytest.raises(ValueError):
+        gentrace.configure_openai()
+
+    gentrace.host = ""
+    gentrace.api_key = ""
+
+
+def test_gentrace_staging_host_valid():
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "https://staging.gentrace.ai/api/v1/"
+
+    gentrace.configure_openai()
+
+    gentrace.host = "https://staging.gentrace.ai/api/v1/feedback"
+    with pytest.raises(ValueError):
+        gentrace.configure_openai()
+
+    gentrace.host = ""
+    gentrace.api_key = ""
+
+
+def test_gentrace_prod_host_valid():
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+    gentrace.host = "https://gentrace.ai/api/v1"
+
+    gentrace.configure_openai()
+
+    gentrace.host = "https://gentrace.ai/api/v1/feedback"
     with pytest.raises(ValueError):
         gentrace.configure_openai()
 
