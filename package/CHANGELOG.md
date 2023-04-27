@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/gentrace/gentrace-python/compare/v0.5.6...v0.6.0) (2023-04-27)
+
+
+### Features
+
+* add in log levels for library ([#70](https://github.com/gentrace/gentrace-python/issues/70)) ([8e6d8fa](https://github.com/gentrace/gentrace-python/commit/8e6d8fad14e93b3a62e5372b92d3165518e78103))
+
 ## [0.5.6](https://github.com/gentrace/gentrace-python/compare/v0.5.5...v0.5.6) (2023-04-27)
 
 
