@@ -22,4 +22,4 @@ result = openai.Completion.create(
 
 gentrace.flush()
 
-print("Result: ", result.pipeline_run_id)
+print("Result: ", result["pipelineRunId"])

@@ -18,10 +18,10 @@ pinecone.init(
 )
 
 result = pinecone.Index("openai-trec").query(
-    top_k=10, vector=DEFAULT_VECTOR, pipline_id="self-contained-pinecone-query"
+    top_k=10, vector=DEFAULT_VECTOR, pipeline_id="self-contained-pinecone-query"
 )
 
 
 gentrace.flush()
 
-print("Result: ", result.pipeline_run_id)
+print("Result: ", result["pipelineRunId"])

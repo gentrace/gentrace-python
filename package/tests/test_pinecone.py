@@ -143,7 +143,7 @@ def test_pinecone_self_contained_fetch_server(setup_teardown_pinecone):
         ids=["3980"], pipeline_id="self-contained-pinecone-fetch"
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
     print(setup_teardown_pinecone)
 
 
@@ -159,7 +159,7 @@ def test_pinecone_self_contained_query_server(setup_teardown_pinecone, vector):
         top_k=10, vector=vector, pipeline_id="self-contained-pinecone-query"
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
     print(setup_teardown_pinecone)
 
 
@@ -175,5 +175,5 @@ def test_pinecone_self_contained_query_server_no_pipeline_id(
     index = pinecone.Index("openai-trec")
     result = index.query(top_k=10, vector=vector)
 
-    assert result.pipeline_run_id is None
+    assert "pipelineRunId" not in result
     print(setup_teardown_pinecone)

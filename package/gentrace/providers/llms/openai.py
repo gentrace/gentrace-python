@@ -91,7 +91,7 @@ def create_completion_step_run(
             submit_result = pipeline_run.submit()
 
             if not stream:
-                completion.pipeline_run_id = (
+                completion["pipelineRunId"] = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result
                     else None
@@ -173,7 +173,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
                 modified_response = []
                 for value in completion:
                     if value and is_self_contained:
-                        value["pipeline_run_id"] = pipeline_run_id
+                        value["pipelineRunId"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -267,7 +267,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
                 modified_response = []
                 async for value in completion:
                     if value and is_self_contained:
-                        value["pipeline_run_id"] = pipeline_run_id
+                        value["pipelineRunId"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -341,7 +341,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                 modified_response = []
                 for value in completion:
                     if value and is_self_contained:
-                        value["pipeline_run_id"] = pipeline_run_id
+                        value["pipelineRunId"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -416,7 +416,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
             if is_self_contained:
                 submit_result = pipeline_run.submit()
-                completion.pipeline_run_id = (
+                completion["pipelineRunId"] = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result
                     else None
@@ -450,7 +450,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                 modified_response = []
                 async for value in completion:
                     if value and is_self_contained:
-                        value["pipeline_run_id"] = pipeline_run_id
+                        value["pipelineRunId"] = pipeline_run_id
                     modified_response.append(value)
                     yield value
 
@@ -526,7 +526,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
             if is_self_contained:
                 submit_result = pipeline_run.submit()
-                completion.pipeline_run_id = (
+                completion["pipelineRunId"] = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result
                     else None
@@ -578,7 +578,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
             if is_self_contained:
                 submit_result = pipeline_run.submit()
-                completion.pipeline_run_id = (
+                completion["pipelineRunId"] = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result
                     else None
@@ -630,7 +630,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
 
             if is_self_contained:
                 submit_result = pipeline_run.submit()
-                completion.pipeline_run_id = (
+                completion["pipelineRunId"] = (
                     submit_result["pipelineRunId"]
                     if "pipelineRunId" in submit_result
                     else None

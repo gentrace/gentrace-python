@@ -62,7 +62,7 @@ def test_openai_completion_self_contained_pipeline_id(
         prompt_inputs={"name": "test"},
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
 
     print(setup_teardown_openai)
 
@@ -114,7 +114,7 @@ def test_openai_completion_self_contained_no_pipeline_id(
         prompt_inputs={"name": "test"},
     )
 
-    assert not hasattr(result, "pipeline_run_id")
+    assert not hasattr(result, "pipelineRunId")
     print(setup_teardown_openai)
 
 
@@ -161,7 +161,7 @@ async def test_openai_completion_self_contained_no_pipeline_id_async(
         prompt_inputs={"name": "test"},
     )
 
-    assert not hasattr(result, "pipeline_run_id")
+    assert not hasattr(result, "pipelineRunId")
 
     print(setup_teardown_openai)
 
@@ -210,7 +210,7 @@ async def test_openai_completion_self_contained_pipeline_id_async(
         pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
 
     print(setup_teardown_openai)
 
@@ -264,7 +264,7 @@ def test_openai_completion_self_contained_pipeline_id_stream(
 
     pipeline_run_id = None
     for value in result:
-        pipeline_run_id = value["pipeline_run_id"]
+        pipeline_run_id = value["pipelineRunId"]
 
     assert uuid.UUID(pipeline_run_id) is not None
 
@@ -289,7 +289,7 @@ async def test_openai_completion_self_contained_pipeline_id_stream_async(
 
     pipeline_run_id = None
     async for value in result:
-        pipeline_run_id = value["pipeline_run_id"]
+        pipeline_run_id = value["pipelineRunId"]
 
     assert uuid.UUID(pipeline_run_id) is not None
 

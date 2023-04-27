@@ -86,7 +86,7 @@ class ModifiedIndex(pinecone.Index):
         )
 
         if pipeline_run_id:
-            response.pipeline_run_id = pipeline_run_id
+            response["pipelineRunId"] = pipeline_run_id
 
         return response
 
@@ -129,7 +129,7 @@ class ModifiedIndex(pinecone.Index):
         )
 
         if pipeline_run_id:
-            response.pipeline_run_id = pipeline_run_id
+            response["pipelineRunId"] = pipeline_run_id
 
         return response
 
@@ -189,7 +189,7 @@ class ModifiedIndex(pinecone.Index):
         )
 
         if pipeline_run_id:
-            response.pipeline_run_id = pipeline_run_id
+            response["pipelineRunId"] = pipeline_run_id
 
         return response
 
@@ -226,7 +226,7 @@ class ModifiedIndex(pinecone.Index):
         )
 
         if pipeline_run_id:
-            response.pipeline_run_id = pipeline_run_id
+            response["pipelineRunId"] = pipeline_run_id
 
         return response
 
@@ -262,7 +262,7 @@ class ModifiedIndex(pinecone.Index):
         )
 
         if pipeline_run_id:
-            response.pipeline_run_id = pipeline_run_id
+            response["pipelineRunId"] = pipeline_run_id
 
         return response
 

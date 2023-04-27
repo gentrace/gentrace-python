@@ -59,7 +59,7 @@ def test_openai_embedding_self_contained_pipeline_id(
         pipeline_id="testing-value",
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
 
     print(setup_teardown_openai)
 
@@ -110,7 +110,7 @@ def test_openai_embedding_self_contained_no_pipeline_id(
         model="text-similarity-davinci-001",
     )
 
-    assert not hasattr(result, "pipeline_run_id")
+    assert not hasattr(result, "pipelineRunId")
     print(setup_teardown_openai)
 
 
@@ -127,9 +127,9 @@ def test_openai_embedding_self_contained_pipeline_id_server(
         pipeline_id="testing-value-vivek",
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
 
-    print("pipeline_id: ", result.pipeline_run_id)
+    print("pipeline_id: ", result["pipelineRunId"])
     print(setup_teardown_openai)
 
 
@@ -143,7 +143,7 @@ def test_openai_embedding_self_contained_no_pipeline_id_server(setup_teardown_op
         model="text-similarity-davinci-001",
     )
 
-    assert not hasattr(result, "pipeline_run_id")
+    assert not hasattr(result, "pipelineRunId")
     print(setup_teardown_openai)
 
 
@@ -244,7 +244,7 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async(
         model="text-similarity-davinci-001",
     )
 
-    assert not hasattr(result, "pipeline_run_id")
+    assert not hasattr(result, "pipelineRunId")
     print(setup_teardown_openai)
 
 
@@ -260,7 +260,7 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async(
         pipeline_id="testing-value",
     )
 
-    assert uuid.UUID(result.pipeline_run_id) is not None
+    assert uuid.UUID(result["pipelineRunId"]) is not None
 
     print(setup_teardown_openai)
 
