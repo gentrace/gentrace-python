@@ -40,7 +40,7 @@ def validate_log_level():
 def to_date_string(time_value):
     utc_time = datetime.utcfromtimestamp(time_value)
     utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    return utc_time_str[:-4]
+    return utc_time_str[:-4] + "Z"
 
 
 def log_debug(message, **params):
