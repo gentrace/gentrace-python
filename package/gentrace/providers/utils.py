@@ -40,12 +40,15 @@ def validate_log_level():
 def to_date_string(time_value):
     utc_time = datetime.utcfromtimestamp(time_value)
     utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    return utc_time_str[:-4] + "Z"
+    return utc_time_str[:-4]
 
 
 def log_debug(message, **params):
     validate_log_level()
     from gentrace import log_level
+
+    if not log_level:
+        return
 
     library_log_level = logging.INFO if log_level == "info" else logging.WARN
     logger.setLevel(library_log_level)
@@ -58,6 +61,9 @@ def log_info(message, **params):
     validate_log_level()
     from gentrace import log_level
 
+    if not log_level:
+        return
+
     library_log_level = logging.INFO if log_level == "info" else logging.WARN
     logger.setLevel(library_log_level)
 
@@ -68,6 +74,9 @@ def log_info(message, **params):
 def log_warn(message, **params):
     validate_log_level()
     from gentrace import log_level
+
+    if not log_level:
+        return
 
     library_log_level = logging.INFO if log_level == "info" else logging.WARN
     logger.setLevel(library_log_level)
@@ -81,8 +90,13 @@ def log_exception(message, **params):
     validate_log_level()
     from gentrace import log_level
 
+    if not log_level:
+        return
+
     library_log_level = logging.INFO if log_level == "info" else logging.WARN
     logger.setLevel(library_log_level)
+
+    logger.exception(message)
 
 
 def logfmt(props):
