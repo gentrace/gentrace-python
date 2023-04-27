@@ -29,9 +29,16 @@ from gentrace.exceptions import ApiException
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import to_date_string
+from gentrace.providers.utils import (
+    to_date_string,
+    log_debug,
+    log_info,
+    log_warn,
+    log_exception,
+)
 
 from gentrace.providers.getters import *
 
 api_key = ""
 host = ""
+log_level = "info"
