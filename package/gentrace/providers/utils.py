@@ -123,8 +123,9 @@ async def pipeline_run_post_background(
     def wrapped_api_invocation():
         try:
             log_info("Submitting PipelineRun to Gentrace")
-            api_instance.pipeline_run_post(pipeline_run_data)
+            result = api_instance.pipeline_run_post(pipeline_run_data)
             log_info("Successfully submitted PipelineRun to Gentrace")
+            return result
         except Exception as e:
             log_exception("Error submitting to Gentrace: ")
 
