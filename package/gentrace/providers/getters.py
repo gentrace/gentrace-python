@@ -2,13 +2,11 @@ import os
 import re
 
 import openai
+from urllib3.util import parse_url
 
 from gentrace.configuration import Configuration as GentraceConfiguration
 
 openai.api_key = os.getenv("OPENAI_KEY")
-
-
-VALID_GENTRACE_HOST = r"^https?://[\w.-]+:\d{1,5}/api/v1/?$"
 
 
 def test_validity():
@@ -17,7 +15,9 @@ def test_validity():
     if not api_key:
         raise ValueError("Gentrace API key not set")
 
-    if host and not re.match(VALID_GENTRACE_HOST, host):
+    path = parse_url(host).path
+
+    if host and path != "/api/v1" and path != "/api/v1/":
         raise ValueError("Gentrace host is invalid")
 
 
@@ -27,9 +27,6 @@ def configure_openai():
     from .llms.openai import annotate_openai_module
 
     test_validity()
-
-    if host and not re.match(VALID_GENTRACE_HOST, host):
-        raise ValueError("Gentrace host is invalid")
 
     gentrace_config = GentraceConfiguration(host=host)
     gentrace_config.access_token = api_key

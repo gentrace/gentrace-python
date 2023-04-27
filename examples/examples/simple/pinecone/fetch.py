@@ -21,4 +21,4 @@ result = pinecone.Index("openai-trec").fetch(
 
 gentrace.flush()
 
-print("Result: ", result.pipeline_run_id)
+print("Result: ", result["pipelineRunId"])

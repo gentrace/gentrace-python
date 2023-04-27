@@ -23,8 +23,8 @@ result = openai.ChatCompletion.create(
 pipeline_run_id = None
 
 for value in result:
-    if value.get("pipeline_run_id"):
-        pipeline_run_id = value.get("pipeline_run_id")
+    if value.get("pipelineRunId"):
+        pipeline_run_id = value.get("pipelineRunId")
 
 print("Result: ", pipeline_run_id)
 
