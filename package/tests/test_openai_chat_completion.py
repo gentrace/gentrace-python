@@ -14,7 +14,7 @@ from urllib3.response import HTTPResponse
 import gentrace
 
 
-def test_openai_completion_self_contained_pipeline_id(
+def test_openai_chat_completion_self_contained_pipeline_id(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -58,11 +58,10 @@ def test_openai_completion_self_contained_pipeline_id(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        pipeline_id="text-generation",
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = openai.ChatCompletion.create(
+        pipeline_id="testing-chat-completion-value",
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
     )
 
     assert uuid.UUID(result["pipelineRunId"]) is not None
@@ -70,7 +69,7 @@ def test_openai_completion_self_contained_pipeline_id(
     print(setup_teardown_openai)
 
 
-def test_openai_completion_self_contained_no_pipeline_id(
+def test_openai_chat_completion_self_contained_no_pipeline_id(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -114,10 +113,9 @@ def test_openai_completion_self_contained_no_pipeline_id(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
     )
 
     assert not hasattr(result, "pipelineRunId")
@@ -125,13 +123,15 @@ def test_openai_completion_self_contained_no_pipeline_id(
 
 
 @pytest.mark.asyncio
-async def test_openai_completion_self_contained_no_pipeline_id_async(
+async def test_openai_chat_completion_self_contained_no_pipeline_id_async(
     mocker,
     mockaio,
     chat_completion_response,
     gentrace_pipeline_run_response,
     setup_teardown_openai,
 ):
+    openai.api_key = os.getenv("OPENAI_KEY")
+
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
     mockaio.post(
@@ -161,10 +161,9 @@ async def test_openai_completion_self_contained_no_pipeline_id_async(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = await openai.Completion.acreate(
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = await openai.ChatCompletion.acreate(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
     )
 
     assert not hasattr(result, "pipelineRunId")
@@ -173,13 +172,14 @@ async def test_openai_completion_self_contained_no_pipeline_id_async(
 
 
 @pytest.mark.asyncio
-async def test_openai_completion_self_contained_pipeline_id_async(
+async def test_openai_chat_completion_self_contained_pipeline_id_async(
     mocker,
     mockaio,
     chat_completion_response,
     gentrace_pipeline_run_response,
     setup_teardown_openai,
 ):
+    openai.api_key = os.getenv("OPENAI_KEY")
     # Setup OpenAI mocked request
     pattern = re.compile(r"^https://api\.openai\.com/v1/.*$")
     mockaio.post(
@@ -209,10 +209,9 @@ async def test_openai_completion_self_contained_pipeline_id_async(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = await openai.Completion.acreate(
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = await openai.ChatCompletion.acreate(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
         pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
     )
 
@@ -222,7 +221,7 @@ async def test_openai_completion_self_contained_pipeline_id_async(
 
 
 @responses.activate
-def test_openai_completion_self_contained_pipeline_id_stream(
+def test_openai_chat_completion_self_contained_pipeline_id_stream(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -236,7 +235,7 @@ def test_openai_completion_self_contained_pipeline_id_stream(
 
     responses.add(
         responses.POST,
-        "https://api.openai.com/v1/completions",
+        "https://api.openai.com/v1/chat/completions",
         body="data: " + json.dumps(chat_completion_response, ensure_ascii=False),
         stream=True,
         content_type="text/event-stream",
@@ -263,11 +262,10 @@ def test_openai_completion_self_contained_pipeline_id_stream(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        pipeline_id="text-generation",
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
+        pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
         stream=True,
     )
 
@@ -281,18 +279,17 @@ def test_openai_completion_self_contained_pipeline_id_stream(
 
 
 @pytest.mark.asyncio
-async def test_openai_completion_self_contained_pipeline_id_stream_async(
+async def test_openai_chat_completion_self_contained_pipeline_id_stream_async(
     setup_teardown_openai,
 ):
     responses.add_passthru("https://api.openai.com/v1/")
 
     openai.api_key = os.getenv("OPENAI_KEY")
 
-    result = await openai.Completion.acreate(
-        pipeline_id="text-generation",
-        model="text-davinci-003",
-        prompt_template="Hello world {{ name }}",
-        prompt_inputs={"name": "test"},
+    result = await openai.ChatCompletion.acreate(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
+        pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
         stream=True,
     )
 
@@ -305,7 +302,7 @@ async def test_openai_completion_self_contained_pipeline_id_stream_async(
     print(setup_teardown_openai)
 
 
-def test_openai_completion_self_contained_pipeline_id_prompt(
+def test_openai_chat_completion_self_contained_pipeline_id_prompt(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -349,10 +346,10 @@ def test_openai_completion_self_contained_pipeline_id_prompt(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        pipeline_id="text-generation",
-        model="text-davinci-003",
-        prompt="Hello World",
+    result = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
+        pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
     )
 
     assert uuid.UUID(result["pipelineRunId"]) is not None
@@ -404,9 +401,9 @@ def test_openai_completion_self_contained_no_pipeline_id_prompt(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        model="text-davinci-003",
-        prompt="Hello World",
+    result = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
     )
 
     assert "pipelineRunId" not in result
@@ -415,7 +412,7 @@ def test_openai_completion_self_contained_no_pipeline_id_prompt(
 
 
 @responses.activate
-def test_openai_completion_self_contained_pipeline_id_stream_prompt(
+def test_openai_chat_completion_self_contained_pipeline_id_stream_prompt(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -429,7 +426,7 @@ def test_openai_completion_self_contained_pipeline_id_stream_prompt(
 
     responses.add(
         responses.POST,
-        "https://api.openai.com/v1/completions",
+        "https://api.openai.com/v1/chat/completions",
         body="data: " + json.dumps(chat_completion_response, ensure_ascii=False),
         stream=True,
         content_type="text/event-stream",
@@ -456,10 +453,10 @@ def test_openai_completion_self_contained_pipeline_id_stream_prompt(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
+    result = openai.ChatCompletion.create(
         pipeline_id="text-generation",
-        model="text-davinci-003",
-        prompt="Hello world!",
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
         stream=True,
     )
 
@@ -473,11 +470,8 @@ def test_openai_completion_self_contained_pipeline_id_stream_prompt(
 
 
 @responses.activate
-def test_openai_completion_self_contained_no_pipeline_id_stream_prompt(
-    mocker,
-    chat_completion_response,
-    gentrace_pipeline_run_response,
-    setup_teardown_openai,
+def test_openai_chat_completion_self_contained_no_pipeline_id_stream_prompt(
+    mocker, completion_response, gentrace_pipeline_run_response, setup_teardown_openai
 ):
     openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -487,8 +481,8 @@ def test_openai_completion_self_contained_no_pipeline_id_stream_prompt(
 
     responses.add(
         responses.POST,
-        "https://api.openai.com/v1/completions",
-        body="data: " + json.dumps(chat_completion_response, ensure_ascii=False),
+        "https://api.openai.com/v1/chat/completions",
+        body="data: " + json.dumps(completion_response, ensure_ascii=False),
         stream=True,
         content_type="text/event-stream",
     )
@@ -514,9 +508,9 @@ def test_openai_completion_self_contained_no_pipeline_id_stream_prompt(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = openai.Completion.create(
-        model="text-davinci-003",
-        prompt="Hello world!",
+    result = openai.ChatCompletion.create(
+        messages=[{"role": "user", "content": "Hello!"}],
+        model="gpt-3.5-turbo",
         stream=True,
     )
 
