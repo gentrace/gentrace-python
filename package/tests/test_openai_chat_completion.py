@@ -363,6 +363,27 @@ def test_openai_chat_completion_self_contained_pipeline_id_template(
     print(setup_teardown_openai)
 
 
+def test_openai_chat_completion_self_contained_render_correctly():
+    from gentrace.providers.llms.openai import create_rendered_chat_messages
+
+    new_messages = create_rendered_chat_messages(
+        [
+            {
+                "role": "user",
+                "contentTemplate": "Hello world, {{ name }}!",
+                "contentInputs": {"name": "Vivek"},
+            }
+        ]
+    )
+
+    assert new_messages == [
+        {
+            "role": "user",
+            "content": "Hello world, Vivek!",
+        }
+    ]
+
+
 def test_openai_completion_self_contained_no_pipeline_id_template(
     mocker,
     chat_completion_response,
