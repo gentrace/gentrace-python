@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/gentrace/gentrace-python/compare/v0.6.1...v0.7.0) (2023-04-28)
+
+
+### Features
+
+* add chat completion templating ([#76](https://github.com/gentrace/gentrace-python/issues/76)) ([9ef50d2](https://github.com/gentrace/gentrace-python/commit/9ef50d24745fe5659aa3b17d119fc5ec8bd82c96))
+
+
+### Bug Fixes
+
+* add chat completion tests ([#74](https://github.com/gentrace/gentrace-python/issues/74)) ([b0ffcf8](https://github.com/gentrace/gentrace-python/commit/b0ffcf88130cc9392642062f1a115558354f5e36))
+
 ## [0.6.1](https://github.com/gentrace/gentrace-python/compare/v0.6.0...v0.6.1) (2023-04-27)
 
 
