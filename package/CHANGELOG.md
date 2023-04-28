@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/gentrace/gentrace-python/compare/v0.7.1...v0.7.2) (2023-04-28)
+
+
+### Bug Fixes
+
+* make sure that not applying a host is fine ([#79](https://github.com/gentrace/gentrace-python/issues/79)) ([0708570](https://github.com/gentrace/gentrace-python/commit/0708570500869b6db9763ec2db52c9939cbc15d1))
+
 ## [0.7.1](https://github.com/gentrace/gentrace-python/compare/v0.7.0...v0.7.1) (2023-04-28)
 
 
