@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/gentrace/gentrace-python/compare/v0.7.0...v0.7.1) (2023-04-28)
+
+
+### Bug Fixes
+
+* input for prompt just the entire prompt string ([#77](https://github.com/gentrace/gentrace-python/issues/77)) ([6c5fceb](https://github.com/gentrace/gentrace-python/commit/6c5fceb2166dfa53dff9184360f8aa706b39ad95))
+
 ## [0.7.0](https://github.com/gentrace/gentrace-python/compare/v0.6.1...v0.7.0) (2023-04-28)
 
 
