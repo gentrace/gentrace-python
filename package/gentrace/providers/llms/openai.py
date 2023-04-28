@@ -402,6 +402,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             return profiled_completion()
 
         rendered_messages = create_rendered_chat_messages(messages)
+
         new_kwargs = dict(kwargs, messages=rendered_messages)
 
         start_time = time.time()

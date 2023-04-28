@@ -302,7 +302,7 @@ async def test_openai_chat_completion_self_contained_pipeline_id_stream_async(
     print(setup_teardown_openai)
 
 
-def test_openai_chat_completion_self_contained_pipeline_id_prompt(
+def test_openai_chat_completion_self_contained_pipeline_id_template(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -347,7 +347,13 @@ def test_openai_chat_completion_self_contained_pipeline_id_prompt(
     gentrace_request.return_value = gentrace_response
 
     result = openai.ChatCompletion.create(
-        messages=[{"role": "user", "content": "Hello!"}],
+        messages=[
+            {
+                "role": "user",
+                "contentTemplate": "Hello world, {{ name }}!",
+                "contentInputs": {"name": "Vivek"},
+            }
+        ],
         model="gpt-3.5-turbo",
         pipeline_id="test_openai_completion_self_contained_no_pipeline_id_async",
     )
@@ -357,7 +363,7 @@ def test_openai_chat_completion_self_contained_pipeline_id_prompt(
     print(setup_teardown_openai)
 
 
-def test_openai_completion_self_contained_no_pipeline_id_prompt(
+def test_openai_completion_self_contained_no_pipeline_id_template(
     mocker,
     chat_completion_response,
     gentrace_pipeline_run_response,
@@ -402,7 +408,13 @@ def test_openai_completion_self_contained_no_pipeline_id_prompt(
     gentrace_request.return_value = gentrace_response
 
     result = openai.ChatCompletion.create(
-        messages=[{"role": "user", "content": "Hello!"}],
+        messages=[
+            {
+                "role": "user",
+                "contentTemplate": "Hello world, {{ name }}!",
+                "contentInputs": {"name": "Vivek"},
+            }
+        ],
         model="gpt-3.5-turbo",
     )
 
