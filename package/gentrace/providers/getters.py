@@ -15,6 +15,10 @@ def test_validity():
     if not api_key:
         raise ValueError("Gentrace API key not set")
 
+    # Totally fine (and expected) to not have a host set
+    if not host:
+        return
+
     path = parse_url(host).path
 
     if host and path != "/api/v1" and path != "/api/v1/":
@@ -28,7 +32,9 @@ def configure_openai():
 
     test_validity()
 
-    gentrace_config = GentraceConfiguration(host=host)
+    resolved_host = host if host else "https://gentrace.ai/api/v1"
+
+    gentrace_config = GentraceConfiguration(host=resolved_host)
     gentrace_config.access_token = api_key
 
     annotate_openai_module(gentrace_config=gentrace_config)
