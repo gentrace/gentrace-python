@@ -363,7 +363,7 @@ def test_openai_chat_completion_self_contained_pipeline_id_template(
     print(setup_teardown_openai)
 
 
-def test_openai_chat_completion_self_contained_render_correctly():
+def test_openai_chat_completion_self_contained_render_correctly_easy():
     from gentrace.providers.llms.openai import create_rendered_chat_messages
 
     new_messages = create_rendered_chat_messages(
@@ -381,6 +381,35 @@ def test_openai_chat_completion_self_contained_render_correctly():
             "role": "user",
             "content": "Hello world, Vivek!",
         }
+    ]
+
+
+def test_openai_chat_completion_self_contained_render_correctly_multiple_values():
+    from gentrace.providers.llms.openai import create_rendered_chat_messages
+
+    new_messages = create_rendered_chat_messages(
+        [
+            {
+                "role": "user",
+                "contentTemplate": "Hello world, {{ name }}! Are you based in {{ location }}?",
+                "contentInputs": {"name": "Vivek", "location": "London"},
+            },
+            {
+                "role": "user",
+                "content": "Hello world, Vivek! Are you based in London?",
+            },
+        ]
+    )
+
+    assert new_messages == [
+        {
+            "role": "user",
+            "content": "Hello world, Vivek! Are you based in London?",
+        },
+        {
+            "role": "user",
+            "content": "Hello world, Vivek! Are you based in London?",
+        },
     ]
 
 
