@@ -151,6 +151,9 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
             if prompt_template and prompt_inputs:
                 rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+            else:
+                # If no prompt template or inputs, then specify the prompt as the entire input
+                prompt_inputs = prompt
 
             new_completion_options = {
                 **base_completion_options,
@@ -196,6 +199,9 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
         if prompt_template and prompt_inputs:
             rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+        else:
+            # If no prompt template or inputs, then specify the prompt as the entire input
+            prompt_inputs = prompt
 
         new_completion_options = {
             **base_completion_options,
@@ -245,6 +251,9 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
             if prompt_template and prompt_inputs:
                 rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+            else:
+                # If no prompt template or inputs, then specify the prompt as the entire input
+                prompt_inputs = prompt
 
             new_completion_options = {
                 **base_completion_options,
@@ -290,6 +299,9 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
         if prompt_template and prompt_inputs:
             rendered_prompt = pystache.render(prompt_template, prompt_inputs)
+        else:
+            # If no prompt template or inputs, then specify the prompt as the entire input
+            prompt_inputs = prompt
 
         new_completion_options = {
             **base_completion_options,
