@@ -493,13 +493,13 @@ files = [
 
 [[package]]
 name = "gentrace-py"
-version = "0.5.6"
+version = "0.7.1"
 description = "Python SDK for the Gentrace API"
 category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.5.6.tar.gz", hash = "sha256:4bbf51f01e31a9008bc07ea4043d6bd187f870eb8151aa707123a59670e31070"},
+    {file = "gentrace_py-0.7.1.tar.gz", hash = "sha256:14932a1f31b6e062436bdfccf54bb7bcc26c0075976befca13976b862350a9d1"},
 ]
 
 [package.dependencies]
@@ -519,7 +519,7 @@ vectorstores = ["pinecone-client (>=2.2.1,<3.0.0)"]
 
 [package.source]
 type = "file"
-url = "../package/dist/gentrace_py-0.5.6.tar.gz"
+url = "../package/dist/gentrace_py-0.7.1.tar.gz"
 
 [[package]]
 name = "idna"
@@ -1157,4 +1157,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "36d47b8354f7f2c7be5cdbde7219af5496266e44077774d1186cf342ba897c1d"
+content-hash = "98c39b2e7f2dfc8de3126253351221323c4caf91fdd1789b0324ca35e3707212"

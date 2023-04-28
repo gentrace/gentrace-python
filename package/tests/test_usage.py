@@ -6,6 +6,14 @@ import pytest
 import gentrace
 
 
+def test_gentrace_no_host_valid():
+    gentrace.api_key = os.getenv("GENTRACE_API_KEY")
+
+    gentrace.configure_openai()
+
+    gentrace.api_key = ""
+
+
 def test_gentrace_localhost_host_valid():
     gentrace.api_key = os.getenv("GENTRACE_API_KEY")
     gentrace.host = "http://localhost:3000/"
