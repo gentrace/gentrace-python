@@ -1,3 +1,4 @@
+import copy
 import time
 import uuid
 from typing import Dict, Optional
@@ -317,6 +318,23 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
     return wrapper
 
 
+def create_rendered_chat_messages(messages):
+    new_messages = []
+    for message in messages:
+        new_message = copy.deepcopy(message)
+        if "contentTemplate" in message and "contentInputs" in message:
+            new_message["content"] = pystache.render(
+                message["contentTemplate"], message["contentInputs"]
+            )
+
+        new_message.pop("contentTemplate", None)
+        new_message.pop("contentInputs", None)
+
+        new_messages.append(new_message)
+
+    return new_messages
+
+
 def intercept_chat_completion(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
@@ -330,8 +348,10 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         }
 
         if stream:
+            rendered_messages = create_rendered_chat_messages(messages)
+            new_kwargs = dict(kwargs, messages=rendered_messages)
             start_time = time.time()
-            completion = original_fn(**kwargs)
+            completion = original_fn(**new_kwargs)
 
             is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
             if is_self_contained:
@@ -381,9 +401,12 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
             return profiled_completion()
 
-        start_time = time.time()
-        completion = original_fn(**kwargs)
+        rendered_messages = create_rendered_chat_messages(messages)
 
+        new_kwargs = dict(kwargs, messages=rendered_messages)
+
+        start_time = time.time()
+        completion = original_fn(**new_kwargs)
         end_time = time.time()
 
         elapsed_time = int((end_time - start_time) * 1000)
@@ -438,8 +461,11 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
 
+        rendered_messages = create_rendered_chat_messages(messages)
+        new_kwargs = dict(kwargs, messages=rendered_messages)
+
         start_time = time.time()
-        completion = await original_fn(**kwargs)
+        completion = await original_fn(**new_kwargs)
 
         if stream:
             is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
