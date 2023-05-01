@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/gentrace/gentrace-python/compare/v0.7.2...v0.7.3) (2023-05-01)
+
+
+### Bug Fixes
+
+* remove python-dotenv from mandatory requirements ([#82](https://github.com/gentrace/gentrace-python/issues/82)) ([b035bd7](https://github.com/gentrace/gentrace-python/commit/b035bd7300c871247ac3dd44242397abb7f0265b))
+
 ## [0.7.2](https://github.com/gentrace/gentrace-python/compare/v0.7.1...v0.7.2) (2023-04-28)
 
 
