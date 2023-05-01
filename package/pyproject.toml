@@ -17,7 +17,6 @@ pinecone-client = {version = "^2.2.1", optional = true}
 pydantic = ">=1.10.2"
 pystache = "^0.6.0"
 python = ">=3.8.1,<4.0"
-python-dotenv = "^1.0.0"
 python_dateutil = ">=2.5.3"
 setuptools = ">=21.0.0"
 urllib3 = ">=1.25.3"
@@ -42,6 +41,7 @@ pytest-asyncio = "^0.21.0"
 pytest-mock = "^3.10.0"
 pytest-responses = "^0.5.1"
 responses = "^0.23.1"
+python-dotenv = "^1.0.0"
 
 [tool.poetry.extras]
 all = [
