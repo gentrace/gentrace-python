@@ -49,7 +49,7 @@ python examples/pinecone/fetch.py
 
 ## Getting started
 
-Visit our [guides](https://docs.gentrace.ai/docs/overview) to learn how to get started.
+Visit our [Python monitoring guides](https://docs.gentrace.ai/docs/python) to learn how to get started.
 
 ### API reference 
 
