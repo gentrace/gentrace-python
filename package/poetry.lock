@@ -970,7 +970,7 @@ six = ">=1.5"
 name = "python-dotenv"
 version = "1.0.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
@@ -1339,4 +1339,4 @@ vectorstores = ["pinecone-client"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8.1,<4.0"
-content-hash = "c0d0631a8bab28c4bd686ec3aa8bf52734046581e086b778ee06a35ec4500e46"
+content-hash = "4812cf4ce1f2d70558f95ce7fe114f3ece50b0758632b1879d52fe49f8f879f5"
