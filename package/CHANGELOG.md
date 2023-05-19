@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.4](https://github.com/gentrace/gentrace-python/compare/v0.7.3...v0.7.4) (2023-05-19)
+
+
+### Bug Fixes
+
+* wrap streamed output correctly for the ChatCompletion endpoint ([#89](https://github.com/gentrace/gentrace-python/issues/89)) ([8cb0518](https://github.com/gentrace/gentrace-python/commit/8cb0518e7b07298bb3832954d1da4039f1c098bc))
+
 ## [0.7.3](https://github.com/gentrace/gentrace-python/compare/v0.7.2...v0.7.3) (2023-05-01)
 
 
