@@ -18,7 +18,12 @@ async def main():
 
     result = await openai.ChatCompletion.acreate(
         pipeline_id="testing-chat-completion-value",
-        messages=[{"role": "user", "content": "Hello!"}],
+        messages=[
+            {
+                "role": "user",
+                "content": "Hello, I'm testing the acreate() async completion!",
+            }
+        ],
         model="gpt-3.5-turbo",
         stream=True,
     )
