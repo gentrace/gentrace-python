@@ -15,7 +15,7 @@ openai.api_key = os.getenv("OPENAI_KEY")
 
 result = openai.ChatCompletion.create(
     pipeline_id="testing-chat-completion-value",
-    messages=[{"role": "user", "content": "Hello!"}],
+    messages=[{"role": "user", "content": "Hello there!"}],
     model="gpt-3.5-turbo",
     stream=True,
 )

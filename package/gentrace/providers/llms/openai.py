@@ -99,7 +99,7 @@ def create_completion_step_run(
                 )
 
 
-def create_stream_response(stream_list):
+def create_completion_stream_response(stream_list):
     final_response_string = ""
     for value in stream_list:
         if "choices" in value and value["choices"]:
@@ -125,6 +125,38 @@ def create_stream_response(stream_list):
                 "index": 0,
                 "logprobs": None,
                 "text": final_response_string,
+            }
+        ]
+    }
+
+    return final_response
+
+
+def create_chat_completion_stream_response(stream_list):
+    final_response_string = ""
+    for value in stream_list:
+        if "choices" in value and value["choices"]:
+            first_choice = value["choices"][0]
+            if "text" in first_choice:
+                final_response_string += first_choice["text"]
+            elif (
+                "delta" in first_choice
+                and first_choice["delta"]
+                and "content" in first_choice["delta"]
+            ):
+                final_response_string += first_choice["delta"]["content"]
+            elif (
+                "finish_reason" in first_choice
+                and first_choice["finish_reason"] == "stop"
+            ):
+                break
+
+    final_response = {
+        "choices": [
+            {
+                "finish_reason": None,
+                "index": 0,
+                "message": {"content": final_response_string, "role": "assistant"},
             }
         ]
     }
@@ -177,7 +209,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
                 end_time = time.time()
 
-                full_response = create_stream_response(modified_response)
+                full_response = create_completion_stream_response(modified_response)
 
                 create_completion_step_run(
                     cls,
@@ -277,7 +309,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
                 end_time = time.time()
 
-                full_response = create_stream_response(modified_response)
+                full_response = create_completion_stream_response(modified_response)
 
                 create_completion_step_run(
                     cls,
@@ -385,8 +417,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     cls.pipeline_run if hasattr(cls, "pipeline_run") else None
                 )
 
-                full_response = create_stream_response(modified_response)
-
+                full_response = create_chat_completion_stream_response(
+                    modified_response
+                )
                 if is_self_contained:
                     pipeline = Pipeline(
                         id=pipeline_id,
@@ -494,7 +527,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 end_time = time.time()
 
-                full_response = create_stream_response(modified_response)
+                full_response = create_chat_completion_stream_response(
+                    modified_response
+                )
 
                 elapsed_time = int((end_time - start_time) * 1000)
 
