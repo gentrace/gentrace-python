@@ -7,3 +7,5 @@ import enum
 
 class PathValues(str, enum.Enum):
     PIPELINERUN = "/pipeline-run"
+    TESTCASE = "/test-case"
+    TESTRUN = "/test-run"

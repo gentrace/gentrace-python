@@ -13,7 +13,7 @@ test/**/*
 tox.ini
 docs/FeedbackRequest.md
 docs/FeedbackResponse.md
-docs/IngestionApi.md
+docs/CoreApi.md
 docs/PipelineRunRequest.md
 docs/PipelineRunRequestStepRunsInner.md
 docs/PipelineRunRequestStepRunsInnerProvider.md
@@ -22,7 +22,7 @@ docs/PipelineRunResponse.md
 test/__init__.py
 test/test_feedback_request.py
 test/test_feedback_response.py
-test/test_ingestion_api.py
+test/test_core_api.py
 test/test_pipeline_run_request.py
 test/test_pipeline_run_request_step_runs_inner.py
 test/test_pipeline_run_request_step_runs_inner_provider.py

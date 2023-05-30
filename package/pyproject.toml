@@ -40,8 +40,8 @@ pytest = "^7.3.1"
 pytest-asyncio = "^0.21.0"
 pytest-mock = "^3.10.0"
 pytest-responses = "^0.5.1"
-responses = "^0.23.1"
 python-dotenv = "^1.0.0"
+responses = "^0.23.1"
 
 [tool.poetry.extras]
 all = [
@@ -64,6 +64,8 @@ ignore = [
   "F401",
   "E501",
   "F841",
+  "F821",
+  "F523",
 ]
 select = [
   "E", # pycodestyle

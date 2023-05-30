@@ -7,7 +7,7 @@ import uuid
 from typing import Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
-from gentrace.apis.tags.ingestion_api import IngestionApi
+from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
@@ -88,7 +88,7 @@ class PipelineRun:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
-        ingestion_api = IngestionApi(api_client=api_client)
+        core_api = CoreApi(api_client=api_client)
 
         step_runs_data = [
             {
@@ -110,7 +110,7 @@ class PipelineRun:
 
         try:
             pipeline_post_response = await pipeline_run_post_background(
-                ingestion_api,
+                core_api,
                 {
                     "id": pipeline_run_id,
                     "name": self.pipeline.id,
@@ -131,7 +131,7 @@ class PipelineRun:
         configuration.access_token = self.pipeline.config.get("api_key")
 
         api_client = ApiClient(configuration=configuration)
-        ingestion_api = IngestionApi(api_client=api_client)
+        core_api = CoreApi(api_client=api_client)
 
         step_runs_data = [
             {
@@ -155,7 +155,7 @@ class PipelineRun:
         if not wait_for_server:
             fire_and_forget(
                 pipeline_run_post_background(
-                    ingestion_api,
+                    core_api,
                     {
                         "id": self.pipeline_run_id,
                         "name": self.pipeline.id,
@@ -168,7 +168,7 @@ class PipelineRun:
 
         if wait_for_server:
             try:
-                pipeline_post_response = ingestion_api.pipeline_run_post(
+                pipeline_post_response = core_api.pipeline_run_post(
                     {
                         "id": self.pipeline_run_id,
                         "name": self.pipeline.id,
