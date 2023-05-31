@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/gentrace/gentrace-python/compare/v0.7.4...v0.8.0) (2023-05-31)
+
+
+### Features
+
+* add evaluation routes ([#91](https://github.com/gentrace/gentrace-python/issues/91)) ([f967745](https://github.com/gentrace/gentrace-python/commit/f967745a9dd3a4233c60b1cf32aab6a13f08bf16))
+
 ## [0.7.4](https://github.com/gentrace/gentrace-python/compare/v0.7.3...v0.7.4) (2023-05-19)
 
 
