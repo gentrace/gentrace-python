@@ -75,13 +75,12 @@ class SchemaForRequestBodyApplicationJson(
                                 "output",
                                 "inputs",
                                 "caseId",
-                                "id",
                             }
                             
                             class properties:
-                                id = schemas.StrSchema
-                                caseId = schemas.StrSchema
-                                inputs = schemas.StrSchema
+                                id = schemas.UUIDSchema
+                                caseId = schemas.UUIDSchema
+                                inputs = schemas.DictSchema
                                 output = schemas.StrSchema
                                 __annotations__ = {
                                     "id": id,
@@ -93,7 +92,6 @@ class SchemaForRequestBodyApplicationJson(
                         output: MetaOapg.properties.output
                         inputs: MetaOapg.properties.inputs
                         caseId: MetaOapg.properties.caseId
-                        id: MetaOapg.properties.id
                         
                         @typing.overload
                         def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
@@ -116,7 +114,7 @@ class SchemaForRequestBodyApplicationJson(
                         
                         
                         @typing.overload
-                        def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
+                        def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> typing.Union[MetaOapg.properties.id, schemas.Unset]: ...
                         
                         @typing.overload
                         def get_item_oapg(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
@@ -138,9 +136,9 @@ class SchemaForRequestBodyApplicationJson(
                             cls,
                             *_args: typing.Union[dict, frozendict.frozendict, ],
                             output: typing.Union[MetaOapg.properties.output, str, ],
-                            inputs: typing.Union[MetaOapg.properties.inputs, str, ],
-                            caseId: typing.Union[MetaOapg.properties.caseId, str, ],
-                            id: typing.Union[MetaOapg.properties.id, str, ],
+                            inputs: typing.Union[MetaOapg.properties.inputs, dict, frozendict.frozendict, ],
+                            caseId: typing.Union[MetaOapg.properties.caseId, str, uuid.UUID, ],
+                            id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, schemas.Unset] = schemas.unset,
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'items':

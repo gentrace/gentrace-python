@@ -491,7 +491,7 @@ with gentrace.ApiClient(configuration) as api_client:
             dict(
                 id="id_example",
                 case_id="case_id_example",
-                inputs="inputs_example",
+                inputs=dict(),
                 output="output_example",
             )
         ],
@@ -556,10 +556,19 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **output** | str,  | str,  | The expected output for the test case | 
-**inputs** | str,  | str,  | The input data for the test case | 
-**caseId** | str,  | str,  | The ID of the test case | 
-**id** | str,  | str,  | The ID of the test result | 
+**[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
+**caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
+**id** | str, uuid.UUID,  | str,  | The ID of the test result | [optional] value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# inputs
+
+The input data for the test case
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
 
 ### Return Types, Responses
 

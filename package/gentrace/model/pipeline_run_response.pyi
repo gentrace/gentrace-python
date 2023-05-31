@@ -35,7 +35,7 @@ class PipelineRunResponse(
     class MetaOapg:
         
         class properties:
-            pipelineRunId = schemas.StrSchema
+            pipelineRunId = schemas.UUIDSchema
             __annotations__ = {
                 "pipelineRunId": pipelineRunId,
             }
@@ -64,7 +64,7 @@ class PipelineRunResponse(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        pipelineRunId: typing.Union[MetaOapg.properties.pipelineRunId, str, schemas.Unset] = schemas.unset,
+        pipelineRunId: typing.Union[MetaOapg.properties.pipelineRunId, str, uuid.UUID, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'PipelineRunResponse':

@@ -1,8 +1,12 @@
-from typing import Optional
+from typing import Dict, Optional, TypedDict
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
+
+
+class Run(TypedDict):
+    runId: str
 
 
 class Evaluation:
@@ -24,3 +28,16 @@ class Evaluation:
         response = self.core_api.test_case_get({"setId": set_id})
         data = response.body
         return data["testCases"]
+
+    def submit_test_results(
+        self, set_id: str, source: str, test_results: list[Dict]
+    ) -> Run:
+        response = self.core_api.test_run_post(
+            {
+                "setId": set_id,
+                "source": source,
+                "testResults": test_results,
+            }
+        )
+        data = response.body
+        return data
