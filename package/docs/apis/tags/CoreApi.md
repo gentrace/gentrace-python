@@ -142,7 +142,7 @@ headers | Unset | headers were not defined |
 
 # **test_case_get**
 <a name="test_case_get"></a>
-> [TestCase] test_case_get(set_id)
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_case_get(set_id)
 
 Get test cases for a test set
 
@@ -233,6 +233,19 @@ headers | Unset | headers were not defined |
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[testCases](#testCases)** | list, tuple,  | tuple,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# testCases
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
 list, tuple,  | tuple,  |  | 
 
 ### Tuple Items
@@ -241,6 +254,19 @@ Class Name | Input Type | Accessed Type | Description | Notes
 [**TestCase**]({{complexTypePrefix}}TestCase.md) | [**TestCase**]({{complexTypePrefix}}TestCase.md) | [**TestCase**]({{complexTypePrefix}}TestCase.md) |  | 
 
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[testCases](#testCases)** | list, tuple,  | tuple,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# testCases
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
