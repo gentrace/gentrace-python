@@ -5,7 +5,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
-from gentrace.apis.tags.ingestion_api import IngestionApi
+from gentrace.apis.tags.core_api import CoreApi
 from gentrace.models import PipelineRunRequest
 
 __all__ = [
@@ -118,7 +118,7 @@ def logfmt(props):
 
 
 async def pipeline_run_post_background(
-    api_instance: IngestionApi, pipeline_run_data: PipelineRunRequest
+    api_instance: CoreApi, pipeline_run_data: PipelineRunRequest
 ):
     def wrapped_api_invocation():
         try:

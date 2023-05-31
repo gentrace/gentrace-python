@@ -1,12 +1,14 @@
-docs/apis/tags/IngestionApi.md
+docs/apis/tags/CoreApi.md
 docs/models/FeedbackRequest.md
 docs/models/FeedbackResponse.md
 docs/models/PipelineRunRequest.md
 docs/models/PipelineRunResponse.md
+docs/models/TestCase.md
+docs/models/TestRun.md
 gentrace/__init__.py
 gentrace/api_client.py
 gentrace/apis/__init__.py
-gentrace/apis/tags/ingestion_api.py
+gentrace/apis/tags/core_api.py
 gentrace/configuration.py
 gentrace/exceptions.py
 gentrace/model/__init__.py
@@ -18,6 +20,10 @@ gentrace/model/pipeline_run_request.py
 gentrace/model/pipeline_run_request.pyi
 gentrace/model/pipeline_run_response.py
 gentrace/model/pipeline_run_response.pyi
+gentrace/model/test_case.py
+gentrace/model/test_case.pyi
+gentrace/model/test_run.py
+gentrace/model/test_run.pyi
 gentrace/models/__init__.py
 gentrace/rest.py
 gentrace/schemas.py
