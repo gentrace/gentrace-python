@@ -395,6 +395,23 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **testRun** | [**TestRun**]({{complexTypePrefix}}TestRun.md) | [**TestRun**]({{complexTypePrefix}}TestRun.md) |  | [optional] 
+**[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# stats
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
@@ -408,6 +425,23 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **testRun** | [**TestRun**]({{complexTypePrefix}}TestRun.md) | [**TestRun**]({{complexTypePrefix}}TestRun.md) |  | [optional] 
+**[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# stats
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### Authorization
