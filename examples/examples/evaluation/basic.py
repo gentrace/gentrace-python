@@ -13,4 +13,5 @@ evaluation = gentrace.Evaluation(api_key=api_key, host="http://localhost:3000/ap
 
 cases = evaluation.get_test_cases(set_id="12494e89-af19-4326-a12c-54e487337ecc")
 
-print("cases: ", cases)
+for case in cases:
+    print("case: ", case, case["updatedAt"], case["name"], case["id"])

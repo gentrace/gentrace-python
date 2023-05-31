@@ -22,10 +22,5 @@ class Evaluation:
 
     def get_test_cases(self, set_id: str):
         response = self.core_api.test_case_get({"setId": set_id})
-
         data = response.body
-
-        print("data", data)
-
-        for value in data:
-            print("value", value)
+        return data["testCases"]
