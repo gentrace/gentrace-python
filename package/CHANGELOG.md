@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/gentrace/gentrace-python/compare/v0.8.0...v0.8.1) (2023-06-01)
+
+
+### Bug Fixes
+
+* updating OpenAI generated Python logic to "0.6.0" ([#94](https://github.com/gentrace/gentrace-python/issues/94)) ([2511ab5](https://github.com/gentrace/gentrace-python/commit/2511ab5b57b26ac46b9dfcfe9b882136ecddde8b))
+
 ## [0.8.0](https://github.com/gentrace/gentrace-python/compare/v0.7.4...v0.8.0) (2023-05-31)
 
 
