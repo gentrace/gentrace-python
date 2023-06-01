@@ -408,10 +408,10 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
@@ -438,10 +438,10 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
-**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | [optional] 
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### Authorization
@@ -594,7 +594,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**runId** | str, uuid.UUID,  | str,  |  | [optional] value must be a uuid
+**runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
@@ -607,7 +607,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**runId** | str, uuid.UUID,  | str,  |  | [optional] value must be a uuid
+**runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### Authorization
