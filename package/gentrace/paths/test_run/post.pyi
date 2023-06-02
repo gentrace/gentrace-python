@@ -38,9 +38,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
 
         class properties:
             setId = schemas.UUIDSchema
-
-            class source(schemas.StrSchema):
-                pass
+            branch = schemas.StrSchema
+            commit = schemas.StrSchema
 
             class testResults(schemas.ListSchema):
                 class MetaOapg:
@@ -218,12 +217,13 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                     return super().__getitem__(i)
             __annotations__ = {
                 "setId": setId,
-                "source": source,
+                "branch": branch,
+                "commit": commit,
                 "testResults": testResults,
             }
     testResults: MetaOapg.properties.testResults
     setId: MetaOapg.properties.setId
-    source: MetaOapg.properties.source
+    source: schemas.AnyTypeSchema
 
     @typing.overload
     def __getitem__(
@@ -231,8 +231,12 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
     ) -> MetaOapg.properties.setId: ...
     @typing.overload
     def __getitem__(
-        self, name: typing_extensions.Literal["source"]
-    ) -> MetaOapg.properties.source: ...
+        self, name: typing_extensions.Literal["branch"]
+    ) -> MetaOapg.properties.branch: ...
+    @typing.overload
+    def __getitem__(
+        self, name: typing_extensions.Literal["commit"]
+    ) -> MetaOapg.properties.commit: ...
     @typing.overload
     def __getitem__(
         self, name: typing_extensions.Literal["testResults"]
@@ -244,7 +248,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
         name: typing.Union[
             typing_extensions.Literal[
                 "setId",
-                "source",
+                "branch",
+                "commit",
                 "testResults",
             ],
             str,
@@ -258,8 +263,12 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
     ) -> MetaOapg.properties.setId: ...
     @typing.overload
     def get_item_oapg(
-        self, name: typing_extensions.Literal["source"]
-    ) -> MetaOapg.properties.source: ...
+        self, name: typing_extensions.Literal["branch"]
+    ) -> typing.Union[MetaOapg.properties.branch, schemas.Unset]: ...
+    @typing.overload
+    def get_item_oapg(
+        self, name: typing_extensions.Literal["commit"]
+    ) -> typing.Union[MetaOapg.properties.commit, schemas.Unset]: ...
     @typing.overload
     def get_item_oapg(
         self, name: typing_extensions.Literal["testResults"]
@@ -273,7 +282,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
         name: typing.Union[
             typing_extensions.Literal[
                 "setId",
-                "source",
+                "branch",
+                "commit",
                 "testResults",
             ],
             str,
@@ -297,9 +307,30 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
             uuid.UUID,
         ],
         source: typing.Union[
-            MetaOapg.properties.source,
+            schemas.AnyTypeSchema,
+            dict,
+            frozendict.frozendict,
             str,
+            date,
+            datetime,
+            uuid.UUID,
+            int,
+            float,
+            decimal.Decimal,
+            bool,
+            None,
+            list,
+            tuple,
+            bytes,
+            io.FileIO,
+            io.BufferedReader,
         ],
+        branch: typing.Union[
+            MetaOapg.properties.branch, str, schemas.Unset
+        ] = schemas.unset,
+        commit: typing.Union[
+            MetaOapg.properties.commit, str, schemas.Unset
+        ] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[
             schemas.AnyTypeSchema,
@@ -324,6 +355,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
             testResults=testResults,
             setId=setId,
             source=source,
+            branch=branch,
+            commit=commit,
             _configuration=_configuration,
             **kwargs,
         )
