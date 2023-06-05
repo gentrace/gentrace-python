@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/gentrace/gentrace-python/compare/v0.8.1...v0.9.0) (2023-06-05)
+
+
+### Features
+
+* add the branch commit logic, init() function ([#99](https://github.com/gentrace/gentrace-python/issues/99)) ([2f6dd2c](https://github.com/gentrace/gentrace-python/commit/2f6dd2c80ffb68bc0e2685b4ec444d75268f9723))
+
 ## [0.8.1](https://github.com/gentrace/gentrace-python/compare/v0.8.0...v0.8.1) (2023-06-01)
 
 
