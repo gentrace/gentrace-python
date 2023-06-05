@@ -92,3 +92,31 @@ def test_pinecone_configure_should_not_raise_error():
     gentrace.configure_pinecone()
 
     gentrace.deinit()
+
+
+def test_pipeline_should_not_raise_error():
+    gentrace.init(
+        api_key=os.getenv("GENTRACE_API_KEY"),
+        host="http://localhost:3000/api/v1",
+    )
+
+    pipeline = gentrace.Pipeline(
+        "test-gentrace-python-pipeline",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    gentrace.deinit()
+
+
+def test_pipeline_should_raise_error():
+    with pytest.raises(ValueError):
+        gentrace.Pipeline(
+            "test-gentrace-python-pipeline",
+            openai_config={
+                "api_key": os.getenv("OPENAI_KEY"),
+            },
+        )
+
+    gentrace.deinit()
