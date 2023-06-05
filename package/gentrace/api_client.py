@@ -1045,6 +1045,8 @@ class OpenApiResponse(JSONDetector):
                     response=response, headers=deserialized_headers, body=unset
                 )
 
+            print("Got here correctly", content_type, response)
+
             if self._content_type_is_json(content_type):
                 body_data = self.__deserialize_json(response)
             elif content_type == "application/octet-stream":
@@ -1058,6 +1060,8 @@ class OpenApiResponse(JSONDetector):
                         content_type
                     )
                 )
+
+            print("Got here correctly 2", body_data)
             deserialized_body = body_schema.from_openapi_data_oapg(
                 body_data, _configuration=configuration
             )

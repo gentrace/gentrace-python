@@ -1,6 +1,7 @@
 from typing import Optional
 from urllib.parse import urlparse
 
+from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
 
@@ -45,7 +46,8 @@ def init(
     config.access_token = api_key
 
     GENTRACE_CONFIG_STATE["global_gentrace_config"] = config
-    GENTRACE_CONFIG_STATE["global_gentrace_api"] = CoreApi(config)
+    api_client = ApiClient(configuration=config)
+    GENTRACE_CONFIG_STATE["global_gentrace_api"] = CoreApi(api_client=api_client)
 
     if branch:
         GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] = branch
