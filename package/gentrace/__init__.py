@@ -36,14 +36,11 @@ from gentrace.providers.utils import to_date_string
 from gentrace.providers.getters import *
 from gentrace.providers.init import init, deinit
 
-# @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
-# API key
+# @deprecated, use init() instead to set the Gentrace API key
 api_key = ""
 
-# @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
-# host
+# @deprecated, use init() instead to set the Gentrace base path
 host = ""
 
-# @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
-# log level
+# @deprecated: use init() instead to set the Gentrace log level
 log_level = "warn"
