@@ -9,6 +9,7 @@ GENTRACE_CONFIG_STATE = {
     "GENTRACE_BASE_PATH": "",
     "GENTRACE_BRANCH": "",
     "GENTRACE_COMMIT": "",
+    "GENTRACE_LOG_LEVEL": "warn",
     "global_gentrace_config": None,
     "global_gentrace_api": None,
 }
@@ -19,6 +20,7 @@ def init(
     host: Optional[str] = None,
     branch: Optional[str] = None,
     commit: Optional[str] = None,
+    log_level: Optional[str] = None,
 ):
     global GENTRACE_CONFIG_STATE
 
@@ -51,6 +53,11 @@ def init(
     if commit:
         GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] = commit
 
+    if log_level:
+        if log_level not in ["info", "warn"]:
+            raise ValueError("Invalid log level: {}".format(log_level))
+        GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"] = log_level
+
 
 def deinit():
     global GENTRACE_CONFIG_STATE
@@ -59,6 +66,7 @@ def deinit():
     GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"] = ""
     GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] = ""
     GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] = ""
+    GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"] = "warn"
     GENTRACE_CONFIG_STATE["global_gentrace_config"] = None
     GENTRACE_CONFIG_STATE["global_gentrace_api"] = None
 

@@ -22,6 +22,10 @@ class Pipeline:
         if api_key:
             self.config = {"api_key": api_key, "host": host}
         else:
+            if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
+                raise ValueError(
+                    "No Gentrace API key available. Please use init() to set the API key."
+                )
             self.config = {
                 "api_key": GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"],
                 "host": GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"],

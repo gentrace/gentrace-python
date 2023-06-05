@@ -7,6 +7,7 @@ from datetime import datetime
 
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.models import PipelineRunRequest
+from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 __all__ = [
     "to_date_string",
@@ -30,13 +31,6 @@ stdout_handler.setFormatter(formatter)
 logger.addHandler(stdout_handler)
 
 
-def validate_log_level():
-    from gentrace import log_level
-
-    if log_level not in ["info", "warn"]:
-        raise ValueError("Invalid log level: {}".format(log_level))
-
-
 def to_date_string(time_value):
     utc_time = datetime.utcfromtimestamp(time_value)
     utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
@@ -44,9 +38,7 @@ def to_date_string(time_value):
 
 
 def log_debug(message, **params):
-    validate_log_level()
-    from gentrace import log_level
-
+    log_level = GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"]
     if not log_level:
         return
 
@@ -58,9 +50,7 @@ def log_debug(message, **params):
 
 
 def log_info(message, **params):
-    validate_log_level()
-    from gentrace import log_level
-
+    log_level = GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"]
     if not log_level:
         return
 
@@ -72,9 +62,7 @@ def log_info(message, **params):
 
 
 def log_warn(message, **params):
-    validate_log_level()
-    from gentrace import log_level
-
+    log_level = GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"]
     if not log_level:
         return
 
@@ -87,9 +75,7 @@ def log_warn(message, **params):
 
 # Logger exception automatically logs the stack trace
 def log_exception(message, **params):
-    validate_log_level()
-    from gentrace import log_level
-
+    log_level = GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"]
     if not log_level:
         return
 
