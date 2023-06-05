@@ -1,7 +1,7 @@
 import inspect
 from typing import Any, Optional
 
-from gentrace.providers.init import GENTRACE_API_KEY, GENTRACE_BASE_PATH
+from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 
 class Pipeline:
@@ -10,7 +10,7 @@ class Pipeline:
         id: str,
         # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
         # API key
-        api_key: Optional[str],
+        api_key: Optional[str] = None,
         # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
         # base URL
         host: Optional[str] = None,
@@ -22,7 +22,10 @@ class Pipeline:
         if api_key:
             self.config = {"api_key": api_key, "host": host}
         else:
-            self.config = {"api_key": GENTRACE_API_KEY, "host": GENTRACE_BASE_PATH}
+            self.config = {
+                "api_key": GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"],
+                "host": GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"],
+            }
 
         if openai_config:
             try:

@@ -5,7 +5,7 @@ import openai
 from urllib3.util import parse_url
 
 from gentrace.configuration import Configuration as GentraceConfiguration
-from gentrace.providers.init import GENTRACE_API_KEY, global_gentrace_config
+from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -13,7 +13,7 @@ openai.api_key = os.getenv("OPENAI_KEY")
 def test_validity():
     from gentrace import api_key, host
 
-    if not api_key and not GENTRACE_API_KEY:
+    if not api_key and not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
         raise ValueError("Gentrace API key not set. Call the init() function first.")
 
     # Totally fine (and expected) to not have a host set
@@ -38,7 +38,7 @@ def configure_openai():
         gentrace_config = GentraceConfiguration(host=resolved_host)
         gentrace_config.access_token = api_key
     else:
-        gentrace_config = global_gentrace_config
+        gentrace_config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
 
     annotate_openai_module(gentrace_config=gentrace_config)
 

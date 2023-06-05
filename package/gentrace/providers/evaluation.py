@@ -1,9 +1,7 @@
 from typing import Dict, TypedDict
 
 from gentrace.providers.init import (
-    GENTRACE_BRANCH,
-    GENTRACE_COMMIT,
-    global_gentrace_api,
+    GENTRACE_CONFIG_STATE,
 )
 
 
@@ -12,16 +10,18 @@ class Run(TypedDict):
 
 
 def get_test_cases(set_id: str):
-    if not global_gentrace_api:
+    api = GENTRACE_CONFIG_STATE["global_gentrace_api"]
+    if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
-    response = global_gentrace_api.test_case_get({"setId": set_id})
+    response = api.test_case_get({"setId": set_id})
     data = response.body
     return data["testCases"]
 
 
 def submit_test_results(set_id: str, test_results: list[Dict]) -> Run:
-    if not global_gentrace_api:
+    api = GENTRACE_CONFIG_STATE["global_gentrace_api"]
+    if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
     params = {
@@ -29,13 +29,13 @@ def submit_test_results(set_id: str, test_results: list[Dict]) -> Run:
         "testResults": test_results,
     }
 
-    if GENTRACE_BRANCH:
-        params["branch"] = GENTRACE_BRANCH
+    if GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
+        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]
 
-    if GENTRACE_COMMIT:
-        params["commit"] = GENTRACE_COMMIT
+    if GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
+        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]
 
-    response = global_gentrace_api.test_run_post(params)
+    response = api.test_run_post(params)
     data = response.body
     return data
 
