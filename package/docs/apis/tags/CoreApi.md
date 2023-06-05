@@ -486,7 +486,8 @@ with gentrace.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     body = dict(
         set_id="set_id_example",
-        source="source_example",
+        branch="branch_example",
+        commit="commit_example",
         test_results=[
             dict(
                 id="id_example",
@@ -530,7 +531,8 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **[testResults](#testResults)** | list, tuple,  | tuple,  |  | 
 **setId** | str, uuid.UUID,  | str,  | The ID of the test case set to run | value must be a uuid
-**source** | str,  | str,  | The source code to test | 
+**branch** | str,  | str,  | The branch that the test run was created from | [optional] 
+**commit** | str,  | str,  | The commit that the test run was created from | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # testResults
