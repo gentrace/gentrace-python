@@ -152,7 +152,6 @@ def test_openai_embedding_pipeline_server(setup_teardown_openai):
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
@@ -208,7 +207,6 @@ def test_openai_embedding_pipeline(
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
@@ -303,7 +301,6 @@ async def test_openai_embedding_pipeline_async(
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
         openai_config={
             "api_key": "test-api-key",
@@ -323,6 +320,8 @@ async def test_openai_embedding_pipeline_async(
     assert len(runner.step_runs) == 1
 
     info = await runner.asubmit()
+
+    print("info", info)
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
 

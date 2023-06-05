@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-gentrace.api_key = os.getenv("GENTRACE_API_KEY")
-gentrace.host = "http://localhost:3000/api/v1"
+gentrace.init(
+    api_key=os.getenv("GENTRACE_API_KEY"),
+    host="http://localhost:3000/api/v1",
+)
 
 gentrace.configure_openai()
 

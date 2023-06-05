@@ -14,6 +14,7 @@ from pinecone import (
 from pinecone.config import init
 
 from gentrace.configuration import Configuration as GentraceConfiguration
+from gentrace.providers.init import GENTRACE_CONFIG_STATE
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun
 from gentrace.providers.step_run import StepRun
@@ -45,8 +46,11 @@ class ModifiedIndex(pinecone.Index):
         if is_self_contained:
             from gentrace import api_key, host
 
-            gentrace_config = GentraceConfiguration(host=host)
-            gentrace_config.access_token = api_key
+            if api_key:
+                gentrace_config = GentraceConfiguration(host=host)
+                gentrace_config.access_token = api_key
+            else:
+                gentrace_config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
 
             pipeline = Pipeline(
                 id=pipeline_id,
