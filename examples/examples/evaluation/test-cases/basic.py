@@ -1,3 +1,4 @@
+import json
 import os
 
 import gentrace
@@ -15,4 +16,4 @@ gentrace.init(
 cases = gentrace.get_test_cases(set_id=SET_ID)
 
 for case in cases:
-    print("case: ", case, case["updatedAt"], case["name"], case["id"])
+    print(json.dumps(case, indent=4))

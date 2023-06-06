@@ -18,7 +18,7 @@ import gentrace
 PINECONE_API_PATTERN = re.compile("^https?:\/\/.*pinecone\.io\/.*")
 
 
-def test_pinecone_pipeline_fetch_server():
+def test_pinecone_pipeline_fetch_server(setup_teardown_pinecone):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -44,7 +44,7 @@ def test_pinecone_pipeline_fetch_server():
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
-def test_pinecone_pipeline_query_server(vector):
+def test_pinecone_pipeline_query_server(vector, setup_teardown_pinecone):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -70,7 +70,7 @@ def test_pinecone_pipeline_query_server(vector):
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
 
-def test_pinecone_pipeline_list_indices_server():
+def test_pinecone_pipeline_list_indices_server(setup_teardown_pinecone):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
@@ -95,7 +95,7 @@ def test_pinecone_pipeline_list_indices_server():
     assert info["pipelineRunId"] is None
 
 
-def test_pinecone_pipeline_upsert_server(vector):
+def test_pinecone_pipeline_upsert_server(vector, setup_teardown_pinecone):
     responses.add_passthru(PINECONE_API_PATTERN)
 
     pipeline = gentrace.Pipeline(
