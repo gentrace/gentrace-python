@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/gentrace/gentrace-python/compare/v0.9.0...v0.9.1) (2023-06-06)
+
+
+### Bug Fixes
+
+* add evaluation tests ([#103](https://github.com/gentrace/gentrace-python/issues/103)) ([173dd00](https://github.com/gentrace/gentrace-python/commit/173dd002a158ec2a0f7e04da6bcf2218d518636e))
+
 ## [0.9.0](https://github.com/gentrace/gentrace-python/compare/v0.8.1...v0.9.0) (2023-06-05)
 
 
