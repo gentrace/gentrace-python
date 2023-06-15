@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/gentrace/gentrace-python/compare/v0.9.1...v0.10.0) (2023-06-15)
+
+
+### Features
+
+* Simplify SDK for evaluation ([#105](https://github.com/gentrace/gentrace-python/issues/105)) ([ae605c1](https://github.com/gentrace/gentrace-python/commit/ae605c156489ca2913ec0bc3e2f35fbb5e57ba99))
+
 ## [0.9.1](https://github.com/gentrace/gentrace-python/compare/v0.9.0...v0.9.1) (2023-06-06)
 
 
