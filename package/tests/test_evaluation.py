@@ -9,6 +9,7 @@ from responses import matchers
 from urllib3.response import HTTPResponse
 
 import gentrace
+from gentrace.providers.evaluation import construct_submission_payload
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 
@@ -33,6 +34,8 @@ def test_evaluation_get_test_cases(mocker, test_cases, setup_teardown_openai):
     gentrace_request.return_value = gentrace_response
 
     test_cases = gentrace.get_test_cases(set_id="201196DC-9471-4B28-A051-C21AE45F247A")
+
+    assert len(test_cases) == 3
 
 
 def test_evaluation_submit_test_run(
@@ -90,7 +93,7 @@ def test_evaluation_submit_test_run(
         outputs=results,
     )
 
-    print(result)
+    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
 
 
 def test_evaluation_submit_prepared_test_run(
@@ -154,4 +157,35 @@ def test_evaluation_submit_prepared_test_run(
         test_results=results,
     )
 
-    print(result)
+    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
+
+
+def test_validate_construct_submission_works_with_env():
+    os.environ["GENTRACE_BRANCH"] = "test-branch"
+    os.environ["GENTRACE_COMMIT"] = "test-commit"
+
+    payload = gentrace.construct_submission_payload("set-id", [])
+
+    assert payload["branch"] == "test-branch"
+    assert payload["commit"] == "test-commit"
+
+
+def test_validate_construct_submission_works_with_init():
+    gentrace.init(api_key="sldkjflk", branch="test-branch", commit="test-commit")
+    payload = gentrace.construct_submission_payload("set-id", [])
+
+    assert payload["branch"] == "test-branch"
+    assert payload["commit"] == "test-commit"
+
+
+def test_validate_construct_submission_prioritizes_override():
+    os.environ["GENTRACE_BRANCH"] = "test-branch-env"
+    os.environ["GENTRACE_COMMIT"] = "test-commit-env"
+
+    gentrace.init(
+        api_key="test-api-key", branch="test-branch-init", commit="test-commit-init"
+    )
+    payload = gentrace.construct_submission_payload("set-id", [])
+
+    assert payload["branch"] == "test-branch-init"
+    assert payload["commit"] == "test-commit-init"

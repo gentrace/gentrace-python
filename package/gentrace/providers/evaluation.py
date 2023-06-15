@@ -1,4 +1,5 @@
 import json
+import os
 from typing import Dict, List, TypedDict
 
 from gentrace.model.test_case import TestCase
@@ -59,19 +60,38 @@ def submit_prepared_test_results(set_id: str, test_results: list[Dict]) -> Run:
             else test_result["inputs"]
         )
 
+    params = construct_submission_payload(set_id, test_results)
+    response = api.test_run_post(params)
+    return response.body
+
+
+def construct_submission_payload(set_id: str, test_results: list[Dict]):
+    """
+    Constructs a dictionary payload for submitting test results to a server.
+
+    Args:
+        set_id (str): The ID of the test set.
+        test_results (list[Dict]): A list of dictionaries containing test results.
+
+    Returns:
+        Dict: A dictionary payload containing the set ID, test results, and optional branch and commit information.
+    """
     params = {
         "setId": set_id,
         "testResults": test_results,
     }
 
-    if GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
-        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]
+    if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
+        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
+            "GENTRACE_BRANCH"
+        )
 
-    if GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
-        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]
+    if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
+        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
+            "GENTRACE_COMMIT"
+        )
 
-    response = api.test_run_post(params)
-    return response.body
+    return params
 
 
 def submit_test_results(
@@ -106,13 +126,12 @@ def submit_test_results(
         for test_case, output in zip(test_cases, outputs)
     ]
 
-    params = {
-        "setId": set_id,
-        "testResults": test_results,
-    }
-
-    response = api.test_run_post(params)
-    return response.body
+    return submit_prepared_test_results(set_id, test_results)
 
 
-__all__ = ["get_test_cases", "submit_test_results", "submit_prepared_test_results"]
+__all__ = [
+    "get_test_cases",
+    "submit_test_results",
+    "submit_prepared_test_results",
+    "construct_submission_payload",
+]
