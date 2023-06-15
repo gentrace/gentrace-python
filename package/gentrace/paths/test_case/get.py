@@ -384,7 +384,6 @@ class BaseApi(api_client.Api):
             for accept_content_type in accept_content_types:
                 _headers.add("Accept", accept_content_type)
 
-        print("used_path: ", used_path)
         response = self.api_client.call_api(
             resource_path=used_path,
             method="get".upper(),
