@@ -15,6 +15,25 @@ def test_gentrace_no_host_valid():
     gentrace.deinit()
 
 
+def test_gentrace_direct_api_key():
+    os.environ["GENTRACE_API_KEY"] = ""
+
+    gentrace.init(api_key="testing")
+
+    gentrace.configure_openai()
+
+    gentrace.deinit()
+
+
+def test_gentrace_env_api_key():
+    # Assuming that the test suite loads in a defined GENTRACE_API_KEY env variable
+    gentrace.init()
+
+    gentrace.configure_openai()
+
+    gentrace.deinit()
+
+
 def test_gentrace_localhost_host_valid():
     with pytest.raises(ValueError):
         gentrace.init(

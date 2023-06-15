@@ -1,3 +1,4 @@
+import os
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -17,7 +18,7 @@ GENTRACE_CONFIG_STATE = {
 
 
 def init(
-    api_key: str,
+    api_key: Optional[str] = None,
     host: Optional[str] = None,
     branch: Optional[str] = None,
     commit: Optional[str] = None,
@@ -25,10 +26,12 @@ def init(
 ):
     global GENTRACE_CONFIG_STATE
 
-    if not api_key:
-        raise ValueError("Gentrace API key not provided.")
+    if not api_key and not os.getenv("GENTRACE_API_KEY"):
+        raise ValueError(
+            "Gentrace API key was provided neither by the `apiKey` param in the constructor nor by the `GENTRACE_API_KEY` env variable."
+        )
 
-    GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"] = api_key
+    GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"] = api_key or os.getenv("GENTRACE_API_KEY")
 
     if host:
         try:
