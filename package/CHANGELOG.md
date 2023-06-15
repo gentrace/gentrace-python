@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/gentrace/gentrace-python/compare/v0.11.0...v0.11.1) (2023-06-15)
+
+
+### Bug Fixes
+
+* Read `GENTRACE_API_KEY` from the environment  (109) ([755a907](https://github.com/gentrace/gentrace-python/commit/755a907db6568986e4cd0fdf19112a2a19950784))
+
 ## [0.11.0](https://github.com/gentrace/gentrace-python/compare/v0.10.0...v0.11.0) (2023-06-15)
 
 
