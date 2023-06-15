@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/gentrace/gentrace-python/compare/v0.10.0...v0.11.0) (2023-06-15)
+
+
+### Features
+
+* Allow passing in `GENTRACE_BRANCH` and `GENTRACE_COMMIT` as env variables ([4f2327d](https://github.com/gentrace/gentrace-python/commit/4f2327da14a71c78c712f08faa65bc3a30d76cd8))
+
 ## [0.10.0](https://github.com/gentrace/gentrace-python/compare/v0.9.1...v0.10.0) (2023-06-15)
 
 
