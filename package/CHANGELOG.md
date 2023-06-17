@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/gentrace/gentrace-python/compare/v0.11.1...v0.12.0) (2023-06-17)
+
+
+### Features
+
+* Add TestRun name ([#113](https://github.com/gentrace/gentrace-python/issues/113)) ([e99fe69](https://github.com/gentrace/gentrace-python/commit/e99fe69d9578d58e3d403b833c912aa345f0c2c3))
+
 ## [0.11.1](https://github.com/gentrace/gentrace-python/compare/v0.11.0...v0.11.1) (2023-06-15)
 
 
