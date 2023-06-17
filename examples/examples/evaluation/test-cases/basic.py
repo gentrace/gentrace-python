@@ -1,4 +1,3 @@
-import json
 import os
 
 import gentrace
@@ -6,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SET_ID = "42d88419-4930-471c-beb9-297fabb8f970"
+SET_ID = "e605d843-88e0-4462-85cc-2d49b0217a30"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
@@ -15,4 +14,4 @@ gentrace.init(
 cases = gentrace.get_test_cases(set_id=SET_ID)
 
 for case in cases:
-    print(json.dumps(case, indent=4))
+    print(case["inputs"])

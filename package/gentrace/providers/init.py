@@ -23,6 +23,7 @@ def init(
     branch: Optional[str] = None,
     commit: Optional[str] = None,
     log_level: Optional[str] = None,
+    run_name: Optional[str] = None,
 ):
     global GENTRACE_CONFIG_STATE
 
@@ -32,6 +33,9 @@ def init(
         )
 
     GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"] = api_key or os.getenv("GENTRACE_API_KEY")
+    GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"] = run_name or os.getenv(
+        "GENTRACE_RUN_NAME"
+    )
 
     if host:
         try:
