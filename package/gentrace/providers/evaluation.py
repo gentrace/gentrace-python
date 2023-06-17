@@ -81,6 +81,9 @@ def construct_submission_payload(set_id: str, test_results: list[Dict]):
         "testResults": test_results,
     }
 
+    if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
+        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+
     if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
         params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
             "GENTRACE_BRANCH"
