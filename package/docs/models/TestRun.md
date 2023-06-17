@@ -14,6 +14,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **setId** | str, uuid.UUID,  | str,  | The unique identifier for the test set associated with the test run. | [optional] value must be a uuid
 **branch** | str,  | str,  | The branch that the test run was created from | [optional] 
 **commit** | str,  | str,  | The commit that the test run was created from | [optional] 
+**name** | str,  | str,  | The name of the test run | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)

@@ -488,6 +488,7 @@ with gentrace.ApiClient(configuration) as api_client:
         set_id="set_id_example",
         branch="branch_example",
         commit="commit_example",
+        name="name_example",
         test_results=[
             dict(
                 id="id_example",
@@ -533,6 +534,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **setId** | str, uuid.UUID,  | str,  | The ID of the test case set to run | value must be a uuid
 **branch** | str,  | str,  | The branch that the test run was created from | [optional] 
 **commit** | str,  | str,  | The commit that the test run was created from | [optional] 
+**name** | str,  | str,  | The name of the test run | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # testResults
