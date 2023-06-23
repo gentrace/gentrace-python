@@ -14,4 +14,4 @@ gentrace.init(
 cases = gentrace.get_test_cases(set_id=SET_ID)
 
 for case in cases:
-    print(case["inputs"])
+    print(case)

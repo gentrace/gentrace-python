@@ -1,6 +1,6 @@
 import json
 import os
-from typing import Dict, List, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict
 
 from gentrace.model.test_case import TestCase
 from gentrace.providers.init import (
@@ -12,7 +12,18 @@ class Run(TypedDict):
     runId: str
 
 
-def get_test_cases(set_id: str):
+class TestCaseDict(TypedDict):
+    id: str
+    createdAt: str
+    updatedAt: str
+    archivedAt: Optional[str]
+    expected: Optional[str]
+    inputs: dict[str, Any]
+    name: str
+    setId: str
+
+
+def get_test_cases(set_id: str) -> List[TestCaseDict]:
     """
     Retrieves test cases for a given set ID from the Gentrace API.
 
