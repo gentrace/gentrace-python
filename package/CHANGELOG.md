@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/gentrace/gentrace-python/compare/v0.12.0...v0.12.1) (2023-06-23)
+
+
+### Bug Fixes
+
+* Add typings for get test cases ([#115](https://github.com/gentrace/gentrace-python/issues/115)) ([dbf8cd4](https://github.com/gentrace/gentrace-python/commit/dbf8cd4539979c78eab60166e6066c432bbeff91))
+
 ## [0.12.0](https://github.com/gentrace/gentrace-python/compare/v0.11.1...v0.12.0) (2023-06-17)
 
 
