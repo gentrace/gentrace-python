@@ -493,8 +493,19 @@ with gentrace.ApiClient(configuration) as api_client:
             dict(
                 id="id_example",
                 case_id="case_id_example",
-                inputs=dict(),
+                inputs=dict(
+                    "key": "key_example",
+                ),
                 output="output_example",
+                steps=[
+                    dict(
+                        key="key_example",
+                        output="output_example",
+                        inputs=dict(
+                            "key": "key_example",
+                        ),
+                    )
+                ],
             )
         ],
     )
@@ -532,9 +543,9 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **[testResults](#testResults)** | list, tuple,  | tuple,  |  | 
 **setId** | str, uuid.UUID,  | str,  | The ID of the test case set to run | value must be a uuid
-**branch** | str,  | str,  | The branch that the test run was created from | [optional] 
-**commit** | str,  | str,  | The commit that the test run was created from | [optional] 
-**name** | str,  | str,  | The name of the test run | [optional] 
+**branch** | None, str,  | NoneClass, str,  | The branch that the test run was created from | [optional] 
+**commit** | None, str,  | NoneClass, str,  | The commit that the test run was created from | [optional] 
+**name** | None, str,  | NoneClass, str,  | The name of the test run | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # testResults
@@ -562,7 +573,8 @@ Key | Input Type | Accessed Type | Description | Notes
 **output** | str,  | str,  | The expected output for the test case | 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
-**id** | str, uuid.UUID,  | str,  | The ID of the test result | [optional] value must be a uuid
+**id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test result | [optional] value must be a uuid
+**[steps](#steps)** | list, tuple, None,  | tuple, NoneClass,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -573,6 +585,52 @@ The input data for the test case
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
+
+# steps
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[items](#items) | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+# items
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**output** | str,  | str,  | The output of the step | 
+**key** | str,  | str,  | The key of the step | 
+**[inputs](#inputs)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  | The inputs of the step | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# inputs
+
+The inputs of the step
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  | The inputs of the step | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
 ### Return Types, Responses
 
