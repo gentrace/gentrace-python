@@ -1,13 +1,20 @@
 import os
-from unittest.mock import create_autospec
 
 import pytest
 
 import gentrace
-from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 
-def test_gentrace_no_host_valid():
+@pytest.fixture
+def os_env_variables():
+    os.environ["GENTRACE_API_KEY"] = "api-key"
+
+    yield "done"
+
+    os.environ["GENTRACE_API_KEY"] = ""
+
+
+def test_gentrace_no_host_valid(os_env_variables):
     gentrace.init(api_key=os.getenv("GENTRACE_API_KEY"))
 
     gentrace.configure_openai()
@@ -15,7 +22,7 @@ def test_gentrace_no_host_valid():
     gentrace.deinit()
 
 
-def test_gentrace_direct_api_key():
+def test_gentrace_direct_api_key(os_env_variables):
     os.environ["GENTRACE_API_KEY"] = ""
 
     gentrace.init(api_key="testing")
@@ -25,7 +32,9 @@ def test_gentrace_direct_api_key():
     gentrace.deinit()
 
 
-def test_gentrace_env_api_key():
+def test_gentrace_env_api_key(os_env_variables):
+    os.environ["GENTRACE_API_KEY"] = "api key"
+
     # Assuming that the test suite loads in a defined GENTRACE_API_KEY env variable
     gentrace.init()
 
@@ -34,7 +43,7 @@ def test_gentrace_env_api_key():
     gentrace.deinit()
 
 
-def test_gentrace_localhost_host_valid():
+def test_gentrace_localhost_host_valid(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.init(
             api_key=os.getenv("GENTRACE_API_KEY"), host="http://localhost:3000"
@@ -49,7 +58,7 @@ def test_gentrace_localhost_host_valid():
     gentrace.deinit()
 
 
-def test_gentrace_staging_host_valid():
+def test_gentrace_staging_host_valid(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         host="https://staging.gentrace.ai/api/v1/",
@@ -66,7 +75,7 @@ def test_gentrace_staging_host_valid():
     gentrace.deinit()
 
 
-def test_gentrace_prod_host_valid():
+def test_gentrace_prod_host_valid(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         host="https://gentrace.ai/api/v1/",
@@ -81,12 +90,12 @@ def test_gentrace_prod_host_valid():
     gentrace.deinit()
 
 
-def test_openai_configure_should_raise_error():
+def test_openai_configure_should_raise_error(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.configure_openai()
 
 
-def test_openai_configure_should_not_raise_error():
+def test_openai_configure_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
@@ -97,12 +106,12 @@ def test_openai_configure_should_not_raise_error():
     gentrace.deinit()
 
 
-def test_pinecone_configure_should_raise_error():
+def test_pinecone_configure_should_raise_error(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.configure_pinecone()
 
 
-def test_pinecone_configure_should_not_raise_error():
+def test_pinecone_configure_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
@@ -113,7 +122,7 @@ def test_pinecone_configure_should_not_raise_error():
     gentrace.deinit()
 
 
-def test_pipeline_should_not_raise_error():
+def test_pipeline_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         host="http://localhost:3000/api/v1",
@@ -129,7 +138,7 @@ def test_pipeline_should_not_raise_error():
     gentrace.deinit()
 
 
-def test_pipeline_should_raise_error():
+def test_pipeline_should_raise_error(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.Pipeline(
             "test-gentrace-python-pipeline",

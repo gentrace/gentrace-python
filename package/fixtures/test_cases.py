@@ -11,7 +11,9 @@ def test_cases():
                 "updatedAt": "2023-06-02T16:56:07.082Z",
                 "archivedAt": None,
                 "expected": "Niagara Falls",
-                "inputs": '{"question":"What is the name of the famous waterfall located on the border of Canada and the United States?"}',
+                "inputs": {
+                    "question": "What is the name of the famous waterfall located on the border of Canada and the United States?"
+                },
                 "name": "Test Case 25",
                 "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
@@ -21,7 +23,9 @@ def test_cases():
                 "updatedAt": "2023-06-02T16:56:07.082Z",
                 "archivedAt": None,
                 "expected": "Disneyland",
-                "inputs": '{"question":"What is the name of the famous theme park located in Anaheim, United States?"}',
+                "inputs": {
+                    "question": "What is the name of the famous theme park located in Anaheim, United States?"
+                },
                 "name": "Test Case 44",
                 "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
@@ -31,7 +35,9 @@ def test_cases():
                 "updatedAt": "2023-06-02T16:56:07.082Z",
                 "archivedAt": None,
                 "expected": "Mount Fuji",
-                "inputs": '{"question":"What is the name of the famous mountain located in Japan that is also an active volcano?"}',
+                "inputs": {
+                    "question": "What is the name of the famous mountain located in Japan that is also an active volcano?"
+                },
                 "name": "Test Case 30",
                 "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
