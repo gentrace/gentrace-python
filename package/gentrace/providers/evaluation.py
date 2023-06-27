@@ -1,5 +1,6 @@
 import json
 import os
+from itertools import zip_longest
 from typing import Any, Dict, List, Optional, TypedDict
 
 from gentrace.model.test_case import TestCase
@@ -108,8 +109,17 @@ def construct_submission_payload(set_id: str, test_results: list[Dict]):
     return params
 
 
+class OutputStep(TypedDict):
+    key: str
+    output: str
+    inputs: Optional[dict[str, Any]]
+
+
 def submit_test_results(
-    set_id: str, test_cases: List[TestCase], outputs: List[str]
+    set_id: str,
+    test_cases: List[TestCase],
+    outputs: List[str],
+    output_steps: Optional[List[List[OutputStep]]] = [],
 ) -> Run:
     """
     Submits test results by creating TestResult objects from given test cases and corresponding outputs.
@@ -118,6 +128,7 @@ def submit_test_results(
         set_id (str): The identifier of the test set.
         test_cases (List[TestCase]): A list of TestCase objects.
         outputs (List[str]): A list of outputs corresponding to each TestCase.
+        output_steps (Optional[List[List[OutputStep]]], optional): A list of lists of OutputStep objects. Defaults to [].
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -129,16 +140,25 @@ def submit_test_results(
     if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
-    test_results = [
-        {
+    test_results = []
+
+    for test_case, output, output_steps_inner in zip_longest(
+        test_cases, outputs, output_steps, fillvalue=None
+    ):
+        result = {
             "caseId": test_case["id"],
             "inputs": json.loads(test_case["inputs"])
             if isinstance(test_case["inputs"], str)
             else test_case["inputs"],
             "output": output,
         }
-        for test_case, output in zip(test_cases, outputs)
-    ]
+
+        # Steps are optional but they can't be null. If they're defined, they must
+        # be an array and have at least one step.
+        if output_steps_inner:
+            result["outputSteps"] = output_steps_inner
+
+        test_results.append(result)
 
     return submit_prepared_test_results(set_id, test_results)
 
@@ -148,4 +168,5 @@ __all__ = [
     "submit_test_results",
     "submit_prepared_test_results",
     "construct_submission_payload",
+    "OutputStep",
 ]
