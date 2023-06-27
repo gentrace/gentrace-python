@@ -497,7 +497,7 @@ with gentrace.ApiClient(configuration) as api_client:
                     "key": "key_example",
                 ),
                 output="output_example",
-                steps=[
+                output_steps=[
                     dict(
                         key="key_example",
                         output="output_example",
@@ -574,7 +574,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test result | [optional] value must be a uuid
-**[steps](#steps)** | list, tuple, None,  | tuple, NoneClass,  |  | [optional] 
+**[outputSteps](#outputSteps)** | list, tuple, None,  | tuple, NoneClass,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -591,7 +591,7 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
 
-# steps
+# outputSteps
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

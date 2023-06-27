@@ -161,7 +161,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                         )
                                 output = schemas.StrSchema
 
-                                class steps(
+                                class outputSteps(
                                     schemas.ListBase,
                                     schemas.NoneBase,
                                     schemas.Schema,
@@ -377,7 +377,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                         _configuration: typing.Optional[
                                             schemas.Configuration
                                         ] = None,
-                                    ) -> "steps":
+                                    ) -> "outputSteps":
                                         return super().__new__(
                                             cls,
                                             *_args,
@@ -388,7 +388,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                     "caseId": caseId,
                                     "inputs": inputs,
                                     "output": output,
-                                    "steps": steps,
+                                    "outputSteps": outputSteps,
                                 }
                         output: MetaOapg.properties.output
                         inputs: MetaOapg.properties.inputs
@@ -412,8 +412,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                         ) -> MetaOapg.properties.output: ...
                         @typing.overload
                         def __getitem__(
-                            self, name: typing_extensions.Literal["steps"]
-                        ) -> MetaOapg.properties.steps: ...
+                            self, name: typing_extensions.Literal["outputSteps"]
+                        ) -> MetaOapg.properties.outputSteps: ...
                         @typing.overload
                         def __getitem__(
                             self, name: str
@@ -426,7 +426,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                     "caseId",
                                     "inputs",
                                     "output",
-                                    "steps",
+                                    "outputSteps",
                                 ],
                                 str,
                             ],
@@ -451,8 +451,10 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                         ) -> MetaOapg.properties.output: ...
                         @typing.overload
                         def get_item_oapg(
-                            self, name: typing_extensions.Literal["steps"]
-                        ) -> typing.Union[MetaOapg.properties.steps, schemas.Unset]: ...
+                            self, name: typing_extensions.Literal["outputSteps"]
+                        ) -> typing.Union[
+                            MetaOapg.properties.outputSteps, schemas.Unset
+                        ]: ...
                         @typing.overload
                         def get_item_oapg(
                             self, name: str
@@ -467,7 +469,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                     "caseId",
                                     "inputs",
                                     "output",
-                                    "steps",
+                                    "outputSteps",
                                 ],
                                 str,
                             ],
@@ -500,8 +502,8 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                 uuid.UUID,
                                 schemas.Unset,
                             ] = schemas.unset,
-                            steps: typing.Union[
-                                MetaOapg.properties.steps,
+                            outputSteps: typing.Union[
+                                MetaOapg.properties.outputSteps,
                                 list,
                                 tuple,
                                 None,
@@ -534,7 +536,7 @@ class SchemaForRequestBodyApplicationJson(schemas.DictSchema):
                                 inputs=inputs,
                                 caseId=caseId,
                                 id=id,
-                                steps=steps,
+                                outputSteps=outputSteps,
                                 _configuration=_configuration,
                                 **kwargs,
                             )
