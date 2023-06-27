@@ -140,6 +140,9 @@ def submit_test_results(
     if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
+    if len(test_cases) != len(outputs):
+        raise ValueError("`test_cases` and `outputs` should be the same length.")
+
     test_results = []
 
     for test_case, output, output_steps_inner in zip_longest(

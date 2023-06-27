@@ -162,6 +162,18 @@ def test_evaluation_submit_test_run_output_steps(
     assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
 
 
+def test_evaluation_submit_throws(
+    mocker, test_cases, setup_teardown_openai, test_run_response
+):
+    with pytest.raises(ValueError):
+        gentrace.submit_test_results(
+            set_id="201196DC-9471-4B28-A051-C21AE45F247A",
+            test_cases=[1, 2, 3],
+            outputs=[1, 2, 3, 4],
+            output_steps=[1, 2],
+        )
+
+
 def test_evaluation_submit_prepared_test_run(
     mocker, test_cases, setup_teardown_openai, test_run_response
 ):
