@@ -166,9 +166,38 @@ def submit_test_results(
     return submit_prepared_test_results(set_id, test_results)
 
 
+def get_test_sets(
+    label: Optional[str] = None,
+) -> Run:
+    """
+    Get test sets from the Gentrace API, optionally filtered by label.
+
+    Args:
+        label (str, optional): The identifier of the test set. Defaults to None.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        Run: The array of test sets returned by the Gentrace API.
+    """
+    api = GENTRACE_CONFIG_STATE["global_gentrace_api"]
+    if not api:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    params = {"label": label} if label else {}
+
+    response = api.test_sets_get(params)
+
+    test_sets = response.body["testSets"]
+
+    return test_sets
+
+
 __all__ = [
     "get_test_cases",
     "submit_test_results",
+    "get_test_sets",
     "submit_prepared_test_results",
     "construct_submission_payload",
     "OutputStep",

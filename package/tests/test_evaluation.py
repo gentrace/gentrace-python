@@ -273,3 +273,28 @@ def test_validate_construct_submission_prioritizes_override():
 
     assert payload["branch"] == "test-branch-init"
     assert payload["commit"] == "test-commit-init"
+
+
+def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
+    # Setup Gentrace mocked response for get_test_cases
+    headers = http.client.HTTPMessage()
+    headers.add_header("Content-Type", "application/json")
+
+    body = json.dumps(test_sets, ensure_ascii=False).encode("utf-8")
+
+    gentrace_response = HTTPResponse(
+        body=body,
+        headers=headers,
+        status=200,
+        reason="OK",
+        preload_content=False,
+        decode_content=True,
+        enforce_content_length=True,
+    )
+
+    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
+    gentrace_request.return_value = gentrace_response
+
+    test_sets = gentrace.get_test_sets()
+
+    assert len(test_sets) == 2
