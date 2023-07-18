@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/gentrace/gentrace-python/compare/v0.12.1...v0.13.0) (2023-07-18)
+
+
+### Features
+
+* Accept output steps ([#119](https://github.com/gentrace/gentrace-python/issues/119)) ([673b453](https://github.com/gentrace/gentrace-python/commit/673b45307be8d1f8e809b8b5eac99b8fd546d5e0))
+* add TestSet routes and testing ([#123](https://github.com/gentrace/gentrace-python/issues/123)) ([39b7b44](https://github.com/gentrace/gentrace-python/commit/39b7b44cdc7f88055482414e9565fb07178d095a))
+
 ## [0.12.1](https://github.com/gentrace/gentrace-python/compare/v0.12.0...v0.12.1) (2023-06-23)
 
 
