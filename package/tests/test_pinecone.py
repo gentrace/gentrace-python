@@ -47,6 +47,8 @@ def test_pinecone_pipeline_fetch_server(setup_teardown_pinecone):
 def test_pinecone_pipeline_query_server(vector, setup_teardown_pinecone):
     responses.add_passthru(PINECONE_API_PATTERN)
 
+    print("api key", os.getenv("PINECONE_API_KEY"))
+
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
         host="http://localhost:3000/api/v1",

@@ -297,4 +297,4 @@ def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
 
     test_sets = gentrace.get_test_sets()
 
-    assert len(test_sets) == 3
+    assert len(test_sets) == 2
