@@ -9,6 +9,7 @@ Method | HTTP request | Description
 [**test_case_get**](#test_case_get) | **get** /test-case | Get test cases for a test set
 [**test_run_get**](#test_run_get) | **get** /test-run | Get test run by ID
 [**test_run_post**](#test_run_post) | **post** /test-run | Create a new test run from test results
+[**test_sets_get**](#test_sets_get) | **get** /test-sets | Get test sets, optionally filtered by label
 
 # **pipeline_run_post**
 <a name="pipeline_run_post"></a>
@@ -671,6 +672,164 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **test_sets_get**
+<a name="test_sets_get"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_sets_get()
+
+Get test sets, optionally filtered by label
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import core_api
+from gentrace.model.test_set import TestSet
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api/v1"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = core_api.CoreApi(api_client)
+
+    # example passing only optional values
+    query_params = {
+        'label': "label_example",
+    }
+    try:
+        # Get test sets, optionally filtered by label
+        api_response = api_instance.test_sets_get(
+            query_params=query_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling CoreApi->test_sets_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+query_params | RequestQueryParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+label | LabelSchema | | optional
+
+
+# LabelSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#test_sets_get.ApiResponseFor200) | Test sets retrieved successfully
+400 | [ApiResponseFor400](#test_sets_get.ApiResponseFor400) | Invalid test set ID
+500 | [ApiResponseFor500](#test_sets_get.ApiResponseFor500) | Server error
+
+#### test_sets_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[testSets](#testSets)** | list, tuple,  | tuple,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# testSets
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) |  | 
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[testSets](#testSets)** | list, tuple,  | tuple,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# testSets
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) |  | 
+
+#### test_sets_get.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### test_sets_get.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
 
 ### Authorization
 

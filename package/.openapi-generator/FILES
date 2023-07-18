@@ -5,6 +5,7 @@ docs/models/PipelineRunRequest.md
 docs/models/PipelineRunResponse.md
 docs/models/TestCase.md
 docs/models/TestRun.md
+docs/models/TestSet.md
 gentrace/__init__.py
 gentrace/api_client.py
 gentrace/apis/__init__.py
@@ -24,6 +25,8 @@ gentrace/model/test_case.py
 gentrace/model/test_case.pyi
 gentrace/model/test_run.py
 gentrace/model/test_run.pyi
+gentrace/model/test_set.py
+gentrace/model/test_set.pyi
 gentrace/models/__init__.py
 gentrace/rest.py
 gentrace/schemas.py

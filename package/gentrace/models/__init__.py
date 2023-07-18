@@ -17,3 +17,4 @@ from gentrace.model.pipeline_run_request import PipelineRunRequest
 from gentrace.model.pipeline_run_response import PipelineRunResponse
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_run import TestRun
+from gentrace.model.test_set import TestSet
