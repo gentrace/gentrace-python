@@ -61,6 +61,7 @@ url = "https://test.pypi.org/legacy/"
 exclude = [".venv"]
 # TODO: Figure out how to solve these by changing Mustache templates.
 ignore = [
+  "E402",
   "F401",
   "E501",
   "F841",
