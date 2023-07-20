@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/gentrace/gentrace-python/compare/v0.13.0...v0.14.0) (2023-07-20)
+
+
+### Features
+
+* when ingesting test runs, support outputs (a JSON blob) and deprecate output / outputSteps ([#124](https://github.com/gentrace/gentrace-python/issues/124)) ([c63e23c](https://github.com/gentrace/gentrace-python/commit/c63e23cc1cd4bd87ef1f9bfbeb8525e5bfc9d832))
+
 ## [0.13.0](https://github.com/gentrace/gentrace-python/compare/v0.12.1...v0.13.0) (2023-07-18)
 
 
