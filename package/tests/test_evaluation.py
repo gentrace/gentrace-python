@@ -65,9 +65,9 @@ def test_evaluation_submit_test_run(
 
     results = []
     for case in test_cases:
-        results.append(
-            "This is an output",
-        )
+        results.append({
+            "value": "This is an output",
+        })
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -88,10 +88,10 @@ def test_evaluation_submit_test_run(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = gentrace.submit_test_results(
+    result = gentrace.submit_test_result(
         set_id="201196DC-9471-4B28-A051-C21AE45F247A",
         test_cases=test_cases,
-        outputs=results,
+        outputs_list=results,
     )
 
     assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
@@ -123,15 +123,10 @@ def test_evaluation_submit_test_run_output_steps(
 
     outputs = []
     for _ in test_cases:
-        outputs.append(
-            "This is an output",
-        )
-
-    output_steps: List[List[OutputStep]] = []
-    for _ in test_cases:
-        output_steps.append(
-            [{"key": "compose", "output": "This is an output", "monkies": "testing"}]
-        )
+        outputs.append({
+            "value": "This is an output",
+            "steps": [{"key": "compose", "output": "This is an output", "monkies": "testing"}],
+        })
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -152,26 +147,13 @@ def test_evaluation_submit_test_run_output_steps(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    result = gentrace.submit_test_results(
+    result = gentrace.submit_test_result(
         set_id="201196DC-9471-4B28-A051-C21AE45F247A",
         test_cases=test_cases,
-        outputs=outputs,
-        output_steps=output_steps,
+        outputs_list=outputs,
     )
 
     assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
-
-
-def test_evaluation_submit_throws(
-    mocker, test_cases, setup_teardown_openai, test_run_response
-):
-    with pytest.raises(ValueError):
-        gentrace.submit_test_results(
-            set_id="201196DC-9471-4B28-A051-C21AE45F247A",
-            test_cases=[1, 2, 3],
-            outputs=[1, 2, 3, 4],
-            output_steps=[1, 2],
-        )
 
 
 def test_evaluation_submit_prepared_test_run(
