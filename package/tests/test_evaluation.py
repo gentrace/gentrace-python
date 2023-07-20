@@ -65,9 +65,11 @@ def test_evaluation_submit_test_run(
 
     results = []
     for case in test_cases:
-        results.append({
-            "value": "This is an output",
-        })
+        results.append(
+            {
+                "value": "This is an output",
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -123,10 +125,18 @@ def test_evaluation_submit_test_run_output_steps(
 
     outputs = []
     for _ in test_cases:
-        outputs.append({
-            "value": "This is an output",
-            "steps": [{"key": "compose", "output": "This is an output", "monkies": "testing"}],
-        })
+        outputs.append(
+            {
+                "value": "This is an output",
+                "steps": [
+                    {
+                        "key": "compose",
+                        "output": "This is an output",
+                        "monkies": "testing",
+                    }
+                ],
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()

@@ -114,6 +114,7 @@ class OutputStep(TypedDict):
     output: str
     inputs: Optional[dict[str, Any]]
 
+
 def submit_test_result(
     set_id: str,
     test_cases: List[TestCase],
@@ -142,9 +143,7 @@ def submit_test_result(
 
     test_results = []
 
-    for test_case, outputs in zip_longest(
-        test_cases, outputs_list, fillvalue=None
-    ):
+    for test_case, outputs in zip_longest(test_cases, outputs_list, fillvalue=None):
         result = {
             "caseId": test_case["id"],
             "inputs": json.loads(test_case["inputs"])
@@ -156,6 +155,7 @@ def submit_test_result(
         test_results.append(result)
 
     return submit_prepared_test_results(set_id, test_results)
+
 
 def submit_test_results(
     set_id: str,
