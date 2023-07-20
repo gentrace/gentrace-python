@@ -17,15 +17,16 @@ gentrace.init(
 
 cases = gentrace.get_test_cases(set_id=SET_ID)
 
-outputs = []
-output_steps: List[List[OutputStep]] = []
+outputs_list = []
 
 for case in cases:
-    outputs.append("This are some outputs")
-    output_steps.append([{"key": "compose", "output": "Testing information"}])
+    outputs_list.append({ 
+        "values": "This are some outputs", 
+        "steps": [{"key": "compose", "output": "Testing information"}]
+    })
 
-result = gentrace.submit_test_results(
-    SET_ID, test_cases=cases, outputs=outputs, output_steps=output_steps
+result = gentrace.submit_test_result(
+    SET_ID, test_cases=cases, outputs_list=outputs_list
 )
 
 print(result["runId"])

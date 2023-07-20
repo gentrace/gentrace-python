@@ -114,6 +114,48 @@ class OutputStep(TypedDict):
     output: str
     inputs: Optional[dict[str, Any]]
 
+def submit_test_result(
+    set_id: str,
+    test_cases: List[TestCase],
+    outputs_list: List[dict[str, Any]],
+) -> Run:
+    """
+    Submits a test result by creating TestResult objects from given test cases and corresponding outputs.
+
+    Args:
+        set_id (str): The identifier of the test set.
+        test_cases (List[TestCase]): A list of TestCase objects.
+        outputs_list (List[dict[str, Any]]): A list of outputs corresponding to each TestCase.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        Run: The response data from the Gentrace API's testRunPost method.
+    """
+    api = GENTRACE_CONFIG_STATE["global_gentrace_api"]
+    if not api:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    if len(test_cases) != len(outputs_list):
+        raise ValueError("`test_cases` and `outputs` should be the same length.")
+
+    test_results = []
+
+    for test_case, outputs in zip_longest(
+        test_cases, outputs_list, fillvalue=None
+    ):
+        result = {
+            "caseId": test_case["id"],
+            "inputs": json.loads(test_case["inputs"])
+            if isinstance(test_case["inputs"], str)
+            else test_case["inputs"],
+            "outputs": outputs,
+        }
+
+        test_results.append(result)
+
+    return submit_prepared_test_results(set_id, test_results)
 
 def submit_test_results(
     set_id: str,
@@ -122,6 +164,7 @@ def submit_test_results(
     output_steps: Optional[List[List[OutputStep]]] = [],
 ) -> Run:
     """
+    DEPRECATED - use submit_test_result instead.
     Submits test results by creating TestResult objects from given test cases and corresponding outputs.
 
     Args:
@@ -196,6 +239,7 @@ def get_test_sets(
 
 __all__ = [
     "get_test_cases",
+    "submit_test_result",
     "submit_test_results",
     "get_test_sets",
     "submit_prepared_test_results",

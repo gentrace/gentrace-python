@@ -494,9 +494,8 @@ with gentrace.ApiClient(configuration) as api_client:
             dict(
                 id="id_example",
                 case_id="case_id_example",
-                inputs=dict(
-                    "key": "key_example",
-                ),
+                inputs=dict(),
+                outputs=dict(),
                 output="output_example",
                 output_steps=[
                     dict(
@@ -571,11 +570,12 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**output** | str,  | str,  | The expected output for the test case | 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test result | [optional] value must be a uuid
-**[outputSteps](#outputSteps)** | list, tuple, None,  | tuple, NoneClass,  |  | [optional] 
+**[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
+**output** | str,  | str,  | Use outputs object instead. | [optional] 
+**[outputSteps](#outputSteps)** | list, tuple, None,  | tuple, NoneClass,  | Use outputs.steps insteads. | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -590,14 +590,30 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
-# outputSteps
+# outputs
+
+The returned outputs for the test case
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-list, tuple, None,  | tuple, NoneClass,  |  | 
+dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# outputSteps
+
+Use outputs.steps insteads.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  | Use outputs.steps insteads. | 
 
 ### Tuple Items
 Class Name | Input Type | Accessed Type | Description | Notes
