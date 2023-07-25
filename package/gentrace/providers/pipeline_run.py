@@ -5,7 +5,7 @@ import inspect
 import threading
 import time
 import uuid
-from typing import Any, Dict, List, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
@@ -85,7 +85,32 @@ class PipelineRun:
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
 
-    def measure(self, func, **kwargs):
+    # TODO: Must create an asynchronous version of this function
+    def measure(self, func: Callable[..., Any], **kwargs):
+        """
+        Measures the execution time of a function and logs the result as a `StepRun`.
+        Also logs additional information about the function invocation.
+
+        Parameters:
+        func (Callable[..., Any]): The function whose execution time is to be measured.
+        **kwargs: Arbitrary keyword arguments. These are passed directly to the function.
+                  If a "step_info" argument is included, it should be a dictionary containing
+                  additional metadata about the function invocation. Supported keys are "provider",
+                  "invocation", and "model_params". The "step_info" argument is not passed to the
+                  function.
+
+        Returns:
+        The return value of the function invocation.
+
+        Raises:
+        Any exceptions raised by the function will be propagated.
+
+        Example:
+        def add(x, y):
+            return x + y
+
+        measure(add, x=1, y=2, step_info={"provider": "my_provider", "invocation": "add invocation"})
+        """
         input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
 
         step_info = kwargs.get("step_info", {})
@@ -109,7 +134,29 @@ class PipelineRun:
             )
         )
 
-    def checkpoint(self, step):
+    def checkpoint(self, step_info):
+        """
+        Creates a checkpoint by recording a `StepRun` instance with execution metadata and appending it to `self.step_runs`.
+        If there are no prior steps, elapsed time is set to 0 and start and end times are set to the current timestamp.
+        If prior steps exist, calculates the elapsed time using the end time of the last `StepRun`.
+
+        Parameters:
+        step_info (dict): The information about the step to checkpoint. It should include "inputs" and "outputs".
+                    Optionally, it can also include "provider", "invocation" and "modelParams".
+
+        Returns:
+        None
+
+        Example:
+        checkpoint_step = {
+            "provider": "MyProvider",
+            "invocation": "doSomething",
+            "inputs": {"x": 10, "y": 20},
+            "outputs": {"result": 30}
+        }
+
+        checkpoint(checkpoint_step)
+        """
         last_element = self.step_runs[-1] if self.step_runs else None
 
         if last_element:
@@ -118,14 +165,14 @@ class PipelineRun:
             elapsed_time = end_time_new - last_element["end_time"]
             self.step_runs.append(
                 StepRun(
-                    step.get("provider", "undeclared"),
-                    step.get("invocation", "undeclared"),
+                    step_info.get("provider", "undeclared"),
+                    step_info.get("invocation", "undeclared"),
                     elapsed_time,
                     step_start_time,
                     end_time_new,
-                    step["inputs"],
-                    step.get("modelParams", {}),
-                    step["outputs"],
+                    step_info.get("inputs", {}),
+                    step_info.get("modelParams", {}),
+                    step_info.get("outputs", {}),
                 )
             )
         else:
@@ -133,14 +180,14 @@ class PipelineRun:
             start_and_end_time = time.time()
             self.step_runs.append(
                 StepRun(
-                    step.get("provider", "undeclared"),
-                    step.get("invocation", "undeclared"),
+                    step_info.get("provider", "undeclared"),
+                    step_info.get("invocation", "undeclared"),
                     elapsed_time,
                     start_and_end_time,
                     start_and_end_time,
-                    step.get("inputs", {}),
-                    step.get("modelParams", {}),
-                    step.get("outputs", {}),
+                    step_info.get("inputs", {}),
+                    step_info.get("modelParams", {}),
+                    step_info.get("outputs", {}),
                 )
             )
 
