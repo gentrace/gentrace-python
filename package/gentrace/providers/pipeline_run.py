@@ -12,7 +12,7 @@ from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import pipeline_run_post_background
+from gentrace.providers.utils import run_post_background
 
 _pipeline_run_loop = None
 _pipeline_tasks = []
@@ -263,7 +263,7 @@ class PipelineRun:
         pipeline_run_id = str(uuid.uuid4())
 
         try:
-            pipeline_post_response = await pipeline_run_post_background(
+            pipeline_post_response = await run_post_background(
                 core_api,
                 {
                     "id": pipeline_run_id,
@@ -308,7 +308,7 @@ class PipelineRun:
 
         if not wait_for_server:
             fire_and_forget(
-                pipeline_run_post_background(
+                run_post_background(
                     core_api,
                     {
                         "id": self.pipeline_run_id,
@@ -322,7 +322,7 @@ class PipelineRun:
 
         if wait_for_server:
             try:
-                pipeline_post_response = core_api.pipeline_run_post(
+                pipeline_post_response = core_api.run_post(
                     {
                         "id": self.pipeline_run_id,
                         "name": self.pipeline.id,
