@@ -143,6 +143,21 @@ def test_pinecone_self_contained_fetch_server(setup_teardown_pinecone):
     print(setup_teardown_pinecone)
 
 
+def test_pinecone_self_contained_fetch_server_with_slug(setup_teardown_pinecone):
+    responses.add_passthru(PINECONE_API_PATTERN)
+
+    pinecone.init(
+        api_key=os.getenv("PINECONE_API_KEY"),
+    )
+
+    result = pinecone.Index("openai-trec").fetch(
+        ids=["3980"], pipeline_slug="self-contained-pinecone-fetch"
+    )
+
+    assert uuid.UUID(result["pipelineRunId"]) is not None
+    print(setup_teardown_pinecone)
+
+
 def test_pinecone_self_contained_query_server(setup_teardown_pinecone, vector):
     responses.add_passthru(PINECONE_API_PATTERN)
 
