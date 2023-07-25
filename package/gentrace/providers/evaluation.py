@@ -1,7 +1,7 @@
 import json
 import os
 from itertools import zip_longest
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, Optional, TypedDict, Union
 
 from gentrace.model.test_case import TestCase
 from gentrace.providers.init import (
@@ -11,6 +11,10 @@ from gentrace.providers.init import (
 
 class Run(TypedDict):
     runId: str
+
+
+class Result(TypedDict):
+    resultId: str
 
 
 class TestCaseDict(TypedDict):
@@ -48,6 +52,7 @@ def get_test_cases(set_id: str) -> List[TestCaseDict]:
 
 def submit_prepared_test_results(set_id: str, test_results: list[Dict]) -> Run:
     """
+    DEPRECATED - use run_test instead.
     Submits prepared test results to the Gentrace API for a given set ID. This method requires that you
     create TestResult objects yourself. We recommend using the submitTestResults method instead.
 
@@ -114,12 +119,14 @@ class OutputStep(TypedDict):
     output: str
     inputs: Optional[dict[str, Any]]
 
+
 def submit_test_result(
     set_id: str,
     test_cases: List[TestCase],
     outputs_list: List[dict[str, Any]],
 ) -> Run:
     """
+    DEPRECATED - use run_test instead.
     Submits a test result by creating TestResult objects from given test cases and corresponding outputs.
 
     Args:
@@ -142,9 +149,7 @@ def submit_test_result(
 
     test_results = []
 
-    for test_case, outputs in zip_longest(
-        test_cases, outputs_list, fillvalue=None
-    ):
+    for test_case, outputs in zip_longest(test_cases, outputs_list, fillvalue=None):
         result = {
             "caseId": test_case["id"],
             "inputs": json.loads(test_case["inputs"])
@@ -157,6 +162,7 @@ def submit_test_result(
 
     return submit_prepared_test_results(set_id, test_results)
 
+
 def submit_test_results(
     set_id: str,
     test_cases: List[TestCase],
@@ -164,7 +170,7 @@ def submit_test_results(
     output_steps: Optional[List[List[OutputStep]]] = [],
 ) -> Run:
     """
-    DEPRECATED - use submit_test_result instead.
+    DEPRECATED - use run_test instead.
     Submits test results by creating TestResult objects from given test cases and corresponding outputs.
 
     Args:
@@ -209,14 +215,16 @@ def submit_test_results(
     return submit_prepared_test_results(set_id, test_results)
 
 
-def get_test_sets(
+def get_pipelines(
     label: Optional[str] = None,
+    slug: Optional[str] = None,
 ) -> Run:
     """
-    Get test sets from the Gentrace API, optionally filtered by label.
+    Get pipelines from the Gentrace API, optionally filtered by label or by slug
 
     Args:
-        label (str, optional): The identifier of the test set. Defaults to None.
+        label (str, optional): The label of the test set. Defaults to None.
+        slug (str, optional): The slug of the test set. Defaults to None.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -228,21 +236,113 @@ def get_test_sets(
     if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
-    params = {"label": label} if label else {}
+    params = {}
 
-    response = api.test_sets_get(params)
+    if label:
+        params["label"] = label
 
-    test_sets = response.body["testSets"]
+    if slug:
+        params["slug"] = slug
 
-    return test_sets
+    response = api.pipelines_get(params)
+
+    pipelines = response.body["pipelines"]
+
+    return pipelines
+
+
+async def run_test(pipeline_slug: str, handler) -> Result:
+    """
+    Runs a test by pulling down test cases from Gentrace, running them through †he
+    provided callback (once per test case), and submitting the result report back to Gentrace.
+
+    Args:
+        pipeline_slug (str): The slug of the pipeline to run.
+        handler (Callable[[TestCase], List[Dict]]): A function that takes a TestCase and returns a list of outputs.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        Response data from the Gentrace API's /test-result POST method. This should just be a dictionary
+        similar to the following:
+
+        {
+            "resultId": "161c623d-ee92-417f-823a-cf9f7eccf557",
+        }
+    """
+
+    api = GENTRACE_CONFIG_STATE["global_gentrace_api"]
+    if not api:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    all_pipelines = get_pipelines()
+
+    matching_pipeline = next(
+        (pipeline for pipeline in all_pipelines if pipeline["slug"] == pipeline_slug),
+        None,
+    )
+
+    if not matching_pipeline:
+        raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+
+    test_cases = get_test_cases(matching_pipeline["id"])
+
+    test_runs = []
+
+    for test_case in test_cases:
+        [output, pipeline_run] = handler(test_case)
+
+        test_runs.append(
+            {
+                "caseId": test_case["id"],
+                "stepRuns": [
+                    {
+                        "provider": {
+                            "modelParams": step_run["modelParams"],
+                            "invocation": step_run["invocation"],
+                            "inputs": step_run["inputs"],
+                            "outputs": step_run["outputs"],
+                            "name": step_run["provider"],
+                        },
+                        "elapsedTime": step_run["elapsedTime"],
+                        "startTime": step_run["startTime"],
+                        "endTime": step_run["endTime"],
+                    }
+                    for step_run in pipeline_run["step_runs"]
+                ],
+            }
+        )
+
+    params = {
+        "pipelineId": matching_pipeline["id"],
+        "testRuns": test_runs,
+    }
+
+    if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
+        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+
+    if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
+        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
+            "GENTRACE_BRANCH"
+        )
+
+    if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
+        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
+            "GENTRACE_COMMIT"
+        )
+
+    response = api.test_result_post(params)
+    return response.body
 
 
 __all__ = [
     "get_test_cases",
     "submit_test_result",
     "submit_test_results",
-    "get_test_sets",
+    "get_pipelines",
     "submit_prepared_test_results",
     "construct_submission_payload",
+    "run_test",
     "OutputStep",
 ]

@@ -5,17 +5,19 @@ All URIs are relative to *https://gentrace.ai/api/v1*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**pipeline_run_post**](#pipeline_run_post) | **post** /pipeline-run | Create a pipeline run
-[**test_case_get**](#test_case_get) | **get** /test-case | Get test cases for a test set
+[**pipelines_get**](#pipelines_get) | **get** /pipelines | Get pipelines, optionally filtered by label
+[**run_post**](#run_post) | **post** /run | Create a run
+[**test_case_get**](#test_case_get) | **get** /test-case | Get test cases for a pipeline
+[**test_result_get**](#test_result_get) | **get** /test-result | Get test result by ID
+[**test_result_post**](#test_result_post) | **post** /test-result | Create a new test result from runs
 [**test_run_get**](#test_run_get) | **get** /test-run | Get test run by ID
 [**test_run_post**](#test_run_post) | **post** /test-run | Create a new test run from test results
-[**test_sets_get**](#test_sets_get) | **get** /test-sets | Get test sets, optionally filtered by label
 
-# **pipeline_run_post**
-<a name="pipeline_run_post"></a>
-> PipelineRunResponse pipeline_run_post(pipeline_run_request)
+# **pipelines_get**
+<a name="pipelines_get"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} pipelines_get()
 
-Create a pipeline run
+Get pipelines, optionally filtered by label
 
 ### Example
 
@@ -23,8 +25,175 @@ Create a pipeline run
 ```python
 import gentrace
 from gentrace.apis.tags import core_api
-from gentrace.model.pipeline_run_response import PipelineRunResponse
-from gentrace.model.pipeline_run_request import PipelineRunRequest
+from gentrace.model.pipeline import Pipeline
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api/v1"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = core_api.CoreApi(api_client)
+
+    # example passing only optional values
+    query_params = {
+        'label': "label_example",
+        'slug': "slug_example",
+    }
+    try:
+        # Get pipelines, optionally filtered by label
+        api_response = api_instance.pipelines_get(
+            query_params=query_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling CoreApi->pipelines_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+query_params | RequestQueryParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+label | LabelSchema | | optional
+slug | SlugSchema | | optional
+
+
+# LabelSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
+
+# SlugSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#pipelines_get.ApiResponseFor200) | Pipelines retrieved successfully
+400 | [ApiResponseFor400](#pipelines_get.ApiResponseFor400) | Invalid pipeline ID
+500 | [ApiResponseFor500](#pipelines_get.ApiResponseFor500) | Server error
+
+#### pipelines_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[pipelines](#pipelines)** | list, tuple,  | tuple,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# pipelines
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**Pipeline**]({{complexTypePrefix}}Pipeline.md) | [**Pipeline**]({{complexTypePrefix}}Pipeline.md) | [**Pipeline**]({{complexTypePrefix}}Pipeline.md) |  | 
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[pipelines](#pipelines)** | list, tuple,  | tuple,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# pipelines
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**Pipeline**]({{complexTypePrefix}}Pipeline.md) | [**Pipeline**]({{complexTypePrefix}}Pipeline.md) | [**Pipeline**]({{complexTypePrefix}}Pipeline.md) |  | 
+
+#### pipelines_get.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### pipelines_get.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **run_post**
+<a name="run_post"></a>
+> RunResponse run_post(run_request)
+
+Create a run
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import core_api
+from gentrace.model.run_request import RunRequest
+from gentrace.model.run_response import RunResponse
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api/v1
 # See configuration.py for a list of all supported configuration parameters.
@@ -47,11 +216,12 @@ with gentrace.ApiClient(configuration) as api_client:
     api_instance = core_api.CoreApi(api_client)
 
     # example passing only required values which don't have defaults set
-    body = PipelineRunRequest(
+    body = RunRequest(
         id="id_example",
+        slug="slug_example",
         name="name_example",
         step_runs=[
-            dict(
+            StepRun(
                 provider=dict(
                     name="name_example",
                     invocation="invocation_example",
@@ -66,13 +236,13 @@ with gentrace.ApiClient(configuration) as api_client:
         ],
     )
     try:
-        # Create a pipeline run
-        api_response = api_instance.pipeline_run_post(
+        # Create a run
+        api_response = api_instance.run_post(
             body=body,
         )
         pprint(api_response)
     except gentrace.ApiException as e:
-        print("Exception when calling CoreApi->pipeline_run_post: %s\n" % e)
+        print("Exception when calling CoreApi->run_post: %s\n" % e)
 ```
 ### Parameters
 
@@ -90,7 +260,7 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 # SchemaForRequestBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**PipelineRunRequest**](../../models/PipelineRunRequest.md) |  | 
+[**RunRequest**](../../models/RunRequest.md) |  | 
 
 
 ### Return Types, Responses
@@ -98,11 +268,11 @@ Type | Description  | Notes
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#pipeline_run_post.ApiResponseFor200) | Stored pipeline run
-400 | [ApiResponseFor400](#pipeline_run_post.ApiResponseFor400) | Bad request
-500 | [ApiResponseFor500](#pipeline_run_post.ApiResponseFor500) | Internal server error
+200 | [ApiResponseFor200](#run_post.ApiResponseFor200) | Stored run
+400 | [ApiResponseFor400](#run_post.ApiResponseFor400) | Bad request
+500 | [ApiResponseFor500](#run_post.ApiResponseFor500) | Internal server error
 
-#### pipeline_run_post.ApiResponseFor200
+#### run_post.ApiResponseFor200
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
@@ -112,23 +282,23 @@ headers | Unset | headers were not defined |
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**PipelineRunResponse**](../../models/PipelineRunResponse.md) |  | 
+[**RunResponse**](../../models/RunResponse.md) |  | 
 
 
 # SchemaFor200ResponseBodyApplicationJson
 Type | Description  | Notes
 ------------- | ------------- | -------------
-[**PipelineRunResponse**](../../models/PipelineRunResponse.md) |  | 
+[**RunResponse**](../../models/RunResponse.md) |  | 
 
 
-#### pipeline_run_post.ApiResponseFor400
+#### run_post.ApiResponseFor400
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
 body | Unset | body was not defined |
 headers | Unset | headers were not defined |
 
-#### pipeline_run_post.ApiResponseFor500
+#### run_post.ApiResponseFor500
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
@@ -143,9 +313,9 @@ headers | Unset | headers were not defined |
 
 # **test_case_get**
 <a name="test_case_get"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_case_get(set_id)
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_case_get()
 
-Get test cases for a test set
+Get test cases for a pipeline
 
 ### Example
 
@@ -175,12 +345,13 @@ with gentrace.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = core_api.CoreApi(api_client)
 
-    # example passing only required values which don't have defaults set
+    # example passing only optional values
     query_params = {
-        'setId': "setId_example",
+        'pipelineId': "pipelineId_example",
+        'pipelineSlug': "pipelineSlug_example",
     }
     try:
-        # Get test cases for a test set
+        # Get test cases for a pipeline
         api_response = api_instance.test_case_get(
             query_params=query_params,
         )
@@ -203,15 +374,23 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-setId | SetIdSchema | | 
+pipelineId | PipelineIdSchema | | optional
+pipelineSlug | PipelineSlugSchema | | optional
 
 
-# SetIdSchema
+# PipelineIdSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 str, uuid.UUID,  | str,  |  | value must be a uuid
+
+# PipelineSlugSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
 
 ### Return Types, Responses
 
@@ -219,7 +398,7 @@ Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
 200 | [ApiResponseFor200](#test_case_get.ApiResponseFor200) | Test cases retrieved successfully
-400 | [ApiResponseFor400](#test_case_get.ApiResponseFor400) | Invalid test set ID
+400 | [ApiResponseFor400](#test_case_get.ApiResponseFor400) | Invalid pipeline ID
 500 | [ApiResponseFor500](#test_case_get.ApiResponseFor500) | Server error
 
 #### test_case_get.ApiResponseFor200
@@ -292,6 +471,347 @@ Name | Type | Description  | Notes
 response | urllib3.HTTPResponse | Raw response |
 body | Unset | body was not defined |
 headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **test_result_get**
+<a name="test_result_get"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_result_get(result_id)
+
+Get test result by ID
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import core_api
+from gentrace.model.test_result import TestResult
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api/v1"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = core_api.CoreApi(api_client)
+
+    # example passing only required values which don't have defaults set
+    query_params = {
+        'resultId': "resultId_example",
+    }
+    try:
+        # Get test result by ID
+        api_response = api_instance.test_result_get(
+            query_params=query_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling CoreApi->test_result_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+query_params | RequestQueryParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+resultId | ResultIdSchema | | 
+
+
+# ResultIdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#test_result_get.ApiResponseFor200) | Test result retrieved successfully
+
+#### test_result_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**testResult** | [**TestResult**]({{complexTypePrefix}}TestResult.md) | [**TestResult**]({{complexTypePrefix}}TestResult.md) |  | [optional] 
+**[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# stats
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**testRun** | [**TestResult**]({{complexTypePrefix}}TestResult.md) | [**TestResult**]({{complexTypePrefix}}TestResult.md) |  | [optional] 
+**[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# stats
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**total** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**failure** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**pending** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**done** | decimal.Decimal, int, float,  | decimal.Decimal,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **test_result_post**
+<a name="test_result_post"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_result_post(any_type)
+
+Create a new test result from runs
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import core_api
+from gentrace.model.step_run import StepRun
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api/v1
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api/v1"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = core_api.CoreApi(api_client)
+
+    # example passing only required values which don't have defaults set
+    body = dict(
+        pipeline_slug="pipeline_slug_example",
+        pipeline_id="pipeline_id_example",
+        branch="branch_example",
+        commit="commit_example",
+        name="name_example",
+        test_runs=[
+            dict(
+                id="id_example",
+                case_id="case_id_example",
+                step_runs=[
+                    StepRun(
+                        provider=dict(
+                            name="name_example",
+                            invocation="invocation_example",
+                            model_params=dict(),
+                            inputs=dict(),
+                            outputs=dict(),
+                        ),
+                        elapsed_time=1,
+                        start_time="1970-01-01T00:00:00.00Z",
+                        end_time="1970-01-01T00:00:00.00Z",
+                    )
+                ],
+            )
+        ],
+    )
+    try:
+        # Create a new test result from runs
+        api_response = api_instance.test_result_post(
+            body=body,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling CoreApi->test_result_post: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[testRuns](#testRuns)** | list, tuple,  | tuple,  |  | 
+**pipelineSlug** | str,  | str,  | The pipeline slug to create the test result for. Only one of pipelineSlug or pipelineId is required. | [optional] 
+**pipelineId** | str,  | str,  | The pipeline ID to create the test result for. Only one of pipelineSlug or pipelineId is required. | [optional] 
+**branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
+**commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
+**name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# testRuns
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[items](#items) | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+# items
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[stepRuns](#stepRuns)** | list, tuple,  | tuple,  | Use outputs.steps insteads. | 
+**caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
+**id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# stepRuns
+
+Use outputs.steps insteads.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  | Use outputs.steps insteads. | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) |  | 
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#test_result_post.ApiResponseFor200) | Test result created successfully
+
+#### test_result_post.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**resultId** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**resultId** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### Authorization
 
@@ -688,164 +1208,6 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-### Authorization
-
-[bearerAuth](../../../README.md#bearerAuth)
-
-[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
-
-# **test_sets_get**
-<a name="test_sets_get"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_sets_get()
-
-Get test sets, optionally filtered by label
-
-### Example
-
-* Bearer Authentication (bearerAuth):
-```python
-import gentrace
-from gentrace.apis.tags import core_api
-from gentrace.model.test_set import TestSet
-from pprint import pprint
-# Defining the host is optional and defaults to https://gentrace.ai/api/v1
-# See configuration.py for a list of all supported configuration parameters.
-configuration = gentrace.Configuration(
-    host = "https://gentrace.ai/api/v1"
-)
-
-# The client must configure the authentication and authorization parameters
-# in accordance with the API server security policy.
-# Examples for each auth method are provided below, use the example that
-# satisfies your auth use case.
-
-# Configure Bearer authorization: bearerAuth
-configuration = gentrace.Configuration(
-    access_token = 'YOUR_BEARER_TOKEN'
-)
-# Enter a context with an instance of the API client
-with gentrace.ApiClient(configuration) as api_client:
-    # Create an instance of the API class
-    api_instance = core_api.CoreApi(api_client)
-
-    # example passing only optional values
-    query_params = {
-        'label': "label_example",
-    }
-    try:
-        # Get test sets, optionally filtered by label
-        api_response = api_instance.test_sets_get(
-            query_params=query_params,
-        )
-        pprint(api_response)
-    except gentrace.ApiException as e:
-        print("Exception when calling CoreApi->test_sets_get: %s\n" % e)
-```
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-query_params | RequestQueryParams | |
-accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
-stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
-timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
-skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
-
-### query_params
-#### RequestQueryParams
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-label | LabelSchema | | optional
-
-
-# LabelSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-### Return Types, Responses
-
-Code | Class | Description
-------------- | ------------- | -------------
-n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#test_sets_get.ApiResponseFor200) | Test sets retrieved successfully
-400 | [ApiResponseFor400](#test_sets_get.ApiResponseFor400) | Invalid test set ID
-500 | [ApiResponseFor500](#test_sets_get.ApiResponseFor500) | Server error
-
-#### test_sets_get.ApiResponseFor200
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
-headers | Unset | headers were not defined |
-
-# SchemaFor200ResponseBodyApplicationJson
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
-
-### Dictionary Keys
-Key | Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | ------------- | -------------
-**[testSets](#testSets)** | list, tuple,  | tuple,  |  | 
-**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-# testSets
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple,  | tuple,  |  | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) |  | 
-
-# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
-
-### Dictionary Keys
-Key | Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | ------------- | -------------
-**[testSets](#testSets)** | list, tuple,  | tuple,  |  | 
-**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-# testSets
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple,  | tuple,  |  | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) | [**TestSet**]({{complexTypePrefix}}TestSet.md) |  | 
-
-#### test_sets_get.ApiResponseFor400
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-response | urllib3.HTTPResponse | Raw response |
-body | Unset | body was not defined |
-headers | Unset | headers were not defined |
-
-#### test_sets_get.ApiResponseFor500
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
-response | urllib3.HTTPResponse | Raw response |
-body | Unset | body was not defined |
-headers | Unset | headers were not defined |
 
 ### Authorization
 
