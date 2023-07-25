@@ -28,7 +28,7 @@ result = pinecone.Index("openai-trec").upsert(
             "values": DEFAULT_VECTOR,
         },
     ],
-    pipeline_id="self-contained-pinecone-upsert",
+    pipeline_slug="self-contained-pinecone-upsert",
 )
 
 gentrace.flush()

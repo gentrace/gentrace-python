@@ -20,7 +20,7 @@ openai.api_key = os.getenv("OPENAI_KEY")
 result = openai.Embedding.create(
     input="sample text",
     model="text-similarity-davinci-001",
-    pipeline_id="testing-value",
+    pipeline_slug="testing-value",
 )
 
 gentrace.flush()

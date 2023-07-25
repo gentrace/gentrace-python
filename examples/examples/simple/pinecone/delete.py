@@ -19,7 +19,7 @@ pinecone.init(
 )
 
 result = pinecone.Index("openai-trec").delete(
-    ids=["3980"], pipeline_id="self-contained-pinecone-delete"
+    ids=["3980"], pipeline_slug="self-contained-pinecone-delete"
 )
 
 gentrace.flush()

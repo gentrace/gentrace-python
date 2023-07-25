@@ -19,7 +19,7 @@ async def main():
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.Completion.acreate(
-        pipeline_id="text-generation",
+        pipeline_slug="text-generation",
         model="text-davinci-003",
         prompt_template="Hello world {{ name }}",
         prompt_inputs={"name": "test"},

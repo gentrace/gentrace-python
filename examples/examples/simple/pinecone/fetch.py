@@ -19,7 +19,7 @@ pinecone.init(
 )
 
 result = pinecone.Index("openai-trec").fetch(
-    ids=["3980"], pipeline_id="self-contained-pinecone-fetch"
+    ids=["3980"], pipeline_slug="self-contained-pinecone-fetch"
 )
 
 gentrace.flush()
