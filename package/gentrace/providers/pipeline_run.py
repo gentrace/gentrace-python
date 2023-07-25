@@ -3,8 +3,9 @@ import concurrent
 import copy
 import inspect
 import threading
+import time
 import uuid
-from typing import Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
@@ -83,6 +84,65 @@ class PipelineRun:
 
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
+
+    def measure(self, func, **kwargs):
+        input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
+
+        step_info = kwargs.get("step_info", {})
+
+        start_time = time.time()
+        output = func(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+
+        self.add_step_run(
+            StepRun(
+                step_info.get("provider", "undeclared"),
+                step_info.get("invocation", "undeclared"),
+                elapsed_time,
+                start_time,
+                end_time,
+                input_params,
+                step_info.get("model_params", {}),
+                output,
+            )
+        )
+
+    def checkpoint(self, step):
+        last_element = self.step_runs[-1] if self.step_runs else None
+
+        if last_element:
+            step_start_time = last_element["end_time"]
+            end_time_new = time.time()
+            elapsed_time = end_time_new - last_element["end_time"]
+            self.step_runs.append(
+                StepRun(
+                    step.get("provider", "undeclared"),
+                    step.get("invocation", "undeclared"),
+                    elapsed_time,
+                    step_start_time,
+                    end_time_new,
+                    step["inputs"],
+                    step.get("modelParams", {}),
+                    step["outputs"],
+                )
+            )
+        else:
+            elapsed_time = 0
+            start_and_end_time = time.time()
+            self.step_runs.append(
+                StepRun(
+                    step.get("provider", "undeclared"),
+                    step.get("invocation", "undeclared"),
+                    elapsed_time,
+                    start_and_end_time,
+                    start_and_end_time,
+                    step.get("inputs", {}),
+                    step.get("modelParams", {}),
+                    step.get("outputs", {}),
+                )
+            )
 
     async def asubmit(self) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
