@@ -12,7 +12,11 @@ from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import run_post_background
+from gentrace.providers.utils import (
+    from_date_string,
+    run_post_background,
+    to_date_string,
+)
 
 _pipeline_run_loop = None
 _pipeline_tasks = []
@@ -163,23 +167,30 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        output = func(**kwargs)
+        outputs = func(**kwargs)
         end_time = time.time()
 
-        elapsed_time = end_time - start_time
+        outputs_for_step_run = outputs
+
+        if not isinstance(outputs_for_step_run, dict):
+            outputs_for_step_run = {"value": outputs_for_step_run}
+
+        elapsed_time = int(end_time - start_time)
 
         self.add_step_run(
             StepRun(
                 step_info.get("provider", "undeclared"),
                 step_info.get("invocation", "undeclared"),
                 elapsed_time,
-                start_time,
-                end_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
                 input_params,
                 step_info.get("model_params", {}),
-                output,
+                outputs_for_step_run,
             )
         )
+
+        return outputs
 
     def checkpoint(self, step_info):
         """
@@ -207,16 +218,16 @@ class PipelineRun:
         last_element = self.step_runs[-1] if self.step_runs else None
 
         if last_element:
-            step_start_time = last_element["end_time"]
+            step_start_time = from_date_string(last_element.end_time)
             end_time_new = time.time()
-            elapsed_time = end_time_new - last_element["end_time"]
+            elapsed_time = int(end_time_new - step_start_time)
             self.step_runs.append(
                 StepRun(
                     step_info.get("provider", "undeclared"),
                     step_info.get("invocation", "undeclared"),
                     elapsed_time,
-                    step_start_time,
-                    end_time_new,
+                    to_date_string(step_start_time),
+                    to_date_string(end_time_new),
                     step_info.get("inputs", {}),
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),
@@ -230,8 +241,8 @@ class PipelineRun:
                     step_info.get("provider", "undeclared"),
                     step_info.get("invocation", "undeclared"),
                     elapsed_time,
-                    start_and_end_time,
-                    start_and_end_time,
+                    to_date_string(start_and_end_time),
+                    to_date_string(start_and_end_time),
                     step_info.get("inputs", {}),
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),

@@ -11,6 +11,7 @@ from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 __all__ = [
     "to_date_string",
+    "from_date_string",
     "run_post_background",
     "log_debug",
     "log_info",
@@ -35,6 +36,13 @@ def to_date_string(time_value):
     utc_time = datetime.utcfromtimestamp(time_value)
     utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return utc_time_str[:-4] + "Z"
+
+
+def from_date_string(time_stamp):
+    dt = datetime.fromisoformat(time_stamp)
+    timestamp = dt.timestamp()
+    seconds_since_epoch = int(timestamp)
+    return seconds_since_epoch
 
 
 def log_debug(message, **params):

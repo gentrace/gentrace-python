@@ -23,7 +23,7 @@ pipeline = gentrace.Pipeline(
 pipeline.setup()
 
 
-def create_embedding(test_case):
+def create_embedding_callback(test_case):
     runner = pipeline.start()
 
     openai_handle = runner.get_openai()
@@ -35,6 +35,6 @@ def create_embedding(test_case):
     return [output, runner]
 
 
-result = gentrace.run_test(PIPELINE_SLUG, create_embedding)
+result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback)
 
 print("Result: ", result)

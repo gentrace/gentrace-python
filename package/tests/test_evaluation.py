@@ -292,3 +292,83 @@ def test_evaluation_get_pipelines(mocker, pipelines, setup_teardown_openai):
     pipelines = gentrace.get_pipelines()
 
     assert len(pipelines) == 2
+
+
+def test_evaluation_measure(mocker, setup_teardown_openai, test_result_response):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    def create_measure_callback(test_case):
+        runner = pipeline.start()
+        output = runner.measure(lambda x=5, y=3: x + y, x=100, y=1000)
+        return [output, runner]
+
+    result = gentrace.run_test("guess-the-year", create_measure_callback)
+
+    print("Result: ", result)
+
+
+def test_evaluation_measure_validate_steps(
+    mocker, setup_teardown_openai, test_result_response
+):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_measure_callback(test_case):
+        runner = pipeline.start()
+        output = runner.measure(lambda x=5, y=3: x + y, x=100, y=1000)
+
+        runner_list.append(runner)
+
+        return [output, runner]
+
+    response = gentrace.run_test("guess-the-year", create_measure_callback)
+
+    assert response.get("resultId", None) is not None
+
+    for runner in runner_list:
+        assert len(runner.step_runs) == 1
+        assert runner.step_runs[0].outputs == {"value": 1100}
+
+
+def test_evaluation_checkpoint(mocker, setup_teardown_openai, test_result_response):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_checkpoint_callback(test_case):
+        runner = pipeline.start()
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner_list.append(runner)
+
+        return ["something", runner]
+
+    response = gentrace.run_test("guess-the-year", create_checkpoint_callback)
+
+    assert response.get("resultId", None) is not None
+
+    for runner in runner_list:
+        assert len(runner.step_runs) == 2
+        assert runner.step_runs[0].outputs == {"value": 1100}
