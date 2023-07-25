@@ -1,32 +1,40 @@
 import os
-from typing import List
 
 import gentrace
 from dotenv import load_dotenv
-from gentrace.providers.evaluation import OutputStep
 
 load_dotenv()
 
-SET_ID = "9685b34e-2cac-5bd2-8751-c9e34ff9fd98"
+PIPELINE_SLUG = "guess-the-year"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    run_name="vivek python run",
+    run_name="vivek python run 2",
     host="http://localhost:3000/api/v1",
 )
 
-cases = gentrace.get_test_cases(set_id=SET_ID)
-
-outputs_list = []
-
-for case in cases:
-    outputs_list.append({ 
-        "values": "This are some outputs", 
-        "steps": [{"key": "compose", "output": "Testing information"}]
-    })
-
-result = gentrace.submit_test_result(
-    SET_ID, test_cases=cases, outputs_list=outputs_list
+pipeline = gentrace.Pipeline(
+    PIPELINE_SLUG,
+    openai_config={
+        "api_key": os.getenv("OPENAI_KEY"),
+    },
 )
 
-print(result["runId"])
+pipeline.setup()
+
+
+def create_embedding(test_case):
+    runner = pipeline.start()
+
+    openai_handle = runner.get_openai()
+
+    output = openai_handle.Embedding.create(
+        input="sample text", model="text-similarity-davinci-001"
+    )
+
+    return [output, runner]
+
+
+result = gentrace.run_test(PIPELINE_SLUG, create_embedding)
+
+print("Result: ", result)

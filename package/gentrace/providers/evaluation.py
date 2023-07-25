@@ -260,7 +260,7 @@ def get_pipelines(
     return pipelines
 
 
-async def run_test(pipeline_slug: str, handler) -> Result:
+def run_test(pipeline_slug: str, handler) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
     provided callback (once per test case), and submitting the result report back to Gentrace.
@@ -309,17 +309,17 @@ async def run_test(pipeline_slug: str, handler) -> Result:
                 "stepRuns": [
                     {
                         "provider": {
-                            "modelParams": step_run["modelParams"],
-                            "invocation": step_run["invocation"],
-                            "inputs": step_run["inputs"],
-                            "outputs": step_run["outputs"],
-                            "name": step_run["provider"],
+                            "name": step_run.provider,
+                            "invocation": step_run.invocation,
+                            "modelParams": step_run.model_params,
+                            "inputs": step_run.inputs,
+                            "outputs": step_run.outputs,
                         },
-                        "elapsedTime": step_run["elapsedTime"],
-                        "startTime": step_run["startTime"],
-                        "endTime": step_run["endTime"],
+                        "elapsedTime": step_run.elapsed_time,
+                        "startTime": step_run.start_time,
+                        "endTime": step_run.end_time,
                     }
-                    for step_run in pipeline_run["step_runs"]
+                    for step_run in pipeline_run.step_runs
                 ],
             }
         )
