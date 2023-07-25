@@ -125,6 +125,7 @@ class TestCase(
                         _configuration=_configuration,
                         **kwargs,
                     )
+            setId = schemas.UUIDSchema
             __annotations__ = {
                 "id": id,
                 "createdAt": createdAt,
@@ -134,6 +135,7 @@ class TestCase(
                 "pipelineId": pipelineId,
                 "archivedAt": archivedAt,
                 "expectedOutputs": expectedOutputs,
+                "setId": setId,
             }
     
     createdAt: MetaOapg.properties.createdAt
@@ -168,9 +170,12 @@ class TestCase(
     def __getitem__(self, name: typing_extensions.Literal["expectedOutputs"]) -> MetaOapg.properties.expectedOutputs: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["setId"]) -> MetaOapg.properties.setId: ...
+    
+    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "inputs", "name", "pipelineId", "archivedAt", "expectedOutputs", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "inputs", "name", "pipelineId", "archivedAt", "expectedOutputs", "setId", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -200,9 +205,12 @@ class TestCase(
     def get_item_oapg(self, name: typing_extensions.Literal["expectedOutputs"]) -> typing.Union[MetaOapg.properties.expectedOutputs, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["setId"]) -> typing.Union[MetaOapg.properties.setId, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "inputs", "name", "pipelineId", "archivedAt", "expectedOutputs", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "inputs", "name", "pipelineId", "archivedAt", "expectedOutputs", "setId", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -217,6 +225,7 @@ class TestCase(
         updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
         archivedAt: typing.Union[MetaOapg.properties.archivedAt, None, str, datetime, schemas.Unset] = schemas.unset,
         expectedOutputs: typing.Union[MetaOapg.properties.expectedOutputs, dict, frozendict.frozendict, None, schemas.Unset] = schemas.unset,
+        setId: typing.Union[MetaOapg.properties.setId, str, uuid.UUID, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'TestCase':
@@ -231,6 +240,7 @@ class TestCase(
             updatedAt=updatedAt,
             archivedAt=archivedAt,
             expectedOutputs=expectedOutputs,
+            setId=setId,
             _configuration=_configuration,
             **kwargs,
         )
