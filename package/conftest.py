@@ -9,9 +9,9 @@ from fixtures.chat_completion import chat_completion_response
 from fixtures.completion import completion_response
 from fixtures.embedding import embedding_response
 from fixtures.gentrace import gentrace_pipeline_run_response
+from fixtures.pipelines import pipelines
 from fixtures.submit_test_run import test_run_response
 from fixtures.test_cases import test_cases
-from fixtures.test_sets import test_sets
 from fixtures.vector import vector
 
 

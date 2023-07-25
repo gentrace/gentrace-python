@@ -28,12 +28,16 @@ class TestCaseDict(TypedDict):
     setId: str
 
 
-def get_test_cases(set_id: str) -> List[TestCaseDict]:
+def get_test_cases(
+    pipeline_id: Optional[str] = None, set_id: Optional[str] = None
+) -> List[TestCaseDict]:
     """
-    Retrieves test cases for a given set ID from the Gentrace API.
+    Retrieves test cases for a given pipeline ID from the Gentrace API.
 
     Args:
-        set_id (str): The ID of the test set to retrieve.
+        pipeline_id (str): The ID of the pipeline to retrieve test cases for.
+        set_id (str): DEPRECATED: The ID of the test set to retrieve test cases for. We renamed
+          TestSet -> Pipeline and will be removing this named parameter in the future.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
@@ -45,7 +49,12 @@ def get_test_cases(set_id: str) -> List[TestCaseDict]:
     if not api:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
-    response = api.test_case_get({"setId": set_id})
+    if not pipeline_id and not set_id:
+        raise ValueError("pipeline_id must be passed")
+
+    effective_pipeline_id = pipeline_id or set_id
+
+    response = api.test_case_get({"pipelineId": effective_pipeline_id})
     test_cases = response.body.get("testCases", [])
     return test_cases
 
@@ -258,7 +267,8 @@ async def run_test(pipeline_slug: str, handler) -> Result:
 
     Args:
         pipeline_slug (str): The slug of the pipeline to run.
-        handler (Callable[[TestCase], List[Dict]]): A function that takes a TestCase and returns a list of outputs.
+        handler (Callable[[TestCase], List[Dict]]): A function that takes a TestCase and returns a tuple of
+          the output and a PipelineRun class instance that contains the list of steps taken by the pipeline.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.

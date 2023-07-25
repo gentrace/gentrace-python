@@ -65,9 +65,11 @@ def test_evaluation_submit_test_run(
 
     results = []
     for case in test_cases:
-        results.append({
-            "value": "This is an output",
-        })
+        results.append(
+            {
+                "value": "This is an output",
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -123,10 +125,18 @@ def test_evaluation_submit_test_run_output_steps(
 
     outputs = []
     for _ in test_cases:
-        outputs.append({
-            "value": "This is an output",
-            "steps": [{"key": "compose", "output": "This is an output", "monkies": "testing"}],
-        })
+        outputs.append(
+            {
+                "value": "This is an output",
+                "steps": [
+                    {
+                        "key": "compose",
+                        "output": "This is an output",
+                        "monkies": "testing",
+                    }
+                ],
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -257,7 +267,7 @@ def test_validate_construct_submission_prioritizes_override():
     assert payload["commit"] == "test-commit-init"
 
 
-def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
+def test_evaluation_get_pipelines(mocker, test_sets, setup_teardown_openai):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
@@ -277,6 +287,6 @@ def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    test_sets = gentrace.get_test_sets()
+    test_sets = gentrace.get_pipelines()
 
     assert len(test_sets) == 2

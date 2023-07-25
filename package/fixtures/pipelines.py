@@ -2,9 +2,9 @@ import pytest
 
 
 @pytest.fixture
-def test_sets():
+def pipelines():
     return {
-        "testSets": [
+        "pipelines": [
             {
                 "id": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
                 "createdAt": "2023-07-18T11:08:09.842Z",
