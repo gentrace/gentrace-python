@@ -85,7 +85,54 @@ class PipelineRun:
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
 
-    # TODO: Must create an asynchronous version of this function
+    async def ameasure(self, func: Callable[..., Any], **kwargs):
+        """
+        Asyncrhonously measures the execution time of a function and logs the result as a `StepRun`.
+        Also logs additional information about the function invocation.
+
+        Parameters:
+        func (Callable[..., Any]): The asynchronous function whose execution time is to be measured.
+        **kwargs: Arbitrary keyword arguments. These are passed directly to the function.
+                  If a "step_info" argument is included, it should be a dictionary containing
+                  additional metadata about the function invocation. Supported keys are "provider",
+                  "invocation", and "model_params". The "step_info" argument is not passed to the
+                  function.
+
+        Returns:
+        The return value of the function invocation.
+
+        Raises:
+        Any exceptions raised by the function will be propagated.
+
+        Example:
+        async def add(x, y):
+            return x + y
+
+        await measure(add, x=1, y=2, step_info={"provider": "my_provider", "invocation": "add invocation"})
+        """
+        input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
+
+        step_info = kwargs.get("step_info", {})
+
+        start_time = time.time()
+        output = func(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+
+        self.add_step_run(
+            StepRun(
+                step_info.get("provider", "undeclared"),
+                step_info.get("invocation", "undeclared"),
+                elapsed_time,
+                start_time,
+                end_time,
+                input_params,
+                step_info.get("model_params", {}),
+                output,
+            )
+        )
+
     def measure(self, func: Callable[..., Any], **kwargs):
         """
         Measures the execution time of a function and logs the result as a `StepRun`.
