@@ -66,7 +66,7 @@ def create_completion_step_run(
 
     if is_self_contained:
         pipeline = Pipeline(
-            id=pipeline_slug,
+            slug=pipeline_slug,
             api_key=gentrace_config.access_token,
             host=gentrace_config.host,
         )
@@ -440,7 +440,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                 )
                 if is_self_contained:
                     pipeline = Pipeline(
-                        id=effective_pipeline_slug,
+                        slug=effective_pipeline_slug,
                         api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
@@ -479,7 +479,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         is_self_contained = not pipeline_run and effective_pipeline_slug
         if is_self_contained:
             pipeline = Pipeline(
-                id=effective_pipeline_slug,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -563,7 +563,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 if is_self_contained:
                     pipeline = Pipeline(
-                        id=effective_pipeline_slug,
+                        slug=effective_pipeline_slug,
                         api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
@@ -600,7 +600,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=effective_pipeline_slug,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -656,7 +656,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=effective_pipeline_slug,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -697,7 +697,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
-        
+
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
         start_time = time.time()
@@ -712,7 +712,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=effective_pipeline_slug,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )

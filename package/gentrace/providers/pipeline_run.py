@@ -267,7 +267,7 @@ class PipelineRun:
                 core_api,
                 {
                     "id": pipeline_run_id,
-                    "name": self.pipeline.id,
+                    "slug": self.pipeline.slug,
                     "stepRuns": step_runs_data,
                 },
             )
@@ -312,7 +312,7 @@ class PipelineRun:
                     core_api,
                     {
                         "id": self.pipeline_run_id,
-                        "name": self.pipeline.id,
+                        "slug": self.pipeline.slug,
                         "stepRuns": step_runs_data,
                     },
                 )
@@ -325,7 +325,7 @@ class PipelineRun:
                 pipeline_post_response = core_api.run_post(
                     {
                         "id": self.pipeline_run_id,
-                        "name": self.pipeline.id,
+                        "slug": self.pipeline.slug,
                         "stepRuns": step_runs_data,
                     }
                 )

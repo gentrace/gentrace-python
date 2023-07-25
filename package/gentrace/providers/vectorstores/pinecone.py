@@ -53,7 +53,7 @@ class ModifiedIndex(pinecone.Index):
                 gentrace_config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
 
             pipeline = Pipeline(
-                id=pipeline_slug,
+                slug=pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
