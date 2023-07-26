@@ -3,15 +3,20 @@ import concurrent
 import copy
 import inspect
 import threading
+import time
 import uuid
-from typing import Dict, List, Optional, cast
+from typing import Any, Callable, Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import pipeline_run_post_background
+from gentrace.providers.utils import (
+    from_date_string,
+    run_post_background,
+    to_date_string,
+)
 
 _pipeline_run_loop = None
 _pipeline_tasks = []
@@ -84,6 +89,166 @@ class PipelineRun:
     def add_step_run(self, step_run: StepRun):
         self.step_runs.append(step_run)
 
+    async def ameasure(self, func: Callable[..., Any], **kwargs):
+        """
+        Asyncrhonously measures the execution time of a function and logs the result as a `StepRun`.
+        Also logs additional information about the function invocation.
+
+        Parameters:
+        func (Callable[..., Any]): The asynchronous function whose execution time is to be measured.
+        **kwargs: Arbitrary keyword arguments. These are passed directly to the function.
+                  If a "step_info" argument is included, it should be a dictionary containing
+                  additional metadata about the function invocation. Supported keys are "provider",
+                  "invocation", and "model_params". The "step_info" argument is not passed to the
+                  function.
+
+        Returns:
+        The return value of the function invocation.
+
+        Raises:
+        Any exceptions raised by the function will be propagated.
+
+        Example:
+        async def add(x, y):
+            return x + y
+
+        await measure(add, x=1, y=2, step_info={"provider": "my_provider", "invocation": "add invocation"})
+        """
+        input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
+
+        step_info = kwargs.get("step_info", {})
+
+        start_time = time.time()
+        output = func(**kwargs)
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+
+        self.add_step_run(
+            StepRun(
+                step_info.get("provider", "undeclared"),
+                step_info.get("invocation", "undeclared"),
+                elapsed_time,
+                start_time,
+                end_time,
+                input_params,
+                step_info.get("model_params", {}),
+                output,
+            )
+        )
+
+    def measure(self, func: Callable[..., Any], **kwargs):
+        """
+        Measures the execution time of a function and logs the result as a `StepRun`.
+        Also logs additional information about the function invocation.
+
+        Parameters:
+        func (Callable[..., Any]): The function whose execution time is to be measured.
+        **kwargs: Arbitrary keyword arguments. These are passed directly to the function.
+                  If a "step_info" argument is included, it should be a dictionary containing
+                  additional metadata about the function invocation. Supported keys are "provider",
+                  "invocation", and "model_params". The "step_info" argument is not passed to the
+                  function.
+
+        Returns:
+        The return value of the function invocation.
+
+        Raises:
+        Any exceptions raised by the function will be propagated.
+
+        Example:
+        def add(x, y):
+            return x + y
+
+        measure(add, x=1, y=2, step_info={"provider": "my_provider", "invocation": "add invocation"})
+        """
+        input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
+
+        step_info = kwargs.get("step_info", {})
+
+        start_time = time.time()
+        outputs = func(**kwargs)
+        end_time = time.time()
+
+        outputs_for_step_run = outputs
+
+        if not isinstance(outputs_for_step_run, dict):
+            outputs_for_step_run = {"value": outputs_for_step_run}
+
+        elapsed_time = int(end_time - start_time)
+
+        self.add_step_run(
+            StepRun(
+                step_info.get("provider", "undeclared"),
+                step_info.get("invocation", "undeclared"),
+                elapsed_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
+                input_params,
+                step_info.get("model_params", {}),
+                outputs_for_step_run,
+            )
+        )
+
+        return outputs
+
+    def checkpoint(self, step_info):
+        """
+        Creates a checkpoint by recording a `StepRun` instance with execution metadata and appending it to `self.step_runs`.
+        If there are no prior steps, elapsed time is set to 0 and start and end times are set to the current timestamp.
+        If prior steps exist, calculates the elapsed time using the end time of the last `StepRun`.
+
+        Parameters:
+        step_info (dict): The information about the step to checkpoint. It should include "inputs" and "outputs".
+                    Optionally, it can also include "provider", "invocation" and "modelParams".
+
+        Returns:
+        None
+
+        Example:
+        checkpoint_step = {
+            "provider": "MyProvider",
+            "invocation": "doSomething",
+            "inputs": {"x": 10, "y": 20},
+            "outputs": {"result": 30}
+        }
+
+        checkpoint(checkpoint_step)
+        """
+        last_element = self.step_runs[-1] if self.step_runs else None
+
+        if last_element:
+            step_start_time = from_date_string(last_element.end_time)
+            end_time_new = time.time()
+            elapsed_time = int(end_time_new - step_start_time)
+            self.step_runs.append(
+                StepRun(
+                    step_info.get("provider", "undeclared"),
+                    step_info.get("invocation", "undeclared"),
+                    elapsed_time,
+                    to_date_string(step_start_time),
+                    to_date_string(end_time_new),
+                    step_info.get("inputs", {}),
+                    step_info.get("modelParams", {}),
+                    step_info.get("outputs", {}),
+                )
+            )
+        else:
+            elapsed_time = 0
+            start_and_end_time = time.time()
+            self.step_runs.append(
+                StepRun(
+                    step_info.get("provider", "undeclared"),
+                    step_info.get("invocation", "undeclared"),
+                    elapsed_time,
+                    to_date_string(start_and_end_time),
+                    to_date_string(start_and_end_time),
+                    step_info.get("inputs", {}),
+                    step_info.get("modelParams", {}),
+                    step_info.get("outputs", {}),
+                )
+            )
+
     async def asubmit(self) -> Dict:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
@@ -109,11 +274,11 @@ class PipelineRun:
         pipeline_run_id = str(uuid.uuid4())
 
         try:
-            pipeline_post_response = await pipeline_run_post_background(
+            pipeline_post_response = await run_post_background(
                 core_api,
                 {
                     "id": pipeline_run_id,
-                    "name": self.pipeline.id,
+                    "slug": self.pipeline.slug,
                     "stepRuns": step_runs_data,
                 },
             )
@@ -154,11 +319,11 @@ class PipelineRun:
 
         if not wait_for_server:
             fire_and_forget(
-                pipeline_run_post_background(
+                run_post_background(
                     core_api,
                     {
                         "id": self.pipeline_run_id,
-                        "name": self.pipeline.id,
+                        "slug": self.pipeline.slug,
                         "stepRuns": step_runs_data,
                     },
                 )
@@ -168,10 +333,10 @@ class PipelineRun:
 
         if wait_for_server:
             try:
-                pipeline_post_response = core_api.pipeline_run_post(
+                pipeline_post_response = core_api.run_post(
                     {
                         "id": self.pipeline_run_id,
-                        "name": self.pipeline.id,
+                        "slug": self.pipeline.slug,
                         "stepRuns": step_runs_data,
                     }
                 )

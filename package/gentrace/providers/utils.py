@@ -6,12 +6,13 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 
 from gentrace.apis.tags.core_api import CoreApi
-from gentrace.models import PipelineRunRequest
+from gentrace.models import RunRequest
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 __all__ = [
     "to_date_string",
-    "pipeline_run_post_background",
+    "from_date_string",
+    "run_post_background",
     "log_debug",
     "log_info",
     "log_warn",
@@ -35,6 +36,13 @@ def to_date_string(time_value):
     utc_time = datetime.utcfromtimestamp(time_value)
     utc_time_str = utc_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     return utc_time_str[:-4] + "Z"
+
+
+def from_date_string(time_stamp):
+    dt = datetime.fromisoformat(time_stamp)
+    timestamp = dt.timestamp()
+    seconds_since_epoch = int(timestamp)
+    return seconds_since_epoch
 
 
 def log_debug(message, **params):
@@ -103,13 +111,11 @@ def logfmt(props):
     return " ".join([fmt(key, val) for key, val in sorted(props.items())])
 
 
-async def pipeline_run_post_background(
-    api_instance: CoreApi, pipeline_run_data: PipelineRunRequest
-):
+async def run_post_background(api_instance: CoreApi, pipeline_run_data: RunRequest):
     def wrapped_api_invocation():
         try:
             log_info("Submitting PipelineRun to Gentrace")
-            result = api_instance.pipeline_run_post(pipeline_run_data)
+            result = api_instance.run_post(pipeline_run_data)
             log_info("Successfully submitted PipelineRun to Gentrace")
             return result
         except Exception as e:

@@ -7,7 +7,11 @@ from gentrace.providers.init import GENTRACE_CONFIG_STATE
 class Pipeline:
     def __init__(
         self,
-        id: str,
+        # In future releases, we will only support the "slug" parameter. This will no
+        # longer be optional.
+        slug: Optional[str] = None,
+        # @deprecated Use the "slug" parameter instead
+        id: Optional[str] = None,
         # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
         # API key
         api_key: Optional[str] = None,
@@ -17,7 +21,8 @@ class Pipeline:
         openai_config: Any = None,
         pinecone_config: Optional[dict] = None,
     ):
-        self.id = id
+        self.id = id or slug
+        self.slug = slug or id
 
         if api_key:
             self.config = {"api_key": api_key, "host": host}

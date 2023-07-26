@@ -1,26 +1,29 @@
 import typing_extensions
 
-from gentrace.apis.paths.pipeline_run import PipelineRun
+from gentrace.apis.paths.pipelines import Pipelines
+from gentrace.apis.paths.run import Run
 from gentrace.apis.paths.test_case import TestCase
+from gentrace.apis.paths.test_result import TestResult
 from gentrace.apis.paths.test_run import TestRun
-from gentrace.apis.paths.test_sets import TestSets
 from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
-    "PathToApi",
+    'PathToApi',
     {
-        PathValues.PIPELINERUN: PipelineRun,
+        PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
+        PathValues.TESTRESULT: TestResult,
         PathValues.TESTRUN: TestRun,
-        PathValues.TESTSETS: TestSets,
-    },
+        PathValues.PIPELINES: Pipelines,
+    }
 )
 
 path_to_api = PathToApi(
     {
-        PathValues.PIPELINERUN: PipelineRun,
+        PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
+        PathValues.TESTRESULT: TestResult,
         PathValues.TESTRUN: TestRun,
-        PathValues.TESTSETS: TestSets,
+        PathValues.PIPELINES: Pipelines,
     }
 )

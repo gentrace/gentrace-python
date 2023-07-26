@@ -15,7 +15,7 @@ def test_cases():
                     "question": "What is the name of the famous waterfall located on the border of Canada and the United States?"
                 },
                 "name": "Test Case 25",
-                "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
+                "pipelineId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
             {
                 "id": "af8a20f1-73f3-5e57-8ab8-577d70a5bc96",
@@ -27,7 +27,7 @@ def test_cases():
                     "question": "What is the name of the famous theme park located in Anaheim, United States?"
                 },
                 "name": "Test Case 44",
-                "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
+                "pipelineId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
             {
                 "id": "032e1643-9caa-5fbc-96a8-b55e971d726e",
@@ -39,7 +39,7 @@ def test_cases():
                     "question": "What is the name of the famous mountain located in Japan that is also an active volcano?"
                 },
                 "name": "Test Case 30",
-                "setId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
+                "pipelineId": "09c6528e-5a2b-548b-b666-c0cb71e12145",
             },
         ]
     }

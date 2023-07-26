@@ -35,7 +35,7 @@ class OpenAIPipelineHandler:
 
 def create_completion_step_run(
     cls,
-    pipeline_id: str,
+    pipeline_slug: str,
     gentrace_config: Configuration,
     start_time,
     end_time,
@@ -62,11 +62,11 @@ def create_completion_step_run(
 
     pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
-    is_self_contained = not pipeline_run and pipeline_id
+    is_self_contained = not pipeline_run and pipeline_slug
 
     if is_self_contained:
         pipeline = Pipeline(
-            id=pipeline_id,
+            slug=pipeline_slug,
             api_key=gentrace_config.access_token,
             host=gentrace_config.host,
         )
@@ -170,13 +170,17 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
         prompt = kwargs.get("prompt")
+        # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
             if k not in ["prompt_template", "prompt_inputs"]
         }
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         if stream:
             rendered_prompt = prompt
@@ -195,7 +199,9 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**new_completion_options)
 
-            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
+            is_self_contained = (
+                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+            )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -213,7 +219,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
                 create_completion_step_run(
                     cls,
-                    pipeline_id,
+                    effective_pipeline_slug,
                     gentrace_config,
                     start_time,
                     end_time,
@@ -247,7 +253,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
 
         create_completion_step_run(
             cls,
-            pipeline_id,
+            effective_pipeline_slug,
             gentrace_config,
             start_time,
             end_time,
@@ -270,13 +276,17 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
         prompt_template = kwargs.get("prompt_template")
         prompt_inputs = kwargs.get("prompt_inputs")
         prompt = kwargs.get("prompt")
+        # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
             for k, v in kwargs.items()
             if k not in ["prompt_template", "prompt_inputs"]
         }
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         if stream:
             rendered_prompt = prompt
@@ -295,7 +305,9 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = await original_fn(**new_completion_options)
 
-            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
+            is_self_contained = (
+                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+            )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -313,7 +325,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
                 create_completion_step_run(
                     cls,
-                    pipeline_id,
+                    effective_pipeline_slug,
                     gentrace_config,
                     start_time,
                     end_time,
@@ -346,7 +358,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
 
         create_completion_step_run(
             cls,
-            pipeline_id,
+            effective_pipeline_slug,
             gentrace_config,
             start_time,
             end_time,
@@ -384,12 +396,16 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
     def wrapper(cls, *args, **kwargs):
         messages = kwargs.get("messages")
         user = kwargs.get("user")
+        # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
         stream = kwargs.get("stream")
 
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         if stream:
             rendered_messages = create_rendered_chat_messages(messages)
@@ -397,7 +413,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             start_time = time.time()
             completion = original_fn(**new_kwargs)
 
-            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
+            is_self_contained = (
+                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+            )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -422,7 +440,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                 )
                 if is_self_contained:
                     pipeline = Pipeline(
-                        id=pipeline_id,
+                        slug=effective_pipeline_slug,
                         api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
@@ -458,10 +476,10 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
         pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
-        is_self_contained = not pipeline_run and pipeline_id
+        is_self_contained = not pipeline_run and effective_pipeline_slug
         if is_self_contained:
             pipeline = Pipeline(
-                id=pipeline_id,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -501,10 +519,14 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         stream = kwargs.get("stream")
+        # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         rendered_messages = create_rendered_chat_messages(messages)
         new_kwargs = dict(kwargs, messages=rendered_messages)
@@ -513,7 +535,9 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         completion = await original_fn(**new_kwargs)
 
         if stream:
-            is_self_contained = not hasattr(cls, "pipeline_run") and pipeline_id
+            is_self_contained = (
+                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+            )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
 
@@ -539,7 +563,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
                 if is_self_contained:
                     pipeline = Pipeline(
-                        id=pipeline_id,
+                        slug=effective_pipeline_slug,
                         api_key=gentrace_config.access_token,
                         host=gentrace_config.host,
                     )
@@ -572,11 +596,11 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
         pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
-        is_self_contained = not pipeline_run and pipeline_id
+        is_self_contained = not pipeline_run and effective_pipeline_slug
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=pipeline_id,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -613,8 +637,12 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
     @classmethod
     def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
-        pipeline_id = kwargs.pop("pipeline_id", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
+        pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+        input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         start_time = time.time()
         completion = original_fn(**kwargs)
@@ -624,11 +652,11 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
         pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
-        is_self_contained = not pipeline_run and pipeline_id
+        is_self_contained = not pipeline_run and effective_pipeline_slug
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=pipeline_id,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -665,8 +693,12 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
     @classmethod
     async def wrapper(cls, *args, **kwargs):
         model = kwargs.get("model")
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         start_time = time.time()
         completion = await original_fn(**kwargs)
@@ -676,11 +708,11 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
 
         pipeline_run = cls.pipeline_run if hasattr(cls, "pipeline_run") else None
 
-        is_self_contained = not pipeline_run and pipeline_id
+        is_self_contained = not pipeline_run and effective_pipeline_slug
 
         if is_self_contained:
             pipeline = Pipeline(
-                id=pipeline_id,
+                slug=effective_pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )

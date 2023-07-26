@@ -1,11 +1,13 @@
 import http.client
 import json
 import os
+import uuid
 from typing import Any, List
 from unittest.mock import create_autospec
 
 import pytest
 import requests
+import responses
 from responses import matchers
 from urllib3.response import HTTPResponse
 
@@ -65,9 +67,11 @@ def test_evaluation_submit_test_run(
 
     results = []
     for case in test_cases:
-        results.append({
-            "value": "This is an output",
-        })
+        results.append(
+            {
+                "value": "This is an output",
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -123,10 +127,18 @@ def test_evaluation_submit_test_run_output_steps(
 
     outputs = []
     for _ in test_cases:
-        outputs.append({
-            "value": "This is an output",
-            "steps": [{"key": "compose", "output": "This is an output", "monkies": "testing"}],
-        })
+        outputs.append(
+            {
+                "value": "This is an output",
+                "steps": [
+                    {
+                        "key": "compose",
+                        "output": "This is an output",
+                        "monkies": "testing",
+                    }
+                ],
+            }
+        )
 
     # Setup Gentrace mocked response for submit_test_run
     headers = http.client.HTTPMessage()
@@ -257,12 +269,12 @@ def test_validate_construct_submission_prioritizes_override():
     assert payload["commit"] == "test-commit-init"
 
 
-def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
+def test_evaluation_get_pipelines(mocker, pipelines, setup_teardown_openai):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_sets, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(pipelines, ensure_ascii=False).encode("utf-8")
 
     gentrace_response = HTTPResponse(
         body=body,
@@ -277,6 +289,86 @@ def test_evaluation_get_test_sets(mocker, test_sets, setup_teardown_openai):
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    test_sets = gentrace.get_test_sets()
+    pipelines = gentrace.get_pipelines()
 
-    assert len(test_sets) == 2
+    assert len(pipelines) == 2
+
+
+def test_evaluation_measure(mocker, setup_teardown_openai, test_result_response):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    def create_measure_callback(test_case):
+        runner = pipeline.start()
+        output = runner.measure(lambda x=5, y=3: x + y, x=100, y=1000)
+        return [output, runner]
+
+    result = gentrace.run_test("guess-the-year", create_measure_callback)
+
+    print("Result: ", result)
+
+
+def test_evaluation_measure_validate_steps(
+    mocker, setup_teardown_openai, test_result_response
+):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_measure_callback(test_case):
+        runner = pipeline.start()
+        output = runner.measure(lambda x=5, y=3: x + y, x=100, y=1000)
+
+        runner_list.append(runner)
+
+        return [output, runner]
+
+    response = gentrace.run_test("guess-the-year", create_measure_callback)
+
+    assert response.get("resultId", None) is not None
+
+    for runner in runner_list:
+        assert len(runner.step_runs) == 1
+        assert runner.step_runs[0].outputs == {"value": 1100}
+
+
+def test_evaluation_checkpoint(mocker, setup_teardown_openai, test_result_response):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_checkpoint_callback(test_case):
+        runner = pipeline.start()
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner_list.append(runner)
+
+        return ["something", runner]
+
+    response = gentrace.run_test("guess-the-year", create_checkpoint_callback)
+
+    assert response.get("resultId", None) is not None
+
+    for runner in runner_list:
+        assert len(runner.step_runs) == 2
+        assert runner.step_runs[0].outputs == {"value": 1100}

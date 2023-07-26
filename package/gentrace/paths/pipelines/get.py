@@ -25,26 +25,31 @@ from gentrace import (
     exceptions,
     schemas,  # noqa: F401
 )
-from gentrace.model.test_set import TestSet
+from gentrace.model.pipeline import Pipeline
+
+from . import path
 
 # Query params
 LabelSchema = schemas.StrSchema
+SlugSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
-    "RequestRequiredQueryParams", {}
+    'RequestRequiredQueryParams',
+    {
+    }
 )
 RequestOptionalQueryParams = typing_extensions.TypedDict(
-    "RequestOptionalQueryParams",
+    'RequestOptionalQueryParams',
     {
-        "label": typing.Union[
-            LabelSchema,
-            str,
-        ],
+        'label': typing.Union[LabelSchema, str, ],
+        'slug': typing.Union[SlugSchema, str, ],
     },
-    total=False,
+    total=False
 )
+
 
 class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams):
     pass
+
 
 request_query_label = api_client.QueryParameter(
     name="label",
@@ -52,184 +57,176 @@ request_query_label = api_client.QueryParameter(
     schema=LabelSchema,
     explode=True,
 )
+request_query_slug = api_client.QueryParameter(
+    name="slug",
+    style=api_client.ParameterStyle.FORM,
+    schema=SlugSchema,
+    explode=True,
+)
+_auth = [
+    'bearerAuth',
+]
 
-class SchemaFor200ResponseBodyApplicationJson(schemas.DictSchema):
+
+class SchemaFor200ResponseBodyApplicationJson(
+    schemas.DictSchema
+):
+
+
     class MetaOapg:
         required = {
-            "testSets",
+            "pipelines",
         }
-
+        
         class properties:
-            class testSets(schemas.ListSchema):
+            
+            
+            class pipelines(
+                schemas.ListSchema
+            ):
+            
+            
                 class MetaOapg:
+                    
                     @staticmethod
-                    def items() -> typing.Type["TestSet"]:
-                        return TestSet
+                    def items() -> typing.Type['Pipeline']:
+                        return Pipeline
+            
                 def __new__(
                     cls,
-                    _arg: typing.Union[typing.Tuple["TestSet"], typing.List["TestSet"]],
+                    _arg: typing.Union[typing.Tuple['Pipeline'], typing.List['Pipeline']],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> "testSets":
+                ) -> 'pipelines':
                     return super().__new__(
                         cls,
                         _arg,
                         _configuration=_configuration,
                     )
-                def __getitem__(self, i: int) -> "TestSet":
+            
+                def __getitem__(self, i: int) -> 'Pipeline':
                     return super().__getitem__(i)
             __annotations__ = {
-                "testSets": testSets,
+                "pipelines": pipelines,
             }
-    testSets: MetaOapg.properties.testSets
-
+    
+    pipelines: MetaOapg.properties.pipelines
+    
     @typing.overload
-    def __getitem__(
-        self, name: typing_extensions.Literal["testSets"]
-    ) -> MetaOapg.properties.testSets: ...
+    def __getitem__(self, name: typing_extensions.Literal["pipelines"]) -> MetaOapg.properties.pipelines: ...
+    
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-    def __getitem__(
-        self, name: typing.Union[typing_extensions.Literal["testSets",], str]
-    ):
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelines", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
+    
+    
     @typing.overload
-    def get_item_oapg(
-        self, name: typing_extensions.Literal["testSets"]
-    ) -> MetaOapg.properties.testSets: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["pipelines"]) -> MetaOapg.properties.pipelines: ...
+    
     @typing.overload
-    def get_item_oapg(
-        self, name: str
-    ) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-    def get_item_oapg(
-        self, name: typing.Union[typing_extensions.Literal["testSets",], str]
-    ):
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelines", ], str]):
         return super().get_item_oapg(name)
+    
+
     def __new__(
         cls,
-        *_args: typing.Union[
-            dict,
-            frozendict.frozendict,
-        ],
-        testSets: typing.Union[
-            MetaOapg.properties.testSets,
-            list,
-            tuple,
-        ],
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        pipelines: typing.Union[MetaOapg.properties.pipelines, list, tuple, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
-        **kwargs: typing.Union[
-            schemas.AnyTypeSchema,
-            dict,
-            frozendict.frozendict,
-            str,
-            date,
-            datetime,
-            uuid.UUID,
-            int,
-            float,
-            decimal.Decimal,
-            None,
-            list,
-            tuple,
-            bytes,
-        ],
-    ) -> "SchemaFor200ResponseBodyApplicationJson":
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor200ResponseBodyApplicationJson':
         return super().__new__(
             cls,
             *_args,
-            testSets=testSets,
+            pipelines=pipelines,
             _configuration=_configuration,
             **kwargs,
         )
 
-class SchemaFor200ResponseBodyApplicationJsonCharsetutf8(schemas.DictSchema):
+
+class SchemaFor200ResponseBodyApplicationJsonCharsetutf8(
+    schemas.DictSchema
+):
+
+
     class MetaOapg:
         required = {
-            "testSets",
+            "pipelines",
         }
-
+        
         class properties:
-            class testSets(schemas.ListSchema):
+            
+            
+            class pipelines(
+                schemas.ListSchema
+            ):
+            
+            
                 class MetaOapg:
+                    
                     @staticmethod
-                    def items() -> typing.Type["TestSet"]:
-                        return TestSet
+                    def items() -> typing.Type['Pipeline']:
+                        return Pipeline
+            
                 def __new__(
                     cls,
-                    _arg: typing.Union[typing.Tuple["TestSet"], typing.List["TestSet"]],
+                    _arg: typing.Union[typing.Tuple['Pipeline'], typing.List['Pipeline']],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> "testSets":
+                ) -> 'pipelines':
                     return super().__new__(
                         cls,
                         _arg,
                         _configuration=_configuration,
                     )
-                def __getitem__(self, i: int) -> "TestSet":
+            
+                def __getitem__(self, i: int) -> 'Pipeline':
                     return super().__getitem__(i)
             __annotations__ = {
-                "testSets": testSets,
+                "pipelines": pipelines,
             }
-    testSets: MetaOapg.properties.testSets
-
+    
+    pipelines: MetaOapg.properties.pipelines
+    
     @typing.overload
-    def __getitem__(
-        self, name: typing_extensions.Literal["testSets"]
-    ) -> MetaOapg.properties.testSets: ...
+    def __getitem__(self, name: typing_extensions.Literal["pipelines"]) -> MetaOapg.properties.pipelines: ...
+    
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-    def __getitem__(
-        self, name: typing.Union[typing_extensions.Literal["testSets",], str]
-    ):
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelines", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
+    
+    
     @typing.overload
-    def get_item_oapg(
-        self, name: typing_extensions.Literal["testSets"]
-    ) -> MetaOapg.properties.testSets: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["pipelines"]) -> MetaOapg.properties.pipelines: ...
+    
     @typing.overload
-    def get_item_oapg(
-        self, name: str
-    ) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-    def get_item_oapg(
-        self, name: typing.Union[typing_extensions.Literal["testSets",], str]
-    ):
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelines", ], str]):
         return super().get_item_oapg(name)
+    
+
     def __new__(
         cls,
-        *_args: typing.Union[
-            dict,
-            frozendict.frozendict,
-        ],
-        testSets: typing.Union[
-            MetaOapg.properties.testSets,
-            list,
-            tuple,
-        ],
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        pipelines: typing.Union[MetaOapg.properties.pipelines, list, tuple, ],
         _configuration: typing.Optional[schemas.Configuration] = None,
-        **kwargs: typing.Union[
-            schemas.AnyTypeSchema,
-            dict,
-            frozendict.frozendict,
-            str,
-            date,
-            datetime,
-            uuid.UUID,
-            int,
-            float,
-            decimal.Decimal,
-            None,
-            list,
-            tuple,
-            bytes,
-        ],
-    ) -> "SchemaFor200ResponseBodyApplicationJsonCharsetutf8":
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor200ResponseBodyApplicationJsonCharsetutf8':
         return super().__new__(
             cls,
             *_args,
-            testSets=testSets,
+            pipelines=pipelines,
             _configuration=_configuration,
             **kwargs,
         )
+
 
 @dataclass
 class ApiResponseFor200(api_client.ApiResponse):
@@ -240,17 +237,17 @@ class ApiResponseFor200(api_client.ApiResponse):
     ]
     headers: schemas.Unset = schemas.unset
 
+
 _response_for_200 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor200,
     content={
-        "application/json": api_client.MediaType(
-            schema=SchemaFor200ResponseBodyApplicationJson
-        ),
-        "application/json; charset=utf-8": api_client.MediaType(
-            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8
-        ),
+        'application/json': api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8),
     },
 )
+
 
 @dataclass
 class ApiResponseFor400(api_client.ApiResponse):
@@ -258,9 +255,11 @@ class ApiResponseFor400(api_client.ApiResponse):
     body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
+
 _response_for_400 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor400,
 )
+
 
 @dataclass
 class ApiResponseFor500(api_client.ApiResponse):
@@ -268,26 +267,36 @@ class ApiResponseFor500(api_client.ApiResponse):
     body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
+
 _response_for_500 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor500,
 )
+_status_code_to_response = {
+    '200': _response_for_200,
+    '400': _response_for_400,
+    '500': _response_for_500,
+}
 _all_accept_content_types = (
-    "application/json",
-    "application/json; charset=utf-8",
+    'application/json',
+    'application/json; charset=utf-8',
 )
+
 
 class BaseApi(api_client.Api):
     @typing.overload
-    def _test_sets_get_oapg(
+    def _pipelines_get_oapg(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[ApiResponseFor200,]: ...
+    ) -> typing.Union[
+        ApiResponseFor200,
+    ]: ...
+
     @typing.overload
-    def _test_sets_get_oapg(
+    def _pipelines_get_oapg(
         self,
         skip_deserialization: typing_extensions.Literal[True],
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -295,8 +304,9 @@ class BaseApi(api_client.Api):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
+
     @typing.overload
-    def _test_sets_get_oapg(
+    def _pipelines_get_oapg(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -307,7 +317,8 @@ class BaseApi(api_client.Api):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
-    def _test_sets_get_oapg(
+
+    def _pipelines_get_oapg(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -316,7 +327,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Get test sets, optionally filtered by label
+        Get pipelines, optionally filtered by label
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
@@ -325,15 +336,16 @@ class BaseApi(api_client.Api):
         used_path = path.value
 
         prefix_separator_iterator = None
-        for parameter in (request_query_label,):
+        for parameter in (
+            request_query_label,
+            request_query_slug,
+        ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:
                 continue
             if prefix_separator_iterator is None:
                 prefix_separator_iterator = parameter.get_prefix_separator_iterator()
-            serialized_data = parameter.serialize(
-                parameter_data, prefix_separator_iterator
-            )
+            serialized_data = parameter.serialize(parameter_data, prefix_separator_iterator)
             for serialized_value in serialized_data.values():
                 used_path += serialized_value
 
@@ -341,11 +353,11 @@ class BaseApi(api_client.Api):
         # TODO add cookie handling
         if accept_content_types:
             for accept_content_type in accept_content_types:
-                _headers.add("Accept", accept_content_type)
+                _headers.add('Accept', accept_content_type)
 
         response = self.api_client.call_api(
             resource_path=used_path,
-            method="get".upper(),
+            method='get'.upper(),
             headers=_headers,
             auth_settings=_auth,
             stream=stream,
@@ -353,43 +365,41 @@ class BaseApi(api_client.Api):
         )
 
         if skip_deserialization:
-            api_response = api_client.ApiResponseWithoutDeserialization(
-                response=response
-            )
+            api_response = api_client.ApiResponseWithoutDeserialization(response=response)
         else:
             response_for_status = _status_code_to_response.get(str(response.status))
             if response_for_status:
-                api_response = response_for_status.deserialize(
-                    response, self.api_client.configuration
-                )
+                api_response = response_for_status.deserialize(response, self.api_client.configuration)
             else:
-                api_response = api_client.ApiResponseWithoutDeserialization(
-                    response=response
-                )
+                api_response = api_client.ApiResponseWithoutDeserialization(response=response)
 
         if not 200 <= response.status <= 299:
             raise exceptions.ApiException(
                 status=response.status,
                 reason=response.reason,
-                api_response=api_response,
+                api_response=api_response
             )
 
         return api_response
 
-class TestSetsGet(BaseApi):
+
+class PipelinesGet(BaseApi):
     # this class is used by api classes that refer to endpoints with operationId fn names
 
     @typing.overload
-    def test_sets_get(
+    def pipelines_get(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[ApiResponseFor200,]: ...
+    ) -> typing.Union[
+        ApiResponseFor200,
+    ]: ...
+
     @typing.overload
-    def test_sets_get(
+    def pipelines_get(
         self,
         skip_deserialization: typing_extensions.Literal[True],
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -397,8 +407,9 @@ class TestSetsGet(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
+
     @typing.overload
-    def test_sets_get(
+    def pipelines_get(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -409,7 +420,8 @@ class TestSetsGet(BaseApi):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
-    def test_sets_get(
+
+    def pipelines_get(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -417,13 +429,14 @@ class TestSetsGet(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
-        return self._test_sets_get_oapg(
+        return self._pipelines_get_oapg(
             query_params=query_params,
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
-            skip_deserialization=skip_deserialization,
+            skip_deserialization=skip_deserialization
         )
+
 
 class ApiForget(BaseApi):
     # this class is used by api classes that refer to endpoints by path and http method names
@@ -436,7 +449,10 @@ class ApiForget(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[ApiResponseFor200,]: ...
+    ) -> typing.Union[
+        ApiResponseFor200,
+    ]: ...
+
     @typing.overload
     def get(
         self,
@@ -446,6 +462,7 @@ class ApiForget(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
+
     @typing.overload
     def get(
         self,
@@ -458,6 +475,7 @@ class ApiForget(BaseApi):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
+
     def get(
         self,
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -466,10 +484,12 @@ class ApiForget(BaseApi):
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: bool = False,
     ):
-        return self._test_sets_get_oapg(
+        return self._pipelines_get_oapg(
             query_params=query_params,
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
-            skip_deserialization=skip_deserialization,
+            skip_deserialization=skip_deserialization
         )
+
+

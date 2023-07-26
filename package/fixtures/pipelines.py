@@ -2,11 +2,12 @@ import pytest
 
 
 @pytest.fixture
-def test_sets():
+def pipelines():
     return {
-        "testSets": [
+        "pipelines": [
             {
                 "id": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
+                "slug": "guess-the-year",
                 "createdAt": "2023-07-18T11:08:09.842Z",
                 "updatedAt": "2023-07-18T11:08:09.842Z",
                 "archivedAt": None,
@@ -26,7 +27,7 @@ def test_sets():
                             "query": "In what year was the Apple Vision Pro released?"
                         },
                         "name": "Apple Vision Pro released",
-                        "setId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
+                        "pipelineId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
                     },
                     {
                         "id": "a2bddcbc-51ac-5831-be0d-5868a7ffa1db",
@@ -37,7 +38,7 @@ def test_sets():
                         "expectedSteps": None,
                         "inputs": {"query": "In what year was ChatGPT released?"},
                         "name": "ChatGPT released",
-                        "setId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
+                        "pipelineId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
                     },
                     {
                         "id": "275d92ac-db8a-5964-846d-c8a7bc3caf4d",
@@ -48,12 +49,13 @@ def test_sets():
                         "expectedSteps": None,
                         "inputs": {"query": "In what year was Gentrace founded?"},
                         "name": "Gentrace founded",
-                        "setId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
+                        "pipelineId": "9685b34e-2cac-5bd2-8751-c9e34ff9fd98",
                     },
                 ],
             },
             {
                 "id": "393e926e-ba1b-486f-8cbe-db7d9471fe56",
+                "slug": "testing",
                 "createdAt": "2023-07-18T12:47:58.618Z",
                 "updatedAt": "2023-07-18T12:47:58.618Z",
                 "archivedAt": None,

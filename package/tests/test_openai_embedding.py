@@ -64,6 +64,56 @@ def test_openai_embedding_self_contained_pipeline_id(
     print(setup_teardown_openai)
 
 
+def test_openai_embedding_self_contained_pipeline_id_with_slug(
+    mocker, embedding_response, gentrace_pipeline_run_response, setup_teardown_openai
+):
+    # Setup OpenAI mocked request
+    openai_api_key_getter = mocker.patch.object(openai.util, "default_api_key")
+    openai_api_key_getter.return_value = "test-key"
+
+    openai_request = mocker.patch.object(requests.sessions.Session, "request")
+
+    response = requests.Response()
+    response.status_code = 200
+    response.headers["Content-Type"] = "application/json"
+    response._content = json.dumps(embedding_response, ensure_ascii=False).encode(
+        "utf-8"
+    )
+
+    openai_request.return_value = response
+
+    # Setup Gentrace mocked response
+    headers = http.client.HTTPMessage()
+    headers.add_header("Content-Type", "application/json")
+
+    body = json.dumps(gentrace_pipeline_run_response, ensure_ascii=False).encode(
+        "utf-8"
+    )
+
+    gentrace_response = HTTPResponse(
+        body=body,
+        headers=headers,
+        status=200,
+        reason="OK",
+        preload_content=False,
+        decode_content=True,
+        enforce_content_length=True,
+    )
+
+    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
+    gentrace_request.return_value = gentrace_response
+
+    result = openai.Embedding.create(
+        input="sample text",
+        model="text-similarity-davinci-001",
+        pipeline_slug="testing-value",
+    )
+
+    assert uuid.UUID(result["pipelineRunId"]) is not None
+
+    print(setup_teardown_openai)
+
+
 def test_openai_embedding_self_contained_no_pipeline_id(
     mocker, embedding_response, gentrace_pipeline_run_response, setup_teardown_openai
 ):
@@ -325,4 +375,55 @@ async def test_openai_embedding_pipeline_async(
 
     assert uuid.UUID(info["pipelineRunId"]) is not None
 
+    print(setup_teardown_openai)
+
+
+def test_openai_embedding_pipeline_server_with_slug_param(setup_teardown_openai):
+    responses.add_passthru("https://api.openai.com/v1/")
+
+    pipeline = gentrace.Pipeline(
+        slug="test-gentrace-python-pipeline",
+        host="http://localhost:3000/api/v1",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner = pipeline.start()
+
+    openai = runner.get_openai()
+
+    openai.Embedding.create(input="sample text", model="text-similarity-davinci-001")
+
+    info = runner.submit()
+
+    assert uuid.UUID(info["pipelineRunId"]) is not None
+    print(setup_teardown_openai)
+
+
+# @deprecated: this test uses the id parameter
+def test_openai_embedding_pipeline_server_with_id_param(setup_teardown_openai):
+    responses.add_passthru("https://api.openai.com/v1/")
+
+    pipeline = gentrace.Pipeline(
+        id="test-gentrace-python-pipeline",
+        host="http://localhost:3000/api/v1",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner = pipeline.start()
+
+    openai = runner.get_openai()
+
+    openai.Embedding.create(input="sample text", model="text-similarity-davinci-001")
+
+    info = runner.submit()
+
+    assert uuid.UUID(info["pipelineRunId"]) is not None
     print(setup_teardown_openai)

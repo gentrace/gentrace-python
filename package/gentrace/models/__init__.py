@@ -13,8 +13,10 @@
 
 from gentrace.model.feedback_request import FeedbackRequest
 from gentrace.model.feedback_response import FeedbackResponse
-from gentrace.model.pipeline_run_request import PipelineRunRequest
-from gentrace.model.pipeline_run_response import PipelineRunResponse
+from gentrace.model.pipeline import Pipeline
+from gentrace.model.run_request import RunRequest
+from gentrace.model.run_response import RunResponse
+from gentrace.model.step_run import StepRun
 from gentrace.model.test_case import TestCase
+from gentrace.model.test_result import TestResult
 from gentrace.model.test_run import TestRun
-from gentrace.model.test_set import TestSet

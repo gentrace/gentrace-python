@@ -21,7 +21,7 @@ pinecone.init(
 )
 
 result = pinecone.Index("openai-trec").query(
-    top_k=10, vector=DEFAULT_VECTOR, pipeline_id="self-contained-pinecone-query"
+    top_k=10, vector=DEFAULT_VECTOR, pipeline_slug="self-contained-pinecone-query"
 )
 
 

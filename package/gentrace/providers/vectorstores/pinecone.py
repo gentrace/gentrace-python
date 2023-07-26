@@ -34,10 +34,10 @@ class ModifiedIndex(pinecone.Index):
     def manage_step_run(
         self,
         step_run,
-        pipeline_id,
+        pipeline_slug,
     ):
         pipeline_run_id = None
-        is_self_contained = not hasattr(self, "pipeline_run") and pipeline_id
+        is_self_contained = not hasattr(self, "pipeline_run") and pipeline_slug
         if is_self_contained:
             pipeline_run_id = str(uuid.uuid4())
 
@@ -53,7 +53,7 @@ class ModifiedIndex(pinecone.Index):
                 gentrace_config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
 
             pipeline = Pipeline(
-                id=pipeline_id,
+                slug=pipeline_slug,
                 api_key=gentrace_config.access_token,
                 host=gentrace_config.host,
             )
@@ -72,7 +72,12 @@ class ModifiedIndex(pinecone.Index):
         self, ids: List[str], namespace: Optional[str] = None, **kwargs
     ) -> FetchResponse:
         start_time = time.time()
+
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         response = super().fetch(ids, namespace, **kwargs)
         end_time = time.time()
@@ -86,7 +91,7 @@ class ModifiedIndex(pinecone.Index):
                 {"ids": ids, "namespace": namespace},
                 response.to_dict(),
             ),
-            pipeline_id,
+            effective_pipeline_slug,
         )
 
         if pipeline_run_id:
@@ -108,7 +113,11 @@ class ModifiedIndex(pinecone.Index):
         **kwargs,
     ) -> Dict[str, any]:
         start_time = time.time()
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
         response = super().update(
             values, set_metadata, namespace, sparse_values, **kwargs
         )
@@ -129,7 +138,7 @@ class ModifiedIndex(pinecone.Index):
                 },
                 response,
             ),
-            pipeline_id,
+            effective_pipeline_slug,
         )
 
         if pipeline_run_id:
@@ -152,7 +161,10 @@ class ModifiedIndex(pinecone.Index):
         ] = None,
         **kwargs,
     ) -> QueryResponse:
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+        effective_pipeline_slug = pipeline_slug or pipeline_id
         bound_query = super().query
         start_time = time.time()
         response = bound_query(
@@ -189,7 +201,7 @@ class ModifiedIndex(pinecone.Index):
                 {**model_params},
                 response.to_dict(),
             ),
-            pipeline_id,
+            effective_pipeline_slug,
         )
 
         if pipeline_run_id:
@@ -205,7 +217,11 @@ class ModifiedIndex(pinecone.Index):
         show_progress: bool = True,
         **kwargs,
     ) -> UpsertResponse:
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+        effective_pipeline_slug = pipeline_slug or pipeline_id
+
         start_time = time.time()
         response = super().upsert(
             vectors, namespace, batch_size, show_progress, **kwargs
@@ -226,7 +242,7 @@ class ModifiedIndex(pinecone.Index):
                 },
                 response.to_dict(),
             ),
-            pipeline_id,
+            effective_pipeline_slug,
         )
 
         if pipeline_run_id:
@@ -247,7 +263,11 @@ class ModifiedIndex(pinecone.Index):
         end_time = time.time()
         elapsed_time = int((end_time - start_time) * 1000)
 
+        # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+
+        effective_pipeline_slug = pipeline_slug or pipeline_id
 
         pipeline_run_id = self.manage_step_run(
             PineconeDeleteStepRun(
@@ -262,7 +282,7 @@ class ModifiedIndex(pinecone.Index):
                 },
                 response,
             ),
-            pipeline_id,
+            effective_pipeline_slug,
         )
 
         if pipeline_run_id:

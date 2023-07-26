@@ -19,7 +19,7 @@ async def main():
     openai.api_key = os.getenv("OPENAI_KEY")
 
     result = await openai.ChatCompletion.acreate(
-        pipeline_id="testing-chat-completion-value",
+        pipeline_slug="testing-chat-completion-value",
         messages=[{"role": "user", "content": "Hello!"}],
         model="gpt-3.5-turbo",
     )
