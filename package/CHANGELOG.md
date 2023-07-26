@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/gentrace/gentrace-python/compare/v0.15.0...v0.15.1) (2023-07-26)
+
+
+### Bug Fixes
+
+* Do not use built-in type subscripting  ([#130](https://github.com/gentrace/gentrace-python/issues/130)) ([b825cf8](https://github.com/gentrace/gentrace-python/commit/b825cf832631c502bc17d939ffc1a9273f606da0))
+
 ## [0.15.0](https://github.com/gentrace/gentrace-python/compare/v0.14.0...v0.15.0) (2023-07-26)
 
 
