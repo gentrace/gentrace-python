@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/gentrace/gentrace-python/compare/v0.14.0...v0.15.0) (2023-07-26)
+
+
+### Features
+
+* Merge evaluate and observe ([#127](https://github.com/gentrace/gentrace-python/issues/127)) ([8529582](https://github.com/gentrace/gentrace-python/commit/85295823a807d8c02ca0f038316dadf301809454))
+
 ## [0.14.0](https://github.com/gentrace/gentrace-python/compare/v0.13.0...v0.14.0) (2023-07-20)
 
 
