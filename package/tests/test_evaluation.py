@@ -23,6 +23,8 @@ def test_evaluation_get_test_cases(mocker, test_cases, setup_teardown_openai):
 
     body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
 
+    print("before this")
+
     gentrace_response = HTTPResponse(
         body=body,
         headers=headers,
@@ -32,6 +34,8 @@ def test_evaluation_get_test_cases(mocker, test_cases, setup_teardown_openai):
         decode_content=True,
         enforce_content_length=True,
     )
+
+    print("after this")
 
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
