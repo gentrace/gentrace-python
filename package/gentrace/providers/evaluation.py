@@ -23,7 +23,7 @@ class TestCaseDict(TypedDict):
     updatedAt: str
     archivedAt: Optional[str]
     expected: Optional[str]
-    inputs: dict[str, Any]
+    inputs: Dict[str, Any]
     name: str
     setId: str
 
@@ -59,7 +59,7 @@ def get_test_cases(
     return test_cases
 
 
-def submit_prepared_test_results(set_id: str, test_results: list[Dict]) -> Run:
+def submit_prepared_test_results(set_id: str, test_results: List[Dict]) -> Run:
     """
     DEPRECATED - use run_test instead.
     Submits prepared test results to the Gentrace API for a given set ID. This method requires that you
@@ -91,13 +91,13 @@ def submit_prepared_test_results(set_id: str, test_results: list[Dict]) -> Run:
     return response.body
 
 
-def construct_submission_payload(set_id: str, test_results: list[Dict]):
+def construct_submission_payload(set_id: str, test_results: List[Dict]):
     """
     Constructs a dictionary payload for submitting test results to a server.
 
     Args:
         set_id (str): The ID of the test set.
-        test_results (list[Dict]): A list of dictionaries containing test results.
+        test_results (List[Dict]): A list of dictionaries containing test results.
 
     Returns:
         Dict: A dictionary payload containing the set ID, test results, and optional branch and commit information.
@@ -126,13 +126,13 @@ def construct_submission_payload(set_id: str, test_results: list[Dict]):
 class OutputStep(TypedDict):
     key: str
     output: str
-    inputs: Optional[dict[str, Any]]
+    inputs: Optional[Dict[str, Any]]
 
 
 def submit_test_result(
     set_id: str,
     test_cases: List[TestCase],
-    outputs_list: List[dict[str, Any]],
+    outputs_list: List[Dict[str, Any]],
 ) -> Run:
     """
     DEPRECATED - use run_test instead.
@@ -141,7 +141,7 @@ def submit_test_result(
     Args:
         set_id (str): The identifier of the test set.
         test_cases (List[TestCase]): A list of TestCase objects.
-        outputs_list (List[dict[str, Any]]): A list of outputs corresponding to each TestCase.
+        outputs_list (List[Dict[str, Any]]): A list of outputs corresponding to each TestCase.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
