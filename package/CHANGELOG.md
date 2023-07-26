@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://github.com/gentrace/gentrace-python/compare/v0.15.1...v0.15.2) (2023-07-26)
+
+
+### Bug Fixes
+
+* Fix issue with stale connection in pool ([#132](https://github.com/gentrace/gentrace-python/issues/132)) ([252a666](https://github.com/gentrace/gentrace-python/commit/252a66661845d5abe8904ef6ad9ae6a173eb235a))
+
 ## [0.15.1](https://github.com/gentrace/gentrace-python/compare/v0.15.0...v0.15.1) (2023-07-26)
 
 
