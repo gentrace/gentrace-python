@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.3](https://github.com/gentrace/gentrace-python/compare/v0.15.2...v0.15.3) (2023-07-31)
+
+
+### Bug Fixes
+
+* Add collection method ([#134](https://github.com/gentrace/gentrace-python/issues/134)) ([4cbe774](https://github.com/gentrace/gentrace-python/commit/4cbe77438b819f2c0784af929a81e49c0ee0108a))
+* Add test counter ([#136](https://github.com/gentrace/gentrace-python/issues/136)) ([84172d7](https://github.com/gentrace/gentrace-python/commit/84172d73d7b5193ee9fa8d806d053cf6f8dece73))
+
 ## [0.15.2](https://github.com/gentrace/gentrace-python/compare/v0.15.1...v0.15.2) (2023-07-26)
 
 
