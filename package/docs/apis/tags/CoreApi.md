@@ -218,6 +218,7 @@ with gentrace.ApiClient(configuration) as api_client:
     # example passing only required values which don't have defaults set
     body = RunRequest(
         id="id_example",
+        collection_method="manual",
         slug="slug_example",
         name="name_example",
         step_runs=[
@@ -668,6 +669,7 @@ with gentrace.ApiClient(configuration) as api_client:
     body = dict(
         pipeline_slug="pipeline_slug_example",
         pipeline_id="pipeline_id_example",
+        collection_method="manual",
         branch="branch_example",
         commit="commit_example",
         name="name_example",
@@ -727,6 +729,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **[testRuns](#testRuns)** | list, tuple,  | tuple,  |  | 
 **pipelineSlug** | str,  | str,  | The pipeline slug to create the test result for. Only one of pipelineSlug or pipelineId is required. | [optional] 
 **pipelineId** | str,  | str,  | The pipeline ID to create the test result for. Only one of pipelineSlug or pipelineId is required. | [optional] 
+**collectionMethod** | str,  | str,  | The method used to collect the test runs | [optional] must be one of ["manual", "runner", ] 
 **branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 

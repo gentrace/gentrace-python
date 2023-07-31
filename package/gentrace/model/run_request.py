@@ -67,11 +67,33 @@ class RunRequest(
             
                 def __getitem__(self, i: int) -> 'StepRun':
                     return super().__getitem__(i)
+            
+            
+            class collectionMethod(
+                schemas.EnumBase,
+                schemas.StrSchema
+            ):
+            
+            
+                class MetaOapg:
+                    enum_value_to_name = {
+                        "manual": "MANUAL",
+                        "runner": "RUNNER",
+                    }
+                
+                @schemas.classproperty
+                def MANUAL(cls):
+                    return cls("manual")
+                
+                @schemas.classproperty
+                def RUNNER(cls):
+                    return cls("runner")
             slug = schemas.StrSchema
             name = schemas.StrSchema
             __annotations__ = {
                 "id": id,
                 "stepRuns": stepRuns,
+                "collectionMethod": collectionMethod,
                 "slug": slug,
                 "name": name,
             }
@@ -86,6 +108,9 @@ class RunRequest(
     def __getitem__(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["collectionMethod"]) -> MetaOapg.properties.collectionMethod: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["slug"]) -> MetaOapg.properties.slug: ...
     
     @typing.overload
@@ -94,7 +119,7 @@ class RunRequest(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "stepRuns", "slug", "name", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "stepRuns", "collectionMethod", "slug", "name", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -106,6 +131,9 @@ class RunRequest(
     def get_item_oapg(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["collectionMethod"]) -> typing.Union[MetaOapg.properties.collectionMethod, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["slug"]) -> typing.Union[MetaOapg.properties.slug, schemas.Unset]: ...
     
     @typing.overload
@@ -114,7 +142,7 @@ class RunRequest(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "stepRuns", "slug", "name", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "stepRuns", "collectionMethod", "slug", "name", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -123,6 +151,7 @@ class RunRequest(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         stepRuns: typing.Union[MetaOapg.properties.stepRuns, list, tuple, ],
         id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
+        collectionMethod: typing.Union[MetaOapg.properties.collectionMethod, str, schemas.Unset] = schemas.unset,
         slug: typing.Union[MetaOapg.properties.slug, str, schemas.Unset] = schemas.unset,
         name: typing.Union[MetaOapg.properties.name, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
@@ -133,6 +162,7 @@ class RunRequest(
             *_args,
             stepRuns=stepRuns,
             id=id,
+            collectionMethod=collectionMethod,
             slug=slug,
             name=name,
             _configuration=_configuration,

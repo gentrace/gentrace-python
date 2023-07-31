@@ -47,6 +47,27 @@ class SchemaForRequestBodyApplicationJson(
             pipelineId = schemas.StrSchema
             
             
+            class collectionMethod(
+                schemas.EnumBase,
+                schemas.StrSchema
+            ):
+            
+            
+                class MetaOapg:
+                    enum_value_to_name = {
+                        "manual": "MANUAL",
+                        "runner": "RUNNER",
+                    }
+                
+                @schemas.classproperty
+                def MANUAL(cls):
+                    return cls("manual")
+                
+                @schemas.classproperty
+                def RUNNER(cls):
+                    return cls("runner")
+            
+            
             class branch(
                 schemas.StrBase,
                 schemas.NoneBase,
@@ -256,6 +277,7 @@ class SchemaForRequestBodyApplicationJson(
             __annotations__ = {
                 "pipelineSlug": pipelineSlug,
                 "pipelineId": pipelineId,
+                "collectionMethod": collectionMethod,
                 "branch": branch,
                 "commit": commit,
                 "name": name,
@@ -269,6 +291,9 @@ class SchemaForRequestBodyApplicationJson(
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["pipelineId"]) -> MetaOapg.properties.pipelineId: ...
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["collectionMethod"]) -> MetaOapg.properties.collectionMethod: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["branch"]) -> MetaOapg.properties.branch: ...
@@ -285,7 +310,7 @@ class SchemaForRequestBodyApplicationJson(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "pipelineId", "branch", "commit", "name", "testRuns", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "pipelineId", "collectionMethod", "branch", "commit", "name", "testRuns", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -295,6 +320,9 @@ class SchemaForRequestBodyApplicationJson(
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["pipelineId"]) -> typing.Union[MetaOapg.properties.pipelineId, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["collectionMethod"]) -> typing.Union[MetaOapg.properties.collectionMethod, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["branch"]) -> typing.Union[MetaOapg.properties.branch, schemas.Unset]: ...
@@ -311,7 +339,7 @@ class SchemaForRequestBodyApplicationJson(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "pipelineId", "branch", "commit", "name", "testRuns", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "pipelineId", "collectionMethod", "branch", "commit", "name", "testRuns", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -321,6 +349,7 @@ class SchemaForRequestBodyApplicationJson(
         testRuns: typing.Union[MetaOapg.properties.testRuns, list, tuple, ],
         pipelineSlug: typing.Union[MetaOapg.properties.pipelineSlug, str, schemas.Unset] = schemas.unset,
         pipelineId: typing.Union[MetaOapg.properties.pipelineId, str, schemas.Unset] = schemas.unset,
+        collectionMethod: typing.Union[MetaOapg.properties.collectionMethod, str, schemas.Unset] = schemas.unset,
         branch: typing.Union[MetaOapg.properties.branch, None, str, schemas.Unset] = schemas.unset,
         commit: typing.Union[MetaOapg.properties.commit, None, str, schemas.Unset] = schemas.unset,
         name: typing.Union[MetaOapg.properties.name, None, str, schemas.Unset] = schemas.unset,
@@ -333,6 +362,7 @@ class SchemaForRequestBodyApplicationJson(
             testRuns=testRuns,
             pipelineSlug=pipelineSlug,
             pipelineId=pipelineId,
+            collectionMethod=collectionMethod,
             branch=branch,
             commit=commit,
             name=name,
