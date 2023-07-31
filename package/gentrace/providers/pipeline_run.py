@@ -14,6 +14,7 @@ from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import (
     from_date_string,
+    get_test_counter,
     run_post_background,
     to_date_string,
 )
@@ -46,6 +47,9 @@ class PipelineRun:
         self.pipeline: Pipeline = pipeline
         self.pipeline_run_id: str = id or str(uuid.uuid4())
         self.step_runs: List[StepRun] = []
+
+    def get_id(self):
+        return self.pipeline_run_id
 
     def get_pipeline(self):
         return self.pipeline
@@ -250,6 +254,11 @@ class PipelineRun:
             )
 
     async def asubmit(self) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
@@ -271,13 +280,11 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = str(uuid.uuid4())
-
         try:
             pipeline_post_response = await run_post_background(
                 core_api,
                 {
-                    "id": pipeline_run_id,
+                    "id": self.pipeline_run_id,
                     "slug": self.pipeline.slug,
                     "stepRuns": step_runs_data,
                 },
@@ -292,6 +299,11 @@ class PipelineRun:
             return {"pipelineRunId": None}
 
     def submit(self, wait_for_server=False) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
 

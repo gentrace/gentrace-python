@@ -16,6 +16,9 @@ __all__ = [
     "log_debug",
     "log_info",
     "log_warn",
+    "get_test_counter",
+    "increment_test_counter",
+    "decrement_test_counter",
 ]
 
 logger = logging.getLogger(__name__)
@@ -127,3 +130,22 @@ async def run_post_background(api_instance: CoreApi, pipeline_run_data: RunReque
             executor, wrapped_api_invocation
         )
     return result
+
+
+test_counter = 0
+
+
+def get_test_counter():
+    return test_counter
+
+
+def increment_test_counter():
+    global test_counter
+    test_counter += 1
+    return test_counter
+
+
+def decrement_test_counter():
+    global test_counter
+    test_counter -= 1
+    return test_counter

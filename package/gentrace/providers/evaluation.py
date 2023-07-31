@@ -9,6 +9,11 @@ from gentrace.model.test_case import TestCase
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
+from gentrace.providers.utils import (
+    decrement_test_counter,
+    get_test_counter,
+    increment_test_counter,
+)
 
 
 class Run(TypedDict):
@@ -293,32 +298,38 @@ def run_test(pipeline_slug: str, handler) -> Result:
             "resultId": "161c623d-ee92-417f-823a-cf9f7eccf557",
         }
     """
-    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
-    if not config:
-        raise ValueError("Gentrace API key not initialized. Call init() first.")
+    increment_test_counter()
 
-    api_client = ApiClient(configuration=config)
-    api = CoreApi(api_client=api_client)
+    try:
+        config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+        if not config:
+            raise ValueError("Gentrace API key not initialized. Call init() first.")
 
-    all_pipelines = get_pipelines()
+        api_client = ApiClient(configuration=config)
+        api = CoreApi(api_client=api_client)
 
-    matching_pipeline = next(
-        (pipeline for pipeline in all_pipelines if pipeline["slug"] == pipeline_slug),
-        None,
-    )
+        all_pipelines = get_pipelines()
 
-    if not matching_pipeline:
-        raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+        matching_pipeline = next(
+            (
+                pipeline
+                for pipeline in all_pipelines
+                if pipeline["slug"] == pipeline_slug
+            ),
+            None,
+        )
 
-    test_cases = get_test_cases(matching_pipeline["id"])
+        if not matching_pipeline:
+            raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
 
-    test_runs = []
+        test_cases = get_test_cases(matching_pipeline["id"])
 
-    for test_case in test_cases:
-        [output, pipeline_run] = handler(test_case)
+        test_runs = []
 
-        test_runs.append(
-            {
+        for test_case in test_cases:
+            [output, pipeline_run] = handler(test_case)
+
+            test_run = {
                 "caseId": test_case["id"],
                 "stepRuns": [
                     {
@@ -336,30 +347,38 @@ def run_test(pipeline_slug: str, handler) -> Result:
                     for step_run in pipeline_run.step_runs
                 ],
             }
-        )
 
-    params = {
-        "pipelineId": matching_pipeline["id"],
-        "testRuns": test_runs,
-    }
+            if pipeline_run.get_id():
+                test_run["id"] = pipeline_run.get_id()
 
-    if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
-        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+            test_runs.append(test_run)
 
-    if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
-        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
-            "GENTRACE_BRANCH"
-        )
+        params = {
+            "pipelineId": matching_pipeline["id"],
+            "testRuns": test_runs,
+        }
 
-    if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
-        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
-            "GENTRACE_COMMIT"
-        )
-        
-    params["collectionMethod"] = "runner"
+        if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
+            params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
 
-    response = api.test_result_post(params)
-    return response.body
+        if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
+            params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
+                "GENTRACE_BRANCH"
+            )
+
+        if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
+            params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
+                "GENTRACE_COMMIT"
+            )
+
+        params["collectionMethod"] = "runner"
+
+        response = api.test_result_post(params)
+        return response.body
+    except Exception as e:
+        raise e
+    finally:
+        decrement_test_counter()
 
 
 __all__ = [
