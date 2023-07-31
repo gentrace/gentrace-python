@@ -8,14 +8,14 @@ from gentrace.apis.paths.test_run import TestRun
 from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
-    'PathToApi',
+    "PathToApi",
     {
         PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
         PathValues.TESTRESULT: TestResult,
         PathValues.TESTRUN: TestRun,
         PathValues.PIPELINES: Pipelines,
-    }
+    },
 )
 
 path_to_api = PathToApi(
