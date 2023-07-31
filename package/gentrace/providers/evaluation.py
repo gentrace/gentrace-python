@@ -317,26 +317,29 @@ def run_test(pipeline_slug: str, handler) -> Result:
     for test_case in test_cases:
         [output, pipeline_run] = handler(test_case)
 
-        test_runs.append(
-            {
-                "caseId": test_case["id"],
-                "stepRuns": [
-                    {
-                        "provider": {
-                            "name": step_run.provider,
-                            "invocation": step_run.invocation,
-                            "modelParams": step_run.model_params,
-                            "inputs": step_run.inputs,
-                            "outputs": step_run.outputs,
-                        },
-                        "elapsedTime": step_run.elapsed_time,
-                        "startTime": step_run.start_time,
-                        "endTime": step_run.end_time,
-                    }
-                    for step_run in pipeline_run.step_runs
-                ],
-            }
-        )
+        test_run = {
+            "caseId": test_case["id"],
+            "stepRuns": [
+                {
+                    "provider": {
+                        "name": step_run.provider,
+                        "invocation": step_run.invocation,
+                        "modelParams": step_run.model_params,
+                        "inputs": step_run.inputs,
+                        "outputs": step_run.outputs,
+                    },
+                    "elapsedTime": step_run.elapsed_time,
+                    "startTime": step_run.start_time,
+                    "endTime": step_run.end_time,
+                }
+                for step_run in pipeline_run.step_runs
+            ],
+        }
+
+        if pipeline_run.get_id():
+            test_run["id"] = pipeline_run.get_id()
+
+        test_runs.append(test_run)
 
     params = {
         "pipelineId": matching_pipeline["id"],
@@ -355,7 +358,7 @@ def run_test(pipeline_slug: str, handler) -> Result:
         params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
             "GENTRACE_COMMIT"
         )
-        
+
     params["collectionMethod"] = "runner"
 
     response = api.test_result_post(params)

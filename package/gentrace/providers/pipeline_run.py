@@ -47,6 +47,9 @@ class PipelineRun:
         self.pipeline_run_id: str = id or str(uuid.uuid4())
         self.step_runs: List[StepRun] = []
 
+    def get_id(self):
+        return self.pipeline_run_id
+
     def get_pipeline(self):
         return self.pipeline
 
@@ -271,13 +274,11 @@ class PipelineRun:
             for step_run in self.step_runs
         ]
 
-        pipeline_run_id = str(uuid.uuid4())
-
         try:
             pipeline_post_response = await run_post_background(
                 core_api,
                 {
-                    "id": pipeline_run_id,
+                    "id": self.pipeline_run_id,
                     "slug": self.pipeline.slug,
                     "stepRuns": step_runs_data,
                 },
