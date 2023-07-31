@@ -31,17 +31,16 @@ from gentrace.model.run_response import RunResponse
 # body param
 SchemaForRequestBodyApplicationJson = RunRequest
 
-
 request_body_run_request = api_client.RequestBody(
     content={
-        'application/json': api_client.MediaType(
-            schema=SchemaForRequestBodyApplicationJson),
+        "application/json": api_client.MediaType(
+            schema=SchemaForRequestBodyApplicationJson
+        ),
     },
     required=True,
 )
 SchemaFor200ResponseBodyApplicationJsonCharsetutf8 = RunResponse
 SchemaFor200ResponseBodyApplicationJson = RunResponse
-
 
 @dataclass
 class ApiResponseFor200(api_client.ApiResponse):
@@ -52,17 +51,17 @@ class ApiResponseFor200(api_client.ApiResponse):
     ]
     headers: schemas.Unset = schemas.unset
 
-
 _response_for_200 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor200,
     content={
-        'application/json; charset=utf-8': api_client.MediaType(
-            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8),
-        'application/json': api_client.MediaType(
-            schema=SchemaFor200ResponseBodyApplicationJson),
+        "application/json; charset=utf-8": api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+        ),
+        "application/json": api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJson
+        ),
     },
 )
-
 
 @dataclass
 class ApiResponseFor400(api_client.ApiResponse):
@@ -70,11 +69,9 @@ class ApiResponseFor400(api_client.ApiResponse):
     body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
-
 _response_for_400 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor400,
 )
-
 
 @dataclass
 class ApiResponseFor500(api_client.ApiResponse):
@@ -82,15 +79,13 @@ class ApiResponseFor500(api_client.ApiResponse):
     body: schemas.Unset = schemas.unset
     headers: schemas.Unset = schemas.unset
 
-
 _response_for_500 = api_client.OpenApiResponse(
     response_cls=ApiResponseFor500,
 )
 _all_accept_content_types = (
-    'application/json; charset=utf-8',
-    'application/json',
+    "application/json; charset=utf-8",
+    "application/json",
 )
-
 
 class BaseApi(api_client.Api):
     @typing.overload
@@ -102,10 +97,7 @@ class BaseApi(api_client.Api):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def _run_post_oapg(
         self,
@@ -115,11 +107,7 @@ class BaseApi(api_client.Api):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def _run_post_oapg(
         self,
@@ -130,7 +118,6 @@ class BaseApi(api_client.Api):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
-
     @typing.overload
     def _run_post_oapg(
         self,
@@ -144,11 +131,10 @@ class BaseApi(api_client.Api):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
-
     def _run_post_oapg(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationJson,],
-        content_type: str = 'application/json',
+        content_type: str = "application/json",
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
@@ -166,22 +152,23 @@ class BaseApi(api_client.Api):
         # TODO add cookie handling
         if accept_content_types:
             for accept_content_type in accept_content_types:
-                _headers.add('Accept', accept_content_type)
+                _headers.add("Accept", accept_content_type)
 
         if body is schemas.unset:
             raise exceptions.ApiValueError(
-                'The required body parameter has an invalid value of: unset. Set a valid value instead')
+                "The required body parameter has an invalid value of: unset. Set a valid value instead"
+            )
         _fields = None
         _body = None
         serialized_data = request_body_run_request.serialize(body, content_type)
-        _headers.add('Content-Type', content_type)
-        if 'fields' in serialized_data:
-            _fields = serialized_data['fields']
-        elif 'body' in serialized_data:
-            _body = serialized_data['body']
+        _headers.add("Content-Type", content_type)
+        if "fields" in serialized_data:
+            _fields = serialized_data["fields"]
+        elif "body" in serialized_data:
+            _body = serialized_data["body"]
         response = self.api_client.call_api(
             resource_path=used_path,
-            method='post'.upper(),
+            method="post".upper(),
             headers=_headers,
             fields=_fields,
             body=_body,
@@ -191,23 +178,28 @@ class BaseApi(api_client.Api):
         )
 
         if skip_deserialization:
-            api_response = api_client.ApiResponseWithoutDeserialization(response=response)
+            api_response = api_client.ApiResponseWithoutDeserialization(
+                response=response
+            )
         else:
             response_for_status = _status_code_to_response.get(str(response.status))
             if response_for_status:
-                api_response = response_for_status.deserialize(response, self.api_client.configuration)
+                api_response = response_for_status.deserialize(
+                    response, self.api_client.configuration
+                )
             else:
-                api_response = api_client.ApiResponseWithoutDeserialization(response=response)
+                api_response = api_client.ApiResponseWithoutDeserialization(
+                    response=response
+                )
 
         if not 200 <= response.status <= 299:
             raise exceptions.ApiException(
                 status=response.status,
                 reason=response.reason,
-                api_response=api_response
+                api_response=api_response,
             )
 
         return api_response
-
 
 class RunPost(BaseApi):
     # this class is used by api classes that refer to endpoints with operationId fn names
@@ -221,10 +213,7 @@ class RunPost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def run_post(
         self,
@@ -234,11 +223,7 @@ class RunPost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def run_post(
         self,
@@ -249,7 +234,6 @@ class RunPost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
-
     @typing.overload
     def run_post(
         self,
@@ -263,11 +247,10 @@ class RunPost(BaseApi):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
-
     def run_post(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationJson,],
-        content_type: str = 'application/json',
+        content_type: str = "application/json",
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
@@ -279,9 +262,8 @@ class RunPost(BaseApi):
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
-            skip_deserialization=skip_deserialization
+            skip_deserialization=skip_deserialization,
         )
-
 
 class ApiForpost(BaseApi):
     # this class is used by api classes that refer to endpoints by path and http method names
@@ -295,10 +277,7 @@ class ApiForpost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def post(
         self,
@@ -308,11 +287,7 @@ class ApiForpost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
         skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor200,
-    ]: ...
-
-
+    ) -> typing.Union[ApiResponseFor200,]: ...
     @typing.overload
     def post(
         self,
@@ -323,7 +298,6 @@ class ApiForpost(BaseApi):
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
     ) -> api_client.ApiResponseWithoutDeserialization: ...
-
     @typing.overload
     def post(
         self,
@@ -337,11 +311,10 @@ class ApiForpost(BaseApi):
         ApiResponseFor200,
         api_client.ApiResponseWithoutDeserialization,
     ]: ...
-
     def post(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationJson,],
-        content_type: str = 'application/json',
+        content_type: str = "application/json",
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
         timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
@@ -353,7 +326,5 @@ class ApiForpost(BaseApi):
             accept_content_types=accept_content_types,
             stream=stream,
             timeout=timeout,
-            skip_deserialization=skip_deserialization
+            skip_deserialization=skip_deserialization,
         )
-
-
