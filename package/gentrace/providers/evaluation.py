@@ -355,6 +355,8 @@ def run_test(pipeline_slug: str, handler) -> Result:
         params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
             "GENTRACE_COMMIT"
         )
+        
+    params["collectionMethod"] = "runner"
 
     response = api.test_result_post(params)
     return response.body
