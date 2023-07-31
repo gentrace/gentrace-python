@@ -14,6 +14,7 @@ from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import (
     from_date_string,
+    get_test_counter,
     run_post_background,
     to_date_string,
 )
@@ -253,6 +254,11 @@ class PipelineRun:
             )
 
     async def asubmit(self) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
@@ -293,6 +299,11 @@ class PipelineRun:
             return {"pipelineRunId": None}
 
     def submit(self, wait_for_server=False) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
 

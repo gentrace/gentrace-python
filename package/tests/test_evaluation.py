@@ -14,6 +14,7 @@ from urllib3.response import HTTPResponse
 import gentrace
 from gentrace.providers.evaluation import OutputStep, construct_submission_payload
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
+from gentrace.providers.utils import get_test_counter
 
 
 def test_evaluation_get_test_cases(mocker, test_cases, setup_teardown_openai):
@@ -372,3 +373,68 @@ def test_evaluation_checkpoint(mocker, setup_teardown_openai, test_result_respon
     for runner in runner_list:
         assert len(runner.step_runs) == 2
         assert runner.step_runs[0].outputs == {"value": 1100}
+
+
+def test_evaluation_counter_rest(mocker, setup_teardown_openai, test_result_response):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_checkpoint_callback(test_case):
+        runner = pipeline.start()
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner_list.append(runner)
+
+        return ["something", runner]
+
+    assert get_test_counter() == 0
+
+    response = gentrace.run_test("guess-the-year", create_checkpoint_callback)
+
+    assert get_test_counter() == 0
+
+    assert response.get("resultId", None) is not None
+
+    for runner in runner_list:
+        assert len(runner.step_runs) == 2
+        assert runner.step_runs[0].outputs == {"value": 1100}
+
+
+def test_evaluation_counter_rest_when_run_test_fails(
+    mocker, setup_teardown_openai, test_result_response
+):
+    pipeline = gentrace.Pipeline(
+        "guess-the-year",
+        openai_config={
+            "api_key": os.getenv("OPENAI_KEY"),
+        },
+    )
+
+    pipeline.setup()
+
+    runner_list = []
+
+    def create_checkpoint_callback(test_case):
+        runner = pipeline.start()
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner.checkpoint({"inputs": {"x": 100, "y": 1000}, "outputs": {"value": 1100}})
+        runner_list.append(runner)
+
+        return ["something", runner]
+
+    assert get_test_counter() == 0
+
+    try:
+        gentrace.run_test("random-slug-no-exist", create_checkpoint_callback)
+    except Exception as e:
+        pass
+
+    assert get_test_counter() == 0
