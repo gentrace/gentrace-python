@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.4](https://github.com/gentrace/gentrace-python/compare/v0.15.3...v0.15.4) (2023-08-10)
+
+
+### Bug Fixes
+
+* Ensure that run_test flushes at the end ([#139](https://github.com/gentrace/gentrace-python/issues/139)) ([255b813](https://github.com/gentrace/gentrace-python/commit/255b8133bc7e8e7b3f436fe0734431173868917e))
+
 ## [0.15.3](https://github.com/gentrace/gentrace-python/compare/v0.15.2...v0.15.3) (2023-07-31)
 
 
