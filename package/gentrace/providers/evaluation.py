@@ -9,6 +9,7 @@ from gentrace.model.test_case import TestCase
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
+from gentrace.providers.pipeline_run import flush
 from gentrace.providers.utils import (
     decrement_test_counter,
     get_test_counter,
@@ -379,6 +380,9 @@ def run_test(pipeline_slug: str, handler) -> Result:
         raise e
     finally:
         decrement_test_counter()
+
+        # OK to flush here and introduce more latency since this is just used for test anyway
+        flush()
 
 
 __all__ = [
