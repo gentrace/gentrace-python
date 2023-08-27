@@ -760,8 +760,8 @@ def swap_methods(cls, attribute: str, gentrace_config: Configuration, intercept_
 def annotate_openai_module(
     gentrace_config: Configuration,
 ):
-    import openai
-
+    import openai 
+    from litellm import embedding, completion, acompletion 
     for name, cls in vars(openai.api_resources).items():
         if isinstance(cls, type):
             if name == "Completion":
@@ -780,6 +780,10 @@ def annotate_openai_module(
                 swap_methods(cls, "acreate", gentrace_config, intercept_embedding_async)
 
             setattr(openai.api_resources, name, cls)
+
+    swap_methods(completion, "create", gentrace_config, intercept_chat_completion)
+    swap_methods(acompletion, "acreate", gentrace_config, intercept_chat_completion_async)
+    swap_methods(embedding, "acreate", gentrace_config, intercept_embedding)
 
 
 def annotate_pipeline_handler(
