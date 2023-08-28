@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 from itertools import zip_longest
 from typing import Any, Dict, List, Optional, TypedDict, Union
 
@@ -36,14 +37,25 @@ class TestCaseDict(TypedDict):
     setId: str
 
 
+def is_valid_uuid(val: str):
+    try:
+        uuid.UUID(str(val))
+        return True
+    except ValueError:
+        return False
+
+
 def get_test_cases(
-    pipeline_id: Optional[str] = None, set_id: Optional[str] = None
+    pipeline_id: Optional[str] = None,
+    set_id: Optional[str] = None,
+    pipeline_slug: Optional[str] = None,
 ) -> List[TestCaseDict]:
     """
     Retrieves test cases for a given pipeline ID from the Gentrace API.
 
     Args:
-        pipeline_id (str): The ID of the pipeline to retrieve test cases for.
+        pipeline_slug (str): The pipeline slug to retrieve test cases for.
+        pipeline_id (str): DEPRECATED: The ID of the pipeline to retrieve test cases for.
         set_id (str): DEPRECATED: The ID of the test set to retrieve test cases for. We renamed
           TestSet -> Pipeline and will be removing this named parameter in the future.
 
@@ -61,10 +73,27 @@ def get_test_cases(
     api_client = ApiClient(configuration=config)
     api = CoreApi(api_client=api_client)
 
-    if not pipeline_id and not set_id:
-        raise ValueError("pipeline_id must be passed")
+    if not pipeline_id and not set_id and not pipeline_slug:
+        raise ValueError("pipeline_slug must be passed")
 
     effective_pipeline_id = pipeline_id or set_id
+
+    if pipeline_slug and not is_valid_uuid(pipeline_slug):
+        all_pipelines = get_pipelines(slug=pipeline_slug)
+
+        matching_pipeline = next(
+            (
+                pipeline
+                for pipeline in all_pipelines
+                if pipeline["slug"] == pipeline_slug
+            ),
+            None,
+        )
+
+        if not matching_pipeline:
+            raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+
+        effective_pipeline_id = matching_pipeline.get("id")
 
     response = api.test_case_get({"pipelineId": effective_pipeline_id})
     test_cases = response.body.get("testCases", [])
@@ -73,7 +102,7 @@ def get_test_cases(
 
 def submit_prepared_test_results(set_id: str, test_results: List[Dict]) -> Run:
     """
-    DEPRECATED - use run_test instead.
+    DEPRECATED - use run_test (advanced runner use case) or submit_test_result (basic use case) instead.
     Submits prepared test results to the Gentrace API for a given set ID. This method requires that you
     create TestResult objects yourself. We recommend using the submitTestResults method instead.
 
@@ -145,16 +174,16 @@ class OutputStep(TypedDict):
 
 
 def submit_test_result(
-    set_id: str,
+    pipeline_slug: str,
     test_cases: List[TestCase],
     outputs_list: List[Dict[str, Any]],
 ) -> Run:
     """
-    DEPRECATED - use run_test instead.
     Submits a test result by creating TestResult objects from given test cases and corresponding outputs.
+    To use a Gentrace runner to capture intermediate steps, use run_test instead.
 
     Args:
-        set_id (str): The identifier of the test set.
+        pipeline_slug (str): The pipeline slug
         test_cases (List[TestCase]): A list of TestCase objects.
         outputs_list (List[Dict[str, Any]]): A list of outputs corresponding to each TestCase.
 
@@ -184,59 +213,26 @@ def submit_test_result(
 
         test_results.append(result)
 
-    return submit_prepared_test_results(set_id, test_results)
+    pipeline_id = pipeline_slug
 
+    if not is_valid_uuid(pipeline_slug):
+        all_pipelines = get_pipelines(slug=pipeline_slug)
 
-def submit_test_results(
-    set_id: str,
-    test_cases: List[TestCase],
-    outputs: List[str],
-    output_steps: Optional[List[List[OutputStep]]] = [],
-) -> Run:
-    """
-    DEPRECATED - use run_test instead.
-    Submits test results by creating TestResult objects from given test cases and corresponding outputs.
+        matching_pipeline = next(
+            (
+                pipeline
+                for pipeline in all_pipelines
+                if pipeline["slug"] == pipeline_slug
+            ),
+            None,
+        )
 
-    Args:
-        set_id (str): The identifier of the test set.
-        test_cases (List[TestCase]): A list of TestCase objects.
-        outputs (List[str]): A list of outputs corresponding to each TestCase.
-        output_steps (Optional[List[List[OutputStep]]], optional): A list of lists of OutputStep objects. Defaults to [].
+        if not matching_pipeline:
+            raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
 
-    Raises:
-        ValueError: If the Gentrace API key is not initialized.
+        pipeline_id = matching_pipeline.get("id")
 
-    Returns:
-        Run: The response data from the Gentrace API's testRunPost method.
-    """
-    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
-    if not config:
-        raise ValueError("Gentrace API key not initialized. Call init() first.")
-
-    if len(test_cases) != len(outputs):
-        raise ValueError("`test_cases` and `outputs` should be the same length.")
-
-    test_results = []
-
-    for test_case, output, output_steps_inner in zip_longest(
-        test_cases, outputs, output_steps, fillvalue=None
-    ):
-        result = {
-            "caseId": test_case["id"],
-            "inputs": json.loads(test_case["inputs"])
-            if isinstance(test_case["inputs"], str)
-            else test_case["inputs"],
-            "output": output,
-        }
-
-        # Steps are optional but they can't be null. If they're defined, they must
-        # be an array and have at least one step.
-        if output_steps_inner:
-            result["outputSteps"] = output_steps_inner
-
-        test_results.append(result)
-
-    return submit_prepared_test_results(set_id, test_results)
+    return submit_prepared_test_results(pipeline_id, test_results)
 
 
 def get_pipelines(
@@ -273,7 +269,7 @@ def get_pipelines(
 
     response = api.pipelines_get(params)
 
-    pipelines = response.body["pipelines"]
+    pipelines = response.body.get("pipelines")
 
     return pipelines
 
@@ -388,7 +384,6 @@ def run_test(pipeline_slug: str, handler) -> Result:
 __all__ = [
     "get_test_cases",
     "submit_test_result",
-    "submit_test_results",
     "get_pipelines",
     "submit_prepared_test_results",
     "construct_submission_payload",

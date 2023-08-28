@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PIPELINE_SLUG = "guess-the-year"
+PIPELINE_SLUG = "main"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
