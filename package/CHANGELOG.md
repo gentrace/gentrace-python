@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.5](https://github.com/gentrace/gentrace-python/compare/v0.15.4...v0.15.5) (2023-08-28)
+
+
+### Bug Fixes
+
+* Add inputs and templates for chat completion rendering ([#142](https://github.com/gentrace/gentrace-python/issues/142)) ([dee4360](https://github.com/gentrace/gentrace-python/commit/dee43607485030742a50ce33b7c31e03d2290018))
+
 ## [0.15.4](https://github.com/gentrace/gentrace-python/compare/v0.15.3...v0.15.4) (2023-08-10)
 
 
