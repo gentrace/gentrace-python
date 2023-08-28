@@ -13,7 +13,7 @@ gentrace.init(
     host="http://localhost:3000/api/v1",
 )
 
-cases = gentrace.get_test_cases(set_id=SET_ID)
+cases = gentrace.get_test_cases(pipeline_slug="main")
 
 outputs_list = []
 
@@ -26,7 +26,7 @@ for case in cases:
     )
 
 result = gentrace.submit_test_result(
-    SET_ID, test_cases=cases, outputs_list=outputs_list
+    "main", test_cases=cases, outputs_list=outputs_list
 )
 
 print(result["runId"])
