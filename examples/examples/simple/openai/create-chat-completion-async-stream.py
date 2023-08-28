@@ -23,7 +23,8 @@ async def main():
         messages=[
             {
                 "role": "user",
-                "content": "Hello, I'm testing the acreate() async completion!",
+                "contentTemplate": "Hello {{ name }}! Tell me a bit about {{ topic }}",
+                "contentInputs": {"name": "John", "topic": "Maine"},
             }
         ],
         model="gpt-3.5-turbo",

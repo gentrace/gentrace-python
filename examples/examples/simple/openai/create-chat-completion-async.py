@@ -20,7 +20,13 @@ async def main():
 
     result = await openai.ChatCompletion.acreate(
         pipeline_slug="testing-chat-completion-value",
-        messages=[{"role": "user", "content": "Hello!"}],
+        messages=[
+            {
+                "role": "user",
+                "contentTemplate": "Hello {{ name }}! Tell me a bit about {{ topic }}",
+                "contentInputs": {"name": "John", "topic": "Maine"},
+            }
+        ],
         model="gpt-3.5-turbo",
     )
 
