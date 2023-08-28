@@ -407,6 +407,16 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
+        content_templates_array = [
+            message["contentTemplate"] if "contentTemplate" in message else None
+            for message in messages
+        ]
+
+        content_inputs_array = [
+            message["contentInputs"] if "contentInputs" in message else None
+            for message in messages
+        ]
+
         if stream:
             rendered_messages = create_rendered_chat_messages(messages)
             new_kwargs = dict(kwargs, messages=rendered_messages)
@@ -453,8 +463,15 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                             elapsed_time,
                             to_date_string(start_time),
                             to_date_string(end_time),
-                            {"messages": messages, "user": user},
-                            model_params,
+                            {
+                                "messages": messages,
+                                "user": user,
+                                "contentInputs": content_inputs_array,
+                            },
+                            {
+                                **model_params,
+                                "contentTemplates": content_templates_array,
+                            },
                             full_response,
                         )
                     )
@@ -494,8 +511,12 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     elapsed_time,
                     to_date_string(start_time),
                     to_date_string(end_time),
-                    {"messages": messages, "user": user},
-                    model_params,
+                    {
+                        "messages": messages,
+                        "user": user,
+                        "contentInputs": content_inputs_array,
+                    },
+                    {**model_params, "contentTemplates": content_templates_array},
                     completion,
                 )
             )
@@ -525,6 +546,16 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
+
+        content_templates_array = [
+            message["contentTemplate"] if "contentTemplate" in message else None
+            for message in messages
+        ]
+
+        content_inputs_array = [
+            message["contentInputs"] if "contentInputs" in message else None
+            for message in messages
+        ]
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
@@ -579,8 +610,15 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                             elapsed_time,
                             to_date_string(start_time),
                             to_date_string(end_time),
-                            {"messages": messages, "user": user},
-                            model_params,
+                            {
+                                "messages": messages,
+                                "user": user,
+                                "contentInputs": content_inputs_array,
+                            },
+                            {
+                                **model_params,
+                                "contentTemplates": content_templates_array,
+                            },
                             full_response,
                         )
                     )
@@ -615,8 +653,15 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                     elapsed_time,
                     to_date_string(start_time),
                     to_date_string(end_time),
-                    {"messages": messages, "user": user},
-                    model_params,
+                    {
+                        "messages": messages,
+                        "user": user,
+                        "contentInputs": content_inputs_array,
+                    },
+                    {
+                        **model_params,
+                        "contentTemplates": content_templates_array,
+                    },
                     completion,
                 )
             )
