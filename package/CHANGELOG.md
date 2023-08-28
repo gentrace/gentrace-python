@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.6](https://github.com/gentrace/gentrace-python/compare/v0.15.5...v0.15.6) (2023-08-28)
+
+
+### Bug Fixes
+
+* Fix slug not accepted in Python invocation ([#144](https://github.com/gentrace/gentrace-python/issues/144)) ([660e7f7](https://github.com/gentrace/gentrace-python/commit/660e7f7b7ac5143f5d0c03592d12ecfc10b485b9))
+
 ## [0.15.5](https://github.com/gentrace/gentrace-python/compare/v0.15.4...v0.15.5) (2023-08-28)
 
 
