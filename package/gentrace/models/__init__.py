@@ -11,6 +11,8 @@
 # import sys
 # sys.setrecursionlimit(n)
 
+from gentrace.model.create_multiple_test_cases import CreateMultipleTestCases
+from gentrace.model.create_single_test_case import CreateSingleTestCase
 from gentrace.model.feedback_request import FeedbackRequest
 from gentrace.model.feedback_response import FeedbackResponse
 from gentrace.model.pipeline import Pipeline
@@ -20,3 +22,4 @@ from gentrace.model.step_run import StepRun
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_result import TestResult
 from gentrace.model.test_run import TestRun
+from gentrace.model.update_test_case import UpdateTestCase

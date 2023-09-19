@@ -11,5 +11,11 @@ gentrace.init(
 
 cases = gentrace.get_test_cases(pipeline_slug="testing-pipeline-id")
 
-for case in cases:
-    print(case)
+case_id = cases[0]["id"]
+
+case_id = gentrace.update_test_case(
+    pipeline_slug="testing-pipeline-id",
+    payload={"id": case_id, "name": "Updated test case name", "inputs": {"d": 1}},
+)
+
+print(case_id)
