@@ -214,11 +214,149 @@ class SchemaFor200ResponseBodyApplicationJson(
         )
 
 
+class SchemaFor200ResponseBodyApplicationJsonCharsetutf8(
+    schemas.ComposedSchema,
+):
+
+
+    class MetaOapg:
+        
+        
+        class one_of_0(
+            schemas.DictSchema
+        ):
+        
+        
+            class MetaOapg:
+                
+                class properties:
+                    caseId = schemas.StrSchema
+                    __annotations__ = {
+                        "caseId": caseId,
+                    }
+            
+            @typing.overload
+            def __getitem__(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
+            
+            @typing.overload
+            def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+            
+            def __getitem__(self, name: typing.Union[typing_extensions.Literal["caseId", ], str]):
+                # dict_instance[name] accessor
+                return super().__getitem__(name)
+            
+            
+            @typing.overload
+            def get_item_oapg(self, name: typing_extensions.Literal["caseId"]) -> typing.Union[MetaOapg.properties.caseId, schemas.Unset]: ...
+            
+            @typing.overload
+            def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+            
+            def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["caseId", ], str]):
+                return super().get_item_oapg(name)
+            
+        
+            def __new__(
+                cls,
+                *_args: typing.Union[dict, frozendict.frozendict, ],
+                caseId: typing.Union[MetaOapg.properties.caseId, str, schemas.Unset] = schemas.unset,
+                _configuration: typing.Optional[schemas.Configuration] = None,
+                **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+            ) -> 'one_of_0':
+                return super().__new__(
+                    cls,
+                    *_args,
+                    caseId=caseId,
+                    _configuration=_configuration,
+                    **kwargs,
+                )
+        
+        
+        class one_of_1(
+            schemas.DictSchema
+        ):
+        
+        
+            class MetaOapg:
+                
+                class properties:
+                    creationCount = schemas.IntSchema
+                    __annotations__ = {
+                        "creationCount": creationCount,
+                    }
+            
+            @typing.overload
+            def __getitem__(self, name: typing_extensions.Literal["creationCount"]) -> MetaOapg.properties.creationCount: ...
+            
+            @typing.overload
+            def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+            
+            def __getitem__(self, name: typing.Union[typing_extensions.Literal["creationCount", ], str]):
+                # dict_instance[name] accessor
+                return super().__getitem__(name)
+            
+            
+            @typing.overload
+            def get_item_oapg(self, name: typing_extensions.Literal["creationCount"]) -> typing.Union[MetaOapg.properties.creationCount, schemas.Unset]: ...
+            
+            @typing.overload
+            def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+            
+            def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["creationCount", ], str]):
+                return super().get_item_oapg(name)
+            
+        
+            def __new__(
+                cls,
+                *_args: typing.Union[dict, frozendict.frozendict, ],
+                creationCount: typing.Union[MetaOapg.properties.creationCount, decimal.Decimal, int, schemas.Unset] = schemas.unset,
+                _configuration: typing.Optional[schemas.Configuration] = None,
+                **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+            ) -> 'one_of_1':
+                return super().__new__(
+                    cls,
+                    *_args,
+                    creationCount=creationCount,
+                    _configuration=_configuration,
+                    **kwargs,
+                )
+        
+        @classmethod
+        @functools.lru_cache()
+        def one_of(cls):
+            # we need this here to make our import statements work
+            # we must store _composed_schemas in here so the code is only run
+            # when we invoke this method. If we kept this at the class
+            # level we would get an error because the class level
+            # code would be run when this module is imported, and these composed
+            # classes don't exist yet because their module has not finished
+            # loading
+            return [
+                cls.one_of_0,
+                cls.one_of_1,
+            ]
+
+
+    def __new__(
+        cls,
+        *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+        _configuration: typing.Optional[schemas.Configuration] = None,
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor200ResponseBodyApplicationJsonCharsetutf8':
+        return super().__new__(
+            cls,
+            *_args,
+            _configuration=_configuration,
+            **kwargs,
+        )
+
+
 @dataclass
 class ApiResponseFor200(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
         SchemaFor200ResponseBodyApplicationJson,
+        SchemaFor200ResponseBodyApplicationJsonCharsetutf8,
     ]
     headers: schemas.Unset = schemas.unset
 
@@ -228,6 +366,8 @@ _response_for_200 = api_client.OpenApiResponse(
     content={
         'application/json': api_client.MediaType(
             schema=SchemaFor200ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8),
     },
 )
 
@@ -256,6 +396,7 @@ _response_for_500 = api_client.OpenApiResponse(
 )
 _all_accept_content_types = (
     'application/json',
+    'application/json; charset=utf-8',
 )
 
 

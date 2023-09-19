@@ -9,13 +9,13 @@ gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"), host="http://localhost:3000/api/v1"
 )
 
-cases = gentrace.get_test_cases(pipeline_slug="testing-pipeline-id")
-
-case_id = cases[0]["id"]
-
-case_id = gentrace.update_test_case(
+case_id = gentrace.create_test_case(
     pipeline_slug="testing-pipeline-id",
-    payload={"id": case_id, "name": "Updated test case name", "inputs": {"d": 1}},
+    payload={
+        "name": "Updated test case name",
+        "inputs": {"d": 1},
+        "expectedOutputs": {"e": 2},
+    },
 )
 
 print(case_id)
