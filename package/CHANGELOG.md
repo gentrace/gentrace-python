@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/gentrace/gentrace-python/compare/v0.15.6...v0.16.0) (2023-09-19)
+
+
+### Features
+
+* Add evaluation routes, deprecate set ID a few calls ([#146](https://github.com/gentrace/gentrace-python/issues/146)) ([7d6fd9b](https://github.com/gentrace/gentrace-python/commit/7d6fd9b5445b1cb7a39ee085287ee680362e19ac))
+
 ## [0.15.6](https://github.com/gentrace/gentrace-python/compare/v0.15.5...v0.15.6) (2023-08-28)
 
 
