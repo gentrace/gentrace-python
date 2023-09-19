@@ -56,6 +56,118 @@ def test_evaluation_get_test_cases(
     assert len(test_cases) == 3
 
 
+def test_evaluation_create_test_cases(
+    mocker, setup_teardown_openai, multiple_create_tc
+):
+    # Setup Gentrace mocked response for get_test_cases
+    headers = http.client.HTTPMessage()
+    headers.add_header("Content-Type", "application/json")
+
+    body = json.dumps(multiple_create_tc, ensure_ascii=False).encode("utf-8")
+
+    gentrace_response_creation_count = HTTPResponse(
+        body=body,
+        headers=headers,
+        status=200,
+        reason="OK",
+        preload_content=False,
+        decode_content=True,
+        enforce_content_length=True,
+    )
+
+    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
+    gentrace_request.side_effect = [
+        gentrace_response_creation_count,
+    ]
+
+    response = gentrace.create_test_cases(
+        pipeline_slug="guess-the-year",
+        payload={
+            "testCases": [
+                {
+                    "name": "Test case 1",
+                    "inputs": {"a": "1", "b": "2"},
+                    "expectedOutputs": {"value": "3"},
+                },
+                {
+                    "name": "Test case 2",
+                    "inputs": {"a": "1", "b": "2"},
+                    "expectedOutputs": {"value": "3"},
+                },
+            ]
+        },
+    )
+
+    assert response == 2
+
+
+def test_evaluation_create_test_case(mocker, setup_teardown_openai, single_create_tc):
+    # Setup Gentrace mocked response for get_test_cases
+    headers = http.client.HTTPMessage()
+    headers.add_header("Content-Type", "application/json")
+
+    body = json.dumps(single_create_tc, ensure_ascii=False).encode("utf-8")
+
+    gentrace_response_creation_count = HTTPResponse(
+        body=body,
+        headers=headers,
+        status=200,
+        reason="OK",
+        preload_content=False,
+        decode_content=True,
+        enforce_content_length=True,
+    )
+
+    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
+    gentrace_request.side_effect = [
+        gentrace_response_creation_count,
+    ]
+
+    response = gentrace.create_test_case(
+        pipeline_slug="guess-the-year",
+        payload={
+            "name": "Test case 1",
+            "inputs": {"a": "1", "b": "2"},
+            "expectedOutputs": {"value": "3"},
+        },
+    )
+
+    assert response == "550e8400-e29b-41d4-a716-446655440000"
+
+
+def test_evaluation_update_test_case(mocker, setup_teardown_openai, update_tc):
+    # Setup Gentrace mocked response for get_test_cases
+    headers = http.client.HTTPMessage()
+    headers.add_header("Content-Type", "application/json")
+
+    body = json.dumps(update_tc, ensure_ascii=False).encode("utf-8")
+
+    gentrace_response_creation_count = HTTPResponse(
+        body=body,
+        headers=headers,
+        status=200,
+        reason="OK",
+        preload_content=False,
+        decode_content=True,
+        enforce_content_length=True,
+    )
+
+    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
+    gentrace_request.side_effect = [
+        gentrace_response_creation_count,
+    ]
+
+    response = gentrace.update_test_case(
+        pipeline_slug="guess-the-year",
+        payload={
+            "id": "550e8400-e29b-41d4-a716-446655440000",
+            "name": "Test case 1",
+        },
+    )
+
+    assert response == "550e8400-e29b-41d4-a716-446655440000"
+
+
 def test_evaluation_submit_test_run(
     mocker, test_cases, setup_teardown_openai, test_run_response
 ):
@@ -78,7 +190,9 @@ def test_evaluation_submit_test_run(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    test_cases = gentrace.get_test_cases(set_id="201196DC-9471-4B28-A051-C21AE45F247A")
+    test_cases = gentrace.get_test_cases(
+        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
+    )
 
     results = []
     for case in test_cases:
@@ -150,7 +264,9 @@ def test_evaluation_submit_test_run_pipeline_slug(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.side_effect = [gentrace_response_pipelines, gentrace_response_tc]
 
-    test_cases = gentrace.get_test_cases(set_id="201196DC-9471-4B28-A051-C21AE45F247A")
+    test_cases = gentrace.get_test_cases(
+        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
+    )
 
     results = []
     for case in test_cases:
@@ -210,7 +326,9 @@ def test_evaluation_submit_test_run_output_steps(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    test_cases = gentrace.get_test_cases(set_id="201196DC-9471-4B28-A051-C21AE45F247A")
+    test_cases = gentrace.get_test_cases(
+        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
+    )
 
     outputs = []
     for _ in test_cases:
@@ -277,7 +395,9 @@ def test_evaluation_submit_prepared_test_run(
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
     gentrace_request.return_value = gentrace_response
 
-    test_cases = gentrace.get_test_cases(set_id="201196DC-9471-4B28-A051-C21AE45F247A")
+    test_cases = gentrace.get_test_cases(
+        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
+    )
 
     results = []
     for case in test_cases:

@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, TypedDict, Union
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.model.test_case import TestCase
+from gentrace.models import CreateMultipleTestCases
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
@@ -31,10 +32,10 @@ class TestCaseDict(TypedDict):
     createdAt: str
     updatedAt: str
     archivedAt: Optional[str]
-    expected: Optional[str]
+    expectedOutputs: Optional[Dict[str, Any]]
     inputs: Dict[str, Any]
     name: str
-    setId: str
+    pipelineId: str
 
 
 def is_valid_uuid(val: str):
@@ -47,7 +48,6 @@ def is_valid_uuid(val: str):
 
 def get_test_cases(
     pipeline_id: Optional[str] = None,
-    set_id: Optional[str] = None,
     pipeline_slug: Optional[str] = None,
 ) -> List[TestCaseDict]:
     """
@@ -56,8 +56,6 @@ def get_test_cases(
     Args:
         pipeline_slug (str): The pipeline slug to retrieve test cases for.
         pipeline_id (str): DEPRECATED: The ID of the pipeline to retrieve test cases for.
-        set_id (str): DEPRECATED: The ID of the test set to retrieve test cases for. We renamed
-          TestSet -> Pipeline and will be removing this named parameter in the future.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
@@ -73,10 +71,10 @@ def get_test_cases(
     api_client = ApiClient(configuration=config)
     api = CoreApi(api_client=api_client)
 
-    if not pipeline_id and not set_id and not pipeline_slug:
+    if not pipeline_id and not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    effective_pipeline_id = pipeline_id or set_id
+    effective_pipeline_id = pipeline_id
 
     if pipeline_slug and not is_valid_uuid(pipeline_slug):
         all_pipelines = get_pipelines(slug=pipeline_slug)
@@ -98,6 +96,137 @@ def get_test_cases(
     response = api.test_case_get({"pipelineId": effective_pipeline_id})
     test_cases = response.body.get("testCases", [])
     return test_cases
+
+
+class CreateTestCasePayload(TypedDict):
+    name: str
+    inputs: Dict[str, Any]
+    expectedOutputs: Optional[Dict[str, Any]]
+
+
+class MultipleTestCasesPayload(TypedDict):
+    testCases: List[TestCaseDict]
+
+
+class SingleTestCasePayload(TypedDict):
+    name: str
+    inputs: Dict[str, Any]
+    expectedOutputs: Optional[Dict[str, Any]]
+
+
+class UpdateTestCasePayload(TypedDict):
+    id: str
+    name: Optional[str]
+    inputs: Optional[Dict[str, Any]]
+    expectedOutputs: Optional[Dict[str, Any]]
+    archived: Optional[bool]
+
+
+class UpdateTestCaseResponse(TypedDict):
+    caseId: str
+
+
+def create_test_cases(
+    pipeline_slug: str,
+    payload: MultipleTestCasesPayload,
+) -> int:
+    """Creates multiple test cases for a specified pipeline using the Gentrace API.
+
+    Parameters:
+    - pipeline_slug (str): The unique identifier of the pipeline to which the test cases should be added.
+    - payload (MultipleTestCasesPayload): The payload containing the test cases to be created.
+
+    Returns:
+    - int: Count of test cases created.
+
+    Raises:
+    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+
+    Note:
+    Ensure that the Gentrace API is initialized by calling init() before using this function.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = CoreApi(api_client=api_client)
+
+    if not pipeline_slug:
+        raise ValueError("pipeline_slug must be passed")
+
+    response = api.test_case_post(
+        {"pipelineSlug": pipeline_slug, "testCases": payload["testCases"]}
+    )
+    count = response.body.get("creationCount", None)
+    return count
+
+
+def create_test_case(
+    pipeline_slug: str,
+    payload: SingleTestCasePayload,
+) -> str:
+    """
+    Creates a single test case for a specified pipeline using the Gentrace API.
+
+    Parameters:
+    - pipeline_slug (str): The unique identifier of the pipeline to which the test case should be added.
+    - payload (SingleTestCasePayload): The payload containing the test case to be created.
+
+    Returns:
+    - str: The identifier (caseId) of the created test case.
+
+    Raises:
+    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+
+    Note:
+    Ensure that the Gentrace API is initialized by calling init() before using this function.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = CoreApi(api_client=api_client)
+
+    if not pipeline_slug:
+        raise ValueError("pipeline_slug must be passed")
+
+    response = api.test_case_post({"pipelineSlug": pipeline_slug, **payload})
+    case_id = response.body.get("caseId", None)
+    return case_id
+
+
+def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
+    """
+    Updates a test case for a specified pipeline using the Gentrace API.
+
+    Parameters:
+    - pipeline_slug (str): The unique identifier of the pipeline where the test case exists.
+    - payload (UpdateTestCasePayload): The payload containing details of the test case to be updated.
+
+    Returns:
+    - str: The identifier (caseId) of the updated test case.
+
+    Raises:
+    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+
+    Note:
+    Ensure that the Gentrace API is initialized by calling init() before using this function.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = CoreApi(api_client=api_client)
+
+    if not pipeline_slug:
+        raise ValueError("pipeline_slug must be passed")
+
+    response = api.test_case_patch({"pipelineSlug": pipeline_slug, **payload})
+    case_id = response.body.get("caseId", None)
+    return case_id
 
 
 def submit_prepared_test_results(set_id: str, test_results: List[Dict]) -> Run:
@@ -383,6 +512,9 @@ def run_test(pipeline_slug: str, handler) -> Result:
 
 __all__ = [
     "get_test_cases",
+    "create_test_cases",
+    "create_test_case",
+    "update_test_case",
     "submit_test_result",
     "get_pipelines",
     "submit_prepared_test_results",
