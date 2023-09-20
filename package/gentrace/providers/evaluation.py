@@ -330,6 +330,9 @@ def submit_test_result(
     if len(test_cases) != len(outputs_list):
         raise ValueError("`test_cases` and `outputs` should be the same length.")
 
+    if is_valid_uuid(pipeline_slug):
+        raise ValueError("You passed a pipeline ID instead of a pipeline slug.")
+
     test_runs = []
 
     for test_case, outputs in zip_longest(test_cases, outputs_list, fillvalue=None):

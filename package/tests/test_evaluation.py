@@ -169,7 +169,10 @@ def test_evaluation_update_test_case(mocker, setup_teardown_openai, update_tc):
 
 
 def test_evaluation_submit_test_run(
-    mocker, test_cases, setup_teardown_openai, test_run_response
+    mocker,
+    test_cases,
+    setup_teardown_openai,
+    test_result_response_simple,
 ):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
@@ -206,7 +209,7 @@ def test_evaluation_submit_test_run(
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
     gentrace_response = HTTPResponse(
         body=body,
@@ -231,7 +234,7 @@ def test_evaluation_submit_test_run(
 
 
 def test_evaluation_submit_test_run_pipeline_slug(
-    mocker, test_cases, setup_teardown_openai, test_run_response, pipelines
+    mocker, test_cases, setup_teardown_openai, test_result_response_simple, pipelines
 ):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
@@ -280,7 +283,7 @@ def test_evaluation_submit_test_run_pipeline_slug(
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
     gentrace_response_tr = HTTPResponse(
         body=body,
@@ -305,7 +308,7 @@ def test_evaluation_submit_test_run_pipeline_slug(
 
 
 def test_evaluation_submit_test_run_output_steps(
-    mocker, test_cases, setup_teardown_openai, test_run_response
+    mocker, test_cases, setup_teardown_openai, test_result_response_simple
 ):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
@@ -349,7 +352,7 @@ def test_evaluation_submit_test_run_output_steps(
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
     gentrace_response = HTTPResponse(
         body=body,
