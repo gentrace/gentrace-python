@@ -1379,9 +1379,8 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
+**pipelineSlug** | str,  | str,  | Slug for the pipeline | 
 **[testRuns](#testRuns)** | list, tuple,  | tuple,  |  | 
-**pipelineId** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO |  | 
-**pipelineSlug** | str, uuid.UUID,  | str,  | The pipeline ID | [optional] value must be a uuid
 **branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 

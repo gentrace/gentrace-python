@@ -9,7 +9,6 @@ docs/models/RunResponse.md
 docs/models/StepRun.md
 docs/models/TestCase.md
 docs/models/TestResult.md
-docs/models/TestRun.md
 docs/models/UpdateTestCase.md
 gentrace/__init__.py
 gentrace/api_client.py

@@ -38,12 +38,12 @@ class SchemaForRequestBodyApplicationJson(
 
     class MetaOapg:
         required = {
+            "pipelineSlug",
             "testRuns",
-            "pipelineId",
         }
         
         class properties:
-            pipelineSlug = schemas.UUIDSchema
+            pipelineSlug = schemas.StrSchema
             
             
             class branch(
@@ -301,8 +301,8 @@ class SchemaForRequestBodyApplicationJson(
                 "testRuns": testRuns,
             }
     
+    pipelineSlug: MetaOapg.properties.pipelineSlug
     testRuns: MetaOapg.properties.testRuns
-    pipelineId: schemas.AnyTypeSchema
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["pipelineSlug"]) -> MetaOapg.properties.pipelineSlug: ...
@@ -328,7 +328,7 @@ class SchemaForRequestBodyApplicationJson(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["pipelineSlug"]) -> typing.Union[MetaOapg.properties.pipelineSlug, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["pipelineSlug"]) -> MetaOapg.properties.pipelineSlug: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["branch"]) -> typing.Union[MetaOapg.properties.branch, schemas.Unset]: ...
@@ -352,9 +352,8 @@ class SchemaForRequestBodyApplicationJson(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
+        pipelineSlug: typing.Union[MetaOapg.properties.pipelineSlug, str, ],
         testRuns: typing.Union[MetaOapg.properties.testRuns, list, tuple, ],
-        pipelineId: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
-        pipelineSlug: typing.Union[MetaOapg.properties.pipelineSlug, str, uuid.UUID, schemas.Unset] = schemas.unset,
         branch: typing.Union[MetaOapg.properties.branch, None, str, schemas.Unset] = schemas.unset,
         commit: typing.Union[MetaOapg.properties.commit, None, str, schemas.Unset] = schemas.unset,
         name: typing.Union[MetaOapg.properties.name, None, str, schemas.Unset] = schemas.unset,
@@ -364,9 +363,8 @@ class SchemaForRequestBodyApplicationJson(
         return super().__new__(
             cls,
             *_args,
-            testRuns=testRuns,
-            pipelineId=pipelineId,
             pipelineSlug=pipelineSlug,
+            testRuns=testRuns,
             branch=branch,
             commit=commit,
             name=name,
