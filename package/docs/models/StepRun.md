@@ -8,28 +8,15 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**[provider](#provider)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
+**[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+**invocation** | str,  | str,  |  | 
+**[modelParams](#modelParams)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+**[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+**startTime** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
+**endTime** | str, datetime,  | str,  |  | value must conform to RFC-3339 date-time
+**providerName** | str,  | str,  |  | 
+**elapsedTime** | decimal.Decimal, int,  | decimal.Decimal,  |  | 
 **[context](#context)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
-**elapsedTime** | decimal.Decimal, int,  | decimal.Decimal,  |  | [optional] 
-**startTime** | str, datetime,  | str,  |  | [optional] value must conform to RFC-3339 date-time
-**endTime** | str, datetime,  | str,  |  | [optional] value must conform to RFC-3339 date-time
-**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-# provider
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
-
-### Dictionary Keys
-Key | Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | ------------- | -------------
-**name** | str,  | str,  |  | [optional] 
-**invocation** | str,  | str,  |  | [optional] 
-**[modelParams](#modelParams)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
-**[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
-**[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # modelParams

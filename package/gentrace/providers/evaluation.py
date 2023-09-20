@@ -229,15 +229,16 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
     return case_id
 
 
-def submit_prepared_test_results(set_id: str, test_results: List[Dict]) -> Run:
+def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict]) -> Run:
     """
-    DEPRECATED - use run_test (advanced runner use case) or submit_test_result (basic use case) instead.
-    Submits prepared test results to the Gentrace API for a given set ID. This method requires that you
-    create TestResult objects yourself. We recommend using the submitTestResults method instead.
+    INTERNAL TO PACKAGE:
+
+    Submits prepared test runs to the Gentrace API for a given pipeline ID. This method requires that you
+    create TestRun objects yourself. We recommend using the submit_test_result method instead.
 
     Args:
-        set_id (str): The ID of the test set associated with the test results.
-        test_results (List[Dict]): A list of test results to submit.
+        pipeline_slug (str): The pipeline slug
+        test_runs (List[Dict]): A list of test runs to submit.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
@@ -252,32 +253,32 @@ def submit_prepared_test_results(set_id: str, test_results: List[Dict]) -> Run:
     api_client = ApiClient(configuration=config)
     api = CoreApi(api_client=api_client)
 
-    for test_result in test_results:
-        test_result["inputs"] = (
-            json.dumps(test_result["inputs"])
-            if isinstance(test_result["inputs"], str)
-            else test_result["inputs"]
+    for test_run in test_runs:
+        test_run["inputs"] = (
+            json.dumps(test_run["inputs"])
+            if isinstance(test_run["inputs"], str)
+            else test_run["inputs"]
         )
 
-    params = construct_submission_payload(set_id, test_results)
-    response = api.test_run_post(params)
+    params = construct_submission_payload(pipeline_slug, test_runs)
+    response = api.test_result_simple_post(params)
     return response.body
 
 
-def construct_submission_payload(set_id: str, test_results: List[Dict]):
+def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict]):
     """
-    Constructs a dictionary payload for submitting test results to a server.
+    Constructs a dictionary payload for submitting test runs to a server.
 
     Args:
-        set_id (str): The ID of the test set.
+        pipeline_slug (str): The pipeline slug
         test_results (List[Dict]): A list of dictionaries containing test results.
 
     Returns:
-        Dict: A dictionary payload containing the set ID, test results, and optional branch and commit information.
+        Dict: A dictionary payload containing the pipeline slug, test runs, and optional branch and commit information.
     """
     params = {
-        "setId": set_id,
-        "testResults": test_results,
+        "pipelineSlug": pipeline_slug,
+        "testRuns": test_runs,
     }
 
     if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
@@ -308,7 +309,7 @@ def submit_test_result(
     outputs_list: List[Dict[str, Any]],
 ) -> Run:
     """
-    Submits a test result by creating TestResult objects from given test cases and corresponding outputs.
+    Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
     To use a Gentrace runner to capture intermediate steps, use run_test instead.
 
     Args:
@@ -320,7 +321,7 @@ def submit_test_result(
         ValueError: If the Gentrace API key is not initialized.
 
     Returns:
-        Run: The response data from the Gentrace API's testRunPost method.
+        Run: The response data from the test_result_simple_post SDK method.
     """
     config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
     if not config:
@@ -329,7 +330,7 @@ def submit_test_result(
     if len(test_cases) != len(outputs_list):
         raise ValueError("`test_cases` and `outputs` should be the same length.")
 
-    test_results = []
+    test_runs = []
 
     for test_case, outputs in zip_longest(test_cases, outputs_list, fillvalue=None):
         result = {
@@ -340,28 +341,9 @@ def submit_test_result(
             "outputs": outputs,
         }
 
-        test_results.append(result)
+        test_runs.append(result)
 
-    pipeline_id = pipeline_slug
-
-    if not is_valid_uuid(pipeline_slug):
-        all_pipelines = get_pipelines(slug=pipeline_slug)
-
-        matching_pipeline = next(
-            (
-                pipeline
-                for pipeline in all_pipelines
-                if pipeline["slug"] == pipeline_slug
-            ),
-            None,
-        )
-
-        if not matching_pipeline:
-            raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
-
-        pipeline_id = matching_pipeline.get("id")
-
-    return submit_prepared_test_results(pipeline_id, test_results)
+    return submit_prepared_test_runs(pipeline_slug, test_runs)
 
 
 def get_pipelines(
@@ -517,7 +499,6 @@ __all__ = [
     "update_test_case",
     "submit_test_result",
     "get_pipelines",
-    "submit_prepared_test_results",
     "construct_submission_payload",
     "run_test",
     "OutputStep",
