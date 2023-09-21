@@ -168,70 +168,8 @@ def test_evaluation_update_test_case(mocker, setup_teardown_openai, update_tc):
     assert response == "550e8400-e29b-41d4-a716-446655440000"
 
 
-def test_evaluation_submit_test_run(
-    mocker, test_cases, setup_teardown_openai, test_run_response
-):
-    # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
-
-    body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
-
-    gentrace_response = HTTPResponse(
-        body=body,
-        headers=headers,
-        status=200,
-        reason="OK",
-        preload_content=False,
-        decode_content=True,
-        enforce_content_length=True,
-    )
-
-    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
-    gentrace_request.return_value = gentrace_response
-
-    test_cases = gentrace.get_test_cases(
-        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
-    )
-
-    results = []
-    for case in test_cases:
-        results.append(
-            {
-                "value": "This is an output",
-            }
-        )
-
-    # Setup Gentrace mocked response for submit_test_run
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
-
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
-
-    gentrace_response = HTTPResponse(
-        body=body,
-        headers=headers,
-        status=200,
-        reason="OK",
-        preload_content=False,
-        decode_content=True,
-        enforce_content_length=True,
-    )
-
-    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
-    gentrace_request.return_value = gentrace_response
-
-    result = gentrace.submit_test_result(
-        pipeline_slug="201196DC-9471-4B28-A051-C21AE45F247A",
-        test_cases=test_cases,
-        outputs_list=results,
-    )
-
-    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
-
-
 def test_evaluation_submit_test_run_pipeline_slug(
-    mocker, test_cases, setup_teardown_openai, test_run_response, pipelines
+    mocker, test_cases, setup_teardown_openai, test_result_response_simple, pipelines
 ):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
@@ -268,9 +206,9 @@ def test_evaluation_submit_test_run_pipeline_slug(
         pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
     )
 
-    results = []
+    runs = []
     for case in test_cases:
-        results.append(
+        runs.append(
             {
                 "value": "This is an output",
             }
@@ -280,7 +218,7 @@ def test_evaluation_submit_test_run_pipeline_slug(
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
     gentrace_response_tr = HTTPResponse(
         body=body,
@@ -293,19 +231,19 @@ def test_evaluation_submit_test_run_pipeline_slug(
     )
 
     gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
-    gentrace_request.side_effect = [gentrace_response_pipelines, gentrace_response_tr]
+    gentrace_request.side_effect = [gentrace_response_tr]
 
     result = gentrace.submit_test_result(
         pipeline_slug="guess-the-year",
         test_cases=test_cases,
-        outputs_list=results,
+        outputs_list=runs,
     )
 
-    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
+    assert result["resultId"] == "9685b34e-2cac-5bd2-8751-c9e34ff9fd98"
 
 
 def test_evaluation_submit_test_run_output_steps(
-    mocker, test_cases, setup_teardown_openai, test_run_response
+    mocker, test_cases, setup_teardown_openai, test_result_response_simple
 ):
     # Setup Gentrace mocked response for get_test_cases
     headers = http.client.HTTPMessage()
@@ -349,7 +287,7 @@ def test_evaluation_submit_test_run_output_steps(
     headers = http.client.HTTPMessage()
     headers.add_header("Content-Type", "application/json")
 
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
+    body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
     gentrace_response = HTTPResponse(
         body=body,
@@ -365,84 +303,12 @@ def test_evaluation_submit_test_run_output_steps(
     gentrace_request.return_value = gentrace_response
 
     result = gentrace.submit_test_result(
-        pipeline_slug="201196DC-9471-4B28-A051-C21AE45F247A",
+        pipeline_slug="guess-the-year",
         test_cases=test_cases,
         outputs_list=outputs,
     )
 
-    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
-
-
-def test_evaluation_submit_prepared_test_run(
-    mocker, test_cases, setup_teardown_openai, test_run_response
-):
-    # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
-
-    body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
-
-    gentrace_response = HTTPResponse(
-        body=body,
-        headers=headers,
-        status=200,
-        reason="OK",
-        preload_content=False,
-        decode_content=True,
-        enforce_content_length=True,
-    )
-
-    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
-    gentrace_request.return_value = gentrace_response
-
-    test_cases = gentrace.get_test_cases(
-        pipeline_id="201196DC-9471-4B28-A051-C21AE45F247A"
-    )
-
-    results = []
-    for case in test_cases:
-        results.append(
-            {
-                "caseId": case["id"],
-                "inputs": {
-                    "a": "1",
-                    "b": "2",
-                },
-                "output": "This are some outputs",
-                "outputSteps": [
-                    {
-                        "key": "compose",
-                        "output": "This are some outputs",
-                    }
-                ],
-            }
-        )
-
-    # Setup Gentrace mocked response for submit_test_run
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
-
-    body = json.dumps(test_run_response, ensure_ascii=False).encode("utf-8")
-
-    gentrace_response = HTTPResponse(
-        body=body,
-        headers=headers,
-        status=200,
-        reason="OK",
-        preload_content=False,
-        decode_content=True,
-        enforce_content_length=True,
-    )
-
-    gentrace_request = mocker.patch.object(gentrace.api_client.ApiClient, "request")
-    gentrace_request.return_value = gentrace_response
-
-    result = gentrace.submit_prepared_test_results(
-        set_id="201196DC-9471-4B28-A051-C21AE45F247A",
-        test_results=results,
-    )
-
-    assert result["runId"] == "B5FF7152-4B10-44AF-B089-95E33A508BFD"
+    assert result["resultId"] == "9685b34e-2cac-5bd2-8751-c9e34ff9fd98"
 
 
 def test_validate_construct_submission_works_with_env():

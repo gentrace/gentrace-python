@@ -21,5 +21,4 @@ from gentrace.model.run_response import RunResponse
 from gentrace.model.step_run import StepRun
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_result import TestResult
-from gentrace.model.test_run import TestRun
 from gentrace.model.update_test_case import UpdateTestCase

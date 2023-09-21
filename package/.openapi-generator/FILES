@@ -9,7 +9,6 @@ docs/models/RunResponse.md
 docs/models/StepRun.md
 docs/models/TestCase.md
 docs/models/TestResult.md
-docs/models/TestRun.md
 docs/models/UpdateTestCase.md
 gentrace/__init__.py
 gentrace/api_client.py
@@ -38,8 +37,6 @@ gentrace/model/test_case.py
 gentrace/model/test_case.pyi
 gentrace/model/test_result.py
 gentrace/model/test_result.pyi
-gentrace/model/test_run.py
-gentrace/model/test_run.pyi
 gentrace/model/update_test_case.py
 gentrace/model/update_test_case.pyi
 gentrace/models/__init__.py

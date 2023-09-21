@@ -12,8 +12,8 @@ Method | HTTP request | Description
 [**test_case_post**](#test_case_post) | **post** /test-case | Create a new test case
 [**test_result_get**](#test_result_get) | **get** /test-result | Get test result by ID
 [**test_result_post**](#test_result_post) | **post** /test-result | Create a new test result from runs
-[**test_run_get**](#test_run_get) | **get** /test-run | Get test run by ID
-[**test_run_post**](#test_run_post) | **post** /test-run | Create a new test run from test results
+[**test_result_simple_get**](#test_result_simple_get) | **get** /test-result-simple | Get test result by ID
+[**test_result_simple_post**](#test_result_simple_post) | **post** /test-result-simple | Create a new test result from test runs
 
 # **pipelines_get**
 <a name="pipelines_get"></a>
@@ -225,13 +225,11 @@ with gentrace.ApiClient(configuration) as api_client:
         name="name_example",
         step_runs=[
             StepRun(
-                provider=dict(
-                    name="name_example",
-                    invocation="invocation_example",
-                    model_params=dict(),
-                    inputs=dict(),
-                    outputs=dict(),
-                ),
+                provider_name="provider_name_example",
+                invocation="invocation_example",
+                model_params=dict(),
+                inputs=dict(),
+                outputs=dict(),
                 context=dict(
                     user_id="user_id_example",
                 ),
@@ -1005,13 +1003,11 @@ with gentrace.ApiClient(configuration) as api_client:
                 case_id="case_id_example",
                 step_runs=[
                     StepRun(
-                        provider=dict(
-                            name="name_example",
-                            invocation="invocation_example",
-                            model_params=dict(),
-                            inputs=dict(),
-                            outputs=dict(),
-                        ),
+                        provider_name="provider_name_example",
+                        invocation="invocation_example",
+                        model_params=dict(),
+                        inputs=dict(),
+                        outputs=dict(),
                         context=dict(
                             user_id="user_id_example",
                         ),
@@ -1151,11 +1147,11 @@ Key | Input Type | Accessed Type | Description | Notes
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
-# **test_run_get**
-<a name="test_run_get"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_run_get(run_id)
+# **test_result_simple_get**
+<a name="test_result_simple_get"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_result_simple_get(result_id)
 
-Get test run by ID
+Get test result by ID
 
 ### Example
 
@@ -1163,7 +1159,7 @@ Get test run by ID
 ```python
 import gentrace
 from gentrace.apis.tags import core_api
-from gentrace.model.test_run import TestRun
+from gentrace.model.test_result import TestResult
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api/v1
 # See configuration.py for a list of all supported configuration parameters.
@@ -1187,16 +1183,16 @@ with gentrace.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     query_params = {
-        'runId': "runId_example",
+        'resultId': "resultId_example",
     }
     try:
-        # Get test run by ID
-        api_response = api_instance.test_run_get(
+        # Get test result by ID
+        api_response = api_instance.test_result_simple_get(
             query_params=query_params,
         )
         pprint(api_response)
     except gentrace.ApiException as e:
-        print("Exception when calling CoreApi->test_run_get: %s\n" % e)
+        print("Exception when calling CoreApi->test_result_simple_get: %s\n" % e)
 ```
 ### Parameters
 
@@ -1213,10 +1209,10 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-runId | RunIdSchema | | 
+resultId | ResultIdSchema | | 
 
 
-# RunIdSchema
+# ResultIdSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -1228,9 +1224,9 @@ str, uuid.UUID,  | str,  |  | value must be a uuid
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#test_run_get.ApiResponseFor200) | Test run retrieved successfully
+200 | [ApiResponseFor200](#test_result_simple_get.ApiResponseFor200) | Test result retrieved successfully
 
-#### test_run_get.ApiResponseFor200
+#### test_result_simple_get.ApiResponseFor200
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
@@ -1247,7 +1243,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**testRun** | [**TestRun**]({{complexTypePrefix}}TestRun.md) | [**TestRun**]({{complexTypePrefix}}TestRun.md) |  | [optional] 
+**testResult** | [**TestResult**]({{complexTypePrefix}}TestResult.md) | [**TestResult**]({{complexTypePrefix}}TestResult.md) |  | [optional] 
 **[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -1277,7 +1273,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**testRun** | [**TestRun**]({{complexTypePrefix}}TestRun.md) | [**TestRun**]({{complexTypePrefix}}TestRun.md) |  | [optional] 
+**testRun** | [**TestResult**]({{complexTypePrefix}}TestResult.md) | [**TestResult**]({{complexTypePrefix}}TestResult.md) |  | [optional] 
 **[stats](#stats)** | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -1303,11 +1299,11 @@ Key | Input Type | Accessed Type | Description | Notes
 
 [[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
-# **test_run_post**
-<a name="test_run_post"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_run_post(any_type)
+# **test_result_simple_post**
+<a name="test_result_simple_post"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} test_result_simple_post(any_type)
 
-Create a new test run from test results
+Create a new test result from test runs
 
 ### Example
 
@@ -1338,37 +1334,27 @@ with gentrace.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     body = dict(
-        set_id="set_id_example",
+        pipeline_slug="pipeline_slug_example",
         branch="branch_example",
         commit="commit_example",
         name="name_example",
-        test_results=[
+        test_runs=[
             dict(
                 id="id_example",
                 case_id="case_id_example",
                 inputs=dict(),
                 outputs=dict(),
-                output="output_example",
-                output_steps=[
-                    dict(
-                        key="key_example",
-                        output="output_example",
-                        inputs=dict(
-                            "key": "key_example",
-                        ),
-                    )
-                ],
             )
         ],
     )
     try:
-        # Create a new test run from test results
-        api_response = api_instance.test_run_post(
+        # Create a new test result from test runs
+        api_response = api_instance.test_result_simple_post(
             body=body,
         )
         pprint(api_response)
     except gentrace.ApiException as e:
-        print("Exception when calling CoreApi->test_run_post: %s\n" % e)
+        print("Exception when calling CoreApi->test_result_simple_post: %s\n" % e)
 ```
 ### Parameters
 
@@ -1393,14 +1379,14 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**[testResults](#testResults)** | list, tuple,  | tuple,  |  | 
-**setId** | str, uuid.UUID,  | str,  | The ID of the test case set to run | value must be a uuid
-**branch** | None, str,  | NoneClass, str,  | The branch that the test run was created from | [optional] 
-**commit** | None, str,  | NoneClass, str,  | The commit that the test run was created from | [optional] 
-**name** | None, str,  | NoneClass, str,  | The name of the test run | [optional] 
+**pipelineSlug** | str,  | str,  | Slug for the pipeline | 
+**[testRuns](#testRuns)** | list, tuple,  | tuple,  |  | 
+**branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
+**commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
+**name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
-# testResults
+# testRuns
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -1424,10 +1410,8 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case | 
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
-**id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test result | [optional] value must be a uuid
+**id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
 **[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
-**output** | str,  | str,  | Use outputs object instead. | [optional] 
-**[outputSteps](#outputSteps)** | list, tuple, None,  | tuple, NoneClass,  | Use outputs.steps insteads. | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -1458,57 +1442,14 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
-# outputSteps
-
-Use outputs.steps insteads.
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple, None,  | tuple, NoneClass,  | Use outputs.steps insteads. | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[items](#items) | dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
-
-# items
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
-
-### Dictionary Keys
-Key | Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | ------------- | -------------
-**output** | str,  | str,  | The output of the step | 
-**key** | str,  | str,  | The key of the step | 
-**[inputs](#inputs)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  | The inputs of the step | [optional] 
-**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-# inputs
-
-The inputs of the step
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  | The inputs of the step | 
-
-### Dictionary Keys
-Key | Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | ------------- | -------------
-**any_string_name** | str,  | str,  | any string name can be used but the value must be the correct type | [optional] 
-
 ### Return Types, Responses
 
 Code | Class | Description
 ------------- | ------------- | -------------
 n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
-200 | [ApiResponseFor200](#test_run_post.ApiResponseFor200) | Test run created successfully
+200 | [ApiResponseFor200](#test_result_simple_post.ApiResponseFor200) | Test result created successfully
 
-#### test_run_post.ApiResponseFor200
+#### test_result_simple_post.ApiResponseFor200
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
@@ -1525,7 +1466,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**resultId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # SchemaFor200ResponseBodyApplicationJsonCharsetutf8
@@ -1538,7 +1479,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**runId** | str, uuid.UUID,  | str,  |  | value must be a uuid
+**resultId** | str, uuid.UUID,  | str,  |  | value must be a uuid
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### Authorization
