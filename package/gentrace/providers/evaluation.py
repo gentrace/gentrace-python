@@ -444,13 +444,11 @@ def run_test(pipeline_slug: str, handler) -> Result:
                 "caseId": test_case["id"],
                 "stepRuns": [
                     {
-                        "provider": {
-                            "name": step_run.provider,
-                            "invocation": step_run.invocation,
-                            "modelParams": step_run.model_params,
-                            "inputs": step_run.inputs,
-                            "outputs": step_run.outputs,
-                        },
+                        "providerName": step_run.provider,
+                        "invocation": step_run.invocation,
+                        "modelParams": step_run.model_params,
+                        "inputs": step_run.inputs,
+                        "outputs": step_run.outputs,
                         "elapsedTime": step_run.elapsed_time,
                         "startTime": step_run.start_time,
                         "endTime": step_run.end_time,
