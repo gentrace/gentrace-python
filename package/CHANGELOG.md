@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/gentrace/gentrace-python/compare/v0.16.0...v0.17.0) (2023-09-21)
+
+
+### Features
+
+* Add test result simple route, include step run flattening ([#148](https://github.com/gentrace/gentrace-python/issues/148)) ([daaa0c5](https://github.com/gentrace/gentrace-python/commit/daaa0c5528c632d60b6e8316362f57a9645ac59b))
+
 ## [0.16.0](https://github.com/gentrace/gentrace-python/compare/v0.15.6...v0.16.0) (2023-09-19)
 
 
