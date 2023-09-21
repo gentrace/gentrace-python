@@ -232,6 +232,10 @@ with gentrace.ApiClient(configuration) as api_client:
                 outputs=dict(),
                 context=dict(
                     user_id="user_id_example",
+                    render=dict(
+                        type="type_example",
+                        key="key_example",
+                    ),
                 ),
                 elapsed_time=1,
                 start_time="1970-01-01T00:00:00.00Z",
@@ -1010,6 +1014,10 @@ with gentrace.ApiClient(configuration) as api_client:
                         outputs=dict(),
                         context=dict(
                             user_id="user_id_example",
+                            render=dict(
+                                type="type_example",
+                                key="key_example",
+                            ),
                         ),
                         elapsed_time=1,
                         start_time="1970-01-01T00:00:00.00Z",
