@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.17.1](https://github.com/gentrace/gentrace-python/compare/v0.17.0...v0.17.1) (2023-09-21)
+
+
+### Bug Fixes
+
+* Add context ([#150](https://github.com/gentrace/gentrace-python/issues/150)) ([c9fd8ff](https://github.com/gentrace/gentrace-python/commit/c9fd8ff910886c16c132072e52b26247eec4efd4))
+* Add render key, rename "context" to "gentrace" to match Node ([#152](https://github.com/gentrace/gentrace-python/issues/152)) ([a864fd2](https://github.com/gentrace/gentrace-python/commit/a864fd2c730217b2fe939d761c0b8488dad5a1f6))
+
 ## [0.17.0](https://github.com/gentrace/gentrace-python/compare/v0.16.0...v0.17.0) (2023-09-21)
 
 
