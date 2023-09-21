@@ -127,7 +127,7 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        output = func(**kwargs)
+        output = func(**input_params)
         end_time = time.time()
 
         elapsed_time = end_time - start_time
@@ -142,6 +142,7 @@ class PipelineRun:
                 input_params,
                 step_info.get("model_params", {}),
                 output,
+                step_info.get("context", {}),
             )
         )
 
@@ -175,7 +176,7 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        outputs = func(**kwargs)
+        outputs = func(**input_params)
         end_time = time.time()
 
         outputs_for_step_run = outputs
@@ -195,6 +196,7 @@ class PipelineRun:
                 input_params,
                 step_info.get("model_params", {}),
                 outputs_for_step_run,
+                step_info.get("context", {}),
             )
         )
 
@@ -239,6 +241,7 @@ class PipelineRun:
                     step_info.get("inputs", {}),
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),
+                    step_info.get("context", {}),
                 )
             )
         else:
@@ -254,6 +257,7 @@ class PipelineRun:
                     step_info.get("inputs", {}),
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),
+                    step_info.get("context", {}),
                 )
             )
 

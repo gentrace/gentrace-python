@@ -174,7 +174,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
         # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
@@ -284,7 +284,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
@@ -408,7 +408,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
         stream = kwargs.get("stream")
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
 
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
@@ -557,7 +557,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
@@ -704,7 +704,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
@@ -764,7 +764,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         effective_pipeline_slug = pipeline_slug or pipeline_id

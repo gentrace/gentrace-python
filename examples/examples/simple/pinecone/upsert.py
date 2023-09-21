@@ -28,7 +28,7 @@ result = pinecone.Index("openai-trec").upsert(
             "values": DEFAULT_VECTOR,
         },
     ],
-    context={"userId": "123"},
+    gentrace={"userId": "123"},
     pipeline_slug="self-contained-pinecone-upsert",
 )
 

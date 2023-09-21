@@ -452,6 +452,7 @@ def run_test(pipeline_slug: str, handler) -> Result:
                         "elapsedTime": step_run.elapsed_time,
                         "startTime": step_run.start_time,
                         "endTime": step_run.end_time,
+                        "context": {**pipeline_run.context, **step_run.context},
                     }
                     for step_run in pipeline_run.step_runs
                 ],
