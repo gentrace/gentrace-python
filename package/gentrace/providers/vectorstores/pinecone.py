@@ -81,7 +81,7 @@ class ModifiedIndex(pinecone.Index):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
@@ -125,7 +125,7 @@ class ModifiedIndex(pinecone.Index):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
         response = super().update(
@@ -176,7 +176,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         effective_pipeline_slug = pipeline_slug or pipeline_id
         bound_query = super().query
         start_time = time.time()
@@ -235,7 +235,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
         start_time = time.time()
@@ -284,7 +284,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
-        context = kwargs.pop("context", {})
+        context = kwargs.pop("gentrace", {})
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
