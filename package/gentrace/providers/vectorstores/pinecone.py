@@ -14,6 +14,7 @@ from pinecone import (
 from pinecone.config import init
 
 from gentrace.configuration import Configuration as GentraceConfiguration
+from gentrace.providers.context import Context
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun
@@ -35,6 +36,7 @@ class ModifiedIndex(pinecone.Index):
         self,
         step_run,
         pipeline_slug,
+        context: Optional[Context] = None,
     ):
         pipeline_run_id = None
         is_self_contained = not hasattr(self, "pipeline_run") and pipeline_slug
@@ -58,7 +60,9 @@ class ModifiedIndex(pinecone.Index):
                 host=gentrace_config.host,
             )
 
-            pipeline_run = PipelineRun(pipeline=pipeline, id=pipeline_run_id)
+            pipeline_run = PipelineRun(
+                pipeline=pipeline, id=pipeline_run_id, context=context
+            )
 
         if pipeline_run:
             pipeline_run.add_step_run(step_run)
@@ -77,6 +81,8 @@ class ModifiedIndex(pinecone.Index):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
+        context = kwargs.pop("context", {})
+
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
         response = super().fetch(ids, namespace, **kwargs)
@@ -90,8 +96,10 @@ class ModifiedIndex(pinecone.Index):
                 to_date_string(end_time),
                 {"ids": ids, "namespace": namespace},
                 response.to_dict(),
+                context,
             ),
             effective_pipeline_slug,
+            context,
         )
 
         if pipeline_run_id:
@@ -117,6 +125,8 @@ class ModifiedIndex(pinecone.Index):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
 
+        context = kwargs.pop("context", {})
+
         effective_pipeline_slug = pipeline_slug or pipeline_id
         response = super().update(
             values, set_metadata, namespace, sparse_values, **kwargs
@@ -137,8 +147,10 @@ class ModifiedIndex(pinecone.Index):
                     "sparse_values": sparse_values,
                 },
                 response,
+                context,
             ),
             effective_pipeline_slug,
+            context,
         )
 
         if pipeline_run_id:
@@ -164,6 +176,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
         effective_pipeline_slug = pipeline_slug or pipeline_id
         bound_query = super().query
         start_time = time.time()
@@ -200,8 +213,10 @@ class ModifiedIndex(pinecone.Index):
                 {**inputs},
                 {**model_params},
                 response.to_dict(),
+                context,
             ),
             effective_pipeline_slug,
+            context,
         )
 
         if pipeline_run_id:
@@ -220,6 +235,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
         start_time = time.time()
@@ -241,8 +257,10 @@ class ModifiedIndex(pinecone.Index):
                     "show_progress": show_progress,
                 },
                 response.to_dict(),
+                context,
             ),
             effective_pipeline_slug,
+            context,
         )
 
         if pipeline_run_id:
@@ -266,6 +284,7 @@ class ModifiedIndex(pinecone.Index):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
 
@@ -281,8 +300,10 @@ class ModifiedIndex(pinecone.Index):
                     "filter": filter,
                 },
                 response,
+                context,
             ),
             effective_pipeline_slug,
+            context,
         )
 
         if pipeline_run_id:
@@ -355,6 +376,7 @@ class PineconeFetchStepRun(StepRun):
         end_time: str,
         inputs: dict,
         response: dict,
+        context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -365,6 +387,7 @@ class PineconeFetchStepRun(StepRun):
             inputs,
             {},
             response,
+            context,
         )
         self.inputs = inputs
         self.response = response
@@ -379,6 +402,7 @@ class PineconeQueryStepRun(StepRun):
         inputs: dict,
         model_params: dict,
         response: dict,
+        context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -389,6 +413,7 @@ class PineconeQueryStepRun(StepRun):
             inputs,
             model_params,
             response,
+            context,
         )
         self.inputs = inputs
         self.response = response
@@ -402,6 +427,7 @@ class PineconeUpdateStepRun(StepRun):
         end_time: str,
         inputs: dict,
         response: dict,
+        context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -412,6 +438,7 @@ class PineconeUpdateStepRun(StepRun):
             inputs,
             {},
             response,
+            context,
         )
         self.inputs = inputs
         self.response = response
@@ -425,6 +452,7 @@ class PineconeUpsertStepRun(StepRun):
         end_time: str,
         inputs: dict,
         response: dict,
+        context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -435,6 +463,7 @@ class PineconeUpsertStepRun(StepRun):
             inputs,
             {},
             response,
+            context,
         )
         self.inputs = inputs
         self.response = response
@@ -448,6 +477,7 @@ class PineconeDeleteStepRun(StepRun):
         end_time: str,
         inputs: dict,
         response: dict,
+        context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -458,6 +488,7 @@ class PineconeDeleteStepRun(StepRun):
             inputs,
             {},
             response,
+            context,
         )
         self.inputs = inputs
         self.response = response

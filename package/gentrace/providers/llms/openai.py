@@ -45,6 +45,7 @@ def create_completion_step_run(
     completion,
     pipeline_run_id: Optional[str] = None,
     stream=False,
+    context={},
 ):
     elapsed_time = int((end_time - start_time) * 1000)
 
@@ -72,8 +73,7 @@ def create_completion_step_run(
         )
 
         pipeline_run = PipelineRun(
-            pipeline=pipeline,
-            id=pipeline_run_id,
+            pipeline=pipeline, id=pipeline_run_id, context=context
         )
 
     if pipeline_run:
@@ -85,6 +85,7 @@ def create_completion_step_run(
                 inputs_dict,
                 {**partial_model_params, "promptTemplate": prompt_template},
                 completion,
+                context,
             )
         )
 
@@ -173,6 +174,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
         # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
@@ -229,6 +231,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
                     full_response,
                     pipeline_run_id if is_self_contained else None,
                     stream,
+                    context,
                 )
 
             return profiled_completion()
@@ -263,6 +266,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             completion,
             None,
             stream,
+            context,
         )
 
         return completion
@@ -279,6 +283,8 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
         # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+
+        context = kwargs.pop("context", {})
         stream = kwargs.get("stream")
         base_completion_options = {
             k: v
@@ -335,6 +341,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
                     full_response,
                     pipeline_run_id if is_self_contained else None,
                     stream,
+                    context,
                 )
 
             return profiled_completion()
@@ -368,6 +375,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             completion,
             None,
             stream,
+            context,
         )
         return completion
 
@@ -400,6 +408,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
         stream = kwargs.get("stream")
+        context = kwargs.pop("context", {})
 
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
@@ -455,7 +464,9 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                         host=gentrace_config.host,
                     )
 
-                    pipeline_run = PipelineRun(pipeline=pipeline, id=pipeline_run_id)
+                    pipeline_run = PipelineRun(
+                        pipeline=pipeline, id=pipeline_run_id, context=context
+                    )
 
                 if pipeline_run:
                     pipeline_run.add_step_run(
@@ -473,6 +484,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                                 "contentTemplates": content_templates_array,
                             },
                             full_response,
+                            context,
                         )
                     )
 
@@ -503,6 +515,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
 
             pipeline_run = PipelineRun(
                 pipeline=pipeline,
+                context=context,
             )
 
         if pipeline_run:
@@ -518,6 +531,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
                     },
                     {**model_params, "contentTemplates": content_templates_array},
                     completion,
+                    context,
                 )
             )
 
@@ -543,6 +557,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         # @deprecated: pipeline_id is deprecated in favor of pipeline_slug
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
@@ -602,6 +617,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                     pipeline_run = PipelineRun(
                         pipeline=pipeline,
                         id=pipeline_run_id,
+                        context=context,
                     )
 
                 if pipeline_run:
@@ -620,6 +636,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                                 "contentTemplates": content_templates_array,
                             },
                             full_response,
+                            context,
                         )
                     )
 
@@ -645,6 +662,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
             pipeline_run = PipelineRun(
                 pipeline=pipeline,
+                context=context,
             )
 
         if pipeline_run:
@@ -663,6 +681,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
                         "contentTemplates": content_templates_array,
                     },
                     completion,
+                    context,
                 )
             )
 
@@ -685,6 +704,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("context", {})
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
@@ -708,6 +728,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
 
             pipeline_run = PipelineRun(
                 pipeline=pipeline,
+                context=context,
             )
 
         if pipeline_run:
@@ -719,6 +740,7 @@ def intercept_embedding(original_fn, gentrace_config: Configuration):
                     input_params,
                     {"model": model},
                     completion,
+                    context,
                 )
             )
 
@@ -741,6 +763,8 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
+
+        context = kwargs.pop("context", {})
         input_params = {k: v for k, v in kwargs.items() if k not in ["model"]}
 
         effective_pipeline_slug = pipeline_slug or pipeline_id
@@ -762,9 +786,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
                 host=gentrace_config.host,
             )
 
-            pipeline_run = PipelineRun(
-                pipeline=pipeline,
-            )
+            pipeline_run = PipelineRun(pipeline=pipeline, context=context)
 
         if pipeline_run:
             pipeline_run.add_step_run(
@@ -775,6 +797,7 @@ def intercept_embedding_async(original_fn, gentrace_config: Configuration):
                     input_params,
                     {"model": model},
                     completion,
+                    context,
                 )
             )
 
@@ -885,7 +908,14 @@ def annotate_pipeline_handler(
 
 class OpenAICreateCompletionStepRun(StepRun):
     def __init__(
-        self, elapsed_time, start_time, end_time, inputs, model_params, response
+        self,
+        elapsed_time,
+        start_time,
+        end_time,
+        inputs,
+        model_params,
+        response,
+        context,
     ):
         super().__init__(
             "openai",
@@ -896,6 +926,7 @@ class OpenAICreateCompletionStepRun(StepRun):
             inputs,
             model_params,
             response,
+            context,
         )
         self.inputs = inputs
         self.model_params = model_params
@@ -904,7 +935,14 @@ class OpenAICreateCompletionStepRun(StepRun):
 
 class OpenAICreateChatCompletionStepRun(StepRun):
     def __init__(
-        self, elapsed_time, start_time, end_time, inputs, model_params, response
+        self,
+        elapsed_time,
+        start_time,
+        end_time,
+        inputs,
+        model_params,
+        response,
+        context,
     ):
         super().__init__(
             "openai",
@@ -915,6 +953,7 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             inputs,
             model_params,
             response,
+            context,
         )
         self.inputs = inputs
         self.model_params = model_params
@@ -923,7 +962,14 @@ class OpenAICreateChatCompletionStepRun(StepRun):
 
 class OpenAICreateEmbeddingStepRun(StepRun):
     def __init__(
-        self, elapsed_time, start_time, end_time, inputs, model_params, response
+        self,
+        elapsed_time,
+        start_time,
+        end_time,
+        inputs,
+        model_params,
+        response,
+        context,
     ):
         super().__init__(
             "openai",
@@ -934,6 +980,7 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             inputs,
             model_params,
             response,
+            context,
         )
         self.inputs = inputs
         self.model_params = model_params

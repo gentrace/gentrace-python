@@ -1,3 +1,8 @@
+from typing import Optional
+
+from gentrace.providers.context import Context
+
+
 class StepRun:
     def __init__(
         self,
@@ -9,6 +14,7 @@ class StepRun:
         inputs: any,
         model_params: any,
         outputs: any,
+        context: Optional[Context] = None,
     ):
         self.provider = provider
         self.invocation = invocation
@@ -18,3 +24,4 @@ class StepRun:
         self.inputs = inputs
         self.model_params = model_params
         self.outputs = outputs
+        self.context = context or {}

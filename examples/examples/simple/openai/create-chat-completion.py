@@ -20,11 +20,14 @@ result = openai.ChatCompletion.create(
     messages=[
         {
             "role": "user",
-            "contentTemplate": "Hello {{ name }}! Tell me a bit about {{ topic }}",
-            "contentInputs": {"name": "John", "topic": "Maine"},
+            "contentTemplate": "Hello {{ name }}! What's your name?",
+            "contentInputs": {"name": "John"},
         }
     ],
     model="gpt-3.5-turbo",
+    context={
+        "userId": "123",
+    },
 )
 
 print(result)
