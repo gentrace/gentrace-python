@@ -10,6 +10,7 @@ from typing import Any, Callable, Dict, List, Optional, cast
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.configuration import Configuration
+from gentrace.providers.context import Context
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import (
@@ -43,10 +44,13 @@ def flush():
 
 
 class PipelineRun:
-    def __init__(self, pipeline, id: Optional[str] = None):
+    def __init__(
+        self, pipeline, id: Optional[str] = None, context: Optional[Context] = None
+    ):
         self.pipeline: Pipeline = pipeline
         self.pipeline_run_id: str = id or str(uuid.uuid4())
         self.step_runs: List[StepRun] = []
+        self.context: Context = context or {}
 
     def get_id(self):
         return self.pipeline_run_id
@@ -274,6 +278,7 @@ class PipelineRun:
                 "elapsedTime": step_run.elapsed_time,
                 "startTime": step_run.start_time,
                 "endTime": step_run.end_time,
+                "context": {**self.context, **step_run.context},
             }
             for step_run in self.step_runs
         ]
@@ -318,6 +323,7 @@ class PipelineRun:
                 "elapsedTime": step_run.elapsed_time,
                 "startTime": step_run.start_time,
                 "endTime": step_run.end_time,
+                "context": {**self.context, **step_run.context},
             }
             for step_run in self.step_runs
         ]

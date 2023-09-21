@@ -19,7 +19,11 @@ pipeline = gentrace.Pipeline(
 
 pipeline.setup()
 
-runner = pipeline.start()
+runner = pipeline.start(
+    {
+        "userId": "123",
+    }
+)
 
 openai = runner.get_openai()
 
@@ -32,3 +36,6 @@ print("Result: ", result)
 info = runner.submit()
 
 print("Response: ", info["pipelineRunId"])
+
+
+gentrace.flush()

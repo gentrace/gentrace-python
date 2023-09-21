@@ -1,6 +1,7 @@
 import inspect
 from typing import Any, Optional
 
+from gentrace.providers.context import Context
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
 
@@ -106,7 +107,7 @@ class Pipeline:
                     "Please install OpenAI as a dependency with, e.g. `pip install openai`"
                 )
 
-    def start(self):
+    def start(self, context: Optional[Context] = None):
         from gentrace.providers.pipeline_run import PipelineRun
 
-        return PipelineRun(pipeline=self)
+        return PipelineRun(pipeline=self, context=context)
