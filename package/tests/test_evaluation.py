@@ -82,20 +82,18 @@ def test_evaluation_create_test_cases(
 
     response = gentrace.create_test_cases(
         pipeline_slug="guess-the-year",
-        payload={
-            "testCases": [
-                {
-                    "name": "Test case 1",
-                    "inputs": {"a": "1", "b": "2"},
-                    "expectedOutputs": {"value": "3"},
-                },
-                {
-                    "name": "Test case 2",
-                    "inputs": {"a": "1", "b": "2"},
-                    "expectedOutputs": {"value": "3"},
-                },
-            ]
-        },
+        payload=[
+            {
+                "name": "Test case 1",
+                "inputs": {"a": "1", "b": "2"},
+                "expectedOutputs": {"value": "3"},
+            },
+            {
+                "name": "Test case 2",
+                "inputs": {"a": "1", "b": "2"},
+                "expectedOutputs": {"value": "3"},
+            },
+        ],
     )
 
     assert response == 2
