@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.2](https://github.com/gentrace/gentrace-python/compare/v0.17.1...v0.17.2) (2023-09-22)
+
+
+### Bug Fixes
+
+* Simplify test case creation multiple method ([#153](https://github.com/gentrace/gentrace-python/issues/153)) ([ffed81c](https://github.com/gentrace/gentrace-python/commit/ffed81cf1e1aab24b86f1066ba5af161537d76e7))
+
 ## [0.17.1](https://github.com/gentrace/gentrace-python/compare/v0.17.0...v0.17.1) (2023-09-21)
 
 
