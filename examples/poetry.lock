@@ -494,13 +494,13 @@ files = [
 
 [[package]]
 name = "gentrace-py"
-version = "0.17.0"
+version = "0.17.1"
 description = "Python SDK for the Gentrace API"
 category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.17.0.tar.gz", hash = "sha256:d553cbda0a895b27e44930376b99bee2648ceaf0a302ce46005bce412386ffa2"},
+    {file = "gentrace_py-0.17.1.tar.gz", hash = "sha256:d5ffee01cf88c379858d5c5d9326f82314de6e61ec9f26bfefff6e60cceb5778"},
 ]
 
 [package.dependencies]
@@ -519,7 +519,7 @@ vectorstores = ["pinecone-client (>=2.2.1,<3.0.0)"]
 
 [package.source]
 type = "file"
-url = "../package/dist/gentrace_py-0.17.0.tar.gz"
+url = "../package/dist/gentrace_py-0.17.1.tar.gz"
 
 [[package]]
 name = "idna"
@@ -1297,4 +1297,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "3c41bc67df1bb9412ac2aac88addfa38504b37ddd0f7b5c8f70a255bed712cea"
+content-hash = "763aabc4043e839af0f4f0d213fe1ee95a77da919900514685e80bea7d1a6d40"

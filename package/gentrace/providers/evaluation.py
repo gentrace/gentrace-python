@@ -104,10 +104,6 @@ class CreateTestCasePayload(TypedDict):
     expectedOutputs: Optional[Dict[str, Any]]
 
 
-class MultipleTestCasesPayload(TypedDict):
-    testCases: List[TestCaseDict]
-
-
 class SingleTestCasePayload(TypedDict):
     name: str
     inputs: Dict[str, Any]
@@ -128,13 +124,13 @@ class UpdateTestCaseResponse(TypedDict):
 
 def create_test_cases(
     pipeline_slug: str,
-    payload: MultipleTestCasesPayload,
+    payload: List[TestCaseDict],
 ) -> int:
     """Creates multiple test cases for a specified pipeline using the Gentrace API.
 
     Parameters:
     - pipeline_slug (str): The unique identifier of the pipeline to which the test cases should be added.
-    - payload (MultipleTestCasesPayload): The payload containing the test cases to be created.
+    - payload (List[TestCaseDict]): The array payload containing the test cases to be created.
 
     Returns:
     - int: Count of test cases created.
@@ -155,9 +151,7 @@ def create_test_cases(
     if not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    response = api.test_case_post(
-        {"pipelineSlug": pipeline_slug, "testCases": payload["testCases"]}
-    )
+    response = api.test_case_post({"pipelineSlug": pipeline_slug, "testCases": payload})
     count = response.body.get("creationCount", None)
     return count
 
