@@ -36,7 +36,6 @@ class Pipeline(
         required = {
             "organizationId",
             "createdAt",
-            "cases",
             "id",
             "slug",
             "labels",
@@ -47,32 +46,6 @@ class Pipeline(
             id = schemas.UUIDSchema
             createdAt = schemas.DateTimeSchema
             updatedAt = schemas.DateTimeSchema
-            
-            
-            class cases(
-                schemas.ListSchema
-            ):
-            
-            
-                class MetaOapg:
-                    
-                    @staticmethod
-                    def items() -> typing.Type['TestCase']:
-                        return TestCase
-            
-                def __new__(
-                    cls,
-                    _arg: typing.Union[typing.Tuple['TestCase'], typing.List['TestCase']],
-                    _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> 'cases':
-                    return super().__new__(
-                        cls,
-                        _arg,
-                        _configuration=_configuration,
-                    )
-            
-                def __getitem__(self, i: int) -> 'TestCase':
-                    return super().__getitem__(i)
             
             
             class labels(
@@ -167,7 +140,6 @@ class Pipeline(
                 "id": id,
                 "createdAt": createdAt,
                 "updatedAt": updatedAt,
-                "cases": cases,
                 "labels": labels,
                 "slug": slug,
                 "organizationId": organizationId,
@@ -178,7 +150,6 @@ class Pipeline(
     
     organizationId: MetaOapg.properties.organizationId
     createdAt: MetaOapg.properties.createdAt
-    cases: MetaOapg.properties.cases
     id: MetaOapg.properties.id
     slug: MetaOapg.properties.slug
     labels: MetaOapg.properties.labels
@@ -192,9 +163,6 @@ class Pipeline(
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["cases"]) -> MetaOapg.properties.cases: ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["labels"]) -> MetaOapg.properties.labels: ...
@@ -217,7 +185,7 @@ class Pipeline(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "cases", "labels", "slug", "organizationId", "archivedAt", "displayName", "branch", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "labels", "slug", "organizationId", "archivedAt", "displayName", "branch", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -230,9 +198,6 @@ class Pipeline(
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["cases"]) -> MetaOapg.properties.cases: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["labels"]) -> MetaOapg.properties.labels: ...
@@ -255,7 +220,7 @@ class Pipeline(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "cases", "labels", "slug", "organizationId", "archivedAt", "displayName", "branch", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "labels", "slug", "organizationId", "archivedAt", "displayName", "branch", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -264,7 +229,6 @@ class Pipeline(
         *_args: typing.Union[dict, frozendict.frozendict, ],
         organizationId: typing.Union[MetaOapg.properties.organizationId, str, ],
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
-        cases: typing.Union[MetaOapg.properties.cases, list, tuple, ],
         id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
         slug: typing.Union[MetaOapg.properties.slug, str, ],
         labels: typing.Union[MetaOapg.properties.labels, list, tuple, ],
@@ -280,7 +244,6 @@ class Pipeline(
             *_args,
             organizationId=organizationId,
             createdAt=createdAt,
-            cases=cases,
             id=id,
             slug=slug,
             labels=labels,
@@ -291,5 +254,3 @@ class Pipeline(
             _configuration=_configuration,
             **kwargs,
         )
-
-from gentrace.model.test_case import TestCase

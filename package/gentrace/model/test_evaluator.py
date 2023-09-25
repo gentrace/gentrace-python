@@ -53,73 +53,30 @@ class TestEvaluator(
             
             
             class options(
-                schemas.DictBase,
+                schemas.ListBase,
                 schemas.NoneBase,
                 schemas.Schema,
-                schemas.NoneFrozenDictMixin
+                schemas.NoneTupleMixin
             ):
+            
+            
+                class MetaOapg:
+                    items = schemas.AnyTypeSchema
             
             
                 def __new__(
                     cls,
-                    *_args: typing.Union[dict, frozendict.frozendict, None, ],
+                    *_args: typing.Union[list, tuple, None, ],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                 ) -> 'options':
                     return super().__new__(
                         cls,
                         *_args,
                         _configuration=_configuration,
-                        **kwargs,
                     )
             pipelineId = schemas.StrSchema
-            
-            
-            class who(
-                schemas.EnumBase,
-                schemas.StrSchema
-            ):
-            
-            
-                class MetaOapg:
-                    enum_value_to_name = {
-                        "AI": "AI",
-                        "HEURISTIC": "HEURISTIC",
-                        "HUMAN": "HUMAN",
-                    }
-                
-                @schemas.classproperty
-                def AI(cls):
-                    return cls("AI")
-                
-                @schemas.classproperty
-                def HEURISTIC(cls):
-                    return cls("HEURISTIC")
-                
-                @schemas.classproperty
-                def HUMAN(cls):
-                    return cls("HUMAN")
-            
-            
-            class valueType(
-                schemas.EnumBase,
-                schemas.StrSchema
-            ):
-            
-            
-                class MetaOapg:
-                    enum_value_to_name = {
-                        "ENUM": "ENUM",
-                        "PERCENTAGE": "PERCENTAGE",
-                    }
-                
-                @schemas.classproperty
-                def ENUM(cls):
-                    return cls("ENUM")
-                
-                @schemas.classproperty
-                def PERCENTAGE(cls):
-                    return cls("PERCENTAGE")
+            who = schemas.StrSchema
+            valueType = schemas.StrSchema
             
             
             class archivedAt(
@@ -167,27 +124,11 @@ class TestEvaluator(
             
             
             class aiModel(
-                schemas.EnumBase,
                 schemas.StrBase,
                 schemas.NoneBase,
                 schemas.Schema,
                 schemas.NoneStrMixin
             ):
-            
-            
-                class MetaOapg:
-                    enum_value_to_name = {
-                        "OPENAI_3_5": "_5",
-                        "OPENAI_4": "POSITIVE_4",
-                    }
-                
-                @schemas.classproperty
-                def _5(cls):
-                    return cls("OPENAI_3_5")
-                
-                @schemas.classproperty
-                def POSITIVE_4(cls):
-                    return cls("OPENAI_4")
             
             
                 def __new__(
@@ -418,7 +359,7 @@ class TestEvaluator(
         createdAt: typing.Union[MetaOapg.properties.createdAt, str, ],
         valueType: typing.Union[MetaOapg.properties.valueType, str, ],
         name: typing.Union[MetaOapg.properties.name, str, ],
-        options: typing.Union[MetaOapg.properties.options, dict, frozendict.frozendict, None, ],
+        options: typing.Union[MetaOapg.properties.options, list, tuple, None, ],
         id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
         pipelineId: typing.Union[MetaOapg.properties.pipelineId, str, ],
         updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, ],
