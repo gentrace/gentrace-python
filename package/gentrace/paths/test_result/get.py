@@ -30,11 +30,11 @@ from gentrace.model.test_result import TestResult
 from . import path
 
 # Query params
-ResultIdSchema = schemas.UUIDSchema
+PipelineSlugSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
-        'resultId': typing.Union[ResultIdSchema, str, uuid.UUID, ],
+        'pipelineSlug': typing.Union[PipelineSlugSchema, str, ],
     }
 )
 RequestOptionalQueryParams = typing_extensions.TypedDict(
@@ -49,10 +49,10 @@ class RequestQueryParams(RequestRequiredQueryParams, RequestOptionalQueryParams)
     pass
 
 
-request_query_result_id = api_client.QueryParameter(
-    name="resultId",
+request_query_pipeline_slug = api_client.QueryParameter(
+    name="pipelineSlug",
     style=api_client.ParameterStyle.FORM,
-    schema=ResultIdSchema,
+    schema=PipelineSlugSchema,
     required=True,
     explode=True,
 )
@@ -69,146 +69,68 @@ class SchemaFor200ResponseBodyApplicationJson(
     class MetaOapg:
         
         class properties:
-        
-            @staticmethod
-            def testResult() -> typing.Type['TestResult']:
-                return TestResult
             
             
-            class stats(
-                schemas.DictSchema
+            class testResults(
+                schemas.ListSchema
             ):
             
             
                 class MetaOapg:
-                    required = {
-                        "total",
-                        "failure",
-                        "pending",
-                        "done",
-                    }
                     
-                    class properties:
-                        total = schemas.NumberSchema
-                        pending = schemas.NumberSchema
-                        failure = schemas.NumberSchema
-                        done = schemas.NumberSchema
-                        __annotations__ = {
-                            "total": total,
-                            "pending": pending,
-                            "failure": failure,
-                            "done": done,
-                        }
-                
-                total: MetaOapg.properties.total
-                failure: MetaOapg.properties.failure
-                pending: MetaOapg.properties.pending
-                done: MetaOapg.properties.done
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["total"]) -> MetaOapg.properties.total: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["failure"]) -> MetaOapg.properties.failure: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["done"]) -> MetaOapg.properties.done: ...
-                
-                @typing.overload
-                def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-                
-                def __getitem__(self, name: typing.Union[typing_extensions.Literal["total", "pending", "failure", "done", ], str]):
-                    # dict_instance[name] accessor
-                    return super().__getitem__(name)
-                
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["total"]) -> MetaOapg.properties.total: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["failure"]) -> MetaOapg.properties.failure: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["done"]) -> MetaOapg.properties.done: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-                
-                def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["total", "pending", "failure", "done", ], str]):
-                    return super().get_item_oapg(name)
-                
+                    @staticmethod
+                    def items() -> typing.Type['TestResult']:
+                        return TestResult
             
                 def __new__(
                     cls,
-                    *_args: typing.Union[dict, frozendict.frozendict, ],
-                    total: typing.Union[MetaOapg.properties.total, decimal.Decimal, int, float, ],
-                    failure: typing.Union[MetaOapg.properties.failure, decimal.Decimal, int, float, ],
-                    pending: typing.Union[MetaOapg.properties.pending, decimal.Decimal, int, float, ],
-                    done: typing.Union[MetaOapg.properties.done, decimal.Decimal, int, float, ],
+                    _arg: typing.Union[typing.Tuple['TestResult'], typing.List['TestResult']],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-                ) -> 'stats':
+                ) -> 'testResults':
                     return super().__new__(
                         cls,
-                        *_args,
-                        total=total,
-                        failure=failure,
-                        pending=pending,
-                        done=done,
+                        _arg,
                         _configuration=_configuration,
-                        **kwargs,
                     )
+            
+                def __getitem__(self, i: int) -> 'TestResult':
+                    return super().__getitem__(i)
             __annotations__ = {
-                "testResult": testResult,
-                "stats": stats,
+                "testResults": testResults,
             }
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["testResult"]) -> 'TestResult': ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["stats"]) -> MetaOapg.properties.stats: ...
+    def __getitem__(self, name: typing_extensions.Literal["testResults"]) -> MetaOapg.properties.testResults: ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["testResult", "stats", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["testResults", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["testResult"]) -> typing.Union['TestResult', schemas.Unset]: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["stats"]) -> typing.Union[MetaOapg.properties.stats, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["testResults"]) -> typing.Union[MetaOapg.properties.testResults, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["testResult", "stats", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["testResults", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        testResult: typing.Union['TestResult', schemas.Unset] = schemas.unset,
-        stats: typing.Union[MetaOapg.properties.stats, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+        testResults: typing.Union[MetaOapg.properties.testResults, list, tuple, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'SchemaFor200ResponseBodyApplicationJson':
         return super().__new__(
             cls,
             *_args,
-            testResult=testResult,
-            stats=stats,
+            testResults=testResults,
             _configuration=_configuration,
             **kwargs,
         )
@@ -222,146 +144,68 @@ class SchemaFor200ResponseBodyApplicationJsonCharsetutf8(
     class MetaOapg:
         
         class properties:
-        
-            @staticmethod
-            def testRun() -> typing.Type['TestResult']:
-                return TestResult
             
             
-            class stats(
-                schemas.DictSchema
+            class testResults(
+                schemas.ListSchema
             ):
             
             
                 class MetaOapg:
-                    required = {
-                        "total",
-                        "failure",
-                        "pending",
-                        "done",
-                    }
                     
-                    class properties:
-                        total = schemas.NumberSchema
-                        pending = schemas.NumberSchema
-                        failure = schemas.NumberSchema
-                        done = schemas.NumberSchema
-                        __annotations__ = {
-                            "total": total,
-                            "pending": pending,
-                            "failure": failure,
-                            "done": done,
-                        }
-                
-                total: MetaOapg.properties.total
-                failure: MetaOapg.properties.failure
-                pending: MetaOapg.properties.pending
-                done: MetaOapg.properties.done
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["total"]) -> MetaOapg.properties.total: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["failure"]) -> MetaOapg.properties.failure: ...
-                
-                @typing.overload
-                def __getitem__(self, name: typing_extensions.Literal["done"]) -> MetaOapg.properties.done: ...
-                
-                @typing.overload
-                def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-                
-                def __getitem__(self, name: typing.Union[typing_extensions.Literal["total", "pending", "failure", "done", ], str]):
-                    # dict_instance[name] accessor
-                    return super().__getitem__(name)
-                
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["total"]) -> MetaOapg.properties.total: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["pending"]) -> MetaOapg.properties.pending: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["failure"]) -> MetaOapg.properties.failure: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: typing_extensions.Literal["done"]) -> MetaOapg.properties.done: ...
-                
-                @typing.overload
-                def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-                
-                def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["total", "pending", "failure", "done", ], str]):
-                    return super().get_item_oapg(name)
-                
+                    @staticmethod
+                    def items() -> typing.Type['TestResult']:
+                        return TestResult
             
                 def __new__(
                     cls,
-                    *_args: typing.Union[dict, frozendict.frozendict, ],
-                    total: typing.Union[MetaOapg.properties.total, decimal.Decimal, int, float, ],
-                    failure: typing.Union[MetaOapg.properties.failure, decimal.Decimal, int, float, ],
-                    pending: typing.Union[MetaOapg.properties.pending, decimal.Decimal, int, float, ],
-                    done: typing.Union[MetaOapg.properties.done, decimal.Decimal, int, float, ],
+                    _arg: typing.Union[typing.Tuple['TestResult'], typing.List['TestResult']],
                     _configuration: typing.Optional[schemas.Configuration] = None,
-                    **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-                ) -> 'stats':
+                ) -> 'testResults':
                     return super().__new__(
                         cls,
-                        *_args,
-                        total=total,
-                        failure=failure,
-                        pending=pending,
-                        done=done,
+                        _arg,
                         _configuration=_configuration,
-                        **kwargs,
                     )
+            
+                def __getitem__(self, i: int) -> 'TestResult':
+                    return super().__getitem__(i)
             __annotations__ = {
-                "testRun": testRun,
-                "stats": stats,
+                "testResults": testResults,
             }
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["testRun"]) -> 'TestResult': ...
-    
-    @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["stats"]) -> MetaOapg.properties.stats: ...
+    def __getitem__(self, name: typing_extensions.Literal["testResults"]) -> MetaOapg.properties.testResults: ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["testRun", "stats", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["testResults", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["testRun"]) -> typing.Union['TestResult', schemas.Unset]: ...
-    
-    @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["stats"]) -> typing.Union[MetaOapg.properties.stats, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["testResults"]) -> typing.Union[MetaOapg.properties.testResults, schemas.Unset]: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["testRun", "stats", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["testResults", ], str]):
         return super().get_item_oapg(name)
     
 
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        testRun: typing.Union['TestResult', schemas.Unset] = schemas.unset,
-        stats: typing.Union[MetaOapg.properties.stats, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+        testResults: typing.Union[MetaOapg.properties.testResults, list, tuple, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'SchemaFor200ResponseBodyApplicationJsonCharsetutf8':
         return super().__new__(
             cls,
             *_args,
-            testRun=testRun,
-            stats=stats,
+            testResults=testResults,
             _configuration=_configuration,
             **kwargs,
         )
@@ -386,8 +230,34 @@ _response_for_200 = api_client.OpenApiResponse(
             schema=SchemaFor200ResponseBodyApplicationJsonCharsetutf8),
     },
 )
+
+
+@dataclass
+class ApiResponseFor400(api_client.ApiResponse):
+    response: urllib3.HTTPResponse
+    body: schemas.Unset = schemas.unset
+    headers: schemas.Unset = schemas.unset
+
+
+_response_for_400 = api_client.OpenApiResponse(
+    response_cls=ApiResponseFor400,
+)
+
+
+@dataclass
+class ApiResponseFor404(api_client.ApiResponse):
+    response: urllib3.HTTPResponse
+    body: schemas.Unset = schemas.unset
+    headers: schemas.Unset = schemas.unset
+
+
+_response_for_404 = api_client.OpenApiResponse(
+    response_cls=ApiResponseFor404,
+)
 _status_code_to_response = {
     '200': _response_for_200,
+    '400': _response_for_400,
+    '404': _response_for_404,
 }
 _all_accept_content_types = (
     'application/json',
@@ -440,7 +310,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Get test result by ID
+        Get test results for a pipeline
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
@@ -450,7 +320,7 @@ class BaseApi(api_client.Api):
 
         prefix_separator_iterator = None
         for parameter in (
-            request_query_result_id,
+            request_query_pipeline_slug,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:
