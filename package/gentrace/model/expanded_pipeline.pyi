@@ -31,76 +31,85 @@ class ExpandedPipeline(
     Do not edit the class manually.
     """
 
-
     class MetaOapg:
-        
-        
-        class all_of_1(
-            schemas.DictSchema
-        ):
-        
-        
+        class all_of_1(schemas.DictSchema):
             class MetaOapg:
-                
                 class properties:
-                    
-                    
-                    class evaluators(
-                        schemas.ListSchema
-                    ):
-                    
-                    
+                    class evaluators(schemas.ListSchema):
                         class MetaOapg:
-                            
                             @staticmethod
-                            def items() -> typing.Type['TestEvaluator']:
+                            def items() -> typing.Type["TestEvaluator"]:
                                 return TestEvaluator
-                    
                         def __new__(
                             cls,
-                            _arg: typing.Union[typing.Tuple['TestEvaluator'], typing.List['TestEvaluator']],
-                            _configuration: typing.Optional[schemas.Configuration] = None,
-                        ) -> 'evaluators':
+                            _arg: typing.Union[
+                                typing.Tuple["TestEvaluator"],
+                                typing.List["TestEvaluator"],
+                            ],
+                            _configuration: typing.Optional[
+                                schemas.Configuration
+                            ] = None,
+                        ) -> "evaluators":
                             return super().__new__(
                                 cls,
                                 _arg,
                                 _configuration=_configuration,
                             )
-                    
-                        def __getitem__(self, i: int) -> 'TestEvaluator':
+                        def __getitem__(self, i: int) -> "TestEvaluator":
                             return super().__getitem__(i)
                     __annotations__ = {
                         "evaluators": evaluators,
                     }
-            
             @typing.overload
-            def __getitem__(self, name: typing_extensions.Literal["evaluators"]) -> MetaOapg.properties.evaluators: ...
-            
+            def __getitem__(
+                self, name: typing_extensions.Literal["evaluators"]
+            ) -> MetaOapg.properties.evaluators: ...
             @typing.overload
             def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-            
-            def __getitem__(self, name: typing.Union[typing_extensions.Literal["evaluators", ], str]):
+            def __getitem__(
+                self, name: typing.Union[typing_extensions.Literal["evaluators",], str]
+            ):
                 # dict_instance[name] accessor
                 return super().__getitem__(name)
-            
-            
             @typing.overload
-            def get_item_oapg(self, name: typing_extensions.Literal["evaluators"]) -> typing.Union[MetaOapg.properties.evaluators, schemas.Unset]: ...
-            
+            def get_item_oapg(
+                self, name: typing_extensions.Literal["evaluators"]
+            ) -> typing.Union[MetaOapg.properties.evaluators, schemas.Unset]: ...
             @typing.overload
-            def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-            
-            def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["evaluators", ], str]):
+            def get_item_oapg(
+                self, name: str
+            ) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+            def get_item_oapg(
+                self, name: typing.Union[typing_extensions.Literal["evaluators",], str]
+            ):
                 return super().get_item_oapg(name)
-            
-        
             def __new__(
                 cls,
-                *_args: typing.Union[dict, frozendict.frozendict, ],
-                evaluators: typing.Union[MetaOapg.properties.evaluators, list, tuple, schemas.Unset] = schemas.unset,
+                *_args: typing.Union[
+                    dict,
+                    frozendict.frozendict,
+                ],
+                evaluators: typing.Union[
+                    MetaOapg.properties.evaluators, list, tuple, schemas.Unset
+                ] = schemas.unset,
                 _configuration: typing.Optional[schemas.Configuration] = None,
-                **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-            ) -> 'all_of_1':
+                **kwargs: typing.Union[
+                    schemas.AnyTypeSchema,
+                    dict,
+                    frozendict.frozendict,
+                    str,
+                    date,
+                    datetime,
+                    uuid.UUID,
+                    int,
+                    float,
+                    decimal.Decimal,
+                    None,
+                    list,
+                    tuple,
+                    bytes,
+                ],
+            ) -> "all_of_1":
                 return super().__new__(
                     cls,
                     *_args,
@@ -108,7 +117,6 @@ class ExpandedPipeline(
                     _configuration=_configuration,
                     **kwargs,
                 )
-        
         @classmethod
         @functools.lru_cache()
         def all_of(cls):
@@ -123,14 +131,44 @@ class ExpandedPipeline(
                 Pipeline,
                 cls.all_of_1,
             ]
-
-
     def __new__(
         cls,
-        *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+        *_args: typing.Union[
+            dict,
+            frozendict.frozendict,
+            str,
+            date,
+            datetime,
+            uuid.UUID,
+            int,
+            float,
+            decimal.Decimal,
+            bool,
+            None,
+            list,
+            tuple,
+            bytes,
+            io.FileIO,
+            io.BufferedReader,
+        ],
         _configuration: typing.Optional[schemas.Configuration] = None,
-        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-    ) -> 'ExpandedPipeline':
+        **kwargs: typing.Union[
+            schemas.AnyTypeSchema,
+            dict,
+            frozendict.frozendict,
+            str,
+            date,
+            datetime,
+            uuid.UUID,
+            int,
+            float,
+            decimal.Decimal,
+            None,
+            list,
+            tuple,
+            bytes,
+        ],
+    ) -> "ExpandedPipeline":
         return super().__new__(
             cls,
             *_args,

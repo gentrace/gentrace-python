@@ -40,7 +40,6 @@ gentrace/model/feedback_request.pyi
 gentrace/model/feedback_response.py
 gentrace/model/feedback_response.pyi
 gentrace/model/full_run.py
-gentrace/model/full_run.pyi
 gentrace/model/pipeline.py
 gentrace/model/pipeline.pyi
 gentrace/model/resolved_step_run.py

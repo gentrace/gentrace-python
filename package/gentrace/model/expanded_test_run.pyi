@@ -31,77 +31,61 @@ class ExpandedTestRun(
     Do not edit the class manually.
     """
 
-
     class MetaOapg:
-        
-        
-        class all_of_1(
-            schemas.DictSchema
-        ):
-        
-        
+        class all_of_1(schemas.DictSchema):
             class MetaOapg:
-                
                 class properties:
-                
                     @staticmethod
-                    def full() -> typing.Type['FullRun']:
+                    def full() -> typing.Type["FullRun"]:
                         return FullRun
-                    
-                    
-                    class steps(
-                        schemas.ListSchema
-                    ):
-                    
-                    
+
+                    class steps(schemas.ListSchema):
                         class MetaOapg:
-                            
                             @staticmethod
-                            def items() -> typing.Type['ResolvedStepRun']:
+                            def items() -> typing.Type["ResolvedStepRun"]:
                                 return ResolvedStepRun
-                    
                         def __new__(
                             cls,
-                            _arg: typing.Union[typing.Tuple['ResolvedStepRun'], typing.List['ResolvedStepRun']],
-                            _configuration: typing.Optional[schemas.Configuration] = None,
-                        ) -> 'steps':
+                            _arg: typing.Union[
+                                typing.Tuple["ResolvedStepRun"],
+                                typing.List["ResolvedStepRun"],
+                            ],
+                            _configuration: typing.Optional[
+                                schemas.Configuration
+                            ] = None,
+                        ) -> "steps":
                             return super().__new__(
                                 cls,
                                 _arg,
                                 _configuration=_configuration,
                             )
-                    
-                        def __getitem__(self, i: int) -> 'ResolvedStepRun':
+                        def __getitem__(self, i: int) -> "ResolvedStepRun":
                             return super().__getitem__(i)
-                
                     @staticmethod
-                    def case() -> typing.Type['TestCase']:
+                    def case() -> typing.Type["TestCase"]:
                         return TestCase
-                    
-                    
-                    class evaluations(
-                        schemas.ListSchema
-                    ):
-                    
-                    
+
+                    class evaluations(schemas.ListSchema):
                         class MetaOapg:
-                            
                             @staticmethod
-                            def items() -> typing.Type['TestEvaluation']:
+                            def items() -> typing.Type["TestEvaluation"]:
                                 return TestEvaluation
-                    
                         def __new__(
                             cls,
-                            _arg: typing.Union[typing.Tuple['TestEvaluation'], typing.List['TestEvaluation']],
-                            _configuration: typing.Optional[schemas.Configuration] = None,
-                        ) -> 'evaluations':
+                            _arg: typing.Union[
+                                typing.Tuple["TestEvaluation"],
+                                typing.List["TestEvaluation"],
+                            ],
+                            _configuration: typing.Optional[
+                                schemas.Configuration
+                            ] = None,
+                        ) -> "evaluations":
                             return super().__new__(
                                 cls,
                                 _arg,
                                 _configuration=_configuration,
                             )
-                    
-                        def __getitem__(self, i: int) -> 'TestEvaluation':
+                        def __getitem__(self, i: int) -> "TestEvaluation":
                             return super().__getitem__(i)
                     __annotations__ = {
                         "full": full,
@@ -109,56 +93,103 @@ class ExpandedTestRun(
                         "case": case,
                         "evaluations": evaluations,
                     }
-            
             @typing.overload
-            def __getitem__(self, name: typing_extensions.Literal["full"]) -> 'FullRun': ...
-            
+            def __getitem__(
+                self, name: typing_extensions.Literal["full"]
+            ) -> "FullRun": ...
             @typing.overload
-            def __getitem__(self, name: typing_extensions.Literal["steps"]) -> MetaOapg.properties.steps: ...
-            
+            def __getitem__(
+                self, name: typing_extensions.Literal["steps"]
+            ) -> MetaOapg.properties.steps: ...
             @typing.overload
-            def __getitem__(self, name: typing_extensions.Literal["case"]) -> 'TestCase': ...
-            
+            def __getitem__(
+                self, name: typing_extensions.Literal["case"]
+            ) -> "TestCase": ...
             @typing.overload
-            def __getitem__(self, name: typing_extensions.Literal["evaluations"]) -> MetaOapg.properties.evaluations: ...
-            
+            def __getitem__(
+                self, name: typing_extensions.Literal["evaluations"]
+            ) -> MetaOapg.properties.evaluations: ...
             @typing.overload
             def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
-            
-            def __getitem__(self, name: typing.Union[typing_extensions.Literal["full", "steps", "case", "evaluations", ], str]):
+            def __getitem__(
+                self,
+                name: typing.Union[
+                    typing_extensions.Literal[
+                        "full",
+                        "steps",
+                        "case",
+                        "evaluations",
+                    ],
+                    str,
+                ],
+            ):
                 # dict_instance[name] accessor
                 return super().__getitem__(name)
-            
-            
             @typing.overload
-            def get_item_oapg(self, name: typing_extensions.Literal["full"]) -> typing.Union['FullRun', schemas.Unset]: ...
-            
+            def get_item_oapg(
+                self, name: typing_extensions.Literal["full"]
+            ) -> typing.Union["FullRun", schemas.Unset]: ...
             @typing.overload
-            def get_item_oapg(self, name: typing_extensions.Literal["steps"]) -> typing.Union[MetaOapg.properties.steps, schemas.Unset]: ...
-            
+            def get_item_oapg(
+                self, name: typing_extensions.Literal["steps"]
+            ) -> typing.Union[MetaOapg.properties.steps, schemas.Unset]: ...
             @typing.overload
-            def get_item_oapg(self, name: typing_extensions.Literal["case"]) -> typing.Union['TestCase', schemas.Unset]: ...
-            
+            def get_item_oapg(
+                self, name: typing_extensions.Literal["case"]
+            ) -> typing.Union["TestCase", schemas.Unset]: ...
             @typing.overload
-            def get_item_oapg(self, name: typing_extensions.Literal["evaluations"]) -> typing.Union[MetaOapg.properties.evaluations, schemas.Unset]: ...
-            
+            def get_item_oapg(
+                self, name: typing_extensions.Literal["evaluations"]
+            ) -> typing.Union[MetaOapg.properties.evaluations, schemas.Unset]: ...
             @typing.overload
-            def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
-            
-            def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["full", "steps", "case", "evaluations", ], str]):
+            def get_item_oapg(
+                self, name: str
+            ) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+            def get_item_oapg(
+                self,
+                name: typing.Union[
+                    typing_extensions.Literal[
+                        "full",
+                        "steps",
+                        "case",
+                        "evaluations",
+                    ],
+                    str,
+                ],
+            ):
                 return super().get_item_oapg(name)
-            
-        
             def __new__(
                 cls,
-                *_args: typing.Union[dict, frozendict.frozendict, ],
-                full: typing.Union['FullRun', schemas.Unset] = schemas.unset,
-                steps: typing.Union[MetaOapg.properties.steps, list, tuple, schemas.Unset] = schemas.unset,
-                case: typing.Union['TestCase', schemas.Unset] = schemas.unset,
-                evaluations: typing.Union[MetaOapg.properties.evaluations, list, tuple, schemas.Unset] = schemas.unset,
+                *_args: typing.Union[
+                    dict,
+                    frozendict.frozendict,
+                ],
+                full: typing.Union["FullRun", schemas.Unset] = schemas.unset,
+                steps: typing.Union[
+                    MetaOapg.properties.steps, list, tuple, schemas.Unset
+                ] = schemas.unset,
+                case: typing.Union["TestCase", schemas.Unset] = schemas.unset,
+                evaluations: typing.Union[
+                    MetaOapg.properties.evaluations, list, tuple, schemas.Unset
+                ] = schemas.unset,
                 _configuration: typing.Optional[schemas.Configuration] = None,
-                **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-            ) -> 'all_of_1':
+                **kwargs: typing.Union[
+                    schemas.AnyTypeSchema,
+                    dict,
+                    frozendict.frozendict,
+                    str,
+                    date,
+                    datetime,
+                    uuid.UUID,
+                    int,
+                    float,
+                    decimal.Decimal,
+                    None,
+                    list,
+                    tuple,
+                    bytes,
+                ],
+            ) -> "all_of_1":
                 return super().__new__(
                     cls,
                     *_args,
@@ -169,7 +200,6 @@ class ExpandedTestRun(
                     _configuration=_configuration,
                     **kwargs,
                 )
-        
         @classmethod
         @functools.lru_cache()
         def all_of(cls):
@@ -184,14 +214,44 @@ class ExpandedTestRun(
                 TestRun,
                 cls.all_of_1,
             ]
-
-
     def __new__(
         cls,
-        *_args: typing.Union[dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+        *_args: typing.Union[
+            dict,
+            frozendict.frozendict,
+            str,
+            date,
+            datetime,
+            uuid.UUID,
+            int,
+            float,
+            decimal.Decimal,
+            bool,
+            None,
+            list,
+            tuple,
+            bytes,
+            io.FileIO,
+            io.BufferedReader,
+        ],
         _configuration: typing.Optional[schemas.Configuration] = None,
-        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
-    ) -> 'ExpandedTestRun':
+        **kwargs: typing.Union[
+            schemas.AnyTypeSchema,
+            dict,
+            frozendict.frozendict,
+            str,
+            date,
+            datetime,
+            uuid.UUID,
+            int,
+            float,
+            decimal.Decimal,
+            None,
+            list,
+            tuple,
+            bytes,
+        ],
+    ) -> "ExpandedTestRun":
         return super().__new__(
             cls,
             *_args,
