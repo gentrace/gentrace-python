@@ -10,7 +10,7 @@ from gentrace.apis.paths.test_result_status import TestResultStatus
 from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
-    "PathToApi",
+    'PathToApi',
     {
         PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
@@ -19,7 +19,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.TESTRESULT_STATUS: TestResultStatus,
         PathValues.TESTRESULTSIMPLE: TestResultSimple,
         PathValues.PIPELINES: Pipelines,
-    },
+    }
 )
 
 path_to_api = PathToApi(
