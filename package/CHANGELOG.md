@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/gentrace/gentrace-python/compare/v0.17.2...v0.18.0) (2023-09-26)
+
+
+### Features
+
+* Add test result endpoints ([#155](https://github.com/gentrace/gentrace-python/issues/155)) ([2d01cbd](https://github.com/gentrace/gentrace-python/commit/2d01cbd793aa7048aeaae1d396f4a22cb06a8c5a))
+
 ## [0.17.2](https://github.com/gentrace/gentrace-python/compare/v0.17.1...v0.17.2) (2023-09-22)
 
 
