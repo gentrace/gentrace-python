@@ -1,3 +1,4 @@
+import copy
 import json
 import os
 import uuid
@@ -488,9 +489,23 @@ def run_test(pipeline_slug: str, handler) -> Result:
         for test_case in test_cases:
             [output, pipeline_run] = handler(test_case)
 
-            test_run = {
-                "caseId": test_case["id"],
-                "stepRuns": [
+            merged_metadata = {}
+
+            step_runs_data = []
+            for step_run in pipeline_run.step_runs:
+                # Extract metadata without mutating original contexts
+                this_context = copy.deepcopy(pipeline_run.context)
+                this_context_metadata = this_context.get("metadata", {})
+                step_run_context = copy.deepcopy(step_run.context)
+                step_run_context_metadata = step_run_context.get("metadata", {})
+
+                merged_metadata.update(this_context_metadata)
+                merged_metadata.update(step_run_context_metadata)
+
+                this_context.pop("metadata", None)
+                step_run_context.pop("metadata", None)
+
+                step_runs_data.append(
                     {
                         "providerName": step_run.provider,
                         "invocation": step_run.invocation,
@@ -500,10 +515,14 @@ def run_test(pipeline_slug: str, handler) -> Result:
                         "elapsedTime": step_run.elapsed_time,
                         "startTime": step_run.start_time,
                         "endTime": step_run.end_time,
-                        "context": {**pipeline_run.context, **step_run.context},
+                        "context": {**this_context, **step_run_context},
                     }
-                    for step_run in pipeline_run.step_runs
-                ],
+                )
+
+            test_run = {
+                "caseId": test_case["id"],
+                "metadata": merged_metadata,
+                "stepRuns": step_runs_data,
             }
 
             if pipeline_run.get_id():

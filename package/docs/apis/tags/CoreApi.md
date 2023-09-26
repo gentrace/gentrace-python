@@ -303,6 +303,11 @@ with gentrace.ApiClient(configuration) as api_client:
         collection_method="manual",
         slug="slug_example",
         name="name_example",
+        metadata=dict(
+            "key": MetadataValueObject(
+                type="type_example",
+            ),
+        ),
         step_runs=[
             StepRun(
                 provider_name="provider_name_example",
@@ -1184,6 +1189,7 @@ Create a new test result from runs
 ```python
 import gentrace
 from gentrace.apis.tags import core_api
+from gentrace.model.metadata_value_object import MetadataValueObject
 from gentrace.model.step_run import StepRun
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api/v1
@@ -1218,6 +1224,11 @@ with gentrace.ApiClient(configuration) as api_client:
             dict(
                 id="id_example",
                 case_id="case_id_example",
+                metadata=dict(
+                    "key": MetadataValueObject(
+                        type="type_example",
+                    ),
+                ),
                 step_runs=[
                     StepRun(
                         provider_name="provider_name_example",
@@ -1306,7 +1317,20 @@ Key | Input Type | Accessed Type | Description | Notes
 **[stepRuns](#stepRuns)** | list, tuple,  | tuple,  | Use outputs.steps insteads. | 
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
+**[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# metadata
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | any string name can be used but the value must be the correct type | [optional] 
 
 # stepRuns
 

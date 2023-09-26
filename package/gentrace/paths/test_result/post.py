@@ -25,6 +25,7 @@ from gentrace import (
     exceptions,
     schemas,  # noqa: F401
 )
+from gentrace.model.metadata_value_object import MetadataValueObject
 from gentrace.model.step_run import StepRun
 
 from . import path
@@ -176,6 +177,42 @@ class SchemaForRequestBodyApplicationJson(
                                 caseId = schemas.UUIDSchema
                                 
                                 
+                                class metadata(
+                                    schemas.DictBase,
+                                    schemas.NoneBase,
+                                    schemas.Schema,
+                                    schemas.NoneFrozenDictMixin
+                                ):
+                                
+                                
+                                    class MetaOapg:
+                                        
+                                        @staticmethod
+                                        def additional_properties() -> typing.Type['MetadataValueObject']:
+                                            return MetadataValueObject
+                                
+                                    
+                                    def __getitem__(self, name: typing.Union[str, ]) -> 'MetadataValueObject':
+                                        # dict_instance[name] accessor
+                                        return super().__getitem__(name)
+                                    
+                                    def get_item_oapg(self, name: typing.Union[str, ]) -> 'MetadataValueObject':
+                                        return super().get_item_oapg(name)
+                                
+                                    def __new__(
+                                        cls,
+                                        *_args: typing.Union[dict, frozendict.frozendict, None, ],
+                                        _configuration: typing.Optional[schemas.Configuration] = None,
+                                        **kwargs: 'MetadataValueObject',
+                                    ) -> 'metadata':
+                                        return super().__new__(
+                                            cls,
+                                            *_args,
+                                            _configuration=_configuration,
+                                            **kwargs,
+                                        )
+                                
+                                
                                 class stepRuns(
                                     schemas.ListSchema
                                 ):
@@ -203,6 +240,7 @@ class SchemaForRequestBodyApplicationJson(
                                 __annotations__ = {
                                     "id": id,
                                     "caseId": caseId,
+                                    "metadata": metadata,
                                     "stepRuns": stepRuns,
                                 }
                         
@@ -216,12 +254,15 @@ class SchemaForRequestBodyApplicationJson(
                         def __getitem__(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
                         
                         @typing.overload
+                        def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+                        
+                        @typing.overload
                         def __getitem__(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
                         
                         @typing.overload
                         def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
                         
-                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "stepRuns", ], str]):
+                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "metadata", "stepRuns", ], str]):
                             # dict_instance[name] accessor
                             return super().__getitem__(name)
                         
@@ -233,12 +274,15 @@ class SchemaForRequestBodyApplicationJson(
                         def get_item_oapg(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
                         
                         @typing.overload
+                        def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
+                        
+                        @typing.overload
                         def get_item_oapg(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
                         
                         @typing.overload
                         def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
                         
-                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "stepRuns", ], str]):
+                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "metadata", "stepRuns", ], str]):
                             return super().get_item_oapg(name)
                         
                     
@@ -248,6 +292,7 @@ class SchemaForRequestBodyApplicationJson(
                             stepRuns: typing.Union[MetaOapg.properties.stepRuns, list, tuple, ],
                             caseId: typing.Union[MetaOapg.properties.caseId, str, uuid.UUID, ],
                             id: typing.Union[MetaOapg.properties.id, None, str, uuid.UUID, schemas.Unset] = schemas.unset,
+                            metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, None, schemas.Unset] = schemas.unset,
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'items':
@@ -257,6 +302,7 @@ class SchemaForRequestBodyApplicationJson(
                                 stepRuns=stepRuns,
                                 caseId=caseId,
                                 id=id,
+                                metadata=metadata,
                                 _configuration=_configuration,
                                 **kwargs,
                             )
