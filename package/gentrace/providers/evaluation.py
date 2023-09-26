@@ -348,7 +348,7 @@ def submit_test_result(
 def get_pipelines(
     label: Optional[str] = None,
     slug: Optional[str] = None,
-) -> Pipeline:
+) -> List[Pipeline]:
     """
     Get pipelines from the Gentrace API, optionally filtered by label or by slug
 

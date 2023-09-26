@@ -11,4 +11,6 @@ gentrace.init(
 
 all_pipelines = gentrace.get_pipelines()
 
-pipelines = [pipeline for pipeline in all_pipelines]
+pipelines = [pipeline["createdAt"] for pipeline in all_pipelines]
+
+print("All pipelines: ", pipelines)
