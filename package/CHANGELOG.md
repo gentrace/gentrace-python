@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/gentrace/gentrace-python/compare/v0.18.0...v0.18.1) (2023-09-26)
+
+
+### Bug Fixes
+
+* Fix Python typing ([#157](https://github.com/gentrace/gentrace-python/issues/157)) ([afedadf](https://github.com/gentrace/gentrace-python/commit/afedadf09089acdb677fc6a1a29f914918654c93))
+
 ## [0.18.0](https://github.com/gentrace/gentrace-python/compare/v0.17.2...v0.18.0) (2023-09-26)
 
 
