@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, TypedDict, Union
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.model.expanded_test_result import ExpandedTestResult
+from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.models import CreateMultipleTestCases, TestResult
 from gentrace.providers.init import (
@@ -347,7 +348,7 @@ def submit_test_result(
 def get_pipelines(
     label: Optional[str] = None,
     slug: Optional[str] = None,
-) -> Run:
+) -> Pipeline:
     """
     Get pipelines from the Gentrace API, optionally filtered by label or by slug
 

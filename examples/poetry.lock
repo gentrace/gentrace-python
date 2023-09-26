@@ -500,7 +500,7 @@ category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.17.2.tar.gz", hash = "sha256:7039ab34f1463f6db8d326b3778b4f5e207b89406f3c26079545ed3161704878"},
+    {file = "gentrace_py-0.17.2.tar.gz", hash = "sha256:1e48a797bf748a9c1aedc83efc5fe6a61882d26d56b43ad338c3bd4f4dd9aa6c"},
 ]
 
 [package.dependencies]
