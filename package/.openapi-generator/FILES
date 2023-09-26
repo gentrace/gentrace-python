@@ -7,6 +7,7 @@ docs/models/ExpandedTestRun.md
 docs/models/FeedbackRequest.md
 docs/models/FeedbackResponse.md
 docs/models/FullRun.md
+docs/models/MetadataValueObject.md
 docs/models/Pipeline.md
 docs/models/ResolvedStepRun.md
 docs/models/RunRequest.md
@@ -40,6 +41,8 @@ gentrace/model/feedback_request.pyi
 gentrace/model/feedback_response.py
 gentrace/model/feedback_response.pyi
 gentrace/model/full_run.py
+gentrace/model/metadata_value_object.py
+gentrace/model/metadata_value_object.pyi
 gentrace/model/pipeline.py
 gentrace/model/pipeline.pyi
 gentrace/model/resolved_step_run.py

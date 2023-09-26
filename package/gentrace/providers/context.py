@@ -1,4 +1,4 @@
-from typing import Literal, Optional, TypedDict
+from typing import Any, Dict, Literal, Optional, TypedDict, Union
 
 
 class Render(TypedDict):
@@ -6,6 +6,14 @@ class Render(TypedDict):
     key: str
 
 
+class MetadataValueRequired(TypedDict):
+    type: str
+
+
+MetadataValue = Union[MetadataValueRequired, Dict[str, Any]]
+
+
 class Context(TypedDict):
-    userId: str
+    userId: Optional[str]
     render: Optional[Render]
+    metadata: Optional[Dict[str, MetadataValue]]

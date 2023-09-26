@@ -19,6 +19,7 @@ from gentrace.model.expanded_test_run import ExpandedTestRun
 from gentrace.model.feedback_request import FeedbackRequest
 from gentrace.model.feedback_response import FeedbackResponse
 from gentrace.model.full_run import FullRun
+from gentrace.model.metadata_value_object import MetadataValueObject
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.resolved_step_run import ResolvedStepRun
 from gentrace.model.run_request import RunRequest
