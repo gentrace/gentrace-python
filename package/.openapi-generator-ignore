@@ -28,3 +28,6 @@ test/test_pipeline_run_request_step_runs_inner.py
 test/test_pipeline_run_request_step_runs_inner_provider.py
 test/test_pipeline_run_request_step_runs_inner_provider_model_params_value.py
 test/test_pipeline_run_response.py
+
+# This file was causing issues with black linting
+gentrace/model/full_run.pyi

@@ -9,5 +9,7 @@ class PathValues(str, enum.Enum):
     RUN = "/run"
     TESTCASE = "/test-case"
     TESTRESULT = "/test-result"
+    TESTRESULT_ID = "/test-result/{id}"
+    TESTRESULT_STATUS = "/test-result/status"
     TESTRESULTSIMPLE = "/test-result-simple"
     PIPELINES = "/pipelines"

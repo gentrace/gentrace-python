@@ -6,8 +6,10 @@ from typing import Any, Dict, List, Optional, TypedDict, Union
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
+from gentrace.model.expanded_test_result import ExpandedTestResult
+from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
-from gentrace.models import CreateMultipleTestCases
+from gentrace.models import CreateMultipleTestCases, TestResult
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
@@ -49,7 +51,7 @@ def is_valid_uuid(val: str):
 def get_test_cases(
     pipeline_id: Optional[str] = None,
     pipeline_slug: Optional[str] = None,
-) -> List[TestCaseDict]:
+) -> List[TestCase]:
     """
     Retrieves test cases for a given pipeline ID from the Gentrace API.
 
@@ -346,7 +348,7 @@ def submit_test_result(
 def get_pipelines(
     label: Optional[str] = None,
     slug: Optional[str] = None,
-) -> Run:
+) -> Pipeline:
     """
     Get pipelines from the Gentrace API, optionally filtered by label or by slug
 
@@ -380,6 +382,58 @@ def get_pipelines(
     pipelines = response.body.get("pipelines")
 
     return pipelines
+
+
+def get_test_result(result_id: str) -> ExpandedTestResult:
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = CoreApi(api_client=api_client)
+
+    params = {}
+
+    if result_id:
+        params["id"] = result_id
+
+    response = api.test_result_id_get(params)
+
+    return response.body
+
+
+def get_test_results(
+    pipeline_slug: str,
+) -> List[TestResult]:
+    """
+    Fetches test results using the Gentrace API.
+
+    Args:
+        pipeline_slug (str): The pipeline slug to pull test results
+
+    Returns:
+        List[TestResult]: A list of test results fetched from the Gentrace API.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized. Call `init()` function first.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = CoreApi(api_client=api_client)
+
+    params = {}
+
+    if pipeline_slug:
+        params["pipelineSlug"] = pipeline_slug
+
+    response = api.test_result_get(params)
+
+    test_results = response.body.get("testResults")
+
+    return test_results
 
 
 def run_test(pipeline_slug: str, handler) -> Result:
@@ -492,6 +546,8 @@ __all__ = [
     "get_test_cases",
     "create_test_cases",
     "create_test_case",
+    "get_test_results",
+    "get_test_result",
     "update_test_case",
     "submit_test_result",
     "get_pipelines",

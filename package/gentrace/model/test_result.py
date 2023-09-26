@@ -34,15 +34,78 @@ class TestResult(
 
 
     class MetaOapg:
+        required = {
+            "createdAt",
+            "id",
+            "pipelineId",
+            "updatedAt",
+        }
         
         class properties:
             id = schemas.UUIDSchema
             createdAt = schemas.DateTimeSchema
             updatedAt = schemas.DateTimeSchema
             pipelineId = schemas.UUIDSchema
-            branch = schemas.StrSchema
-            commit = schemas.StrSchema
-            name = schemas.StrSchema
+            
+            
+            class branch(
+                schemas.StrBase,
+                schemas.NoneBase,
+                schemas.Schema,
+                schemas.NoneStrMixin
+            ):
+            
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[None, str, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                ) -> 'branch':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                    )
+            
+            
+            class commit(
+                schemas.StrBase,
+                schemas.NoneBase,
+                schemas.Schema,
+                schemas.NoneStrMixin
+            ):
+            
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[None, str, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                ) -> 'commit':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                    )
+            
+            
+            class name(
+                schemas.StrBase,
+                schemas.NoneBase,
+                schemas.Schema,
+                schemas.NoneStrMixin
+            ):
+            
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[None, str, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                ) -> 'name':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                    )
             __annotations__ = {
                 "id": id,
                 "createdAt": createdAt,
@@ -52,6 +115,11 @@ class TestResult(
                 "commit": commit,
                 "name": name,
             }
+    
+    createdAt: MetaOapg.properties.createdAt
+    id: MetaOapg.properties.id
+    pipelineId: MetaOapg.properties.pipelineId
+    updatedAt: MetaOapg.properties.updatedAt
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
@@ -83,16 +151,16 @@ class TestResult(
     
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> typing.Union[MetaOapg.properties.id, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> typing.Union[MetaOapg.properties.createdAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["createdAt"]) -> MetaOapg.properties.createdAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> typing.Union[MetaOapg.properties.updatedAt, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["pipelineId"]) -> typing.Union[MetaOapg.properties.pipelineId, schemas.Unset]: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["pipelineId"]) -> MetaOapg.properties.pipelineId: ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["branch"]) -> typing.Union[MetaOapg.properties.branch, schemas.Unset]: ...
@@ -113,23 +181,23 @@ class TestResult(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, schemas.Unset] = schemas.unset,
-        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, schemas.Unset] = schemas.unset,
-        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, schemas.Unset] = schemas.unset,
-        pipelineId: typing.Union[MetaOapg.properties.pipelineId, str, uuid.UUID, schemas.Unset] = schemas.unset,
-        branch: typing.Union[MetaOapg.properties.branch, str, schemas.Unset] = schemas.unset,
-        commit: typing.Union[MetaOapg.properties.commit, str, schemas.Unset] = schemas.unset,
-        name: typing.Union[MetaOapg.properties.name, str, schemas.Unset] = schemas.unset,
+        createdAt: typing.Union[MetaOapg.properties.createdAt, str, datetime, ],
+        id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
+        pipelineId: typing.Union[MetaOapg.properties.pipelineId, str, uuid.UUID, ],
+        updatedAt: typing.Union[MetaOapg.properties.updatedAt, str, datetime, ],
+        branch: typing.Union[MetaOapg.properties.branch, None, str, schemas.Unset] = schemas.unset,
+        commit: typing.Union[MetaOapg.properties.commit, None, str, schemas.Unset] = schemas.unset,
+        name: typing.Union[MetaOapg.properties.name, None, str, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'TestResult':
         return super().__new__(
             cls,
             *_args,
-            id=id,
             createdAt=createdAt,
-            updatedAt=updatedAt,
+            id=id,
             pipelineId=pipelineId,
+            updatedAt=updatedAt,
             branch=branch,
             commit=commit,
             name=name,

@@ -4,7 +4,9 @@ from gentrace.apis.paths.pipelines import Pipelines
 from gentrace.apis.paths.run import Run
 from gentrace.apis.paths.test_case import TestCase
 from gentrace.apis.paths.test_result import TestResult
+from gentrace.apis.paths.test_result_id import TestResultId
 from gentrace.apis.paths.test_result_simple import TestResultSimple
+from gentrace.apis.paths.test_result_status import TestResultStatus
 from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
@@ -13,6 +15,8 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
         PathValues.TESTRESULT: TestResult,
+        PathValues.TESTRESULT_ID: TestResultId,
+        PathValues.TESTRESULT_STATUS: TestResultStatus,
         PathValues.TESTRESULTSIMPLE: TestResultSimple,
         PathValues.PIPELINES: Pipelines,
     }
@@ -23,6 +27,8 @@ path_to_api = PathToApi(
         PathValues.RUN: Run,
         PathValues.TESTCASE: TestCase,
         PathValues.TESTRESULT: TestResult,
+        PathValues.TESTRESULT_ID: TestResultId,
+        PathValues.TESTRESULT_STATUS: TestResultStatus,
         PathValues.TESTRESULTSIMPLE: TestResultSimple,
         PathValues.PIPELINES: Pipelines,
     }

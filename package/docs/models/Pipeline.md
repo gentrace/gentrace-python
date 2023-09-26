@@ -10,7 +10,6 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **organizationId** | str,  | str,  | The ID of the organization that owns the pipeline | 
 **createdAt** | str, datetime,  | str,  | The date and time when the pipeline was created | value must conform to RFC-3339 date-time
-**[cases](#cases)** | list, tuple,  | tuple,  | The array of test cases that belong to the pipeline | 
 **id** | str, uuid.UUID,  | str,  | The ID of the pipeline | value must be a uuid
 **slug** | str,  | str,  | The slug of the pipeline | 
 **[labels](#labels)** | list, tuple,  | tuple,  | The labels attached to the pipeline | 
@@ -19,20 +18,6 @@ Key | Input Type | Accessed Type | Description | Notes
 **displayName** | None, str,  | NoneClass, str,  | The name of the pipeline | [optional] 
 **branch** | None, str,  | NoneClass, str,  | The branch that the pipeline is associated with | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
-
-# cases
-
-The array of test cases that belong to the pipeline
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-list, tuple,  | tuple,  | The array of test cases that belong to the pipeline | 
-
-### Tuple Items
-Class Name | Input Type | Accessed Type | Description | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-[**TestCase**](TestCase.md) | [**TestCase**](TestCase.md) | [**TestCase**](TestCase.md) |  | 
 
 # labels
 
