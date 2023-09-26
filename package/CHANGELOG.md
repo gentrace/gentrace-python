@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.19.0](https://github.com/gentrace/gentrace-python/compare/v0.18.1...v0.19.0) (2023-09-26)
+
+
+### Features
+
+* Add run metadata ([#159](https://github.com/gentrace/gentrace-python/issues/159)) ([8a5f0c3](https://github.com/gentrace/gentrace-python/commit/8a5f0c3a03ad4a4c239f96546dc007efcfa5b155))
+
 ## [0.18.1](https://github.com/gentrace/gentrace-python/compare/v0.18.0...v0.18.1) (2023-09-26)
 
 
