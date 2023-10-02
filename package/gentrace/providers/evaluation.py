@@ -505,6 +505,9 @@ def run_test(pipeline_slug: str, handler) -> Result:
                 this_context.pop("metadata", None)
                 step_run_context.pop("metadata", None)
 
+                this_context.pop("previousRunId", None)
+                step_run_context.pop("previousRunId", None)
+
                 step_runs_data.append(
                     {
                         "providerName": step_run.provider,
@@ -522,6 +525,7 @@ def run_test(pipeline_slug: str, handler) -> Result:
             test_run = {
                 "caseId": test_case["id"],
                 "metadata": merged_metadata,
+                "previousRunId": pipeline_run.context.get("previousRunId"),
                 "stepRuns": step_runs_data,
             }
 

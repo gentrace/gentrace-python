@@ -303,6 +303,7 @@ with gentrace.ApiClient(configuration) as api_client:
         collection_method="manual",
         slug="slug_example",
         name="name_example",
+        previous_run_id="previous_run_id_example",
         metadata=dict(
             "key": MetadataValueObject(
                 type="type_example",
@@ -321,6 +322,7 @@ with gentrace.ApiClient(configuration) as api_client:
                         type="type_example",
                         key="key_example",
                     ),
+                    metadata=dict(),
                 ),
                 elapsed_time=1,
                 start_time="1970-01-01T00:00:00.00Z",
@@ -1242,6 +1244,7 @@ with gentrace.ApiClient(configuration) as api_client:
                                 type="type_example",
                                 key="key_example",
                             ),
+                            metadata=dict(),
                         ),
                         elapsed_time=1,
                         start_time="1970-01-01T00:00:00.00Z",
