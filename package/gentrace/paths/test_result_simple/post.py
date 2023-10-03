@@ -25,6 +25,7 @@ from gentrace import (
     exceptions,
     schemas,  # noqa: F401
 )
+from gentrace.model.metadata_value_object import MetadataValueObject
 
 from . import path
 
@@ -103,6 +104,42 @@ class SchemaForRequestBodyApplicationJson(
                         cls,
                         *_args,
                         _configuration=_configuration,
+                    )
+            
+            
+            class metadata(
+                schemas.DictBase,
+                schemas.NoneBase,
+                schemas.Schema,
+                schemas.NoneFrozenDictMixin
+            ):
+            
+            
+                class MetaOapg:
+                    
+                    @staticmethod
+                    def additional_properties() -> typing.Type['MetadataValueObject']:
+                        return MetadataValueObject
+            
+                
+                def __getitem__(self, name: typing.Union[str, ]) -> 'MetadataValueObject':
+                    # dict_instance[name] accessor
+                    return super().__getitem__(name)
+                
+                def get_item_oapg(self, name: typing.Union[str, ]) -> 'MetadataValueObject':
+                    return super().get_item_oapg(name)
+            
+                def __new__(
+                    cls,
+                    *_args: typing.Union[dict, frozendict.frozendict, None, ],
+                    _configuration: typing.Optional[schemas.Configuration] = None,
+                    **kwargs: 'MetadataValueObject',
+                ) -> 'metadata':
+                    return super().__new__(
+                        cls,
+                        *_args,
+                        _configuration=_configuration,
+                        **kwargs,
                     )
             
             
@@ -298,6 +335,7 @@ class SchemaForRequestBodyApplicationJson(
                 "branch": branch,
                 "commit": commit,
                 "name": name,
+                "metadata": metadata,
                 "testRuns": testRuns,
             }
     
@@ -317,12 +355,15 @@ class SchemaForRequestBodyApplicationJson(
     def __getitem__(self, name: typing_extensions.Literal["name"]) -> MetaOapg.properties.name: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["testRuns"]) -> MetaOapg.properties.testRuns: ...
     
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "branch", "commit", "name", "testRuns", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "branch", "commit", "name", "metadata", "testRuns", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -340,12 +381,15 @@ class SchemaForRequestBodyApplicationJson(
     def get_item_oapg(self, name: typing_extensions.Literal["name"]) -> typing.Union[MetaOapg.properties.name, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["testRuns"]) -> MetaOapg.properties.testRuns: ...
     
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "branch", "commit", "name", "testRuns", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["pipelineSlug", "branch", "commit", "name", "metadata", "testRuns", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -357,6 +401,7 @@ class SchemaForRequestBodyApplicationJson(
         branch: typing.Union[MetaOapg.properties.branch, None, str, schemas.Unset] = schemas.unset,
         commit: typing.Union[MetaOapg.properties.commit, None, str, schemas.Unset] = schemas.unset,
         name: typing.Union[MetaOapg.properties.name, None, str, schemas.Unset] = schemas.unset,
+        metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, None, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'SchemaForRequestBodyApplicationJson':
@@ -368,6 +413,7 @@ class SchemaForRequestBodyApplicationJson(
             branch=branch,
             commit=commit,
             name=name,
+            metadata=metadata,
             _configuration=_configuration,
             **kwargs,
         )

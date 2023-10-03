@@ -11,6 +11,7 @@ from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.models import CreateMultipleTestCases, TestResult
+from gentrace.providers.context import ResultContext
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
@@ -226,7 +227,7 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
     return case_id
 
 
-def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict]) -> Run:
+def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict], context: Optional[ResultContext] = None) -> Run:
     """
     INTERNAL TO PACKAGE:
 
@@ -257,18 +258,19 @@ def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict]) -> Run:
             else test_run["inputs"]
         )
 
-    params = construct_submission_payload(pipeline_slug, test_runs)
+    params = construct_submission_payload(pipeline_slug, test_runs, context)
     response = api.test_result_simple_post(params)
     return response.body
 
 
-def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict]):
+def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], context: Optional[ResultContext] = None):
     """
     Constructs a dictionary payload for submitting test runs to a server.
 
     Args:
         pipeline_slug (str): The pipeline slug
         test_results (List[Dict]): A list of dictionaries containing test results.
+        context (Optional[ResultContext]): Context key pairs
 
     Returns:
         Dict: A dictionary payload containing the pipeline slug, test runs, and optional branch and commit information.
@@ -290,6 +292,9 @@ def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict]):
         params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
             "GENTRACE_COMMIT"
         )
+        
+    if context and context.get("metadata"):
+        params["metadata"] = context.get("metadata")
 
     return params
 
@@ -304,6 +309,7 @@ def submit_test_result(
     pipeline_slug: str,
     test_cases: List[TestCase],
     outputs_list: List[Dict[str, Any]],
+    context: Optional[ResultContext] = None
 ) -> Run:
     """
     Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
@@ -343,7 +349,7 @@ def submit_test_result(
 
         test_runs.append(result)
 
-    return submit_prepared_test_runs(pipeline_slug, test_runs)
+    return submit_prepared_test_runs(pipeline_slug, test_runs, context)
 
 
 def get_pipelines(
@@ -437,7 +443,7 @@ def get_test_results(
     return test_results
 
 
-def run_test(pipeline_slug: str, handler) -> Result:
+def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
     provided callback (once per test case), and submitting the result report back to Gentrace.
@@ -551,6 +557,9 @@ def run_test(pipeline_slug: str, handler) -> Result:
             params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
                 "GENTRACE_COMMIT"
             )
+            
+        if context and context.get("metadata"):
+            params["metadata"] = context.get("metadata")
 
         params["collectionMethod"] = "runner"
 

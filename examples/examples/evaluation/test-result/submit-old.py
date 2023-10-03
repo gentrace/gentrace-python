@@ -11,7 +11,7 @@ gentrace.init(
     host="http://localhost:3000/api/v1",
 )
 
-cases = gentrace.get_test_cases(pipeline_slug="main")
+cases = gentrace.get_test_cases(pipeline_slug="testing3")
 
 outputs_list = []
 
@@ -24,7 +24,14 @@ for case in cases:
     )
 
 result = gentrace.submit_test_result(
-    "main", test_cases=cases, outputs_list=outputs_list
+    "testing3", test_cases=cases, outputs_list=outputs_list, context={
+      "metadata": {
+        "promptString": {
+          "type": "string",
+          "value": "testing"
+        }
+      }
+    }
 )
 
 print(result["resultId"])
