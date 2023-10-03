@@ -16,7 +16,7 @@ gentrace.configure_openai()
 openai.api_key = os.getenv("OPENAI_KEY")
 
 result = openai.ChatCompletion.create(
-    pipeline_slug="testing-chat-completion-value",
+    pipeline_slug="testing-pipeline-id",
     messages=[
         {
             "role": "user",
@@ -25,9 +25,7 @@ result = openai.ChatCompletion.create(
         }
     ],
     model="gpt-3.5-turbo",
-    gentrace={
-        "userId": "123",
-    },
+    gentrace={"userId": "123", "previousRunId": "2839ec86-b859-4b66-aa8c-3678451f018b"},
 )
 
 print(result)

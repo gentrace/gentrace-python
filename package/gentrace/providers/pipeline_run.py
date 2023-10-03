@@ -333,6 +333,9 @@ class PipelineRun:
             this_context.pop("metadata", None)
             step_run_context.pop("metadata", None)
 
+            this_context.pop("previousRunId", None)
+            step_run_context.pop("previousRunId", None)
+
             step_runs_data.append(
                 {
                     "providerName": step_run.provider,
@@ -358,6 +361,7 @@ class PipelineRun:
                         "id": self.pipeline_run_id,
                         "slug": self.pipeline.slug,
                         "metadata": merged_metadata,
+                        "previousRunId": self.context.get("previousRunId"),
                         "stepRuns": step_runs_data,
                     },
                 )
@@ -372,6 +376,7 @@ class PipelineRun:
                         "id": self.pipeline_run_id,
                         "slug": self.pipeline.slug,
                         "metadata": merged_metadata,
+                        "previousRunId": self.context.get("previousRunId"),
                         "stepRuns": step_runs_data,
                     }
                 )
