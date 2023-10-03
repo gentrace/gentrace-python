@@ -18,3 +18,7 @@ class Context(TypedDict):
     render: Optional[Render]
     metadata: Optional[Dict[str, MetadataValue]]
     previousRunId: Optional[str]
+
+
+class ResultContext(TypedDict):
+    metadata: Optional[Dict[str, MetadataValue]]

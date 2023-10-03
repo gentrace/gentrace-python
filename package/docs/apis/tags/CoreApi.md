@@ -1222,15 +1222,16 @@ with gentrace.ApiClient(configuration) as api_client:
         branch="branch_example",
         commit="commit_example",
         name="name_example",
+        metadata=dict(
+            "key": MetadataValueObject(
+                type="type_example",
+            ),
+        ),
         test_runs=[
             dict(
                 id="id_example",
                 case_id="case_id_example",
-                metadata=dict(
-                    "key": MetadataValueObject(
-                        type="type_example",
-                    ),
-                ),
+                metadata=dict(),
                 step_runs=[
                     StepRun(
                         provider_name="provider_name_example",
@@ -1293,7 +1294,20 @@ Key | Input Type | Accessed Type | Description | Notes
 **branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
+**[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# metadata
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | any string name can be used but the value must be the correct type | [optional] 
 
 # testRuns
 
@@ -1407,6 +1421,7 @@ Create a new test result from test runs
 ```python
 import gentrace
 from gentrace.apis.tags import core_api
+from gentrace.model.metadata_value_object import MetadataValueObject
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api/v1
 # See configuration.py for a list of all supported configuration parameters.
@@ -1434,6 +1449,11 @@ with gentrace.ApiClient(configuration) as api_client:
         branch="branch_example",
         commit="commit_example",
         name="name_example",
+        metadata=dict(
+            "key": MetadataValueObject(
+                type="type_example",
+            ),
+        ),
         test_runs=[
             dict(
                 id="id_example",
@@ -1480,7 +1500,20 @@ Key | Input Type | Accessed Type | Description | Notes
 **branch** | None, str,  | NoneClass, str,  | The branch that the test result was created from | [optional] 
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
+**[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# metadata
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | [**MetadataValueObject**]({{complexTypePrefix}}MetadataValueObject.md) | any string name can be used but the value must be the correct type | [optional] 
 
 # testRuns
 

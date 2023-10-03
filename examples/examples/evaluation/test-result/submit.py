@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PIPELINE_SLUG = "main"
+PIPELINE_SLUG = "testing3"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
@@ -35,6 +35,13 @@ def create_embedding_callback(test_case):
     return [output, runner]
 
 
-result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback)
+result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback, {
+    "metadata": {
+        "promptString": {
+            "type": "string",
+            "value": "testing"
+        }
+    }
+})
 
 print("Result: ", result)
