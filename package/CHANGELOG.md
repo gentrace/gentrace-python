@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/gentrace/gentrace-python/compare/v0.20.0...v0.21.0) (2023-10-03)
+
+
+### Features
+
+* Add test result metadata ([#163](https://github.com/gentrace/gentrace-python/issues/163)) ([4180462](https://github.com/gentrace/gentrace-python/commit/41804629790496b0ee01352a9d8748d02d312493))
+
 ## [0.20.0](https://github.com/gentrace/gentrace-python/compare/v0.19.0...v0.20.0) (2023-10-03)
 
 
