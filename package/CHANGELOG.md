@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/gentrace/gentrace-python/compare/v0.19.0...v0.20.0) (2023-10-03)
+
+
+### Features
+
+* Add threading ([#161](https://github.com/gentrace/gentrace-python/issues/161)) ([1075e4e](https://github.com/gentrace/gentrace-python/commit/1075e4ed610713e71a50e3744d50c5917f46b278))
+
 ## [0.19.0](https://github.com/gentrace/gentrace-python/compare/v0.18.1...v0.19.0) (2023-09-26)
 
 
