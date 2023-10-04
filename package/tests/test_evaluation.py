@@ -313,7 +313,7 @@ def test_validate_construct_submission_works_with_env():
     os.environ["GENTRACE_BRANCH"] = "test-branch"
     os.environ["GENTRACE_COMMIT"] = "test-commit"
 
-    payload = gentrace.construct_submission_payload("set-id", [])
+    payload = gentrace.construct_submission_payload("pipeline_slug", [])
 
     assert payload["branch"] == "test-branch"
     assert payload["commit"] == "test-commit"
@@ -321,7 +321,7 @@ def test_validate_construct_submission_works_with_env():
 
 def test_validate_construct_submission_works_with_init():
     gentrace.init(api_key="sldkjflk", branch="test-branch", commit="test-commit")
-    payload = gentrace.construct_submission_payload("set-id", [])
+    payload = gentrace.construct_submission_payload("pipeline_slug", [])
 
     assert payload["branch"] == "test-branch"
     assert payload["commit"] == "test-commit"
@@ -334,10 +334,99 @@ def test_validate_construct_submission_prioritizes_override():
     gentrace.init(
         api_key="test-api-key", branch="test-branch-init", commit="test-commit-init"
     )
-    payload = gentrace.construct_submission_payload("set-id", [])
+    payload = gentrace.construct_submission_payload("pipeline_slug", [])
 
     assert payload["branch"] == "test-branch-init"
     assert payload["commit"] == "test-commit-init"
+
+
+def test_prioritize_gentrace_result_name_over_gentrace_run_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    os.environ["GENTRACE_RESULT_NAME"] = "result-name"
+    os.environ["GENTRACE_RUN_NAME"] = "run-name"
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "result-name"
+
+
+def test_should_still_read_gentrace_run_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    os.environ["GENTRACE_RUN_NAME"] = "run-name"
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "run-name"
+
+
+def test_should_read_gentrace_result_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    os.environ["GENTRACE_RESULT_NAME"] = "result-name"
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "result-name"
+
+
+def test_should_read_result_name_over_run_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+        run_name="run-name",
+        result_name="result-name"
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "result-name"
+
+
+def test_should_still_read_run_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+        run_name="run-name"
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "run-name"
+
+
+def test_should_read_result_name(setup_teardown_openai):
+    os.environ["GENTRACE_RUN_NAME"] = ""
+    os.environ["GENTRACE_RESULT_NAME"] = ""
+
+    gentrace.init(
+        api_key="gentrace-api-key",
+        result_name="result-name"
+    )
+
+    payload = gentrace.construct_submission_payload("pipeline-id", [])
+
+    assert payload["name"] == "result-name"
 
 
 def test_evaluation_get_pipelines(mocker, pipelines, setup_teardown_openai):
