@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.1](https://github.com/gentrace/gentrace-python/compare/v0.21.0...v0.21.1) (2023-10-04)
+
+
+### Bug Fixes
+
+* Fix Gentrace run name ([#165](https://github.com/gentrace/gentrace-python/issues/165)) ([3903289](https://github.com/gentrace/gentrace-python/commit/3903289d1931735083dc3719f25155748bb76242))
+
 ## [0.21.0](https://github.com/gentrace/gentrace-python/compare/v0.20.0...v0.21.0) (2023-10-03)
 
 
