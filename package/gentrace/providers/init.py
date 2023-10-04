@@ -23,7 +23,9 @@ def init(
     branch: Optional[str] = None,
     commit: Optional[str] = None,
     log_level: Optional[str] = None,
+    # @deprecated: use result_name instead
     run_name: Optional[str] = None,
+    result_name: Optional[str] = None,
 ):
     global GENTRACE_CONFIG_STATE
 
@@ -35,6 +37,10 @@ def init(
     GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"] = api_key or os.getenv("GENTRACE_API_KEY")
     GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"] = run_name or os.getenv(
         "GENTRACE_RUN_NAME"
+    )
+    
+    GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"] = result_name or os.getenv(
+        "GENTRACE_RESULT_NAME"
     )
 
     if host:
@@ -76,6 +82,9 @@ def deinit():
     GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] = ""
     GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] = ""
     GENTRACE_CONFIG_STATE["GENTRACE_LOG_LEVEL"] = "warn"
+    GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"] = ""
+    GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"] = ""
+
     GENTRACE_CONFIG_STATE["global_gentrace_config"] = None
     GENTRACE_CONFIG_STATE["global_gentrace_api"] = None
 

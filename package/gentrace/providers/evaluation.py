@@ -282,6 +282,9 @@ def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], cont
 
     if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
         params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+        
+    if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
+        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
 
     if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
         params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
@@ -547,6 +550,9 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
         if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
             params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+            
+        if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
+            params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
 
         if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
             params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
