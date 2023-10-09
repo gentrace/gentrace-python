@@ -1,11 +1,11 @@
 import os
-import re
 
 import openai
 from urllib3.util import parse_url
 
 from gentrace.configuration import Configuration as GentraceConfiguration
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
+from gentrace.providers.utils import is_openai_v1
 
 openai.api_key = os.getenv("OPENAI_KEY")
 
@@ -29,8 +29,6 @@ def test_validity():
 def configure_openai():
     from gentrace import api_key, host
 
-    from .llms.openai import annotate_openai_module
-
     test_validity()
 
     if api_key:
@@ -40,7 +38,9 @@ def configure_openai():
     else:
         gentrace_config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
 
-    annotate_openai_module(gentrace_config=gentrace_config)
+    if not is_openai_v1():
+        from .llms.openai_v0 import annotate_openai_module
+        annotate_openai_module(gentrace_config=gentrace_config)
 
 
 def configure_pinecone():

@@ -16,6 +16,7 @@ from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import (
     from_date_string,
     get_test_counter,
+    is_openai_v1,
     run_post_background,
     to_date_string,
 )
@@ -45,7 +46,7 @@ def flush():
 
 class PipelineRun:
     def __init__(
-        self, pipeline, id: Optional[str] = None, context: Optional[Context] = None
+            self, pipeline, id: Optional[str] = None, context: Optional[Context] = None
     ):
         self.pipeline: Pipeline = pipeline
         self.pipeline_run_id: str = id or str(uuid.uuid4())
@@ -58,24 +59,50 @@ class PipelineRun:
     def get_pipeline(self):
         return self.pipeline
 
-    def get_openai(self):
+    def get_openai(self, asynchronous=False):
         if "openai" in self.pipeline.pipeline_handlers:
-            handler = self.pipeline.pipeline_handlers.get("openai")
-            cloned_handler = copy.deepcopy(handler)
 
-            from .llms.openai import annotate_pipeline_handler
+            if is_openai_v1():
+                from gentrace.providers.llms.openai_v1 import (
+                    GentraceAsyncOpenAI,
+                    GentraceSyncOpenAI,
+                )
 
-            annotated_handler = annotate_pipeline_handler(
-                cloned_handler, self.pipeline.openai_config, self
-            )
+                if asynchronous:
+                    openai_async_handler = GentraceAsyncOpenAI(**self.pipeline.openai_config,
+                                                               gentrace_config=self.pipeline.config,
+                                                               pipeline=self, pipeline_run=self)
 
-            import openai
+                    from openai import AsyncOpenAI
 
-            # TODO: Could not find an easy way to create a union type with openai and
-            # OpenAIPipelineHandler, so we just use openai.
-            typed_cloned_handler = cast(openai, annotated_handler)
+                    typed_cloned_handler = cast(AsyncOpenAI, openai_async_handler)
+                    return typed_cloned_handler
+                else:
+                    openai_handler = GentraceSyncOpenAI(**self.pipeline.openai_config,
+                                                        gentrace_config=self.pipeline.config,
+                                                        pipeline=self, pipeline_run=self)
 
-            return typed_cloned_handler
+                    from openai import OpenAI
+
+                    typed_cloned_handler = cast(OpenAI, openai_handler)
+                    return typed_cloned_handler
+            else:
+                handler = self.pipeline.pipeline_handlers.get("openai")
+                cloned_handler = copy.deepcopy(handler)
+
+                from .llms.openai_v0 import annotate_pipeline_handler
+
+                annotated_handler = annotate_pipeline_handler(
+                    cloned_handler, self.pipeline.openai_config, self
+                )
+
+                import openai
+
+                # TODO: Could not find an easy way to create a union type with openai and
+                # OpenAIPipelineHandler, so we just use openai.
+                typed_cloned_handler = cast(openai, annotated_handler)
+
+                return typed_cloned_handler
         else:
             raise ValueError(
                 "Did not find OpenAI handler. Did you call setup() on the pipeline?"
@@ -99,7 +126,7 @@ class PipelineRun:
 
     async def ameasure(self, func: Callable[..., Any], **kwargs):
         """
-        Asyncrhonously measures the execution time of a function and logs the result as a `StepRun`.
+        Asynchronously measures the execution time of a function and logs the result as a `StepRun`.
         Also logs additional information about the function invocation.
 
         Parameters:

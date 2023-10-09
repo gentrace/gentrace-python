@@ -14,7 +14,7 @@ gentrace.init(
 
 async def main():
     pipeline = gentrace.Pipeline(
-        "test-gentrace-python-pipeline",
+        "testing-pipeline-id",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },
@@ -24,9 +24,9 @@ async def main():
 
     runner = pipeline.start()
 
-    openai = runner.get_openai()
+    openai = runner.get_openai(asynchronous=True)
 
-    await openai.Completion.acreate(
+    await openai.completions.create(
         model="text-davinci-003",
         prompt_template="Hello world {{ name }}",
         prompt_inputs={"name": "Vivek"},

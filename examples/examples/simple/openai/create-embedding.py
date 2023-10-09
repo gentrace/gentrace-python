@@ -1,8 +1,8 @@
 import os
 
 import gentrace
-import openai
 from dotenv import load_dotenv
+from gentrace import OpenAI
 
 load_dotenv()
 
@@ -12,17 +12,14 @@ gentrace.init(
     log_level="info",
 )
 
-gentrace.configure_openai()
+openai = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 
-openai.log = "debug"
-openai.api_key = os.getenv("OPENAI_KEY")
-
-result = openai.Embedding.create(
+result = openai.embeddings.create(
     input="sample text",
-    model="text-similarity-davinci-001",
-    pipeline_slug="testing-value",
+    model="text-embedding-ada-002",
+    pipeline_slug="testing-pipeline-id",
 )
 
-gentrace.flush()
+print("Result: ", result.pipelineRunId)
 
-print("Result: ", result["pipelineRunId"])
+gentrace.flush()

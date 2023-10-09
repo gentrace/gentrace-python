@@ -14,7 +14,7 @@ async def main():
     )
 
     pipeline = gentrace.Pipeline(
-        "test-gentrace-python-pipeline",
+        "testing-pipeline-id",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },
@@ -24,15 +24,15 @@ async def main():
 
     runner = pipeline.start()
 
-    openai = runner.get_openai()
+    openai = runner.get_openai(asynchronous=True)
 
-    result = await openai.Embedding.acreate(
-        input="sample text", model="text-similarity-davinci-001"
+    result = await openai.embeddings.create(
+        input="sample text", model="text-embedding-ada-002"
     )
 
     print("Result: ", result)
 
-    info = runner.submit()
+    info = await runner.asubmit()
 
     print("Response: ", info["pipelineRunId"])
 

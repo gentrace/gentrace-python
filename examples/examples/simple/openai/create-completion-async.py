@@ -2,7 +2,6 @@ import asyncio
 import os
 
 import gentrace
-import openai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,12 +13,10 @@ async def main():
         host="http://localhost:3000/api/v1",
     )
 
-    gentrace.configure_openai()
+    openai = gentrace.AsyncOpenAI()
 
-    openai.api_key = os.getenv("OPENAI_KEY")
-
-    result = await openai.Completion.acreate(
-        pipeline_slug="text-generation",
+    result = await openai.completions.create(
+        pipeline_slug="testing-pipeline-id",
         model="text-davinci-003",
         prompt_template="Hello world {{ name }}",
         prompt_inputs={"name": "test"},
@@ -27,7 +24,7 @@ async def main():
 
     gentrace.flush()
 
-    print("Result: ", result["pipelineRunId"])
+    print("Result: ", result.pipelineRunId)
 
 
 asyncio.run(main())

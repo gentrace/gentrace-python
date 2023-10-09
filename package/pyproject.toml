@@ -4,7 +4,7 @@ description = "Python SDK for the Gentrace API"
 license = "MIT"
 name = "gentrace-py"
 packages = [
-  {include = "gentrace"},
+    { include = "gentrace" },
 ]
 repository = "https://github.com/gentrace/gentrace-python"
 version = "0.22.2"
@@ -12,14 +12,15 @@ version = "0.22.2"
 [tool.poetry.dependencies]
 aenum = ">=3.1.11"
 frozendict = "^2.3.7"
-openai = {version = "^0.27.4", optional = true}
-pinecone-client = {version = "^2.2.1", optional = true}
+openai = { version = "^1.0.0b1", optional = true }
+pinecone-client = { version = "^2.2.1", optional = true }
 pydantic = ">=1.10.2"
 pystache = "^0.6.0"
 python = ">=3.8.1,<4.0"
 python_dateutil = ">=2.5.3"
 setuptools = ">=21.0.0"
-urllib3 = ">=1.25.3"
+urllib3 = "1.25.10"
+pytest-httpx = "0.22.0"
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
@@ -30,7 +31,7 @@ types-python-dateutil = "^2.8.19.12"
 types-urllib3 = "^1.26.25.10"
 
 [tool.poetry.group.dev.dependencies]
-openai = "^0.27.4"
+openai = "^1.0.0b1 "
 pinecone-client = "^2.2.1"
 pyyaml = "^6.0"
 
@@ -45,8 +46,8 @@ responses = "^0.23.1"
 
 [tool.poetry.extras]
 all = [
-  "openai",
-  "pinecone-client",
+    "openai",
+    "pinecone-client",
 ]
 llms = ["openai"]
 vectorstores = ["pinecone-client"]
@@ -61,17 +62,17 @@ url = "https://test.pypi.org/legacy/"
 exclude = [".venv"]
 # TODO: Figure out how to solve these by changing Mustache templates.
 ignore = [
-  "E402",
-  "F401",
-  "E501",
-  "F841",
-  "F821",
-  "F523",
+    "E402",
+    "F401",
+    "E501",
+    "F841",
+    "F821",
+    "F523",
 ]
 select = [
-  "E", # pycodestyle
-  "F", # pyflakes
-  "I", # isort
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
 ]
 
 [build-system]

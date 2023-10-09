@@ -31,11 +31,15 @@ from gentrace.providers.evaluation import *
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.step_run import StepRun
-from gentrace.providers.utils import to_date_string
+from gentrace.providers.utils import to_date_string, is_openai_v1
 from gentrace.providers.files import *
 
 from gentrace.providers.getters import *
 from gentrace.providers.init import init, deinit
+
+if is_openai_v1():
+    from gentrace.providers.llms.handlers.openai_v1.simple import SimpleGentraceSyncOpenAITyped as OpenAI
+    from gentrace.providers.llms.handlers.openai_v1.simple import SimpleGentraceAsyncOpenAITyped as AsyncOpenAI
 
 # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
 # API key
@@ -48,3 +52,4 @@ host = ""
 # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
 # log level
 log_level = "warn"
+

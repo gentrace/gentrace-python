@@ -14,7 +14,7 @@ async def main():
     )
 
     pipeline = gentrace.Pipeline(
-        "test-gentrace-python-pipeline",
+        "testing-pipeline-id",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },
@@ -24,9 +24,9 @@ async def main():
 
     runner = pipeline.start()
 
-    openai = runner.get_openai()
+    openai = runner.get_openai(asynchronous=True)
 
-    result = await openai.ChatCompletion.acreate(
+    result = await openai.chat.completions.create(
         messages=[{"role": "user", "content": "Hello!"}],
         model="gpt-3.5-turbo",
     )

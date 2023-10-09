@@ -1,28 +1,18 @@
-import http.client
 import json
 import os
-import uuid
-from typing import Any, List
-from unittest.mock import create_autospec
 
-import pytest
-import requests
-import responses
-from responses import matchers
+from urllib3._collections import HTTPHeaderDict
 from urllib3.response import HTTPResponse
 
 import gentrace
-from gentrace.providers.evaluation import OutputStep, construct_submission_payload
-from gentrace.providers.init import GENTRACE_CONFIG_STATE
 from gentrace.providers.utils import get_test_counter
 
 
 def test_evaluation_get_test_cases(
-    mocker, test_cases, setup_teardown_openai, pipelines
+        mocker, test_cases, setup_teardown_openai, pipelines
 ):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
 
@@ -57,11 +47,10 @@ def test_evaluation_get_test_cases(
 
 
 def test_evaluation_create_test_cases(
-    mocker, setup_teardown_openai, multiple_create_tc
+        mocker, setup_teardown_openai, multiple_create_tc
 ):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(multiple_create_tc, ensure_ascii=False).encode("utf-8")
 
@@ -101,8 +90,7 @@ def test_evaluation_create_test_cases(
 
 def test_evaluation_create_test_case(mocker, setup_teardown_openai, single_create_tc):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(single_create_tc, ensure_ascii=False).encode("utf-8")
 
@@ -135,8 +123,7 @@ def test_evaluation_create_test_case(mocker, setup_teardown_openai, single_creat
 
 def test_evaluation_update_test_case(mocker, setup_teardown_openai, update_tc):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(update_tc, ensure_ascii=False).encode("utf-8")
 
@@ -167,11 +154,10 @@ def test_evaluation_update_test_case(mocker, setup_teardown_openai, update_tc):
 
 
 def test_evaluation_submit_test_run_pipeline_slug(
-    mocker, test_cases, setup_teardown_openai, test_result_response_simple, pipelines
+        mocker, test_cases, setup_teardown_openai, test_result_response_simple, pipelines
 ):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
 
@@ -213,8 +199,7 @@ def test_evaluation_submit_test_run_pipeline_slug(
         )
 
     # Setup Gentrace mocked response for submit_test_run
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
@@ -241,11 +226,10 @@ def test_evaluation_submit_test_run_pipeline_slug(
 
 
 def test_evaluation_submit_test_run_output_steps(
-    mocker, test_cases, setup_teardown_openai, test_result_response_simple
+        mocker, test_cases, setup_teardown_openai, test_result_response_simple
 ):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(test_cases, ensure_ascii=False).encode("utf-8")
 
@@ -282,8 +266,7 @@ def test_evaluation_submit_test_run_output_steps(
         )
 
     # Setup Gentrace mocked response for submit_test_run
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(test_result_response_simple, ensure_ascii=False).encode("utf-8")
 
@@ -431,8 +414,7 @@ def test_should_read_result_name(setup_teardown_openai):
 
 def test_evaluation_get_pipelines(mocker, pipelines, setup_teardown_openai):
     # Setup Gentrace mocked response for get_test_cases
-    headers = http.client.HTTPMessage()
-    headers.add_header("Content-Type", "application/json")
+    headers = HTTPHeaderDict({"Content-Type": "application/json"})
 
     body = json.dumps(pipelines, ensure_ascii=False).encode("utf-8")
 
@@ -475,7 +457,7 @@ def test_evaluation_measure(mocker, setup_teardown_openai, test_result_response)
 
 
 def test_evaluation_measure_validate_steps(
-    mocker, setup_teardown_openai, test_result_response
+        mocker, setup_teardown_openai, test_result_response
 ):
     pipeline = gentrace.Pipeline(
         "guess-the-year",
@@ -568,7 +550,7 @@ def test_evaluation_counter_rest(mocker, setup_teardown_openai, test_result_resp
 
 
 def test_evaluation_counter_rest_when_run_test_fails(
-    mocker, setup_teardown_openai, test_result_response
+        mocker, setup_teardown_openai, test_result_response
 ):
     pipeline = gentrace.Pipeline(
         "guess-the-year",
