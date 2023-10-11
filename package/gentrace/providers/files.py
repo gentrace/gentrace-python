@@ -3,15 +3,15 @@ import typing
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
-from gentrace.paths.files_upload.post import SchemaForRequestBodyImage
+from gentrace.paths.files_upload.post import SchemaForRequestBodyMultipartFormData
+from gentrace.schemas import BinarySchema
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
 
 
 def upload_file(
-    file_name: str,
-    body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, ]
+    file: typing.Union[BinarySchema, bytes, io.FileIO, io.BufferedReader]
 ) -> str:
     """Creates multiple test cases for a specified pipeline using the Gentrace API.
 
@@ -35,6 +35,7 @@ def upload_file(
     api_client = ApiClient(configuration=config)
     api = CoreApi(api_client=api_client)
 
-    response = api.files_upload_post(body, content_type="application/octet-stream", query_params={ "name": file_name })
+    body = SchemaForRequestBodyMultipartFormData(file=file)
+    response = api.files_upload_post(body=body)
     url = response.body.get("url", None)
     return url

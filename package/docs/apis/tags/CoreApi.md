@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 # **files_upload_post**
 <a name="files_upload_post"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} files_upload_post(namebody)
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} files_upload_post()
 
 Upload an image file
 
@@ -50,27 +50,13 @@ with gentrace.ApiClient(configuration) as api_client:
     # Create an instance of the API class
     api_instance = core_api.CoreApi(api_client)
 
-    # example passing only required values which don't have defaults set
-    query_params = {
-        'name': "name_example",
-    }
-    body = open('/path/to/file', 'rb')
-    try:
-        # Upload an image file
-        api_response = api_instance.files_upload_post(
-            query_params=query_params,
-            body=body,
-        )
-        pprint(api_response)
-    except gentrace.ApiException as e:
-        print("Exception when calling CoreApi->files_upload_post: %s\n" % e)
-
     # example passing only optional values
     query_params = {
         'org': "org_example",
-        'name': "name_example",
     }
-    body = open('/path/to/file', 'rb')
+    body = dict(
+        file=open('/path/to/file', 'rb'),
+    )
     try:
         # Upload an image file
         api_response = api_instance.files_upload_post(
@@ -85,9 +71,9 @@ with gentrace.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-body | typing.Union[SchemaForRequestBodyApplicationOctetStream] | required |
+body | typing.Union[SchemaForRequestBodyMultipartFormData, Unset] | optional, default is unset |
 query_params | RequestQueryParams | |
-content_type | str | optional, default is 'application/octet-stream' | Selects the schema and serialization of the request body
+content_type | str | optional, default is 'multipart/form-data' | Selects the schema and serialization of the request body
 accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
@@ -95,12 +81,18 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 ### body
 
-# SchemaForRequestBodyApplicationOctetStream
+# SchemaForRequestBodyMultipartFormData
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-bytes, io.FileIO, io.BufferedReader,  | bytes, FileIO,  |  | 
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**file** | bytes, io.FileIO, io.BufferedReader,  | bytes, FileIO,  | The file to upload. | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 ### query_params
 #### RequestQueryParams
@@ -108,17 +100,9 @@ bytes, io.FileIO, io.BufferedReader,  | bytes, FileIO,  |  |
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 org | OrgSchema | | optional
-name | NameSchema | | 
 
 
 # OrgSchema
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-str,  | str,  |  | 
-
-# NameSchema
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

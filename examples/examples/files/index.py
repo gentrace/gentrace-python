@@ -11,5 +11,5 @@ gentrace.init(
 )
 
 file = io.FileIO("examples/files/icon.png", "r")
-url = gentrace.upload_file("icon.png", file)
+url = gentrace.upload_file(file)
 print('url', url)
