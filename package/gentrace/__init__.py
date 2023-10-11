@@ -32,6 +32,7 @@ from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import to_date_string
+from gentrace.providers.files import *
 
 from gentrace.providers.getters import *
 from gentrace.providers.init import init, deinit

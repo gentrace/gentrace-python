@@ -19,7 +19,7 @@ Method | HTTP request | Description
 
 # **files_upload_post**
 <a name="files_upload_post"></a>
-> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} files_upload_post(orgnamebody)
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} files_upload_post(namebody)
 
 Upload an image file
 
@@ -52,6 +52,21 @@ with gentrace.ApiClient(configuration) as api_client:
 
     # example passing only required values which don't have defaults set
     query_params = {
+        'name': "name_example",
+    }
+    body = open('/path/to/file', 'rb')
+    try:
+        # Upload an image file
+        api_response = api_instance.files_upload_post(
+            query_params=query_params,
+            body=body,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling CoreApi->files_upload_post: %s\n" % e)
+
+    # example passing only optional values
+    query_params = {
         'org': "org_example",
         'name': "name_example",
     }
@@ -70,22 +85,15 @@ with gentrace.ApiClient(configuration) as api_client:
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-body | typing.Union[SchemaForRequestBodyImage, SchemaForRequestBodyApplicationOctetStream] | required |
+body | typing.Union[SchemaForRequestBodyApplicationOctetStream] | required |
 query_params | RequestQueryParams | |
-content_type | str | optional, default is 'image/*' | Selects the schema and serialization of the request body
-accept_content_types | typing.Tuple[str] | default is ('application/json', ) | Tells the server the content type(s) that are accepted by the client
+content_type | str | optional, default is 'application/octet-stream' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
 stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
 timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
 skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
 
 ### body
-
-# SchemaForRequestBodyImage
-
-## Model Type Info
-Input Type | Accessed Type | Description | Notes
------------- | ------------- | ------------- | -------------
-bytes, io.FileIO, io.BufferedReader,  | bytes, FileIO,  |  | 
 
 # SchemaForRequestBodyApplicationOctetStream
 
@@ -99,7 +107,7 @@ bytes, io.FileIO, io.BufferedReader,  | bytes, FileIO,  |  |
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
-org | OrgSchema | | 
+org | OrgSchema | | optional
 name | NameSchema | | 
 
 
@@ -131,10 +139,23 @@ n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization i
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor201ResponseBodyApplicationJson, ] |  |
+body | typing.Union[SchemaFor201ResponseBodyApplicationJson, SchemaFor201ResponseBodyApplicationJsonCharsetutf8, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor201ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**url** | str,  | str,  | URL of the uploaded image | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor201ResponseBodyApplicationJsonCharsetutf8
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -151,10 +172,23 @@ Key | Input Type | Accessed Type | Description | Notes
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor400ResponseBodyApplicationJson, ] |  |
+body | typing.Union[SchemaFor400ResponseBodyApplicationJson, SchemaFor400ResponseBodyApplicationJsonCharsetutf8, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor400ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**message** | str,  | str,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor400ResponseBodyApplicationJsonCharsetutf8
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -171,10 +205,23 @@ Key | Input Type | Accessed Type | Description | Notes
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor401ResponseBodyApplicationJson, ] |  |
+body | typing.Union[SchemaFor401ResponseBodyApplicationJson, SchemaFor401ResponseBodyApplicationJsonCharsetutf8, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor401ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**message** | str,  | str,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor401ResponseBodyApplicationJsonCharsetutf8
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes
@@ -191,10 +238,23 @@ Key | Input Type | Accessed Type | Description | Notes
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
 response | urllib3.HTTPResponse | Raw response |
-body | typing.Union[SchemaFor500ResponseBodyApplicationJson, ] |  |
+body | typing.Union[SchemaFor500ResponseBodyApplicationJson, SchemaFor500ResponseBodyApplicationJsonCharsetutf8, ] |  |
 headers | Unset | headers were not defined |
 
 # SchemaFor500ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**message** | str,  | str,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor500ResponseBodyApplicationJsonCharsetutf8
 
 ## Model Type Info
 Input Type | Accessed Type | Description | Notes

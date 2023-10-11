@@ -34,13 +34,13 @@ NameSchema = schemas.StrSchema
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
-        'org': typing.Union[OrgSchema, str, ],
         'name': typing.Union[NameSchema, str, ],
     }
 )
 RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
+        'org': typing.Union[OrgSchema, str, ],
     },
     total=False
 )
@@ -54,7 +54,6 @@ request_query_org = api_client.QueryParameter(
     name="org",
     style=api_client.ParameterStyle.FORM,
     schema=OrgSchema,
-    required=True,
     explode=True,
 )
 request_query_name = api_client.QueryParameter(
@@ -65,14 +64,11 @@ request_query_name = api_client.QueryParameter(
     explode=True,
 )
 # body param
-SchemaForRequestBodyImage = schemas.BinarySchema
 SchemaForRequestBodyApplicationOctetStream = schemas.BinarySchema
 
 
 request_body_body = api_client.RequestBody(
     content={
-        'image/*': api_client.MediaType(
-            schema=SchemaForRequestBodyImage),
         'application/octet-stream': api_client.MediaType(
             schema=SchemaForRequestBodyApplicationOctetStream),
     },
@@ -133,11 +129,62 @@ class SchemaFor201ResponseBodyApplicationJson(
         )
 
 
+class SchemaFor201ResponseBodyApplicationJsonCharsetutf8(
+    schemas.DictSchema
+):
+
+
+    class MetaOapg:
+        
+        class properties:
+            url = schemas.StrSchema
+            __annotations__ = {
+                "url": url,
+            }
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["url"]) -> MetaOapg.properties.url: ...
+    
+    @typing.overload
+    def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["url", ], str]):
+        # dict_instance[name] accessor
+        return super().__getitem__(name)
+    
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["url"]) -> typing.Union[MetaOapg.properties.url, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["url", ], str]):
+        return super().get_item_oapg(name)
+    
+
+    def __new__(
+        cls,
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        url: typing.Union[MetaOapg.properties.url, str, schemas.Unset] = schemas.unset,
+        _configuration: typing.Optional[schemas.Configuration] = None,
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor201ResponseBodyApplicationJsonCharsetutf8':
+        return super().__new__(
+            cls,
+            *_args,
+            url=url,
+            _configuration=_configuration,
+            **kwargs,
+        )
+
+
 @dataclass
 class ApiResponseFor201(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
         SchemaFor201ResponseBodyApplicationJson,
+        SchemaFor201ResponseBodyApplicationJsonCharsetutf8,
     ]
     headers: schemas.Unset = schemas.unset
 
@@ -147,6 +194,8 @@ _response_for_201 = api_client.OpenApiResponse(
     content={
         'application/json': api_client.MediaType(
             schema=SchemaFor201ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor201ResponseBodyApplicationJsonCharsetutf8),
     },
 )
 
@@ -201,11 +250,62 @@ class SchemaFor400ResponseBodyApplicationJson(
         )
 
 
+class SchemaFor400ResponseBodyApplicationJsonCharsetutf8(
+    schemas.DictSchema
+):
+
+
+    class MetaOapg:
+        
+        class properties:
+            message = schemas.StrSchema
+            __annotations__ = {
+                "message": message,
+            }
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["message"]) -> MetaOapg.properties.message: ...
+    
+    @typing.overload
+    def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        # dict_instance[name] accessor
+        return super().__getitem__(name)
+    
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["message"]) -> typing.Union[MetaOapg.properties.message, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        return super().get_item_oapg(name)
+    
+
+    def __new__(
+        cls,
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        message: typing.Union[MetaOapg.properties.message, str, schemas.Unset] = schemas.unset,
+        _configuration: typing.Optional[schemas.Configuration] = None,
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor400ResponseBodyApplicationJsonCharsetutf8':
+        return super().__new__(
+            cls,
+            *_args,
+            message=message,
+            _configuration=_configuration,
+            **kwargs,
+        )
+
+
 @dataclass
 class ApiResponseFor400(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
         SchemaFor400ResponseBodyApplicationJson,
+        SchemaFor400ResponseBodyApplicationJsonCharsetutf8,
     ]
     headers: schemas.Unset = schemas.unset
 
@@ -215,6 +315,8 @@ _response_for_400 = api_client.OpenApiResponse(
     content={
         'application/json': api_client.MediaType(
             schema=SchemaFor400ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor400ResponseBodyApplicationJsonCharsetutf8),
     },
 )
 
@@ -269,11 +371,62 @@ class SchemaFor401ResponseBodyApplicationJson(
         )
 
 
+class SchemaFor401ResponseBodyApplicationJsonCharsetutf8(
+    schemas.DictSchema
+):
+
+
+    class MetaOapg:
+        
+        class properties:
+            message = schemas.StrSchema
+            __annotations__ = {
+                "message": message,
+            }
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["message"]) -> MetaOapg.properties.message: ...
+    
+    @typing.overload
+    def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        # dict_instance[name] accessor
+        return super().__getitem__(name)
+    
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["message"]) -> typing.Union[MetaOapg.properties.message, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        return super().get_item_oapg(name)
+    
+
+    def __new__(
+        cls,
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        message: typing.Union[MetaOapg.properties.message, str, schemas.Unset] = schemas.unset,
+        _configuration: typing.Optional[schemas.Configuration] = None,
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor401ResponseBodyApplicationJsonCharsetutf8':
+        return super().__new__(
+            cls,
+            *_args,
+            message=message,
+            _configuration=_configuration,
+            **kwargs,
+        )
+
+
 @dataclass
 class ApiResponseFor401(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
         SchemaFor401ResponseBodyApplicationJson,
+        SchemaFor401ResponseBodyApplicationJsonCharsetutf8,
     ]
     headers: schemas.Unset = schemas.unset
 
@@ -283,6 +436,8 @@ _response_for_401 = api_client.OpenApiResponse(
     content={
         'application/json': api_client.MediaType(
             schema=SchemaFor401ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor401ResponseBodyApplicationJsonCharsetutf8),
     },
 )
 
@@ -337,11 +492,62 @@ class SchemaFor500ResponseBodyApplicationJson(
         )
 
 
+class SchemaFor500ResponseBodyApplicationJsonCharsetutf8(
+    schemas.DictSchema
+):
+
+
+    class MetaOapg:
+        
+        class properties:
+            message = schemas.StrSchema
+            __annotations__ = {
+                "message": message,
+            }
+    
+    @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["message"]) -> MetaOapg.properties.message: ...
+    
+    @typing.overload
+    def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
+    
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        # dict_instance[name] accessor
+        return super().__getitem__(name)
+    
+    
+    @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["message"]) -> typing.Union[MetaOapg.properties.message, schemas.Unset]: ...
+    
+    @typing.overload
+    def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
+    
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["message", ], str]):
+        return super().get_item_oapg(name)
+    
+
+    def __new__(
+        cls,
+        *_args: typing.Union[dict, frozendict.frozendict, ],
+        message: typing.Union[MetaOapg.properties.message, str, schemas.Unset] = schemas.unset,
+        _configuration: typing.Optional[schemas.Configuration] = None,
+        **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
+    ) -> 'SchemaFor500ResponseBodyApplicationJsonCharsetutf8':
+        return super().__new__(
+            cls,
+            *_args,
+            message=message,
+            _configuration=_configuration,
+            **kwargs,
+        )
+
+
 @dataclass
 class ApiResponseFor500(api_client.ApiResponse):
     response: urllib3.HTTPResponse
     body: typing.Union[
         SchemaFor500ResponseBodyApplicationJson,
+        SchemaFor500ResponseBodyApplicationJsonCharsetutf8,
     ]
     headers: schemas.Unset = schemas.unset
 
@@ -351,6 +557,8 @@ _response_for_500 = api_client.OpenApiResponse(
     content={
         'application/json': api_client.MediaType(
             schema=SchemaFor500ResponseBodyApplicationJson),
+        'application/json; charset=utf-8': api_client.MediaType(
+            schema=SchemaFor500ResponseBodyApplicationJsonCharsetutf8),
     },
 )
 _status_code_to_response = {
@@ -361,6 +569,7 @@ _status_code_to_response = {
 }
 _all_accept_content_types = (
     'application/json',
+    'application/json; charset=utf-8',
 )
 
 
@@ -368,8 +577,8 @@ class BaseApi(api_client.Api):
     @typing.overload
     def _files_upload_post_oapg(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["image/*"] = ...,
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: typing_extensions.Literal["application/octet-stream"] = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -383,20 +592,6 @@ class BaseApi(api_client.Api):
     def _files_upload_post_oapg(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["application/octet-stream"],
-        query_params: RequestQueryParams = frozendict.frozendict(),
-        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
-        stream: bool = False,
-        timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
-        skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor201,
-    ]: ...
-
-    @typing.overload
-    def _files_upload_post_oapg(
-        self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -411,7 +606,7 @@ class BaseApi(api_client.Api):
     @typing.overload
     def _files_upload_post_oapg(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         skip_deserialization: typing_extensions.Literal[True],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -423,7 +618,7 @@ class BaseApi(api_client.Api):
     @typing.overload
     def _files_upload_post_oapg(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -437,8 +632,8 @@ class BaseApi(api_client.Api):
 
     def _files_upload_post_oapg(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: str = 'image/*',
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: str = 'application/octet-stream',
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -521,8 +716,8 @@ class FilesUploadPost(BaseApi):
     @typing.overload
     def files_upload_post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["image/*"] = ...,
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: typing_extensions.Literal["application/octet-stream"] = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -536,20 +731,6 @@ class FilesUploadPost(BaseApi):
     def files_upload_post(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["application/octet-stream"],
-        query_params: RequestQueryParams = frozendict.frozendict(),
-        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
-        stream: bool = False,
-        timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
-        skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor201,
-    ]: ...
-
-    @typing.overload
-    def files_upload_post(
-        self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -564,7 +745,7 @@ class FilesUploadPost(BaseApi):
     @typing.overload
     def files_upload_post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         skip_deserialization: typing_extensions.Literal[True],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -576,7 +757,7 @@ class FilesUploadPost(BaseApi):
     @typing.overload
     def files_upload_post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -590,8 +771,8 @@ class FilesUploadPost(BaseApi):
 
     def files_upload_post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: str = 'image/*',
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: str = 'application/octet-stream',
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -615,8 +796,8 @@ class ApiForpost(BaseApi):
     @typing.overload
     def post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["image/*"] = ...,
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: typing_extensions.Literal["application/octet-stream"] = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
@@ -630,20 +811,6 @@ class ApiForpost(BaseApi):
     def post(
         self,
         body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: typing_extensions.Literal["application/octet-stream"],
-        query_params: RequestQueryParams = frozendict.frozendict(),
-        accept_content_types: typing.Tuple[str] = _all_accept_content_types,
-        stream: bool = False,
-        timeout: typing.Optional[typing.Union[int, typing.Tuple]] = None,
-        skip_deserialization: typing_extensions.Literal[False] = ...,
-    ) -> typing.Union[
-        ApiResponseFor201,
-    ]: ...
-
-    @typing.overload
-    def post(
-        self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -658,7 +825,7 @@ class ApiForpost(BaseApi):
     @typing.overload
     def post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         skip_deserialization: typing_extensions.Literal[True],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
@@ -670,7 +837,7 @@ class ApiForpost(BaseApi):
     @typing.overload
     def post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
         content_type: str = ...,
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
@@ -684,8 +851,8 @@ class ApiForpost(BaseApi):
 
     def post(
         self,
-        body: typing.Union[SchemaForRequestBodyImage,bytes, io.FileIO, io.BufferedReader, SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
-        content_type: str = 'image/*',
+        body: typing.Union[SchemaForRequestBodyApplicationOctetStream,bytes, io.FileIO, io.BufferedReader, ],
+        content_type: str = 'application/octet-stream',
         query_params: RequestQueryParams = frozendict.frozendict(),
         accept_content_types: typing.Tuple[str] = _all_accept_content_types,
         stream: bool = False,
