@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.1](https://github.com/gentrace/gentrace-python/compare/v0.22.0...v0.22.1) (2023-10-16)
+
+
+### Bug Fixes
+
+* Add in upload_bytes ([#170](https://github.com/gentrace/gentrace-python/issues/170)) ([a2e8428](https://github.com/gentrace/gentrace-python/commit/a2e84283ba7234030d386ba950f303c9830a60a5))
+
 ## [0.22.0](https://github.com/gentrace/gentrace-python/compare/v0.21.1...v0.22.0) (2023-10-16)
 
 
