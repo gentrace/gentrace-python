@@ -10,19 +10,21 @@ gentrace.init(
 )
 
 with open("examples/files/gentrace-icon.png", "rb") as f:
+    # Remember to specify the file extension! The Gentrace UI relies on the file
+    # extension to render file contents correctly.
     url = gentrace.upload_bytes("gentrace-icon.png", f.read())
 
-    print("Gentrace URL: ", url)
+print(url)
 
-    gentrace.create_test_case(
-        "main",
-        {
-            "name": 'Gentrace Icon',
-            'inputs': {
-                'imageUrl': url,
-            },
-            "expectedOutputs": {
-                "value": "Gentrace logo"
-            }
+gentrace.create_test_case(
+    "main",
+    {
+        "name": 'Gentrace Icon',
+        'inputs': {
+            'imageUrl': url,
+        },
+        "expectedOutputs": {
+            "value": "Gentrace logo"
         }
-    )
+    }
+)
