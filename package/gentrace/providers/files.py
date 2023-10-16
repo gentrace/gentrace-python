@@ -65,8 +65,6 @@ def upload_bytes(file_name: str, content: bytes):
     temp_dir = tempfile.gettempdir()
     temp_file_path = os.path.join(temp_dir, file_name)
 
-    print("temp_file_path: ", temp_file_path)
-
     with open(temp_file_path, "wb") as temp:
         temp.write(content)
 
