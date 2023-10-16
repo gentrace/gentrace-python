@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.2](https://github.com/gentrace/gentrace-python/compare/v0.22.1...v0.22.2) (2023-10-16)
+
+
+### Bug Fixes
+
+* remove print statement ([#172](https://github.com/gentrace/gentrace-python/issues/172)) ([4f82676](https://github.com/gentrace/gentrace-python/commit/4f8267697491b96d0334eb3df6d03f8f46f9b713))
+
 ## [0.22.1](https://github.com/gentrace/gentrace-python/compare/v0.22.0...v0.22.1) (2023-10-16)
 
 
