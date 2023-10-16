@@ -1,29 +1,30 @@
 import io  # noqa: F401
+import os
+import tempfile
 import typing
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.paths.files_upload.post import SchemaForRequestBodyMultipartFormData
-from gentrace.schemas import BinarySchema
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
+from gentrace.schemas import BinarySchema
 
 
 def upload_file(
-    file: typing.Union[BinarySchema, bytes, io.FileIO, io.BufferedReader]
+        file: typing.Union[BinarySchema, bytes, io.FileIO, io.BufferedReader]
 ) -> str:
-    """Creates multiple test cases for a specified pipeline using the Gentrace API.
+    """Uploads a file to the Gentrace API.
 
     Parameters:
-    - pipeline_slug (str): The unique identifier of the pipeline to which the test cases should be added.
-    - payload (List[TestCaseDict]): The array payload containing the test cases to be created.
+    - file (typing.Union[BinarySchema, bytes, io.FileIO, io.BufferedReader]): The file to be uploaded.
 
     Returns:
-    - int: Count of test cases created.
+    - str: URL of the uploaded file.
 
     Raises:
-    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+    - ValueError: If the Gentrace API key is not initialized
 
     Note:
     Ensure that the Gentrace API is initialized by calling init() before using this function.
@@ -38,4 +39,42 @@ def upload_file(
     body = SchemaForRequestBodyMultipartFormData(file=file)
     response = api.files_upload_post(body=body)
     url = response.body.get("url", None)
+    return url
+
+
+def upload_bytes(file_name: str, content: bytes):
+    """Uploads a file as bytes to the Gentrace API.
+
+    Parameters:
+    - file_name (str): The name of the file to be uploaded.
+    - content (bytes): The content of the file to be uploaded.
+
+    Returns:
+    - str: URL of the uploaded file.
+
+    Raises:
+    - ValueError: If the Gentrace API key is not initialized
+
+    Note:
+    Ensure that the Gentrace API is initialized by calling init() before using this function.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    temp_dir = tempfile.gettempdir()
+    temp_file_path = os.path.join(temp_dir, file_name)
+
+    print("temp_file_path: ", temp_file_path)
+
+    with open(temp_file_path, "wb") as temp:
+        temp.write(content)
+
+    file = io.FileIO(temp_file_path, mode="rb")
+
+    url = upload_file(file)
+
+    file.close()
+    os.remove(temp_file_path)
+
     return url
