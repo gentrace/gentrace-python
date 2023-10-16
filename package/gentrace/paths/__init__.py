@@ -13,3 +13,4 @@ class PathValues(str, enum.Enum):
     TESTRESULT_STATUS = "/test-result/status"
     TESTRESULTSIMPLE = "/test-result-simple"
     PIPELINES = "/pipelines"
+    FILES_UPLOAD = "/files/upload"
