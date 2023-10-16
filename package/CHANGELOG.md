@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.0](https://github.com/gentrace/gentrace-python/compare/v0.21.1...v0.22.0) (2023-10-16)
+
+
+### Features
+
+* add file uploading ([#168](https://github.com/gentrace/gentrace-python/issues/168)) ([38ed312](https://github.com/gentrace/gentrace-python/commit/38ed3128fdcf2d67305b7236b0a5c81d2a8f0f11))
+
 ## [0.21.1](https://github.com/gentrace/gentrace-python/compare/v0.21.0...v0.21.1) (2023-10-04)
 
 
