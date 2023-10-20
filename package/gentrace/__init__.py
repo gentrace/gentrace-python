@@ -19,6 +19,8 @@ from gentrace.api_client import ApiClient
 # import Configuration
 from gentrace.configuration import Configuration
 
+from gentrace.providers.utils import is_openai_v1
+
 # import exceptions
 from gentrace.exceptions import OpenApiException
 from gentrace.exceptions import ApiAttributeError
@@ -37,6 +39,10 @@ from gentrace.providers.files import *
 from gentrace.providers.getters import *
 from gentrace.providers.init import init, deinit
 
+if is_openai_v1():
+    from gentrace.providers.llms.handlers.openai_v1.simple import SimpleGentraceSyncOpenAITyped as OpenAI
+    from gentrace.providers.llms.handlers.openai_v1.simple import SimpleGentraceAsyncOpenAITyped as AsyncOpenAI
+
 # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
 # API key
 api_key = ""
@@ -48,3 +54,4 @@ host = ""
 # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
 # log level
 log_level = "warn"
+
