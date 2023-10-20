@@ -10,9 +10,8 @@ gentrace.init(
     host="http://localhost:3000/api/v1",
 )
 
-
 pipeline = gentrace.Pipeline(
-    "test-gentrace-python-pipeline",
+    "testing-pipeline-id",
     openai_config={
         "api_key": os.getenv("OPENAI_KEY"),
     },
@@ -24,12 +23,14 @@ runner = pipeline.start()
 
 openai = runner.get_openai()
 
-result = openai.Embedding.create(
-    input="sample text", model="text-similarity-davinci-001"
+result = openai.embeddings.create(
+    input="sample text", model="text-embedding-ada-002"
 )
 
 print("Result: ", result)
 
 info = runner.submit()
 
-print("Response: ", info["pipelineRunId"])
+print("Info: ", info)
+
+gentrace.flush()

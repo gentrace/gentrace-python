@@ -26,8 +26,6 @@ def setup_teardown_openai():
         host="http://localhost:3000/api/v1",
     )
 
-    gentrace.configure_openai()
-
     yield "done"
 
     gentrace.deinit()

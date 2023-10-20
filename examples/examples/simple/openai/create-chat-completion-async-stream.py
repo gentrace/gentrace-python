@@ -2,7 +2,6 @@ import asyncio
 import os
 
 import gentrace
-import openai
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -14,12 +13,10 @@ async def main():
         host="http://localhost:3000/api/v1",
     )
 
-    gentrace.configure_openai()
+    openai = gentrace.AsyncOpenAI()
 
-    openai.api_key = os.getenv("OPENAI_KEY")
-
-    result = await openai.ChatCompletion.acreate(
-        pipeline_slug="testing-chat-completion-value",
+    result = await openai.chat.completions.create(
+        pipeline_slug="testing-pipeline-id",
         messages=[
             {
                 "role": "user",

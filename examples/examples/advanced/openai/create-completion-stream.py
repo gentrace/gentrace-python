@@ -10,7 +10,6 @@ gentrace.init(
     host="http://localhost:3000/api/v1",
 )
 
-
 pipeline = gentrace.Pipeline(
     "test-gentrace-python-pipeline",
     openai_config={
@@ -24,7 +23,7 @@ runner = pipeline.start()
 
 openai = runner.get_openai()
 
-result = openai.Completion.create(
+result = openai.completions.create(
     model="text-davinci-003",
     prompt_template="Hello world {{ name }}",
     prompt_inputs={"name": "test"},
@@ -32,7 +31,7 @@ result = openai.Completion.create(
 )
 
 for value in result:
-    pass
+    print("Value: ", value)
 
 print("Result: ", result)
 

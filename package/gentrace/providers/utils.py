@@ -1,9 +1,9 @@
 import asyncio
 import logging
 import re
-import sys
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
+from importlib.metadata import version
 
 from gentrace.apis.tags.core_api import CoreApi
 from gentrace.models import RunRequest
@@ -19,6 +19,7 @@ __all__ = [
     "get_test_counter",
     "increment_test_counter",
     "decrement_test_counter",
+    "is_openai_v1"
 ]
 
 logger = logging.getLogger(__name__)
@@ -46,6 +47,13 @@ def from_date_string(time_stamp):
     timestamp = dt.timestamp()
     seconds_since_epoch = int(timestamp)
     return seconds_since_epoch
+
+
+def is_openai_v1():
+    version_info = version("openai")
+    if version_info.startswith("1."):
+        return True
+    return False
 
 
 def log_debug(message, **params):

@@ -7,23 +7,22 @@ repository = "https://github.com/gentrace/gentrace-python"
 version = "0.0.1"
 
 [tool.poetry.dependencies]
-openai = "^0.27.4"
+openai = "1.0.0b2"
 pinecone-client = "^2.2.1"
 python = "^3.8.1"
 python-dotenv = "^1.0.0"
-# gentrace-py = {path = "../package/dist/gentrace_py-0.20.0.tar.gz", develop = true}
-gentrace-py = {path = "../package/dist/gentrace_py-0.22.0.tar.gz", develop = true}
+gentrace-py = { path = "../package/dist/gentrace_py-0.22.0.tar.gz", develop = true }
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
-ruff = "^0.0.261"
+ruff = "^0.0.291"
 
 [tool.ruff]
 exclude = [".venv"]
 select = [
-  "E", # pycodestyle
-  "F", # pyflakes
-  "I", # isort
+    "E", # pycodestyle
+    "F", # pyflakes
+    "I", # isort
 ]
 
 [build-system]

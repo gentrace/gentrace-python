@@ -1,18 +1,21 @@
 import os
 
 import gentrace
+import openai
 from dotenv import load_dotenv
 
 load_dotenv()
+
+openai.api_key = os.getenv("OPENAI_KEY")
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     host="http://localhost:3000/api/v1",
 )
 
-openai = gentrace.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+gentrace.configure_openai()
 
-result = openai.chat.completions.create(
+result = openai.ChatCompletion.create(
     pipeline_slug="testing-pipeline-id",
     messages=[
         {
@@ -22,10 +25,8 @@ result = openai.chat.completions.create(
         }
     ],
     model="gpt-3.5-turbo",
-    stream=True,
 )
 
-for event in result:
-    print(event)
+print(result["pipelineRunId"])
 
 gentrace.flush()

@@ -3,24 +3,25 @@ from typing import Any, Optional
 
 from gentrace.providers.context import Context
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
+from gentrace.providers.utils import is_openai_v1
 
 
 class Pipeline:
     def __init__(
-        self,
-        # In future releases, we will only support the "slug" parameter. This will no
-        # longer be optional.
-        slug: Optional[str] = None,
-        # @deprecated Use the "slug" parameter instead
-        id: Optional[str] = None,
-        # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
-        # API key
-        api_key: Optional[str] = None,
-        # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
-        # base URL
-        host: Optional[str] = None,
-        openai_config: Any = None,
-        pinecone_config: Optional[dict] = None,
+            self,
+            # In future releases, we will only support the "slug" parameter. This will no
+            # longer be optional.
+            slug: Optional[str] = None,
+            # @deprecated Use the "slug" parameter instead
+            id: Optional[str] = None,
+            # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
+            # API key
+            api_key: Optional[str] = None,
+            # @deprecated: use gentrace.providers.init.init() instead to set the Gentrace
+            # base URL
+            host: Optional[str] = None,
+            openai_config: Any = None,
+            pinecone_config: Optional[dict] = None,
     ):
         self.id = id or slug
         self.slug = slug or id
@@ -46,11 +47,12 @@ class Pipeline:
                     "Please install it with `pip install openai`."
                 )
 
-            for key in openai_config:
-                if key not in openai.__all__:
-                    raise ValueError(
-                        f"Invalid key ({key}) in supplied OpenAI configuration."
-                    )
+            if not is_openai_v1():
+                for key in openai_config:
+                    if key not in openai.__all__:
+                        raise ValueError(
+                            f"Invalid key ({key}) in supplied OpenAI configuration."
+                        )
 
             self.openai_config = openai_config
         else:
@@ -85,27 +87,33 @@ class Pipeline:
                     PineconePipelineHandler,
                 )
 
-                pineconeHandler = PineconePipelineHandler(pipeline=self)
-                pineconeHandler.init(api_key=self.pinecone_config["api_key"])
-                self.pipeline_handlers["pinecone"] = pineconeHandler
+                pinecone_handler = PineconePipelineHandler(pipeline=self)
+                pinecone_handler.init(api_key=self.pinecone_config["api_key"])
+                self.pipeline_handlers["pinecone"] = pinecone_handler
             except ImportError:
                 raise ImportError(
                     "Please install Pinecone as a dependency with, e.g. `pip install pinecone-client`"
                 )
 
         if self.openai_config:
-            try:
-                from gentrace.providers.llms.openai import OpenAIPipelineHandler
-
-                OpenAIPipelineHandler.setup(self.openai_config)
-                openai_handler = OpenAIPipelineHandler(
-                    self.config, self.openai_config, pipeline=self
-                )
+            if is_openai_v1():
+                from gentrace.providers.llms.openai_v1 import GentraceSyncOpenAI
+                openai_handler = GentraceSyncOpenAI(**self.openai_config, gentrace_config=self.config, pipeline=self)
                 self.pipeline_handlers["openai"] = openai_handler
-            except ImportError:
-                raise ImportError(
-                    "Please install OpenAI as a dependency with, e.g. `pip install openai`"
-                )
+
+            else:
+                try:
+                    from gentrace.providers.llms.openai_v0 import OpenAIPipelineHandler
+
+                    OpenAIPipelineHandler.setup(self.openai_config)
+                    openai_handler = OpenAIPipelineHandler(
+                        self.config, self.openai_config, pipeline=self
+                    )
+                    self.pipeline_handlers["openai"] = openai_handler
+                except ImportError:
+                    raise ImportError(
+                        "Please install OpenAI as a dependency with, e.g. `pip install openai`"
+                    )
 
     def start(self, context: Optional[Context] = None):
         from gentrace.providers.pipeline_run import PipelineRun

@@ -19,37 +19,22 @@ pipeline = gentrace.Pipeline(
 
 pipeline.setup()
 
-runner = pipeline.start(
-    {
-        "userId": "123",
-        "metadata": {"test": {"type": "string", "value": "https://google.com"}},
-    }
-)
+runner = pipeline.start()
 
 openai = runner.get_openai()
 
-result = openai.ChatCompletion.create(
-    messages=[{"role": "user", "content": "Hello!"}],
+result = openai.chat.completions.create(
+    messages=[{"role": "user", "content": "Hello! What's the capital of Maine?"}],
     model="gpt-3.5-turbo",
     gentrace={
         "metadata": {"anotherKey": {"type": "string", "value": "promptTesting"}},
     },
 )
 
-result = openai.ChatCompletion.create(
-    messages=[{"role": "user", "content": "Hello!"}],
-    model="gpt-3.5-turbo",
-    gentrace={
-        "metadata": {"anotherKey2": {"type": "string", "value": "promptTesting"}},
-    },
-)
-
-
 print("Result: ", result)
 
 info = runner.submit()
 
 print("Response: ", info["pipelineRunId"])
-
 
 gentrace.flush()
