@@ -23,7 +23,7 @@ def test_pinecone_pipeline_fetch_server(setup_teardown_pinecone):
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         pinecone_config={
             "api_key": os.getenv("PINECONE_API_KEY"),
         },
@@ -49,7 +49,7 @@ def test_pinecone_pipeline_query_server(vector, setup_teardown_pinecone):
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         pinecone_config={
             "api_key": os.getenv("PINECONE_API_KEY"),
         },
@@ -75,7 +75,7 @@ def test_pinecone_pipeline_list_indices_server(setup_teardown_pinecone):
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         pinecone_config={
             "api_key": os.getenv("PINECONE_API_KEY"),
         },
@@ -100,7 +100,7 @@ def test_pinecone_pipeline_upsert_server(vector, setup_teardown_pinecone):
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         pinecone_config={
             "api_key": os.getenv("PINECONE_API_KEY"),
         },

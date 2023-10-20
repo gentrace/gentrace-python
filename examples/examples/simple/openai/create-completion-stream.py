@@ -7,7 +7,7 @@ load_dotenv()
 
 init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    host="http://localhost:3000/api/v1",
+    host="http://localhost:3000/api",
     log_level="info",
 )
 

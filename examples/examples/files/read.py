@@ -11,7 +11,7 @@ temp_directory = tempfile.gettempdir()
 load_dotenv()
 
 gentrace.init(
-    api_key=os.getenv("GENTRACE_API_KEY"), host="http://localhost:3000/api/v1"
+    api_key=os.getenv("GENTRACE_API_KEY"), host="http://localhost:3000/api"
 )
 
 GENTRACE_PIPELINE_SLUG = "main"

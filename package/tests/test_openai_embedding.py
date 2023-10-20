@@ -145,7 +145,7 @@ def test_openai_embedding_self_contained_no_pipeline_id_server_sync(mocker, setu
 def test_openai_embedding_pipeline_server_sync(setup_teardown_openai):
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },
@@ -195,7 +195,7 @@ def test_openai_embedding_pipeline_sync(
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },
@@ -286,7 +286,7 @@ async def test_openai_embedding_pipeline_async(
 
     pipeline = gentrace.Pipeline(
         "test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         openai_config={
             "api_key": "test-api-key",
         },
@@ -314,7 +314,7 @@ async def test_openai_embedding_pipeline_async(
 def test_openai_embedding_pipeline_server_with_slug_param(setup_teardown_openai):
     pipeline = gentrace.Pipeline(
         slug="test-gentrace-python-pipeline",
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
         openai_config={
             "api_key": os.getenv("OPENAI_KEY"),
         },

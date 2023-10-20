@@ -53,7 +53,7 @@ def init(
 
         GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"] = host
 
-    resolved_host = host if host else "https://gentrace.ai/api/v1"
+    resolved_host = host if host else "https://gentrace.ai/api"
 
     config = Configuration(host=resolved_host)
     config.access_token = api_key

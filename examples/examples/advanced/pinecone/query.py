@@ -9,7 +9,7 @@ load_dotenv()
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    host="http://localhost:3000/api/v1",
+    host="http://localhost:3000/api",
 )
 
 pipeline = gentrace.Pipeline(

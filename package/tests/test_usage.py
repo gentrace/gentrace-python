@@ -52,7 +52,7 @@ def test_gentrace_localhost_host_valid(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.init(
             api_key=os.getenv("GENTRACE_API_KEY"),
-            host="http://localhost:3000/api/v1/feedback",
+            host="http://localhost:3000/api/feedback",
         )
 
     gentrace.deinit()
@@ -61,7 +61,7 @@ def test_gentrace_localhost_host_valid(os_env_variables):
 def test_gentrace_staging_host_valid(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="https://staging.gentrace.ai/api/v1/",
+        host="https://staging.gentrace.ai/api/",
     )
 
     gentrace.configure_openai()
@@ -69,7 +69,7 @@ def test_gentrace_staging_host_valid(os_env_variables):
     with pytest.raises(ValueError):
         gentrace.init(
             api_key=os.getenv("GENTRACE_API_KEY"),
-            host="https://staging.gentrace.ai/api/v1/feedback",
+            host="https://staging.gentrace.ai/api/feedback",
         )
 
     gentrace.deinit()
@@ -78,13 +78,13 @@ def test_gentrace_staging_host_valid(os_env_variables):
 def test_gentrace_prod_host_valid(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="https://gentrace.ai/api/v1/",
+        host="https://gentrace.ai/api/",
     )
 
     with pytest.raises(ValueError):
         gentrace.init(
             api_key=os.getenv("GENTRACE_API_KEY"),
-            host="https://gentrace.ai/api/v1/feedback",
+            host="https://gentrace.ai/api/feedback",
         )
 
     gentrace.deinit()
@@ -98,7 +98,7 @@ def test_openai_configure_should_raise_error(os_env_variables):
 def test_openai_configure_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
     )
 
     gentrace.configure_openai()
@@ -114,7 +114,7 @@ def test_pinecone_configure_should_raise_error(os_env_variables):
 def test_pinecone_configure_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
     )
 
     gentrace.configure_pinecone()
@@ -125,7 +125,7 @@ def test_pinecone_configure_should_not_raise_error(os_env_variables):
 def test_pipeline_should_not_raise_error(os_env_variables):
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="http://localhost:3000/api/v1",
+        host="http://localhost:3000/api",
     )
 
     pipeline = gentrace.Pipeline(
