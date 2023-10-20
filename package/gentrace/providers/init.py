@@ -46,8 +46,8 @@ def init(
     if host:
         try:
             url = urlparse(host)
-            if url.path != "/api/v1" and url.path != "/api/v1/":
-                raise ValueError('Gentrace URL path must end in "/api/v1".')
+            if url.path != "/api" and url.path != "/api/":
+                raise ValueError('Gentrace URL path must end in "/api".')
         except Exception as e:
             raise ValueError(f"Invalid Gentrace base path: {str(e)}")
 
