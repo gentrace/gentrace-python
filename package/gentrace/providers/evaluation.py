@@ -97,7 +97,7 @@ def get_test_cases(
 
         effective_pipeline_id = matching_pipeline.get("id")
 
-    response = api.test_case_get({"pipelineId": effective_pipeline_id})
+    response = api.v1_test_case_get({"pipelineId": effective_pipeline_id})
     test_cases = response.body.get("testCases", [])
     return test_cases
 
@@ -155,7 +155,7 @@ def create_test_cases(
     if not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    response = api.test_case_post({"pipelineSlug": pipeline_slug, "testCases": payload})
+    response = api.v1_test_case_post({"pipelineSlug": pipeline_slug, "testCases": payload})
     count = response.body.get("creationCount", None)
     return count
 
@@ -190,7 +190,7 @@ def create_test_case(
     if not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    response = api.test_case_post({"pipelineSlug": pipeline_slug, **payload})
+    response = api.v1_test_case_post({"pipelineSlug": pipeline_slug, **payload})
     case_id = response.body.get("caseId", None)
     return case_id
 
@@ -222,7 +222,7 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
     if not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    response = api.test_case_patch({"pipelineSlug": pipeline_slug, **payload})
+    response = api.v1_test_case_patch({"pipelineSlug": pipeline_slug, **payload})
     case_id = response.body.get("caseId", None)
     return case_id
 
@@ -259,7 +259,7 @@ def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict], context
         )
 
     params = construct_submission_payload(pipeline_slug, test_runs, context)
-    response = api.test_result_simple_post(params)
+    response = api.v1_test_result_simple_post(params)
     return response.body
 
 
@@ -387,7 +387,7 @@ def get_pipelines(
     if slug:
         params["slug"] = slug
 
-    response = api.pipelines_get(params)
+    response = api.v1_pipelines_get(params)
 
     pipelines = response.body.get("pipelines")
 
@@ -407,7 +407,7 @@ def get_test_result(result_id: str) -> ExpandedTestResult:
     if result_id:
         params["id"] = result_id
 
-    response = api.test_result_id_get(params)
+    response = api.v1_test_result_id_get(params)
 
     return response.body
 
@@ -439,7 +439,7 @@ def get_test_results(
     if pipeline_slug:
         params["pipelineSlug"] = pipeline_slug
 
-    response = api.test_result_get(params)
+    response = api.v1_test_result_get(params)
 
     test_results = response.body.get("testResults")
 
@@ -569,7 +569,7 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
         params["collectionMethod"] = "runner"
 
-        response = api.test_result_post(params)
+        response = api.v1_test_result_post(params)
         return response.body
     except Exception as e:
         raise e

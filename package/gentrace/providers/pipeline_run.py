@@ -398,7 +398,7 @@ class PipelineRun:
 
         if wait_for_server:
             try:
-                pipeline_post_response = core_api.run_post(
+                pipeline_post_response = core_api.v1_run_post(
                     {
                         "id": self.pipeline_run_id,
                         "slug": self.pipeline.slug,

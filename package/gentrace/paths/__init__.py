@@ -6,11 +6,14 @@ import enum
 
 
 class PathValues(str, enum.Enum):
-    RUN = "/run"
-    TESTCASE = "/test-case"
-    TESTRESULT = "/test-result"
-    TESTRESULT_ID = "/test-result/{id}"
-    TESTRESULT_STATUS = "/test-result/status"
-    TESTRESULTSIMPLE = "/test-result-simple"
-    PIPELINES = "/pipelines"
-    FILES_UPLOAD = "/files/upload"
+    V1_RUN = "/v1/run"
+    V1_TESTCASE = "/v1/test-case"
+    V1_TESTRESULT = "/v1/test-result"
+    V1_TESTRESULT_ID = "/v1/test-result/{id}"
+    V1_TESTRESULT_STATUS = "/v1/test-result/status"
+    V1_TESTRESULTSIMPLE = "/v1/test-result-simple"
+    V1_PIPELINES = "/v1/pipelines"
+    V1_FILES_UPLOAD = "/v1/files/upload"
+    V2_TESTRESULTS = "/v2/test-results"
+    V2_TESTCASES = "/v2/test-cases"
+    V2_PIPELINES = "/v2/pipelines"

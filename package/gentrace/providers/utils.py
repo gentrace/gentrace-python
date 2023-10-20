@@ -126,7 +126,7 @@ async def run_post_background(api_instance: CoreApi, pipeline_run_data: RunReque
     def wrapped_api_invocation():
         try:
             log_info("Submitting PipelineRun to Gentrace")
-            result = api_instance.run_post(pipeline_run_data)
+            result = api_instance.v1_run_post(pipeline_run_data)
             log_info("Successfully submitted PipelineRun to Gentrace")
             return result
         except Exception as e:

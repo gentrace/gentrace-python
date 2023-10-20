@@ -46,14 +46,14 @@ def init(
     if host:
         try:
             url = urlparse(host)
-            if url.path != "/api/v1" and url.path != "/api/v1/":
-                raise ValueError('Gentrace URL path must end in "/api/v1".')
+            if url.path != "/api" and url.path != "/api/":
+                raise ValueError('Gentrace URL path must end in "/api".')
         except Exception as e:
             raise ValueError(f"Invalid Gentrace base path: {str(e)}")
 
         GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"] = host
 
-    resolved_host = host if host else "https://gentrace.ai/api/v1"
+    resolved_host = host if host else "https://gentrace.ai/api"
 
     config = Configuration(host=resolved_host)
     config.access_token = api_key

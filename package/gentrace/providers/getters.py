@@ -22,7 +22,7 @@ def test_validity():
 
     path = parse_url(host).path
 
-    if host and path != "/api/v1" and path != "/api/v1/":
+    if host and path != "/api" and path != "/api/":
         raise ValueError("Gentrace host is invalid")
 
 
@@ -32,7 +32,7 @@ def configure_openai():
     test_validity()
 
     if api_key:
-        resolved_host = host if host else "https://gentrace.ai/api/v1"
+        resolved_host = host if host else "https://gentrace.ai/api"
         gentrace_config = GentraceConfiguration(host=resolved_host)
         gentrace_config.access_token = api_key
     else:
