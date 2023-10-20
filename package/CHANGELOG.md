@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/gentrace/gentrace-python/compare/v0.22.2...v0.23.0) (2023-10-20)
+
+
+### Features
+
+* Support openai-python 1.x.x ([#167](https://github.com/gentrace/gentrace-python/issues/167)) ([f534741](https://github.com/gentrace/gentrace-python/commit/f534741f2e81b2639b7a120ffe1e5695ed861ca1))
+
 ## [0.22.2](https://github.com/gentrace/gentrace-python/compare/v0.22.1...v0.22.2) (2023-10-16)
 
 
