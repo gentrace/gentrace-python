@@ -29,6 +29,18 @@ jobs:
           cd package
           poetry install --no-interaction
 
+      - name: Generate configuration for .env
+        run: |
+          cd package
+          touch .env
+          echo 'GENTRACE_API_KEY=${{ secrets.GENTRACE_API_KEY }}' >> .env
+          echo 'GENTRACE_HOSTNAME=${{ secrets.GENTRACE_HOSTNAME }}' >> .env
+          echo 'OPENAI_KEY=${{ secrets.OPENAI_KEY }}' >> .env
+          echo 'OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}' >> .env
+          echo 'OPENAI_ORG_ID=${{ secrets.OPENAI_ORG_ID }}' >> .env
+          echo 'PINECONE_API_KEY=${{ secrets.PINECONE_API_KEY }}' >> .env
+          echo 'PINECONE_ENVIRONMENT=${{ secrets.PINECONE_ENVIRONMENT }}' >> .env
+
       - name: Run tests
         run: |
           cd package
