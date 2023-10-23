@@ -1,4 +1,5 @@
 import copy
+import os
 import time
 import uuid
 from typing import Any, Dict, Optional
@@ -11,10 +12,21 @@ from gentrace.providers.pipeline_run import PipelineRun
 from gentrace.providers.step_run import StepRun
 from gentrace.providers.utils import to_date_string
 
+# Mega hack: somehow __class__ is actually invoking the OpenAI constructor
+prior_value = os.environ.get("OPENAI_API_KEY", None)
+
+os.environ["OPENAI_API_KEY"] = "DUMMY_VALUE"
+
+# Extract classes as you mentioned
 ExtractedCompletions = completions.__class__
 ExtractedChat = chat.__class__
 ExtractedChatCompletions = chat.completions.__class__
 ExtractedEmbeddings = embeddings.__class__
+
+if prior_value is not None:
+    os.environ["OPENAI_API_KEY"] = prior_value
+else:
+    del os.environ["OPENAI_API_KEY"]
 
 # Hack: dummy async OpenAI client to get async classes
 dummy_client = AsyncOpenAI(api_key="DUMMY_VALUE")
