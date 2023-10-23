@@ -23,7 +23,7 @@ from fixtures.vector import vector
 def setup_teardown_openai():
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="http://localhost:3000/api",
+        host=os.getenv("GENTRACE_HOSTNAME") if os.getenv("GENTRACE_HOSTNAME") else "https://gentrace.ai/api",
     )
 
     yield "done"
@@ -35,7 +35,7 @@ def setup_teardown_openai():
 def setup_teardown_pinecone():
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
-        host="http://localhost:3000/api",
+        host=os.getenv("GENTRACE_HOSTNAME") if os.getenv("GENTRACE_HOSTNAME") else "https://gentrace.ai/api",
     )
 
     gentrace.configure_pinecone()
