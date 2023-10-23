@@ -15,7 +15,7 @@ def test_openai_chat_completion_self_contained_pipeline_id_only(
         chat_completion_response,
         gentrace_pipeline_run_response,
         setup_teardown_openai,
-        httpx_mock
+        httpx_mock,
 ):
     # Setup Gentrace mocked response
     headers = HTTPHeaderDict({"Content-Type": "application/json"})
