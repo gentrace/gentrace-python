@@ -2,7 +2,7 @@ import asyncio
 import logging
 import re
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from datetime import datetime, timezone
 from importlib.metadata import version
 
 from gentrace.apis.tags.core_api import CoreApi
@@ -43,7 +43,13 @@ def to_date_string(time_value):
 
 
 def from_date_string(time_stamp):
-    dt = datetime.fromisoformat(time_stamp)
+    # If the string ends with 'Z', remove it and set it as UTC.
+    if time_stamp.endswith('Z'):
+        time_stamp = time_stamp[:-1]
+        dt = datetime.fromisoformat(time_stamp).replace(tzinfo=timezone.utc)
+    else:
+        dt = datetime.fromisoformat(time_stamp)
+
     timestamp = dt.timestamp()
     seconds_since_epoch = int(timestamp)
     return seconds_since_epoch
