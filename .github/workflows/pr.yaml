@@ -34,6 +34,7 @@ jobs:
       - name: Poetry install and build
         run: |
           cd package
+          python --version
           poetry install --no-interaction
 
       - name: Generate configuration for .env
