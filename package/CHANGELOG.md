@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.24.0](https://github.com/gentrace/gentrace-python/compare/v0.23.0...v0.24.0) (2023-10-23)
+
+
+### Features
+
+* api V2 supported (not used in core methods yet) ([#175](https://github.com/gentrace/gentrace-python/issues/175)) ([c0df3d0](https://github.com/gentrace/gentrace-python/commit/c0df3d068858a03f0bc97b8986b653fa3ada392a))
+
+
+### Bug Fixes
+
+* Fix ISO checkpoint() issues for Python &lt;= 3.10.0 ([#177](https://github.com/gentrace/gentrace-python/issues/177)) ([b43e9db](https://github.com/gentrace/gentrace-python/commit/b43e9db1fc96b6046d4f43b943bc241fa950cf39))
+* Fix issue with prior overriding value ([#178](https://github.com/gentrace/gentrace-python/issues/178)) ([0582776](https://github.com/gentrace/gentrace-python/commit/05827769831b330205f0ffc31f3ea2852beb7758))
+
 ## [0.23.0](https://github.com/gentrace/gentrace-python/compare/v0.22.2...v0.23.0) (2023-10-20)
 
 
