@@ -71,13 +71,13 @@ request_query_pipeline_slug = api_client.QueryParameter(
 )
 request_query_created_at = api_client.QueryParameter(
     name="createdAt",
-    style=api_client.ParameterStyle.FORM,
+    style=api_client.ParameterStyle.DEEP_OBJECT,
     schema=CreatedAtSchema,
     explode=True,
 )
 request_query_metadata = api_client.QueryParameter(
     name="metadata",
-    style=api_client.ParameterStyle.FORM,
+    style=api_client.ParameterStyle.DEEP_OBJECT,
     schema=MetadataSchema,
     explode=True,
 )

@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from importlib.metadata import version
 
-from gentrace.apis.tags.core_api import CoreApi
+from gentrace.apis.tags.v1_api import V1Api
 from gentrace.models import RunRequest
 from gentrace.providers.init import GENTRACE_CONFIG_STATE
 
@@ -128,7 +128,7 @@ def logfmt(props):
     return " ".join([fmt(key, val) for key, val in sorted(props.items())])
 
 
-async def run_post_background(api_instance: CoreApi, pipeline_run_data: RunRequest):
+async def run_post_background(api_instance: V1Api, pipeline_run_data: RunRequest):
     def wrapped_api_invocation():
         try:
             log_info("Submitting PipelineRun to Gentrace")

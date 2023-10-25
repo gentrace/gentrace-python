@@ -1,20 +1,23 @@
 import typing_extensions
 
 from gentrace.apis.tags import TagValues
-from gentrace.apis.tags.core_api import CoreApi
 from gentrace.apis.tags.feedback_api import FeedbackApi
+from gentrace.apis.tags.v1_api import V1Api
+from gentrace.apis.tags.v2_api import V2Api
 
 TagToApi = typing_extensions.TypedDict(
     'TagToApi',
     {
-        TagValues.CORE: CoreApi,
+        TagValues.V1: V1Api,
+        TagValues.V2: V2Api,
         TagValues.FEEDBACK: FeedbackApi,
     }
 )
 
 tag_to_api = TagToApi(
     {
-        TagValues.CORE: CoreApi,
+        TagValues.V1: V1Api,
+        TagValues.V2: V2Api,
         TagValues.FEEDBACK: FeedbackApi,
     }
 )

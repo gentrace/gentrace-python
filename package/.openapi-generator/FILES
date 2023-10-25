@@ -1,4 +1,5 @@
-docs/apis/tags/CoreApi.md
+docs/apis/tags/V1Api.md
+docs/apis/tags/V2Api.md
 docs/models/CreateMultipleTestCases.md
 docs/models/CreateSingleTestCase.md
 docs/models/ExpandedPipeline.md
@@ -29,7 +30,8 @@ docs/models/UpdateTestCase.md
 gentrace/__init__.py
 gentrace/api_client.py
 gentrace/apis/__init__.py
-gentrace/apis/tags/core_api.py
+gentrace/apis/tags/v1_api.py
+gentrace/apis/tags/v2_api.py
 gentrace/configuration.py
 gentrace/exceptions.py
 gentrace/model/__init__.py

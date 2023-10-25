@@ -3,7 +3,7 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from gentrace.api_client import ApiClient
-from gentrace.apis.tags.core_api import CoreApi
+from gentrace.apis.tags.v1_api import V1Api
 from gentrace.configuration import Configuration
 
 GENTRACE_CONFIG_STATE = {
@@ -18,14 +18,14 @@ GENTRACE_CONFIG_STATE = {
 
 
 def init(
-    api_key: Optional[str] = None,
-    host: Optional[str] = None,
-    branch: Optional[str] = None,
-    commit: Optional[str] = None,
-    log_level: Optional[str] = None,
-    # @deprecated: use result_name instead
-    run_name: Optional[str] = None,
-    result_name: Optional[str] = None,
+        api_key: Optional[str] = None,
+        host: Optional[str] = None,
+        branch: Optional[str] = None,
+        commit: Optional[str] = None,
+        log_level: Optional[str] = None,
+        # @deprecated: use result_name instead
+        run_name: Optional[str] = None,
+        result_name: Optional[str] = None,
 ):
     global GENTRACE_CONFIG_STATE
 
@@ -38,7 +38,7 @@ def init(
     GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"] = run_name or os.getenv(
         "GENTRACE_RUN_NAME"
     )
-    
+
     GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"] = result_name or os.getenv(
         "GENTRACE_RESULT_NAME"
     )
@@ -60,7 +60,7 @@ def init(
 
     GENTRACE_CONFIG_STATE["global_gentrace_config"] = config
     api_client = ApiClient(configuration=config)
-    GENTRACE_CONFIG_STATE["global_gentrace_api"] = CoreApi(api_client=api_client)
+    GENTRACE_CONFIG_STATE["global_gentrace_api"] = V1Api(api_client=api_client)
 
     if branch:
         GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] = branch
