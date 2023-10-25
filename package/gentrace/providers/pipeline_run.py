@@ -8,7 +8,7 @@ import uuid
 from typing import Any, Callable, Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
-from gentrace.apis.tags.core_api import CoreApi
+from gentrace.apis.tags.v1_api import V1Api
 from gentrace.configuration import Configuration
 from gentrace.providers.context import Context
 from gentrace.providers.pipeline import Pipeline
@@ -297,7 +297,7 @@ class PipelineRun:
         configuration = Configuration(host=self.pipeline.config.get("host"))
         configuration.access_token = self.pipeline.config.get("api_key")
         api_client = ApiClient(configuration=configuration)
-        core_api = CoreApi(api_client=api_client)
+        v1_api = V1Api(api_client=api_client)
 
         step_runs_data = [
             {
@@ -316,7 +316,7 @@ class PipelineRun:
 
         try:
             pipeline_post_response = await run_post_background(
-                core_api,
+                v1_api,
                 {
                     "id": self.pipeline_run_id,
                     "slug": self.pipeline.slug,
@@ -342,7 +342,7 @@ class PipelineRun:
         configuration.access_token = self.pipeline.config.get("api_key")
 
         api_client = ApiClient(configuration=configuration)
-        core_api = CoreApi(api_client=api_client)
+        v1_api = V1Api(api_client=api_client)
 
         merged_metadata = {}
 
@@ -383,7 +383,7 @@ class PipelineRun:
         if not wait_for_server:
             fire_and_forget(
                 run_post_background(
-                    core_api,
+                    v1_api,
                     {
                         "id": self.pipeline_run_id,
                         "slug": self.pipeline.slug,
@@ -398,7 +398,7 @@ class PipelineRun:
 
         if wait_for_server:
             try:
-                pipeline_post_response = core_api.v1_run_post(
+                pipeline_post_response = v1_api.v1_run_post(
                     {
                         "id": self.pipeline_run_id,
                         "slug": self.pipeline.slug,

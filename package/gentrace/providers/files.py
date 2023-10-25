@@ -4,7 +4,7 @@ import tempfile
 import typing
 
 from gentrace.api_client import ApiClient
-from gentrace.apis.tags.core_api import CoreApi
+from gentrace.apis.tags.v1_api import V1Api
 from gentrace.paths.v1_files_upload.post import SchemaForRequestBodyMultipartFormData
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
@@ -34,7 +34,7 @@ def upload_file(
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
     api_client = ApiClient(configuration=config)
-    api = CoreApi(api_client=api_client)
+    api = V1Api(api_client=api_client)
 
     body = SchemaForRequestBodyMultipartFormData(file=file)
     response = api.v1_files_upload_post(body=body)

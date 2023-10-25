@@ -6,5 +6,6 @@ import enum
 
 
 class TagValues(str, enum.Enum):
-    CORE = "Core"
+    V1 = "v1"
+    V2 = "v2"
     FEEDBACK = "Feedback"

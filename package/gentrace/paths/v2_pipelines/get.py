@@ -26,12 +26,13 @@ from gentrace import (
     schemas,  # noqa: F401
 )
 from gentrace.model.pipeline_v2 import PipelineV2
+from gentrace.model.searchable_string_input import SearchableStringInput
 
 from . import path
 
 # Query params
 LabelSchema = schemas.StrSchema
-SlugSchema = schemas.StrSchema
+SlugSchema = SearchableStringInput
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
@@ -41,7 +42,7 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     'RequestOptionalQueryParams',
     {
         'label': typing.Union[LabelSchema, str, ],
-        'slug': typing.Union[SlugSchema, str, ],
+        'slug': typing.Union[SlugSchema, ],
     },
     total=False
 )
@@ -59,7 +60,7 @@ request_query_label = api_client.QueryParameter(
 )
 request_query_slug = api_client.QueryParameter(
     name="slug",
-    style=api_client.ParameterStyle.FORM,
+    style=api_client.ParameterStyle.DEEP_OBJECT,
     schema=SlugSchema,
     explode=True,
 )

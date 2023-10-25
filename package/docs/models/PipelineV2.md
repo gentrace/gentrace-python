@@ -9,14 +9,16 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **organizationId** | str,  | str,  | The ID of the organization that owns the pipeline | 
+**archivedAt** | decimal.Decimal, int,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 64 bit integer
 **createdAt** | decimal.Decimal, int,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 64 bit integer
+**privateUserEmail** | None, str,  | NoneClass, str,  | If null, this is a team pipeline. If not null, this is a private pipeline for the specified email. | 
 **id** | str, uuid.UUID,  | str,  | The ID of the pipeline | value must be a uuid
+**branch** | None, str,  | NoneClass, str,  | The branch that the pipeline is associated with | 
+**privateMemberId** | None, str,  | NoneClass, str,  | If null, this is a team pipeline. If not null, this is a private pipeline for the specified member ID. | 
 **slug** | str,  | str,  | The slug of the pipeline | 
 **[labels](#labels)** | list, tuple,  | tuple,  | The labels attached to the pipeline | 
 **updatedAt** | decimal.Decimal, int,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 64 bit integer
-**archivedAt** | decimal.Decimal, int,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | [optional] value must be a 64 bit integer
 **displayName** | None, str,  | NoneClass, str,  | The name of the pipeline | [optional] 
-**branch** | None, str,  | NoneClass, str,  | The branch that the pipeline is associated with | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # labels
