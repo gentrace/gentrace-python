@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.2](https://github.com/gentrace/gentrace-python/compare/v0.24.1...v0.24.2) (2023-10-25)
+
+
+### Bug Fixes
+
+* Use v1 tags from OpenAPI generator ([#181](https://github.com/gentrace/gentrace-python/issues/181)) ([34aba67](https://github.com/gentrace/gentrace-python/commit/34aba67e994757c3de9af8360846e3923aed4a45))
+
 ## [0.24.1](https://github.com/gentrace/gentrace-python/compare/v0.24.0...v0.24.1) (2023-10-23)
 
 
