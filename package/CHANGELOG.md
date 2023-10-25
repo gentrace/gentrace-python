@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.1](https://github.com/gentrace/gentrace-python/compare/v0.24.0...v0.24.1) (2023-10-23)
+
+
+### Bug Fixes
+
+* Add Python PR check ([#179](https://github.com/gentrace/gentrace-python/issues/179)) ([e5087c2](https://github.com/gentrace/gentrace-python/commit/e5087c20096952fb22978dadf212fc42afc29757))
+
 ## [0.24.0](https://github.com/gentrace/gentrace-python/compare/v0.23.0...v0.24.0) (2023-10-23)
 
 
