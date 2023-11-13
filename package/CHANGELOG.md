@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.3](https://github.com/gentrace/gentrace-python/compare/v0.24.2...v0.24.3) (2023-11-13)
+
+
+### Bug Fixes
+
+* Fix resolved host ([#183](https://github.com/gentrace/gentrace-python/issues/183)) ([d5c27aa](https://github.com/gentrace/gentrace-python/commit/d5c27aa52bbb508b094157e4e9385e86153f6005))
+
 ## [0.24.2](https://github.com/gentrace/gentrace-python/compare/v0.24.1...v0.24.2) (2023-10-25)
 
 
