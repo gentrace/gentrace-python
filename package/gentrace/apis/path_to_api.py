@@ -8,8 +8,11 @@ from gentrace.apis.paths.v1_test_result import V1TestResult
 from gentrace.apis.paths.v1_test_result_id import V1TestResultId
 from gentrace.apis.paths.v1_test_result_simple import V1TestResultSimple
 from gentrace.apis.paths.v1_test_result_status import V1TestResultStatus
+from gentrace.apis.paths.v2_folders import V2Folders
+from gentrace.apis.paths.v2_folders_id import V2FoldersId
 from gentrace.apis.paths.v2_pipelines import V2Pipelines
 from gentrace.apis.paths.v2_test_cases import V2TestCases
+from gentrace.apis.paths.v2_test_cases_id import V2TestCasesId
 from gentrace.apis.paths.v2_test_results import V2TestResults
 from gentrace.paths import PathValues
 
@@ -26,7 +29,10 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.V1_FILES_UPLOAD: V1FilesUpload,
         PathValues.V2_TESTRESULTS: V2TestResults,
         PathValues.V2_TESTCASES: V2TestCases,
+        PathValues.V2_TESTCASES_ID: V2TestCasesId,
         PathValues.V2_PIPELINES: V2Pipelines,
+        PathValues.V2_FOLDERS: V2Folders,
+        PathValues.V2_FOLDERS_ID: V2FoldersId,
     }
 )
 
@@ -42,6 +48,9 @@ path_to_api = PathToApi(
         PathValues.V1_FILES_UPLOAD: V1FilesUpload,
         PathValues.V2_TESTRESULTS: V2TestResults,
         PathValues.V2_TESTCASES: V2TestCases,
+        PathValues.V2_TESTCASES_ID: V2TestCasesId,
         PathValues.V2_PIPELINES: V2Pipelines,
+        PathValues.V2_FOLDERS: V2Folders,
+        PathValues.V2_FOLDERS_ID: V2FoldersId,
     }
 )
