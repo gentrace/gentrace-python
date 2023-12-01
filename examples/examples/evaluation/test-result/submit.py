@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PIPELINE_SLUG = "testing3"
+PIPELINE_SLUG = "guess-the-year"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
@@ -28,14 +28,14 @@ def create_embedding_callback(test_case):
 
     openai_handle = runner.get_openai()
 
-    output = openai_handle.Embedding.create(
+    output = openai_handle.embeddings.create(
         input="sample text", model="text-similarity-davinci-001"
     )
 
     return [output, runner]
 
 
-result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback, {
+result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback, context={
     "metadata": {
         "promptString": {
             "type": "string",

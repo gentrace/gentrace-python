@@ -3,7 +3,7 @@ import json
 import os
 import uuid
 from itertools import zip_longest
-from typing import Any, Dict, List, Optional, TypedDict, Union
+from typing import Any, Callable, Dict, List, Optional, TypedDict, Union
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
@@ -477,7 +477,8 @@ def get_test_results(
     return test_results
 
 
-def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None) -> Result:
+def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
+             case_filter: Optional[Callable[[TestCase], bool]] = None) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
     provided callback (once per test case), and submitting the result report back to Gentrace.
@@ -486,6 +487,8 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
         pipeline_slug (str): The slug of the pipeline to run.
         handler (Callable[[TestCase], List[Dict]]): A function that takes a TestCase and returns a tuple of
           the output and a PipelineRun class instance that contains the list of steps taken by the pipeline.
+        context (Optional[ResultContext]): Context key pairs
+        case_filter: Optional[Callable[[TestCase], bool]] = None
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -527,6 +530,9 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
         test_runs = []
 
         for test_case in test_cases:
+            if case_filter and not case_filter(test_case):
+                continue
+
             [output, pipeline_run] = handler(test_case)
 
             merged_metadata = {}
