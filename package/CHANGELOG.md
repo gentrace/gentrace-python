@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.0](https://github.com/gentrace/gentrace-python/compare/v0.25.0...v0.26.0) (2023-12-01)
+
+
+### Features
+
+* Add case filter to run_test() ([#188](https://github.com/gentrace/gentrace-python/issues/188)) ([86a2ee3](https://github.com/gentrace/gentrace-python/commit/86a2ee3155487c393ee4594856fe6c68d49b2c38))
+
 ## [0.25.0](https://github.com/gentrace/gentrace-python/compare/v0.24.3...v0.25.0) (2023-12-01)
 
 
