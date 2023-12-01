@@ -7,9 +7,11 @@ from typing import Any, Dict, List, Optional, TypedDict, Union
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
+from gentrace.apis.tags.v2_api import V2Api
 from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
+from gentrace.model.test_case_v2 import TestCaseV2
 from gentrace.models import CreateMultipleTestCases, TestResult
 from gentrace.providers.context import ResultContext
 from gentrace.providers.init import (
@@ -100,6 +102,34 @@ def get_test_cases(
     response = api.v1_test_case_get({"pipelineId": effective_pipeline_id})
     test_cases = response.body.get("testCases", [])
     return test_cases
+
+
+def get_test_case(
+        case_id: str,
+) -> TestCaseV2:
+    """
+    Retrieves a test case for a given test case ID from the Gentrace API.
+
+    Args:
+        case_id (str): The test case ID to retrieve.
+
+    Raises:
+        ValueError: If the SDK is not initialized. Call init() first.
+
+    Returns:
+        TestCaseV2: The test case.
+    """
+
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_test_cases_id_get({"id": case_id})
+    test_case = response.body
+    return test_case
 
 
 class CreateTestCasePayload(TypedDict):
@@ -583,6 +613,7 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
 __all__ = [
     "get_test_cases",
+    "get_test_case",
     "create_test_cases",
     "create_test_case",
     "get_test_results",

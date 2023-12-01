@@ -31,6 +31,26 @@ from gentrace.model.searchable_string_input import SearchableStringInput
 # Query params
 LabelSchema = schemas.StrSchema
 SlugSchema = SearchableStringInput
+
+
+class FolderIdSchema(
+    schemas.StrBase,
+    schemas.NoneBase,
+    schemas.Schema,
+    schemas.NoneStrMixin
+):
+
+
+    def __new__(
+        cls,
+        *_args: typing.Union[None, str, ],
+        _configuration: typing.Optional[schemas.Configuration] = None,
+    ) -> 'FolderIdSchema':
+        return super().__new__(
+            cls,
+            *_args,
+            _configuration=_configuration,
+        )
 RequestRequiredQueryParams = typing_extensions.TypedDict(
     'RequestRequiredQueryParams',
     {
@@ -41,6 +61,7 @@ RequestOptionalQueryParams = typing_extensions.TypedDict(
     {
         'label': typing.Union[LabelSchema, str, ],
         'slug': typing.Union[SlugSchema, ],
+        'folderId': typing.Union[FolderIdSchema, None, str, ],
     },
     total=False
 )
@@ -60,6 +81,12 @@ request_query_slug = api_client.QueryParameter(
     name="slug",
     style=api_client.ParameterStyle.DEEP_OBJECT,
     schema=SlugSchema,
+    explode=True,
+)
+request_query_folder_id = api_client.QueryParameter(
+    name="folderId",
+    style=api_client.ParameterStyle.FORM,
+    schema=FolderIdSchema,
     explode=True,
 )
 
@@ -296,7 +323,7 @@ class BaseApi(api_client.Api):
         skip_deserialization: bool = False,
     ):
         """
-        Get pipelines, optionally filtered by label
+        Get pipelines
         :param skip_deserialization: If true then api_response.response will be set but
             api_response.body and api_response.headers will not be deserialized into schema
             class instances
@@ -308,6 +335,7 @@ class BaseApi(api_client.Api):
         for parameter in (
             request_query_label,
             request_query_slug,
+            request_query_folder_id,
         ):
             parameter_data = query_params.get(parameter.name, schemas.unset)
             if parameter_data is schemas.unset:

@@ -8,6 +8,7 @@ docs/models/ExpandedTestRun.md
 docs/models/FeedbackRequest.md
 docs/models/FeedbackResponse.md
 docs/models/FilterableMetadataInput.md
+docs/models/FolderV2.md
 docs/models/FullRun.md
 docs/models/MetadataValueObject.md
 docs/models/Pipeline.md
@@ -51,6 +52,8 @@ gentrace/model/feedback_response.py
 gentrace/model/feedback_response.pyi
 gentrace/model/filterable_metadata_input.py
 gentrace/model/filterable_metadata_input.pyi
+gentrace/model/folder_v2.py
+gentrace/model/folder_v2.pyi
 gentrace/model/full_run.py
 gentrace/model/metadata_value_object.py
 gentrace/model/metadata_value_object.pyi

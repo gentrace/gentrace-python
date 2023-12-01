@@ -16,4 +16,7 @@ class PathValues(str, enum.Enum):
     V1_FILES_UPLOAD = "/v1/files/upload"
     V2_TESTRESULTS = "/v2/test-results"
     V2_TESTCASES = "/v2/test-cases"
+    V2_TESTCASES_ID = "/v2/test-cases/{id}"
     V2_PIPELINES = "/v2/pipelines"
+    V2_FOLDERS = "/v2/folders"
+    V2_FOLDERS_ID = "/v2/folders/{id}"

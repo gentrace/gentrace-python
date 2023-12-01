@@ -543,7 +543,6 @@ with gentrace.ApiClient(configuration) as api_client:
         id="id_example",
         collection_method="manual",
         slug="slug_example",
-        name="name_example",
         previous_run_id="previous_run_id_example",
         metadata=dict(
             "key": MetadataValueObject(
