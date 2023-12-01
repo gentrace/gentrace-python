@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.25.0](https://github.com/gentrace/gentrace-python/compare/v0.24.3...v0.25.0) (2023-12-01)
+
+
+### Features
+
+* Add test case singular ([#186](https://github.com/gentrace/gentrace-python/issues/186)) ([03c358f](https://github.com/gentrace/gentrace-python/commit/03c358f31bea1219c0d55c6b7ed72e9dde4d76eb))
+
 ## [0.24.3](https://github.com/gentrace/gentrace-python/compare/v0.24.2...v0.24.3) (2023-11-13)
 
 
