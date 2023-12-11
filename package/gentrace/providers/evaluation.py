@@ -25,10 +25,6 @@ from gentrace.providers.utils import (
 )
 
 
-class Run(TypedDict):
-    runId: str
-
-
 class Result(TypedDict):
     resultId: str
 
@@ -258,7 +254,7 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
 
 
 def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
-                              context: Optional[ResultContext] = None) -> Run:
+                              context: Optional[ResultContext] = None) -> Result:
     """
     INTERNAL TO PACKAGE:
 
@@ -344,7 +340,7 @@ def submit_test_result(
         test_cases: List[TestCase],
         outputs_list: List[Dict[str, Any]],
         context: Optional[ResultContext] = None
-) -> Run:
+) -> Result:
     """
     Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
     To use a Gentrace runner to capture intermediate steps, use run_test instead.
