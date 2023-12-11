@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://github.com/gentrace/gentrace-python/compare/v0.26.0...v0.26.1) (2023-12-11)
+
+
+### Bug Fixes
+
+* Fix typing issue with submit_test_result() ([#190](https://github.com/gentrace/gentrace-python/issues/190)) ([db282ea](https://github.com/gentrace/gentrace-python/commit/db282eab9441cdf4e362307dcbdaa87494f4d1a4))
+
 ## [0.26.0](https://github.com/gentrace/gentrace-python/compare/v0.25.0...v0.26.0) (2023-12-01)
 
 
