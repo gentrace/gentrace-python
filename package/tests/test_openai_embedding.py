@@ -34,7 +34,7 @@ def test_openai_embedding_self_contained_pipeline_id_sync(
 
     result = openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
         pipeline_slug="testing-value",
     )
 
@@ -68,7 +68,7 @@ def test_openai_embedding_self_contained_no_pipeline_id_sync(
 
     result = openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
     )
 
     assert not hasattr(result, "pipelineRunId")
@@ -101,7 +101,7 @@ def test_openai_embedding_self_contained_pipeline_id_server_sync(
     openai_simple = gentrace.OpenAI()
     result = openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
         pipeline_slug="testing-value-vivek",
     )
 
@@ -135,7 +135,7 @@ def test_openai_embedding_self_contained_no_pipeline_id_server_sync(mocker, setu
 
     result = openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
     )
 
     assert not hasattr(result, "pipelineRunId")
@@ -157,7 +157,7 @@ def test_openai_embedding_pipeline_server_sync(setup_teardown_openai):
 
     openai_advanced = runner.get_openai()
 
-    openai_advanced.embeddings.create(input="sample text", model="text-similarity-davinci-001")
+    openai_advanced.embeddings.create(input="sample text", model="text-embedding-ada-002")
 
     info = runner.submit()
 
@@ -208,7 +208,7 @@ def test_openai_embedding_pipeline_sync(
     openai_handle = runner.get_openai()
 
     result = openai_handle.embeddings.create(
-        input="sample text", model="text-similarity-davinci-001"
+        input="sample text", model="text-embedding-ada-002"
     )
 
     assert len(runner.step_runs) == 1
@@ -227,7 +227,7 @@ async def test_openai_embedding_self_contained_no_pipeline_id_server_async(
 
     result = await openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
     )
 
     assert not hasattr(result, "pipelineRunId")
@@ -242,7 +242,7 @@ async def test_openai_embedding_self_contained_pipeline_id_server_async(
 
     result = await openai_simple.embeddings.create(
         input="sample text",
-        model="text-similarity-davinci-001",
+        model="text-embedding-ada-002",
         pipeline_slug="testing-value",
     )
 
@@ -299,7 +299,7 @@ async def test_openai_embedding_pipeline_async(
     openai_handle = runner.get_openai(asynchronous=True)
 
     await openai_handle.embeddings.create(
-        input="sample text", model="text-similarity-davinci-001"
+        input="sample text", model="text-embedding-ada-002"
     )
 
     assert len(runner.step_runs) == 1
@@ -326,7 +326,7 @@ def test_openai_embedding_pipeline_server_with_slug_param(setup_teardown_openai)
 
     openai = runner.get_openai()
 
-    openai.embeddings.create(input="sample text", model="text-similarity-davinci-001")
+    openai.embeddings.create(input="sample text", model="text-embedding-ada-002")
 
     info = runner.submit()
 
