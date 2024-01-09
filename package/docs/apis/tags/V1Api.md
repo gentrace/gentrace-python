@@ -5,6 +5,7 @@ All URIs are relative to *https://gentrace.ai/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**v1_feedback_post**](#v1_feedback_post) | **post** /v1/feedback | Submit feedback
 [**v1_files_upload_post**](#v1_files_upload_post) | **post** /v1/files/upload | Upload an image file
 [**v1_pipelines_get**](#v1_pipelines_get) | **get** /v1/pipelines | Get pipelines, optionally filtered by label
 [**v1_run_post**](#v1_run_post) | **post** /v1/run | Create a run
@@ -16,6 +17,124 @@ Method | HTTP request | Description
 [**v1_test_result_post**](#v1_test_result_post) | **post** /v1/test-result | Create a new test result from runs
 [**v1_test_result_simple_post**](#v1_test_result_simple_post) | **post** /v1/test-result-simple | Create a new test result from test runs
 [**v1_test_result_status_get**](#v1_test_result_status_get) | **get** /v1/test-result/status | Get status of the test result
+
+# **v1_feedback_post**
+<a name="v1_feedback_post"></a>
+> FeedbackResponse v1_feedback_post(feedback_request)
+
+Submit feedback
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v1_api
+from gentrace.model.feedback_response import FeedbackResponse
+from gentrace.model.feedback_request import FeedbackRequest
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v1_api.V1Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    body = FeedbackRequest(
+        pipeline_run_id="pipeline_run_id_example",
+        score=0,
+        recorded_time="1970-01-01T00:00:00.00Z",
+        details="details_example",
+    )
+    try:
+        # Submit feedback
+        api_response = api_instance.v1_feedback_post(
+            body=body,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V1Api->v1_feedback_post: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**FeedbackRequest**](../../models/FeedbackRequest.md) |  | 
+
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v1_feedback_post.ApiResponseFor200) | Feedback submitted successfully
+400 | [ApiResponseFor400](#v1_feedback_post.ApiResponseFor400) | Invalid feedback payload
+500 | [ApiResponseFor500](#v1_feedback_post.ApiResponseFor500) | Server error
+
+#### v1_feedback_post.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**FeedbackResponse**](../../models/FeedbackResponse.md) |  | 
+
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**FeedbackResponse**](../../models/FeedbackResponse.md) |  | 
+
+
+#### v1_feedback_post.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v1_feedback_post.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
 # **v1_files_upload_post**
 <a name="v1_files_upload_post"></a>
