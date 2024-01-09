@@ -473,6 +473,50 @@ def get_test_results(
     return test_results
 
 
+class EvaluationDictBase(TypedDict, total=True):
+    evaluatorId: str
+    runId: str
+    note: Optional[str]
+
+
+class EvaluationDict(EvaluationDictBase, total=False):
+    evalValue: Optional[float]
+    evalLabel: Optional[str]
+
+
+def bulk_create_evaluations(
+        payload: List[EvaluationDict],
+):
+    """
+    Creates multiple evaluations using the Gentrace API.
+
+    Args:
+        payload (List[EvaluationDict]): The array payload containing the evaluations to be created.
+
+    Returns:
+        int: Count of evaluations created.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Note:
+    Ensure that the Gentrace API is initialized by calling init() before using this function.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    result = api.v2_evaluations_bulk_post({
+        "data": payload
+    })
+
+    count = result.body.get("count", None)
+    return count
+
+
 def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
              case_filter: Optional[Callable[[TestCase], bool]] = None) -> Result:
     """
@@ -625,5 +669,7 @@ __all__ = [
     "get_pipelines",
     "construct_submission_payload",
     "run_test",
+    "bulk_create_evaluations",
     "OutputStep",
+    "EvaluationDict"
 ]

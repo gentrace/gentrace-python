@@ -11,6 +11,8 @@
 # import sys
 # sys.setrecursionlimit(n)
 
+from gentrace.model.create_evaluation_v2 import CreateEvaluationV2
+from gentrace.model.create_feedback_v2 import CreateFeedbackV2
 from gentrace.model.create_multiple_test_cases import CreateMultipleTestCases
 from gentrace.model.create_single_test_case import CreateSingleTestCase
 from gentrace.model.expanded_pipeline import ExpandedPipeline
@@ -18,6 +20,7 @@ from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.expanded_test_run import ExpandedTestRun
 from gentrace.model.feedback_request import FeedbackRequest
 from gentrace.model.feedback_response import FeedbackResponse
+from gentrace.model.feedback_v2 import FeedbackV2
 from gentrace.model.filterable_metadata_input import FilterableMetadataInput
 from gentrace.model.folder_v2 import FolderV2
 from gentrace.model.full_run import FullRun
@@ -38,4 +41,5 @@ from gentrace.model.test_result import TestResult
 from gentrace.model.test_result_v2 import TestResultV2
 from gentrace.model.test_run import TestRun
 from gentrace.model.unix_seconds import UnixSeconds
+from gentrace.model.update_feedback_v2 import UpdateFeedbackV2
 from gentrace.model.update_test_case import UpdateTestCase

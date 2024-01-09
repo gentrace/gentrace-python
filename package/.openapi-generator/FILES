@@ -1,5 +1,7 @@
 docs/apis/tags/V1Api.md
 docs/apis/tags/V2Api.md
+docs/models/CreateEvaluationV2.md
+docs/models/CreateFeedbackV2.md
 docs/models/CreateMultipleTestCases.md
 docs/models/CreateSingleTestCase.md
 docs/models/ExpandedPipeline.md
@@ -7,6 +9,7 @@ docs/models/ExpandedTestResult.md
 docs/models/ExpandedTestRun.md
 docs/models/FeedbackRequest.md
 docs/models/FeedbackResponse.md
+docs/models/FeedbackV2.md
 docs/models/FilterableMetadataInput.md
 docs/models/FolderV2.md
 docs/models/FullRun.md
@@ -27,6 +30,7 @@ docs/models/TestResult.md
 docs/models/TestResultV2.md
 docs/models/TestRun.md
 docs/models/UnixSeconds.md
+docs/models/UpdateFeedbackV2.md
 docs/models/UpdateTestCase.md
 gentrace/__init__.py
 gentrace/api_client.py
@@ -36,6 +40,10 @@ gentrace/apis/tags/v2_api.py
 gentrace/configuration.py
 gentrace/exceptions.py
 gentrace/model/__init__.py
+gentrace/model/create_evaluation_v2.py
+gentrace/model/create_evaluation_v2.pyi
+gentrace/model/create_feedback_v2.py
+gentrace/model/create_feedback_v2.pyi
 gentrace/model/create_multiple_test_cases.py
 gentrace/model/create_multiple_test_cases.pyi
 gentrace/model/create_single_test_case.py
@@ -50,6 +58,8 @@ gentrace/model/feedback_request.py
 gentrace/model/feedback_request.pyi
 gentrace/model/feedback_response.py
 gentrace/model/feedback_response.pyi
+gentrace/model/feedback_v2.py
+gentrace/model/feedback_v2.pyi
 gentrace/model/filterable_metadata_input.py
 gentrace/model/filterable_metadata_input.pyi
 gentrace/model/folder_v2.py
@@ -89,6 +99,8 @@ gentrace/model/test_run.py
 gentrace/model/test_run.pyi
 gentrace/model/unix_seconds.py
 gentrace/model/unix_seconds.pyi
+gentrace/model/update_feedback_v2.py
+gentrace/model/update_feedback_v2.pyi
 gentrace/model/update_test_case.py
 gentrace/model/update_test_case.pyi
 gentrace/models/__init__.py
