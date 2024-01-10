@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.27.0](https://github.com/gentrace/gentrace-python/compare/v0.26.1...v0.27.0) (2024-01-10)
+
+
+### Features
+
+* Add bulk create SDK, remove OpenAI completion endpoint ([#192](https://github.com/gentrace/gentrace-python/issues/192)) ([f395b0f](https://github.com/gentrace/gentrace-python/commit/f395b0ff0c0444737234c93a6116ec3ec5aafe78))
+
+
+### Bug Fixes
+
+* Specify evaluation payloads ([#194](https://github.com/gentrace/gentrace-python/issues/194)) ([ef66bb5](https://github.com/gentrace/gentrace-python/commit/ef66bb504c7c039f13cfa7d17d47771e1126751b))
+
 ## [0.26.1](https://github.com/gentrace/gentrace-python/compare/v0.26.0...v0.26.1) (2023-12-11)
 
 
