@@ -485,13 +485,13 @@ class EvaluationDict(EvaluationDictBase, total=False):
 
 
 def bulk_create_evaluations(
-        payload: List[EvaluationDict],
+        payloads: List[EvaluationDict],
 ):
     """
     Creates multiple evaluations using the Gentrace API.
 
     Args:
-        payload (List[EvaluationDict]): The array payload containing the evaluations to be created.
+        payloads (List[EvaluationDict]): The array payload containing the evaluations to be created.
 
     Returns:
         int: Count of evaluations created.
@@ -510,7 +510,7 @@ def bulk_create_evaluations(
     api = V2Api(api_client=api_client)
 
     result = api.v2_evaluations_bulk_post({
-        "data": payload
+        "data": payloads
     })
 
     count = result.body.get("count", None)
