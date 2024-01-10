@@ -28,7 +28,7 @@ payloads = [
 ]
 
 creation_count = gentrace.bulk_create_evaluations(
-    payload=payloads
+    payloads=payloads
 )
 
 print(creation_count)
