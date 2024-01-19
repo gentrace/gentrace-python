@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.1](https://github.com/gentrace/gentrace-python/compare/v0.27.0...v0.27.1) (2024-01-19)
+
+
+### Bug Fixes
+
+* Fix chat completion message failing ([#195](https://github.com/gentrace/gentrace-python/issues/195)) ([91c6396](https://github.com/gentrace/gentrace-python/commit/91c639650281c909aa19000c150f5edac0f2d2b7))
+
 ## [0.27.0](https://github.com/gentrace/gentrace-python/compare/v0.26.1...v0.27.0) (2024-01-10)
 
 
