@@ -44,5 +44,6 @@ def create_measure_callback(test_case):
     )
     return [output, runner]
 
-
 result = gentrace.run_test("main", create_measure_callback)
+
+

@@ -637,8 +637,11 @@ def create_rendered_chat_messages(messages):
                 message["contentTemplate"], message["contentInputs"]
             )
 
-        new_message.pop("contentTemplate", None)
-        new_message.pop("contentInputs", None)
+            if "contentTemplate" in new_message:
+                new_message.pop("contentTemplate", None)
+
+            if "contentInputs" in new_message:
+                new_message.pop("contentInputs", None)
 
         new_messages.append(new_message)
 
