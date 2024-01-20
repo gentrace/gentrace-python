@@ -1,7 +1,9 @@
 import copy
+import inspect
 import json
 import os
 import uuid
+from functools import partial, wraps
 from itertools import zip_longest
 from typing import Any, Callable, Dict, List, Optional, TypedDict, Union
 
@@ -515,6 +517,23 @@ def bulk_create_evaluations(
 
     count = result.body.get("count", None)
     return count
+
+
+def experiment(*args, **kwargs):
+    def wrapper(func):
+        @wraps(func)
+        def sync_ver(*func_args, **func_kwargs):
+            return func(*func_args, **func_kwargs)
+
+        @wraps(func)
+        async def async_ver(*func_args, **func_kwargs):
+            return await func(*func_args, **func_kwargs)
+
+        return async_ver if inspect.iscoroutinefunction(func) else sync_ver
+
+    if len(args) == 1 and callable(args[0]) and len(kwargs) == 0:
+        return wrapper(*args, **kwargs)
+    return partial(wrapper, *args, **kwargs)
 
 
 def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
