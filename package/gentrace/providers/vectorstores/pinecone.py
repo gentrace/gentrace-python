@@ -24,19 +24,19 @@ from gentrace.providers.utils import to_date_string
 
 class ModifiedIndex(pinecone.Index):
     def __init__(
-        self,
-        index_name: str,
-        pool_threads=1,
-        *args,
-        **kwargs,
+            self,
+            index_name: str,
+            pool_threads=1,
+            *args,
+            **kwargs,
     ):
         super().__init__(index_name, pool_threads, *args, **kwargs)
 
     def manage_step_run(
-        self,
-        step_run,
-        pipeline_slug,
-        context: Optional[Context] = None,
+            self,
+            step_run,
+            pipeline_slug,
+            context: Optional[Context] = None,
     ):
         pipeline_run_id = None
         is_self_contained = not hasattr(self, "pipeline_run") and pipeline_slug
@@ -73,7 +73,7 @@ class ModifiedIndex(pinecone.Index):
         return pipeline_run_id
 
     def fetch(
-        self, ids: List[str], namespace: Optional[str] = None, **kwargs
+            self, ids: List[str], namespace: Optional[str] = None, **kwargs
     ) -> FetchResponse:
         start_time = time.time()
 
@@ -108,17 +108,17 @@ class ModifiedIndex(pinecone.Index):
         return response
 
     def update(
-        self,
-        id: str,
-        values: Optional[List[float]] = None,
-        set_metadata: Optional[
-            Dict[str, Union[str, float, int, bool, List[int], List[float], List[str]]]
-        ] = None,
-        namespace: Optional[str] = None,
-        sparse_values: Optional[
-            Union[SparseValues, Dict[str, Union[List[float], List[int]]]]
-        ] = None,
-        **kwargs,
+            self,
+            id: str,
+            values: Optional[List[float]] = None,
+            set_metadata: Optional[
+                Dict[str, Union[str, float, int, bool, List[int], List[float], List[str]]]
+            ] = None,
+            namespace: Optional[str] = None,
+            sparse_values: Optional[
+                Union[SparseValues, Dict[str, Union[List[float], List[int]]]]
+            ] = None,
+            **kwargs,
     ) -> Dict[str, any]:
         start_time = time.time()
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
@@ -159,19 +159,19 @@ class ModifiedIndex(pinecone.Index):
         return response
 
     def query(
-        self,
-        vector: Optional[List[float]] = None,
-        id: Optional[str] = None,
-        queries: Optional[Union[List[QueryVector], List[Tuple]]] = None,
-        top_k: Optional[int] = None,
-        namespace: Optional[str] = None,
-        filter: Optional[Dict[str, Union[str, float, int, bool, List, dict]]] = None,
-        include_values: Optional[bool] = None,
-        include_metadata: Optional[bool] = None,
-        sparse_vector: Optional[
-            Union[SparseValues, Dict[str, Union[List[float], List[int]]]]
-        ] = None,
-        **kwargs,
+            self,
+            vector: Optional[List[float]] = None,
+            id: Optional[str] = None,
+            queries: Optional[Union[List[QueryVector], List[Tuple]]] = None,
+            top_k: Optional[int] = None,
+            namespace: Optional[str] = None,
+            filter: Optional[Dict[str, Union[str, float, int, bool, List, dict]]] = None,
+            include_values: Optional[bool] = None,
+            include_metadata: Optional[bool] = None,
+            sparse_vector: Optional[
+                Union[SparseValues, Dict[str, Union[List[float], List[int]]]]
+            ] = None,
+            **kwargs,
     ) -> QueryResponse:
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
@@ -225,12 +225,12 @@ class ModifiedIndex(pinecone.Index):
         return response
 
     def upsert(
-        self,
-        vectors: Union[List[Vector], List[tuple], List[dict]],
-        namespace: Optional[str] = None,
-        batch_size: Optional[int] = None,
-        show_progress: bool = True,
-        **kwargs,
+            self,
+            vectors: Union[List[Vector], List[tuple], List[dict]],
+            namespace: Optional[str] = None,
+            batch_size: Optional[int] = None,
+            show_progress: bool = True,
+            **kwargs,
     ) -> UpsertResponse:
         # @deprecated: pipeline_id is deprecated, use pipeline_slug instead
         pipeline_id = kwargs.pop("pipeline_id", None)
@@ -269,12 +269,12 @@ class ModifiedIndex(pinecone.Index):
         return response
 
     def delete(
-        self,
-        ids: Optional[List[str]] = None,
-        delete_all: Optional[bool] = None,
-        namespace: Optional[str] = None,
-        filter: Optional[Dict[str, Union[str, float, int, bool, List, dict]]] = None,
-        **kwargs,
+            self,
+            ids: Optional[List[str]] = None,
+            delete_all: Optional[bool] = None,
+            namespace: Optional[str] = None,
+            filter: Optional[Dict[str, Union[str, float, int, bool, List, dict]]] = None,
+            **kwargs,
     ) -> Dict[str, Any]:
         start_time = time.time()
         response = super().delete(ids, delete_all, namespace, filter, **kwargs)
@@ -348,9 +348,9 @@ class PineconePipelineHandler:
 # Assign exported member function to PineconePipelineHandler
 for exported_member in dir(pinecone):
     if (
-        not exported_member.startswith("__")
-        and exported_member != "Index"
-        and exported_member != "init"
+            not exported_member.startswith("__")
+            and exported_member != "Index"
+            and exported_member != "init"
     ):
         retrieved_member = getattr(pinecone, exported_member)
         setattr(
@@ -370,13 +370,13 @@ def annotate_pinecone_module():
 
 class PineconeFetchStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time: int,
-        start_time: str,
-        end_time: str,
-        inputs: dict,
-        response: dict,
-        context: Optional[Context] = None,
+            self,
+            elapsed_time: int,
+            start_time: str,
+            end_time: str,
+            inputs: dict,
+            response: dict,
+            context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -389,20 +389,19 @@ class PineconeFetchStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
         self.response = response
 
 
 class PineconeQueryStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time: int,
-        start_time: str,
-        end_time: str,
-        inputs: dict,
-        model_params: dict,
-        response: dict,
-        context: Optional[Context] = None,
+            self,
+            elapsed_time: int,
+            start_time: str,
+            end_time: str,
+            inputs: dict,
+            model_params: dict,
+            response: dict,
+            context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -415,19 +414,18 @@ class PineconeQueryStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
         self.response = response
 
 
 class PineconeUpdateStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time: int,
-        start_time: str,
-        end_time: str,
-        inputs: dict,
-        response: dict,
-        context: Optional[Context] = None,
+            self,
+            elapsed_time: int,
+            start_time: str,
+            end_time: str,
+            inputs: dict,
+            response: dict,
+            context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -440,19 +438,18 @@ class PineconeUpdateStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
         self.response = response
 
 
 class PineconeUpsertStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time: int,
-        start_time: str,
-        end_time: str,
-        inputs: dict,
-        response: dict,
-        context: Optional[Context] = None,
+            self,
+            elapsed_time: int,
+            start_time: str,
+            end_time: str,
+            inputs: dict,
+            response: dict,
+            context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -465,19 +462,18 @@ class PineconeUpsertStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
         self.response = response
 
 
 class PineconeDeleteStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time: int,
-        start_time: str,
-        end_time: str,
-        inputs: dict,
-        response: dict,
-        context: Optional[Context] = None,
+            self,
+            elapsed_time: int,
+            start_time: str,
+            end_time: str,
+            inputs: dict,
+            response: dict,
+            context: Optional[Context] = None,
     ):
         super().__init__(
             "pinecone",
@@ -490,5 +486,4 @@ class PineconeDeleteStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
         self.response = response

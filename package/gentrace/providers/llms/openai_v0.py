@@ -34,18 +34,18 @@ class OpenAIPipelineHandler:
 
 
 def create_completion_step_run(
-    cls,
-    pipeline_slug: str,
-    gentrace_config: Configuration,
-    start_time,
-    end_time,
-    base_completion_options,
-    prompt_template,
-    prompt_inputs,
-    completion,
-    pipeline_run_id: Optional[str] = None,
-    stream=False,
-    context={},
+        cls,
+        pipeline_slug: str,
+        gentrace_config: Configuration,
+        start_time,
+        end_time,
+        base_completion_options,
+        prompt_template,
+        prompt_inputs,
+        completion,
+        pipeline_run_id: Optional[str] = None,
+        stream=False,
+        context={},
 ):
     elapsed_time = int((end_time - start_time) * 1000)
 
@@ -108,14 +108,14 @@ def create_completion_stream_response(stream_list):
             if "text" in first_choice:
                 final_response_string += first_choice["text"]
             elif (
-                "delta" in first_choice
-                and first_choice["delta"]
-                and "content" in first_choice["delta"]
+                    "delta" in first_choice
+                    and first_choice["delta"]
+                    and "content" in first_choice["delta"]
             ):
                 final_response_string += first_choice["delta"]["content"]
             elif (
-                "finish_reason" in first_choice
-                and first_choice["finish_reason"] == "stop"
+                    "finish_reason" in first_choice
+                    and first_choice["finish_reason"] == "stop"
             ):
                 break
 
@@ -141,14 +141,14 @@ def create_chat_completion_stream_response(stream_list):
             if "text" in first_choice:
                 final_response_string += first_choice["text"]
             elif (
-                "delta" in first_choice
-                and first_choice["delta"]
-                and "content" in first_choice["delta"]
+                    "delta" in first_choice
+                    and first_choice["delta"]
+                    and "content" in first_choice["delta"]
             ):
                 final_response_string += first_choice["delta"]["content"]
             elif (
-                "finish_reason" in first_choice
-                and first_choice["finish_reason"] == "stop"
+                    "finish_reason" in first_choice
+                    and first_choice["finish_reason"] == "stop"
             ):
                 break
 
@@ -202,7 +202,7 @@ def intercept_completion(original_fn, gentrace_config: Configuration):
             completion = original_fn(**new_completion_options)
 
             is_self_contained = (
-                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+                    not hasattr(cls, "pipeline_run") and effective_pipeline_slug
             )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
@@ -312,7 +312,7 @@ def intercept_completion_async(original_fn, gentrace_config: Configuration):
             completion = await original_fn(**new_completion_options)
 
             is_self_contained = (
-                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+                    not hasattr(cls, "pipeline_run") and effective_pipeline_slug
             )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
@@ -433,7 +433,7 @@ def intercept_chat_completion(original_fn, gentrace_config: Configuration):
             completion = original_fn(**new_kwargs)
 
             is_self_contained = (
-                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+                    not hasattr(cls, "pipeline_run") and effective_pipeline_slug
             )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
@@ -582,7 +582,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
 
         if stream:
             is_self_contained = (
-                not hasattr(cls, "pipeline_run") and effective_pipeline_slug
+                    not hasattr(cls, "pipeline_run") and effective_pipeline_slug
             )
             if is_self_contained:
                 pipeline_run_id = str(uuid.uuid4())
@@ -826,7 +826,7 @@ def swap_methods(cls, attribute: str, gentrace_config: Configuration, intercept_
 
 
 def annotate_openai_module(
-    gentrace_config: Configuration,
+        gentrace_config: Configuration,
 ):
     import openai
 
@@ -851,9 +851,9 @@ def annotate_openai_module(
 
 
 def annotate_pipeline_handler(
-    handler: OpenAIPipelineHandler,
-    gentrace_config: Configuration,
-    pipeline_run: Optional[PipelineRun] = None,
+        handler: OpenAIPipelineHandler,
+        gentrace_config: Configuration,
+        pipeline_run: Optional[PipelineRun] = None,
 ):
     import openai
 
@@ -908,14 +908,14 @@ def annotate_pipeline_handler(
 
 class OpenAICreateCompletionStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time,
-        start_time,
-        end_time,
-        inputs,
-        model_params,
-        response,
-        context,
+            self,
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response,
+            context,
     ):
         super().__init__(
             "openai",
@@ -928,21 +928,19 @@ class OpenAICreateCompletionStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
 
 
 class OpenAICreateChatCompletionStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time,
-        start_time,
-        end_time,
-        inputs,
-        model_params,
-        response,
-        context,
+            self,
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response,
+            context,
     ):
         super().__init__(
             "openai",
@@ -955,21 +953,19 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
 
 
 class OpenAICreateEmbeddingStepRun(StepRun):
     def __init__(
-        self,
-        elapsed_time,
-        start_time,
-        end_time,
-        inputs,
-        model_params,
-        response,
-        context,
+            self,
+            elapsed_time,
+            start_time,
+            end_time,
+            inputs,
+            model_params,
+            response,
+            context,
     ):
         super().__init__(
             "openai",
@@ -982,6 +978,4 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
