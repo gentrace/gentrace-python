@@ -879,8 +879,6 @@ class OpenAICreateCompletionStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
 
 
@@ -906,8 +904,6 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
 
 
@@ -933,6 +929,4 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             response,
             context,
         )
-        self.inputs = inputs
-        self.model_params = model_params
         self.response = response
