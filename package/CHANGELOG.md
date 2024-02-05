@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.2](https://github.com/gentrace/gentrace-python/compare/v0.27.1...v0.27.2) (2024-02-05)
+
+
+### Bug Fixes
+
+* Deep copy inputs ([#198](https://github.com/gentrace/gentrace-python/issues/198)) ([d07fa62](https://github.com/gentrace/gentrace-python/commit/d07fa62d0757c686c01546b93b834af886093e50))
+
 ## [0.27.1](https://github.com/gentrace/gentrace-python/compare/v0.27.0...v0.27.1) (2024-01-19)
 
 
