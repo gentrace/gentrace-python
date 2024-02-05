@@ -11,7 +11,7 @@ openai = "1.8.0"
 pinecone-client = "^2.2.1"
 python = "^3.8.1"
 python-dotenv = "^1.0.0"
-gentrace-py = {path = "../package/dist/gentrace_py-0.27.0.tar.gz", develop = true}
+gentrace-py = {path = "../package/dist/gentrace_py-0.27.1.tar.gz", develop = true}
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
