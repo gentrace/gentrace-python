@@ -1,7 +1,9 @@
 import copy
+import inspect
 import json
 import os
 import uuid
+from functools import partial, wraps
 from itertools import zip_longest
 from typing import Any, Callable, Dict, List, Optional, TypedDict, Union
 
@@ -517,6 +519,183 @@ def bulk_create_evaluations(
     return count
 
 
+def create_test_run_payload(pipeline_run, test_case):
+    merged_metadata = {}
+
+    step_runs_data = []
+    for step_run in pipeline_run.step_runs:
+        # Extract metadata without mutating original contexts
+        this_context = copy.deepcopy(pipeline_run.context)
+        this_context_metadata = this_context.get("metadata", {})
+        step_run_context = copy.deepcopy(step_run.context)
+        step_run_context_metadata = step_run_context.get("metadata", {})
+
+        merged_metadata.update(this_context_metadata)
+        merged_metadata.update(step_run_context_metadata)
+
+        this_context.pop("metadata", None)
+        step_run_context.pop("metadata", None)
+
+        this_context.pop("previousRunId", None)
+        step_run_context.pop("previousRunId", None)
+
+        step_runs_data.append(
+            {
+                "providerName": step_run.provider,
+                "invocation": step_run.invocation,
+                "modelParams": step_run.model_params,
+                "inputs": step_run.inputs,
+                "outputs": step_run.outputs,
+                "elapsedTime": step_run.elapsed_time,
+                "startTime": step_run.start_time,
+                "endTime": step_run.end_time,
+                "context": {**this_context, **step_run_context},
+            }
+        )
+
+    test_run = {
+        "caseId": test_case["id"],
+        "metadata": merged_metadata,
+        "previousRunId": pipeline_run.context.get("previousRunId"),
+        "stepRuns": step_runs_data,
+    }
+
+    if pipeline_run.get_id():
+        test_run["id"] = pipeline_run.get_id()
+
+    return test_run
+
+
+def send_test_result_payload(matching_pipeline, test_runs, context):
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V1Api(api_client=api_client)
+
+    params = {
+        "pipelineId": matching_pipeline["id"],
+        "testRuns": test_runs,
+    }
+
+    if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
+        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
+
+    if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
+        params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
+
+    if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
+        params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
+            "GENTRACE_BRANCH"
+        )
+
+    if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
+        params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
+            "GENTRACE_COMMIT"
+        )
+
+    if context and context.get("metadata"):
+        params["metadata"] = context.get("metadata")
+
+    params["collectionMethod"] = "runner"
+
+    response = api.v1_test_result_post(params)
+    return response.body
+
+
+def experiment(pipeline_slug: str, context: Optional[ResultContext] = None,
+               case_filter: Optional[Callable[[TestCase], bool]] = None):
+    def wrapper(func) -> Result:
+        @wraps(func)
+        def sync_ver(*func_args, **func_kwargs):
+            increment_test_counter()
+
+            try:
+                all_pipelines = get_pipelines()
+
+                matching_pipeline = next(
+                    (
+                        pipeline
+                        for pipeline in all_pipelines
+                        if pipeline["slug"] == pipeline_slug
+                    ),
+                    None,
+                )
+
+                if not matching_pipeline:
+                    raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+
+                test_cases = get_test_cases(matching_pipeline["id"])
+
+                test_runs = []
+
+                for test_case in test_cases:
+                    if case_filter and not case_filter(test_case):
+                        continue
+
+                    [output, pipeline_run] = func(test_case)
+
+                    test_run = create_test_run_payload(pipeline_run, test_case)
+
+                    test_runs.append(test_run)
+
+                return send_test_result_payload(matching_pipeline, test_runs, context)
+            except Exception as e:
+                raise e
+            finally:
+                decrement_test_counter()
+
+                # OK to flush here and introduce more latency since this is just used for test anyway
+                flush()
+
+        @wraps(func)
+        async def async_ver(*func_args, **func_kwargs):
+            increment_test_counter()
+
+            try:
+                all_pipelines = get_pipelines()
+
+                matching_pipeline = next(
+                    (
+                        pipeline
+                        for pipeline in all_pipelines
+                        if pipeline["slug"] == pipeline_slug
+                    ),
+                    None,
+                )
+
+                if not matching_pipeline:
+                    raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+
+                test_cases = get_test_cases(matching_pipeline["id"])
+
+                test_runs = []
+
+                for test_case in test_cases:
+                    if case_filter and not case_filter(test_case):
+                        continue
+
+                    [output, pipeline_run] = await func(test_case)
+
+                    test_run = create_test_run_payload(pipeline_run, test_case)
+
+                    test_runs.append(test_run)
+
+                return send_test_result_payload(matching_pipeline, test_runs, context)
+            except Exception as e:
+                raise e
+            finally:
+                decrement_test_counter()
+
+                # OK to flush here and introduce more latency since this is just used for test anyway
+                flush()
+
+        return async_ver if inspect.iscoroutinefunction(func) else sync_ver
+
+    return wrapper
+
+
 def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
              case_filter: Optional[Callable[[TestCase], bool]] = None) -> Result:
     """
@@ -671,5 +850,6 @@ __all__ = [
     "run_test",
     "bulk_create_evaluations",
     "OutputStep",
-    "EvaluationDict"
+    "EvaluationDict",
+    "experiment"
 ]
