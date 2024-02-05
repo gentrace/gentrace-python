@@ -1,4 +1,3 @@
-import asyncio
 import os
 
 import gentrace
@@ -35,7 +34,7 @@ pipeline.setup()
 
 
 @experiment("guess-the-year")
-async def create_measure_callback(test_case):
+def create_measure_callback(test_case):
     print("Running with test case", test_case)
     runner = pipeline.start()
     output = runner.measure(
@@ -46,4 +45,4 @@ async def create_measure_callback(test_case):
     return [output, runner]
 
 
-asyncio.run(create_measure_callback())
+create_measure_callback()
