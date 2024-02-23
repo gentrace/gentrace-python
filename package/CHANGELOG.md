@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.3](https://github.com/gentrace/gentrace-python/compare/v0.27.2...v0.27.3) (2024-02-23)
+
+
+### Bug Fixes
+
+* Support a more flexible urllib3 range ([#200](https://github.com/gentrace/gentrace-python/issues/200)) ([31aedf6](https://github.com/gentrace/gentrace-python/commit/31aedf6718d423c52d11911270197c394b5f5768))
+
 ## [0.27.2](https://github.com/gentrace/gentrace-python/compare/v0.27.1...v0.27.2) (2024-02-05)
 
 
