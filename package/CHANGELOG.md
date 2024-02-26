@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.0](https://github.com/gentrace/gentrace-python/compare/v0.27.3...v0.28.0) (2024-02-26)
+
+
+### Features
+
+* Add result_name parameter to the test result submission ([#202](https://github.com/gentrace/gentrace-python/issues/202)) ([42d7dbe](https://github.com/gentrace/gentrace-python/commit/42d7dbe246285ab17fccafa56a9c93c904bb8587))
+
 ## [0.27.3](https://github.com/gentrace/gentrace-python/compare/v0.27.2...v0.27.3) (2024-02-23)
 
 
