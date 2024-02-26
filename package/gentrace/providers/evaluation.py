@@ -254,7 +254,8 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
 
 
 def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
-                              context: Optional[ResultContext] = None) -> Result:
+                              context: Optional[ResultContext] = None,
+                              result_name: Optional[str] = None) -> Result:
     """
     INTERNAL TO PACKAGE:
 
@@ -264,6 +265,8 @@ def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
     Args:
         pipeline_slug (str): The pipeline slug
         test_runs (List[Dict]): A list of test runs to submit.
+        context (Optional[ResultContext]): Context key pairs
+        result_name (str, optional): The name of the test result. Defaults to None.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
@@ -285,12 +288,13 @@ def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
             else test_run["inputs"]
         )
 
-    params = construct_submission_payload(pipeline_slug, test_runs, context)
+    params = construct_submission_payload(pipeline_slug, test_runs, context, result_name)
     response = api.v1_test_result_simple_post(params)
     return response.body
 
 
-def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], context: Optional[ResultContext] = None):
+def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], context: Optional[ResultContext] = None,
+                                 result_name: Optional[str] = None):
     """
     Constructs a dictionary payload for submitting test runs to a server.
 
@@ -298,6 +302,7 @@ def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], cont
         pipeline_slug (str): The pipeline slug
         test_results (List[Dict]): A list of dictionaries containing test results.
         context (Optional[ResultContext]): Context key pairs
+        result_name (str, optional): The name of the test result. Defaults to None.
 
     Returns:
         Dict: A dictionary payload containing the pipeline slug, test runs, and optional branch and commit information.
@@ -312,6 +317,9 @@ def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], cont
 
     if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
         params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
+
+    if result_name:
+        params["name"] = result_name
 
     if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
         params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
@@ -339,7 +347,8 @@ def submit_test_result(
         pipeline_slug: str,
         test_cases: List[TestCase],
         outputs_list: List[Dict[str, Any]],
-        context: Optional[ResultContext] = None
+        context: Optional[ResultContext] = None,
+        result_name: Optional[str] = None
 ) -> Result:
     """
     Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
@@ -349,6 +358,7 @@ def submit_test_result(
         pipeline_slug (str): The pipeline slug
         test_cases (List[TestCase]): A list of TestCase objects.
         outputs_list (List[Dict[str, Any]]): A list of outputs corresponding to each TestCase.
+        result_name (str, optional): The name of the test result. Defaults to None.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -379,7 +389,7 @@ def submit_test_result(
 
         test_runs.append(result)
 
-    return submit_prepared_test_runs(pipeline_slug, test_runs, context)
+    return submit_prepared_test_runs(pipeline_slug, test_runs, context, result_name)
 
 
 def get_pipelines(

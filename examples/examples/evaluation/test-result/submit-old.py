@@ -7,7 +7,7 @@ load_dotenv()
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    run_name="vivek python run",
+    result_name="vivek python run",
     host="http://localhost:3000/api",
 )
 
@@ -31,7 +31,8 @@ result = gentrace.submit_test_result(
                 "value": "testing"
             }
         }
-    }
+    },
+    result_name="Another one"
 )
 
 print(result["resultId"])
