@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.1](https://github.com/gentrace/gentrace-python/compare/v0.28.0...v0.28.1) (2024-02-27)
+
+
+### Bug Fixes
+
+* Add result name for run_test() ([#204](https://github.com/gentrace/gentrace-python/issues/204)) ([4a59851](https://github.com/gentrace/gentrace-python/commit/4a5985145f33157b7640a2047940540cd56162a0))
+
 ## [0.28.0](https://github.com/gentrace/gentrace-python/compare/v0.27.3...v0.28.0) (2024-02-26)
 
 
