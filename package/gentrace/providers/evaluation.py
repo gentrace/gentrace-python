@@ -528,7 +528,9 @@ def bulk_create_evaluations(
 
 
 def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
-             case_filter: Optional[Callable[[TestCase], bool]] = None) -> Result:
+             case_filter: Optional[Callable[[TestCase], bool]] = None,
+             result_name: Optional[str] = None
+             ) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
     provided callback (once per test case), and submitting the result report back to Gentrace.
@@ -539,6 +541,7 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
           the output and a PipelineRun class instance that contains the list of steps taken by the pipeline.
         context (Optional[ResultContext]): Context key pairs
         case_filter: Optional[Callable[[TestCase], bool]] = None
+        result_name (str, optional): The name of the test result. Defaults to None.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -640,6 +643,9 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
         if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
             params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
+
+        if result_name:
+            params["name"] = result_name
 
         if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
             params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(

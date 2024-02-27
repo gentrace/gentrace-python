@@ -29,7 +29,7 @@ def create_embedding_callback(test_case):
     openai_handle = runner.get_openai()
 
     output = openai_handle.embeddings.create(
-        input="sample text", model="text-similarity-davinci-001"
+        input="sample text", model="text-embedding-3-small"
     )
 
     return [output, runner]
@@ -42,6 +42,6 @@ result = gentrace.run_test(PIPELINE_SLUG, create_embedding_callback, context={
             "value": "testing"
         }
     }
-})
+}, result_name="Testing")
 
 print("Result: ", result)
