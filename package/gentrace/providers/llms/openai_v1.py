@@ -2,7 +2,7 @@ import copy
 import os
 import time
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 import pystache
 from openai import AsyncOpenAI, OpenAI, chat, completions, embeddings
@@ -454,31 +454,59 @@ class GentraceSyncEmbeddings(ExtractedEmbeddings):
 
 def create_chat_completion_stream_response(stream_list):
     final_response_string = ""
+    tool_id_to_info_map = {}
+    model = ""
+    id_ = ""  # `id` is a built-in function in Python, so we use `id_` instead.
+    created = 0
+
     for value in stream_list:
+        model = getattr(value, "model", "")
+        id_ = getattr(value, "id", "")
+        created = getattr(value, "created", 0)
+
         if hasattr(value, "choices") and value.choices:
             first_choice = value.choices[0]
-            if hasattr(first_choice, "text"):
-                final_response_string += first_choice.text
-            elif (
-                    hasattr(first_choice, "delta")
-                    and first_choice.delta
-                    and hasattr(first_choice.delta, "content")
-            ):
-                final_response_string += first_choice.delta.content if first_choice.delta.content else ""
-            elif (
-                    hasattr(first_choice, "finish_reason")
-                    and first_choice.finish_reason == "stop"
-            ):
+
+            if hasattr(first_choice, "delta") and first_choice.delta:
+                if hasattr(first_choice.delta, "tool_calls") and first_choice.delta.tool_calls:
+                    for tool_call in first_choice.delta.tool_calls:
+                        if tool_call.id:
+                            existing_tool_info = tool_id_to_info_map.get(tool_call.id)
+                            if not existing_tool_info:
+                                tool_id_to_info_map[tool_call.id] = tool_call
+                            else:
+                                if getattr(existing_tool_info.function, "arguments", None) is not None and \
+                                        getattr(tool_call.function, "arguments", None) is not None:
+                                    existing_tool_info.function.arguments += tool_call.function.arguments
+                        else:
+                            if tool_id_to_info_map:
+                                tool_id = next(iter(tool_id_to_info_map))
+                                existing_tool_info = tool_id_to_info_map[tool_id]
+                                if getattr(existing_tool_info.function, "arguments", None) is not None and \
+                                        getattr(tool_call.function, "arguments", None) is not None:
+                                    existing_tool_info.function.arguments += tool_call.function.arguments
+
+                if hasattr(first_choice.delta, "content") and first_choice.delta.content:
+                    final_response_string += first_choice.delta.content
+            elif hasattr(first_choice, "finish_reason") and first_choice.finish_reason:
                 break
 
     final_response = {
+        "id": id_,
+        "object": "chat.completion",
+        "created": created,
+        "model": model,
         "choices": [
             {
                 "finish_reason": None,
                 "index": 0,
-                "message": {"content": final_response_string, "role": "assistant"},
-            }
-        ]
+                "message": {
+                    "content": final_response_string,
+                    "role": "assistant",
+                    "tool_calls": [tool_call.dict() for tool_call in list(tool_id_to_info_map.values())],
+                },
+            },
+        ],
     }
 
     return final_response
