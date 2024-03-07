@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.2](https://github.com/gentrace/gentrace-python/compare/v0.28.1...v0.28.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* Handle tool_calls ([#206](https://github.com/gentrace/gentrace-python/issues/206)) ([777802b](https://github.com/gentrace/gentrace-python/commit/777802bb12274613899287c18c1a7bd2188a48ee))
+
 ## [0.28.1](https://github.com/gentrace/gentrace-python/compare/v0.28.0...v0.28.1) (2024-02-27)
 
 
