@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.3](https://github.com/gentrace/gentrace-python/compare/v0.28.2...v0.28.3) (2024-03-11)
+
+
+### Bug Fixes
+
+* Add more specific models for metadata ([#208](https://github.com/gentrace/gentrace-python/issues/208)) ([c566008](https://github.com/gentrace/gentrace-python/commit/c566008b8a6967fed453a2feb690f6597768e6b2))
+
 ## [0.28.2](https://github.com/gentrace/gentrace-python/compare/v0.28.1...v0.28.2) (2024-03-07)
 
 
