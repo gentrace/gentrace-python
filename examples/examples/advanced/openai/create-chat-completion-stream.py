@@ -27,7 +27,19 @@ result = openai.chat.completions.create(
     messages=[{"role": "user", "content": "Hello! What's the capital of Maine?"}],
     model="gpt-3.5-turbo",
     gentrace={
-        "metadata": {"anotherKey": {"type": "string", "value": "promptTesting"}},
+        "metadata": {
+            # We support multiple metadata keys within the metadata object
+            "externalServiceUrl": {
+                # Every metadata object must have a "type" key
+                "type": "url",
+                "url": "https://external-service.example.com",
+                "text": "External service"
+            },
+            "gitSha": {
+                "type": "string",
+                "value": "testing"
+            }
+        }
     },
     stream=True
 )
