@@ -288,62 +288,7 @@ class PipelineRun:
                 )
             )
 
-    async def asubmit(self) -> Dict:
-        if get_test_counter() > 0:
-            return {
-                "pipelineRunId": self.get_id(),
-            }
-
-        configuration = Configuration(host=self.pipeline.config.get("host"))
-        configuration.access_token = self.pipeline.config.get("api_key")
-        api_client = ApiClient(configuration=configuration)
-        v1_api = V1Api(api_client=api_client)
-
-        step_runs_data = [
-            {
-                "providerName": step_run.provider,
-                "invocation": step_run.invocation,
-                "modelParams": step_run.model_params,
-                "inputs": step_run.inputs,
-                "outputs": step_run.outputs,
-                "elapsedTime": step_run.elapsed_time,
-                "startTime": step_run.start_time,
-                "endTime": step_run.end_time,
-                "context": {**self.context, **step_run.context},
-            }
-            for step_run in self.step_runs
-        ]
-
-        try:
-            pipeline_post_response = await run_post_background(
-                v1_api,
-                {
-                    "id": self.pipeline_run_id,
-                    "slug": self.pipeline.slug,
-                    "stepRuns": step_runs_data,
-                },
-            )
-            return {
-                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
-                    "pipelineRunId"
-                )
-            }
-        except Exception as e:
-            print(f"Error submitting to Gentrace: {e}")
-            return {"pipelineRunId": None}
-
-    def submit(self, wait_for_server=False) -> Dict:
-        if get_test_counter() > 0:
-            return {
-                "pipelineRunId": self.get_id(),
-            }
-
-        configuration = Configuration(host=self.pipeline.config.get("host"))
-        configuration.access_token = self.pipeline.config.get("api_key")
-
-        api_client = ApiClient(configuration=configuration)
-        v1_api = V1Api(api_client=api_client)
-
+    def get_final_step_runs(self):
         merged_metadata = {}
 
         step_runs_data = []
@@ -376,6 +321,61 @@ class PipelineRun:
                     "context": {**this_context, **step_run_context},
                 }
             )
+
+        return (
+            step_runs_data,
+            merged_metadata
+        )
+
+    async def asubmit(self) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
+        configuration = Configuration(host=self.pipeline.config.get("host"))
+        configuration.access_token = self.pipeline.config.get("api_key")
+        api_client = ApiClient(configuration=configuration)
+        v1_api = V1Api(api_client=api_client)
+
+        step_runs_data, merged_metadata = self.get_final_step_runs()
+
+        if len(step_runs_data) == 0:
+            return {"pipelineRunId": None}
+
+        try:
+            pipeline_post_response = await run_post_background(
+                v1_api,
+                {
+                    "id": self.pipeline_run_id,
+                    "slug": self.pipeline.slug,
+                    "metadata": merged_metadata,
+                    "previousRunId": self.context.get("previousRunId"),
+                    "stepRuns": step_runs_data,
+                },
+            )
+            return {
+                "pipelineRunId": pipeline_post_response.body.get_item_oapg(
+                    "pipelineRunId"
+                )
+            }
+        except Exception as e:
+            print(f"Error submitting to Gentrace: {e}")
+            return {"pipelineRunId": None}
+
+    def submit(self, wait_for_server=False) -> Dict:
+        if get_test_counter() > 0:
+            return {
+                "pipelineRunId": self.get_id(),
+            }
+
+        configuration = Configuration(host=self.pipeline.config.get("host"))
+        configuration.access_token = self.pipeline.config.get("api_key")
+
+        api_client = ApiClient(configuration=configuration)
+        v1_api = V1Api(api_client=api_client)
+
+        step_runs_data, merged_metadata = self.get_final_step_runs()
 
         if len(step_runs_data) == 0:
             return {"pipelineRunId": None}

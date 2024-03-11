@@ -35,6 +35,21 @@ async def main():
                 "content": "Convert this sentence to JSON: John is 10 years old.",
             },
         ],
+        gentrace={
+            "metadata": {
+                # We support multiple metadata keys within the metadata object
+                "externalServiceUrl": {
+                    # Every metadata object must have a "type" key
+                    "type": "url",
+                    "url": "https://external-service.example.com",
+                    "text": "External service"
+                },
+                "gitSha": {
+                    "type": "string",
+                    "value": "testing"
+                }
+            }
+        },
         tools=[
             {
                 "type": "function",
