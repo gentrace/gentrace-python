@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.4](https://github.com/gentrace/gentrace-python/compare/v0.28.3...v0.28.4) (2024-04-04)
+
+
+### Bug Fixes
+
+* add get_run function to Python SDK ([#210](https://github.com/gentrace/gentrace-python/issues/210)) ([42a3b65](https://github.com/gentrace/gentrace-python/commit/42a3b65b99e6b5ee24ba918981c5d42dc40ecb98))
+
 ## [0.28.3](https://github.com/gentrace/gentrace-python/compare/v0.28.2...v0.28.3) (2024-03-11)
 
 
