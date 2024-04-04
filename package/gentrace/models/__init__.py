@@ -30,9 +30,11 @@ from gentrace.model.pipeline_v2 import PipelineV2
 from gentrace.model.resolved_step_run import ResolvedStepRun
 from gentrace.model.run_request import RunRequest
 from gentrace.model.run_response import RunResponse
+from gentrace.model.run_v2 import RunV2
 from gentrace.model.searchable_string_input import SearchableStringInput
 from gentrace.model.searchable_unix_seconds_input import SearchableUnixSecondsInput
 from gentrace.model.step_run import StepRun
+from gentrace.model.string_type import StringType
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_case_v2 import TestCaseV2
 from gentrace.model.test_evaluation import TestEvaluation
@@ -43,3 +45,4 @@ from gentrace.model.test_run import TestRun
 from gentrace.model.unix_seconds import UnixSeconds
 from gentrace.model.update_feedback_v2 import UpdateFeedbackV2
 from gentrace.model.update_test_case import UpdateTestCase
+from gentrace.model.url_type import UrlType

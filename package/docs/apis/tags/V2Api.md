@@ -12,6 +12,7 @@ Method | HTTP request | Description
 [**v2_folders_get**](#v2_folders_get) | **get** /v2/folders | Get folders
 [**v2_folders_id_get**](#v2_folders_id_get) | **get** /v2/folders/{id} | Get a folder
 [**v2_pipelines_get**](#v2_pipelines_get) | **get** /v2/pipelines | Get pipelines
+[**v2_runs_id_get**](#v2_runs_id_get) | **get** /v2/runs/{id} | Get a run
 [**v2_test_cases_get**](#v2_test_cases_get) | **get** /v2/test-cases | Get test cases
 [**v2_test_cases_id_get**](#v2_test_cases_id_get) | **get** /v2/test-cases/{id} | Get a test case
 [**v2_test_results_get**](#v2_test_results_get) | **get** /v2/test-results | Get test results
@@ -942,6 +943,117 @@ list, tuple,  | tuple,  |  |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**PipelineV2**]({{complexTypePrefix}}PipelineV2.md) | [**PipelineV2**]({{complexTypePrefix}}PipelineV2.md) | [**PipelineV2**]({{complexTypePrefix}}PipelineV2.md) |  | 
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **v2_runs_id_get**
+<a name="v2_runs_id_get"></a>
+> RunV2 v2_runs_id_get(id)
+
+Get a run
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from gentrace.model.run_v2 import RunV2
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'id': "id_example",
+    }
+    try:
+        # Get a run
+        api_response = api_instance.v2_runs_id_get(
+            path_params=path_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_runs_id_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+path_params | RequestPathParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+id | IdSchema | | 
+
+# IdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_runs_id_get.ApiResponseFor200) | Run retrieved successfully
+404 | [ApiResponseFor404](#v2_runs_id_get.ApiResponseFor404) | Run not found
+
+#### v2_runs_id_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**RunV2**](../../models/RunV2.md) |  | 
+
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**RunV2**](../../models/RunV2.md) |  | 
+
+
+#### v2_runs_id_get.ApiResponseFor404
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
 
 ### Authorization
 
