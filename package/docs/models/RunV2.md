@@ -40,8 +40,8 @@ Key | Input Type | Accessed Type | Description | Notes
 **[modelParams](#modelParams)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The parameters used by the model | 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The inputs of the run | 
 **stepId** | str, uuid.UUID,  | str,  | The ID of the step | value must be a uuid
-**startTime** | str, datetime,  | str,  | The date and time when the run started | value must conform to RFC-3339 date-time
-**endTime** | str, datetime,  | str,  | The date and time when the run ended | value must conform to RFC-3339 date-time
+**startTime** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
+**endTime** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
 **providerName** | str,  | str,  | The name of the provider | 
 **stepRunId** | str, uuid.UUID,  | str,  | The ID of the step run | value must be a uuid
 **elapsedTime** | decimal.Decimal, int,  | decimal.Decimal,  | The milliseconds to complete the run | 

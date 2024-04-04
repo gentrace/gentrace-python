@@ -82,8 +82,8 @@ class RunV2(
                                 inputs = schemas.DictSchema
                                 outputs = schemas.DictSchema
                                 elapsedTime = schemas.IntSchema
-                                startTime = schemas.DateTimeSchema
-                                endTime = schemas.DateTimeSchema
+                                startTime = schemas.Float32Schema
+                                endTime = schemas.Float32Schema
                                 cost = schemas.NumberSchema
                                 
                                 
@@ -252,8 +252,8 @@ class RunV2(
                             modelParams: typing.Union[MetaOapg.properties.modelParams, dict, frozendict.frozendict, ],
                             inputs: typing.Union[MetaOapg.properties.inputs, dict, frozendict.frozendict, ],
                             stepId: typing.Union[MetaOapg.properties.stepId, str, uuid.UUID, ],
-                            startTime: typing.Union[MetaOapg.properties.startTime, str, datetime, ],
-                            endTime: typing.Union[MetaOapg.properties.endTime, str, datetime, ],
+                            startTime: typing.Union[MetaOapg.properties.startTime, decimal.Decimal, int, float, ],
+                            endTime: typing.Union[MetaOapg.properties.endTime, decimal.Decimal, int, float, ],
                             providerName: typing.Union[MetaOapg.properties.providerName, str, ],
                             stepRunId: typing.Union[MetaOapg.properties.stepRunId, str, uuid.UUID, ],
                             elapsedTime: typing.Union[MetaOapg.properties.elapsedTime, decimal.Decimal, int, ],
