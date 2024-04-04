@@ -9,11 +9,14 @@ from typing import Any, Callable, Dict, List, Optional, cast
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
+from gentrace.apis.tags.v2_api import V2Api
 from gentrace.configuration import Configuration
 from gentrace.providers.context import Context
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
+from gentrace.model.run_v2 import RunV2
 from gentrace.providers.utils import (
+    GENTRACE_CONFIG_STATE,
     from_date_string,
     get_test_counter,
     is_openai_v1,
@@ -43,6 +46,32 @@ def flush():
         concurrent.futures.wait(_pipeline_tasks)
         _pipeline_tasks.clear()
 
+def get_run(
+    run_id: str,
+) -> RunV2:
+    """
+    Retrieves a run for a given run ID from the Gentrace API.
+
+    Args:
+        run_id (str): The run ID to retrieve.
+
+    Raises:
+        ValueError: If the SDK is not initialized. Call init() first.
+
+    Returns:
+        RunV2: The run.
+    """
+
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_runs_id_get({"id": run_id})
+    run = response.body
+    return run
 
 class PipelineRun:
     def __init__(

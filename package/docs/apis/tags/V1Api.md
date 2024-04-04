@@ -664,9 +664,7 @@ with gentrace.ApiClient(configuration) as api_client:
         slug="slug_example",
         previous_run_id="previous_run_id_example",
         metadata=dict(
-            "key": MetadataValueObject(
-                type="type_example",
-            ),
+            "key": MetadataValueObject(),
         ),
         step_runs=[
             StepRun(
@@ -1582,9 +1580,7 @@ with gentrace.ApiClient(configuration) as api_client:
         commit="commit_example",
         name="name_example",
         metadata=dict(
-            "key": MetadataValueObject(
-                type="type_example",
-            ),
+            "key": MetadataValueObject(),
         ),
         test_runs=[
             dict(
@@ -1809,9 +1805,7 @@ with gentrace.ApiClient(configuration) as api_client:
         commit="commit_example",
         name="name_example",
         metadata=dict(
-            "key": MetadataValueObject(
-                type="type_example",
-            ),
+            "key": MetadataValueObject(),
         ),
         test_runs=[
             dict(

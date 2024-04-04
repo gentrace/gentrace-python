@@ -1,24 +1,25 @@
 import typing_extensions
 
-from gentrace.apis.paths.v1_feedback import V1Feedback
-from gentrace.apis.paths.v1_files_upload import V1FilesUpload
-from gentrace.apis.paths.v1_pipelines import V1Pipelines
+from gentrace.paths import PathValues
 from gentrace.apis.paths.v1_run import V1Run
+from gentrace.apis.paths.v1_feedback import V1Feedback
 from gentrace.apis.paths.v1_test_case import V1TestCase
 from gentrace.apis.paths.v1_test_result import V1TestResult
 from gentrace.apis.paths.v1_test_result_id import V1TestResultId
-from gentrace.apis.paths.v1_test_result_simple import V1TestResultSimple
 from gentrace.apis.paths.v1_test_result_status import V1TestResultStatus
-from gentrace.apis.paths.v2_evaluations_bulk import V2EvaluationsBulk
+from gentrace.apis.paths.v1_test_result_simple import V1TestResultSimple
+from gentrace.apis.paths.v1_pipelines import V1Pipelines
+from gentrace.apis.paths.v1_files_upload import V1FilesUpload
 from gentrace.apis.paths.v2_feedback import V2Feedback
 from gentrace.apis.paths.v2_feedback_id import V2FeedbackId
-from gentrace.apis.paths.v2_folders import V2Folders
-from gentrace.apis.paths.v2_folders_id import V2FoldersId
-from gentrace.apis.paths.v2_pipelines import V2Pipelines
+from gentrace.apis.paths.v2_runs_id import V2RunsId
+from gentrace.apis.paths.v2_test_results import V2TestResults
 from gentrace.apis.paths.v2_test_cases import V2TestCases
 from gentrace.apis.paths.v2_test_cases_id import V2TestCasesId
-from gentrace.apis.paths.v2_test_results import V2TestResults
-from gentrace.paths import PathValues
+from gentrace.apis.paths.v2_pipelines import V2Pipelines
+from gentrace.apis.paths.v2_folders import V2Folders
+from gentrace.apis.paths.v2_folders_id import V2FoldersId
+from gentrace.apis.paths.v2_evaluations_bulk import V2EvaluationsBulk
 
 PathToApi = typing_extensions.TypedDict(
     'PathToApi',
@@ -34,6 +35,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.V1_FILES_UPLOAD: V1FilesUpload,
         PathValues.V2_FEEDBACK: V2Feedback,
         PathValues.V2_FEEDBACK_ID: V2FeedbackId,
+        PathValues.V2_RUNS_ID: V2RunsId,
         PathValues.V2_TESTRESULTS: V2TestResults,
         PathValues.V2_TESTCASES: V2TestCases,
         PathValues.V2_TESTCASES_ID: V2TestCasesId,
@@ -57,6 +59,7 @@ path_to_api = PathToApi(
         PathValues.V1_FILES_UPLOAD: V1FilesUpload,
         PathValues.V2_FEEDBACK: V2Feedback,
         PathValues.V2_FEEDBACK_ID: V2FeedbackId,
+        PathValues.V2_RUNS_ID: V2RunsId,
         PathValues.V2_TESTRESULTS: V2TestResults,
         PathValues.V2_TESTCASES: V2TestCases,
         PathValues.V2_TESTCASES_ID: V2TestCasesId,

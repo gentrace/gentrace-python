@@ -19,9 +19,11 @@ docs/models/PipelineV2.md
 docs/models/ResolvedStepRun.md
 docs/models/RunRequest.md
 docs/models/RunResponse.md
+docs/models/RunV2.md
 docs/models/SearchableStringInput.md
 docs/models/SearchableUnixSecondsInput.md
 docs/models/StepRun.md
+docs/models/StringType.md
 docs/models/TestCase.md
 docs/models/TestCaseV2.md
 docs/models/TestEvaluation.md
@@ -32,6 +34,7 @@ docs/models/TestRun.md
 docs/models/UnixSeconds.md
 docs/models/UpdateFeedbackV2.md
 docs/models/UpdateTestCase.md
+docs/models/UrlType.md
 gentrace/__init__.py
 gentrace/api_client.py
 gentrace/apis/__init__.py
@@ -77,12 +80,16 @@ gentrace/model/run_request.py
 gentrace/model/run_request.pyi
 gentrace/model/run_response.py
 gentrace/model/run_response.pyi
+gentrace/model/run_v2.py
+gentrace/model/run_v2.pyi
 gentrace/model/searchable_string_input.py
 gentrace/model/searchable_string_input.pyi
 gentrace/model/searchable_unix_seconds_input.py
 gentrace/model/searchable_unix_seconds_input.pyi
 gentrace/model/step_run.py
 gentrace/model/step_run.pyi
+gentrace/model/string_type.py
+gentrace/model/string_type.pyi
 gentrace/model/test_case.py
 gentrace/model/test_case.pyi
 gentrace/model/test_case_v2.py
@@ -103,6 +110,8 @@ gentrace/model/update_feedback_v2.py
 gentrace/model/update_feedback_v2.pyi
 gentrace/model/update_test_case.py
 gentrace/model/update_test_case.pyi
+gentrace/model/url_type.py
+gentrace/model/url_type.pyi
 gentrace/models/__init__.py
 gentrace/rest.py
 gentrace/schemas.py
