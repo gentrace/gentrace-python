@@ -11,6 +11,7 @@
 # import sys
 # sys.setrecursionlimit(n)
 
+from gentrace.model.boolean_type import BooleanType
 from gentrace.model.create_evaluation_v2 import CreateEvaluationV2
 from gentrace.model.create_feedback_v2 import CreateFeedbackV2
 from gentrace.model.create_multiple_test_cases import CreateMultipleTestCases

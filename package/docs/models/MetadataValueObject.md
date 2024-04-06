@@ -17,6 +17,7 @@ Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [UrlType](UrlType.md) | [**UrlType**](UrlType.md) | [**UrlType**](UrlType.md) |  | 
 [StringType](StringType.md) | [**StringType**](StringType.md) | [**StringType**](StringType.md) |  | 
+[BooleanType](BooleanType.md) | [**BooleanType**](BooleanType.md) | [**BooleanType**](BooleanType.md) |  | 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

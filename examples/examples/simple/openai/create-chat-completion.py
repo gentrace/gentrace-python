@@ -13,7 +13,7 @@ gentrace.init(
 openai = gentrace.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 result = openai.chat.completions.create(
-    pipeline_slug="testing-pipeline-id",
+    pipeline_slug="testing-vivek-5",
     messages=[
         {
             "role": "user",
@@ -22,6 +22,14 @@ result = openai.chat.completions.create(
         }
     ],
     model="gpt-3.5-turbo",
+    gentrace={
+        "metadata": {
+            "booleanPythonTest": {
+                "type": "boolean",
+                "value": True
+            }
+        }
+    }
 )
 
 print(result.pipelineRunId)
