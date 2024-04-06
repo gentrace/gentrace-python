@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.28.5](https://github.com/gentrace/gentrace-python/compare/v0.28.4...v0.28.5) (2024-04-06)
+
+
+### Bug Fixes
+
+* Add boolean metadata type to SDK ([#212](https://github.com/gentrace/gentrace-python/issues/212)) ([57bc876](https://github.com/gentrace/gentrace-python/commit/57bc87600b50b6eb2078dd27a95a8fec46bd08c2))
+
 ## [0.28.4](https://github.com/gentrace/gentrace-python/compare/v0.28.3...v0.28.4) (2024-04-04)
 
 
