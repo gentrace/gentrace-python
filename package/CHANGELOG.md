@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/gentrace/gentrace-python/compare/v0.28.5...v0.29.0) (2024-04-16)
+
+
+### Features
+
+* get_evaluators SDK function w example ([#214](https://github.com/gentrace/gentrace-python/issues/214)) ([4fb03ac](https://github.com/gentrace/gentrace-python/commit/4fb03ace887ed4c8205a73075fc41a1f8319ccb4))
+
 ## [0.28.5](https://github.com/gentrace/gentrace-python/compare/v0.28.4...v0.28.5) (2024-04-06)
 
 
