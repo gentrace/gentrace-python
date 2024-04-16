@@ -16,6 +16,7 @@ from gentrace.model.create_evaluation_v2 import CreateEvaluationV2
 from gentrace.model.create_feedback_v2 import CreateFeedbackV2
 from gentrace.model.create_multiple_test_cases import CreateMultipleTestCases
 from gentrace.model.create_single_test_case import CreateSingleTestCase
+from gentrace.model.evaluator_v2 import EvaluatorV2
 from gentrace.model.expanded_pipeline import ExpandedPipeline
 from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.expanded_test_run import ExpandedTestRun
@@ -44,6 +45,7 @@ from gentrace.model.test_result import TestResult
 from gentrace.model.test_result_v2 import TestResultV2
 from gentrace.model.test_run import TestRun
 from gentrace.model.unix_seconds import UnixSeconds
+from gentrace.model.unix_seconds_nullable import UnixSecondsNullable
 from gentrace.model.update_feedback_v2 import UpdateFeedbackV2
 from gentrace.model.update_test_case import UpdateTestCase
 from gentrace.model.url_type import UrlType

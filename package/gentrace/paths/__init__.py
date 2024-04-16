@@ -24,4 +24,5 @@ class PathValues(str, enum.Enum):
     V2_PIPELINES = "/v2/pipelines"
     V2_FOLDERS = "/v2/folders"
     V2_FOLDERS_ID = "/v2/folders/{id}"
+    V2_EVALUATORS = "/v2/evaluators"
     V2_EVALUATIONS_BULK = "/v2/evaluations/bulk"

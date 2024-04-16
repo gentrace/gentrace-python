@@ -5,6 +5,7 @@ docs/models/CreateEvaluationV2.md
 docs/models/CreateFeedbackV2.md
 docs/models/CreateMultipleTestCases.md
 docs/models/CreateSingleTestCase.md
+docs/models/EvaluatorV2.md
 docs/models/ExpandedPipeline.md
 docs/models/ExpandedTestResult.md
 docs/models/ExpandedTestRun.md
@@ -33,6 +34,7 @@ docs/models/TestResult.md
 docs/models/TestResultV2.md
 docs/models/TestRun.md
 docs/models/UnixSeconds.md
+docs/models/UnixSecondsNullable.md
 docs/models/UpdateFeedbackV2.md
 docs/models/UpdateTestCase.md
 docs/models/UrlType.md
@@ -54,6 +56,8 @@ gentrace/model/create_multiple_test_cases.py
 gentrace/model/create_multiple_test_cases.pyi
 gentrace/model/create_single_test_case.py
 gentrace/model/create_single_test_case.pyi
+gentrace/model/evaluator_v2.py
+gentrace/model/evaluator_v2.pyi
 gentrace/model/expanded_pipeline.py
 gentrace/model/expanded_pipeline.pyi
 gentrace/model/expanded_test_result.py
@@ -109,6 +113,8 @@ gentrace/model/test_run.py
 gentrace/model/test_run.pyi
 gentrace/model/unix_seconds.py
 gentrace/model/unix_seconds.pyi
+gentrace/model/unix_seconds_nullable.py
+gentrace/model/unix_seconds_nullable.pyi
 gentrace/model/update_feedback_v2.py
 gentrace/model/update_feedback_v2.pyi
 gentrace/model/update_test_case.py

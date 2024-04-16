@@ -9,6 +9,7 @@ from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
 from gentrace.apis.tags.v2_api import V2Api
 from gentrace.model.expanded_test_result import ExpandedTestResult
+from gentrace.model.evaluator_v2 import EvaluatorV2
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_case_v2 import TestCaseV2
@@ -47,6 +48,45 @@ def is_valid_uuid(val: str):
     except ValueError:
         return False
 
+def get_evaluators(
+        pipeline_id: Optional[str] = None,
+        pipeline_slug: Optional[str] = None,
+) -> List[EvaluatorV2]:
+
+    """
+    Retrieves evaluators  for a given pipeline ID from the Gentrace API.
+
+    Args:
+        pipeline_slug (str): The pipeline slug to retrieve evaluators for.
+        pipeline_id (str): The ID of the pipeline to retrieve evaluators for.
+
+    Raises:
+        ValueError: If the SDK is not initialized. Call init() first.
+
+    Returns:
+        list: A list of evaluators.
+    """
+
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    if not pipeline_id and not pipeline_slug:
+        pipeline_slug = 'null' # get template evaluators
+
+    response = api.v2_evaluators_get({
+        "pipelineId": pipeline_id,
+        "pipelineSlug": pipeline_slug
+    })
+
+    evaluators = response.body.get("data", [])
+
+    return evaluators
+
+
 
 def get_test_cases(
         pipeline_id: Optional[str] = None,
@@ -57,7 +97,7 @@ def get_test_cases(
 
     Args:
         pipeline_slug (str): The pipeline slug to retrieve test cases for.
-        pipeline_id (str): DEPRECATED: The ID of the pipeline to retrieve test cases for.
+        pipeline_id (str): The ID of the pipeline to retrieve test cases for.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
@@ -74,7 +114,7 @@ def get_test_cases(
     api = V1Api(api_client=api_client)
 
     if not pipeline_id and not pipeline_slug:
-        raise ValueError("pipeline_slug must be passed")
+        raise ValueError("pipeline_slug or pipeline_id must be passed")
 
     effective_pipeline_id = pipeline_id
 
@@ -674,6 +714,7 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
 
 __all__ = [
+    "get_evaluators",
     "get_test_cases",
     "get_test_case",
     "create_test_cases",

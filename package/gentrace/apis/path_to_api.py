@@ -19,6 +19,7 @@ from gentrace.apis.paths.v2_test_cases_id import V2TestCasesId
 from gentrace.apis.paths.v2_pipelines import V2Pipelines
 from gentrace.apis.paths.v2_folders import V2Folders
 from gentrace.apis.paths.v2_folders_id import V2FoldersId
+from gentrace.apis.paths.v2_evaluators import V2Evaluators
 from gentrace.apis.paths.v2_evaluations_bulk import V2EvaluationsBulk
 
 PathToApi = typing_extensions.TypedDict(
@@ -42,6 +43,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.V2_PIPELINES: V2Pipelines,
         PathValues.V2_FOLDERS: V2Folders,
         PathValues.V2_FOLDERS_ID: V2FoldersId,
+        PathValues.V2_EVALUATORS: V2Evaluators,
         PathValues.V2_EVALUATIONS_BULK: V2EvaluationsBulk,
     }
 )
@@ -66,6 +68,7 @@ path_to_api = PathToApi(
         PathValues.V2_PIPELINES: V2Pipelines,
         PathValues.V2_FOLDERS: V2Folders,
         PathValues.V2_FOLDERS_ID: V2FoldersId,
+        PathValues.V2_EVALUATORS: V2Evaluators,
         PathValues.V2_EVALUATIONS_BULK: V2EvaluationsBulk,
     }
 )
