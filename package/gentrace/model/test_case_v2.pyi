@@ -48,31 +48,10 @@ class TestCaseV2(
             id = schemas.UUIDSchema
             createdAt = schemas.Float32Schema
             updatedAt = schemas.Float32Schema
-            
-            
-            class archivedAt(
-                schemas.Float32Base,
-                schemas.NumberBase,
-                schemas.NoneBase,
-                schemas.Schema,
-                schemas.NoneDecimalMixin
-            ):
-            
-            
-                class MetaOapg:
-                    format = 'float'
-            
-            
-                def __new__(
-                    cls,
-                    *_args: typing.Union[None, decimal.Decimal, int, float, ],
-                    _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> 'archivedAt':
-                    return super().__new__(
-                        cls,
-                        *_args,
-                        _configuration=_configuration,
-                    )
+        
+            @staticmethod
+            def archivedAt() -> typing.Type['UnixSecondsNullable']:
+                return UnixSecondsNullable
             
             
             class inputs(
@@ -137,7 +116,7 @@ class TestCaseV2(
                 "expectedOutputs": expectedOutputs,
             }
     
-    archivedAt: MetaOapg.properties.archivedAt
+    archivedAt: 'UnixSecondsNullable'
     createdAt: MetaOapg.properties.createdAt
     inputs: MetaOapg.properties.inputs
     name: MetaOapg.properties.name
@@ -155,7 +134,7 @@ class TestCaseV2(
     def __getitem__(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["archivedAt"]) -> MetaOapg.properties.archivedAt: ...
+    def __getitem__(self, name: typing_extensions.Literal["archivedAt"]) -> 'UnixSecondsNullable': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["inputs"]) -> MetaOapg.properties.inputs: ...
@@ -187,7 +166,7 @@ class TestCaseV2(
     def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["archivedAt"]) -> MetaOapg.properties.archivedAt: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["archivedAt"]) -> 'UnixSecondsNullable': ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["inputs"]) -> MetaOapg.properties.inputs: ...
@@ -211,7 +190,7 @@ class TestCaseV2(
     def __new__(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
-        archivedAt: typing.Union[MetaOapg.properties.archivedAt, None, decimal.Decimal, int, float, ],
+        archivedAt: 'UnixSecondsNullable',
         createdAt: typing.Union[MetaOapg.properties.createdAt, decimal.Decimal, int, float, ],
         inputs: typing.Union[MetaOapg.properties.inputs, dict, frozendict.frozendict, ],
         name: typing.Union[MetaOapg.properties.name, str, ],
@@ -236,3 +215,5 @@ class TestCaseV2(
             _configuration=_configuration,
             **kwargs,
         )
+
+from gentrace.model.unix_seconds_nullable import UnixSecondsNullable
