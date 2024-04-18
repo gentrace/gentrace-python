@@ -8,7 +8,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**archivedAt** | None, decimal.Decimal, int, float,  | NoneClass, decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
+**archivedAt** | [**UnixSecondsNullable**](UnixSecondsNullable.md) | [**UnixSecondsNullable**](UnixSecondsNullable.md) |  | 
 **createdAt** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
 **id** | str, uuid.UUID,  | str,  | The unique identifier for the test result. | value must be a uuid
 **pipelineId** | str, uuid.UUID,  | str,  | The unique identifier for the pipeline associated with the test result. | value must be a uuid

@@ -51,31 +51,10 @@ class PipelineV2(
             id = schemas.UUIDSchema
             createdAt = schemas.Float32Schema
             updatedAt = schemas.Float32Schema
-            
-            
-            class archivedAt(
-                schemas.Float32Base,
-                schemas.NumberBase,
-                schemas.NoneBase,
-                schemas.Schema,
-                schemas.NoneDecimalMixin
-            ):
-            
-            
-                class MetaOapg:
-                    format = 'float'
-            
-            
-                def __new__(
-                    cls,
-                    *_args: typing.Union[None, decimal.Decimal, int, float, ],
-                    _configuration: typing.Optional[schemas.Configuration] = None,
-                ) -> 'archivedAt':
-                    return super().__new__(
-                        cls,
-                        *_args,
-                        _configuration=_configuration,
-                    )
+        
+            @staticmethod
+            def archivedAt() -> typing.Type['UnixSecondsNullable']:
+                return UnixSecondsNullable
             
             
             class labels(
@@ -196,7 +175,7 @@ class PipelineV2(
             }
     
     organizationId: MetaOapg.properties.organizationId
-    archivedAt: MetaOapg.properties.archivedAt
+    archivedAt: 'UnixSecondsNullable'
     createdAt: MetaOapg.properties.createdAt
     privateUserEmail: MetaOapg.properties.privateUserEmail
     id: MetaOapg.properties.id
@@ -216,7 +195,7 @@ class PipelineV2(
     def __getitem__(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["archivedAt"]) -> MetaOapg.properties.archivedAt: ...
+    def __getitem__(self, name: typing_extensions.Literal["archivedAt"]) -> 'UnixSecondsNullable': ...
     
     @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["labels"]) -> MetaOapg.properties.labels: ...
@@ -257,7 +236,7 @@ class PipelineV2(
     def get_item_oapg(self, name: typing_extensions.Literal["updatedAt"]) -> MetaOapg.properties.updatedAt: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["archivedAt"]) -> MetaOapg.properties.archivedAt: ...
+    def get_item_oapg(self, name: typing_extensions.Literal["archivedAt"]) -> 'UnixSecondsNullable': ...
     
     @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["labels"]) -> MetaOapg.properties.labels: ...
@@ -291,7 +270,7 @@ class PipelineV2(
         cls,
         *_args: typing.Union[dict, frozendict.frozendict, ],
         organizationId: typing.Union[MetaOapg.properties.organizationId, str, ],
-        archivedAt: typing.Union[MetaOapg.properties.archivedAt, None, decimal.Decimal, int, float, ],
+        archivedAt: 'UnixSecondsNullable',
         createdAt: typing.Union[MetaOapg.properties.createdAt, decimal.Decimal, int, float, ],
         privateUserEmail: typing.Union[MetaOapg.properties.privateUserEmail, None, str, ],
         id: typing.Union[MetaOapg.properties.id, str, uuid.UUID, ],
@@ -321,3 +300,5 @@ class PipelineV2(
             _configuration=_configuration,
             **kwargs,
         )
+
+from gentrace.model.unix_seconds_nullable import UnixSecondsNullable
