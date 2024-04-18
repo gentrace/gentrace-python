@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.1](https://github.com/gentrace/gentrace-python/compare/v0.29.0...v0.29.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* update archivedAt to use UnixSecondsNullable ([#216](https://github.com/gentrace/gentrace-python/issues/216)) ([27f206a](https://github.com/gentrace/gentrace-python/commit/27f206a68e801b1d8216b19aa2387c2192981a72))
+
 ## [0.29.0](https://github.com/gentrace/gentrace-python/compare/v0.28.5...v0.29.0) (2024-04-16)
 
 
