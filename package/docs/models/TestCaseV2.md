@@ -8,7 +8,7 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**archivedAt** | None, decimal.Decimal, int, float,  | NoneClass, decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
+**archivedAt** | [**UnixSecondsNullable**](UnixSecondsNullable.md) | [**UnixSecondsNullable**](UnixSecondsNullable.md) |  | 
 **createdAt** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case as a JSON object | 
 **name** | str,  | str,  | The name of the test case | 

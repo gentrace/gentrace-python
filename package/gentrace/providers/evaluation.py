@@ -48,6 +48,45 @@ def is_valid_uuid(val: str):
     except ValueError:
         return False
 
+def get_evaluators(
+        pipeline_id: Optional[str] = None,
+        pipeline_slug: Optional[str] = None,
+) -> List[EvaluatorV2]:
+
+    """
+    Retrieves evaluators  for a given pipeline ID from the Gentrace API.
+
+    Args:
+        pipeline_slug (str): The pipeline slug to retrieve evaluators for.
+        pipeline_id (str): The ID of the pipeline to retrieve evaluators for.
+
+    Raises:
+        ValueError: If the SDK is not initialized. Call init() first.
+
+    Returns:
+        list: A list of evaluators.
+    """
+
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    if not pipeline_id and not pipeline_slug:
+        pipeline_slug = 'null' # get template evaluators
+
+    response = api.v2_evaluators_get({
+        "pipelineId": pipeline_id,
+        "pipelineSlug": pipeline_slug
+    })
+
+    evaluators = response.body.get("data", [])
+
+    return evaluators
+
+
 
 def get_evaluators(
     pipeline_id: Optional[str] = None,

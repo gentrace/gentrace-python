@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.29.1](https://github.com/gentrace/gentrace-python/compare/v0.29.0...v0.29.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* update archivedAt to use UnixSecondsNullable ([#216](https://github.com/gentrace/gentrace-python/issues/216)) ([27f206a](https://github.com/gentrace/gentrace-python/commit/27f206a68e801b1d8216b19aa2387c2192981a72))
+
+## [0.29.0](https://github.com/gentrace/gentrace-python/compare/v0.28.5...v0.29.0) (2024-04-16)
+
+
+### Features
+
+* get_evaluators SDK function w example ([#214](https://github.com/gentrace/gentrace-python/issues/214)) ([4fb03ac](https://github.com/gentrace/gentrace-python/commit/4fb03ace887ed4c8205a73075fc41a1f8319ccb4))
+
 ## [0.28.5](https://github.com/gentrace/gentrace-python/compare/v0.28.4...v0.28.5) (2024-04-06)
 
 
