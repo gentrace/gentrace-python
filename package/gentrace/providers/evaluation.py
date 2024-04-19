@@ -13,7 +13,7 @@ from gentrace.model.evaluator_v2 import EvaluatorV2
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_case_v2 import TestCaseV2
-from gentrace.models import CreateMultipleTestCases, TestResult
+from gentrace.models import TestResult
 from gentrace.providers.context import ResultContext
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
@@ -708,7 +708,6 @@ def run_test(
 
 def get_test_runners(
     pipeline: Pipeline,
-    context: Optional[ResultContext] = None,
     case_filter: Optional[Callable[[TestCase], bool]] = None,
 ) -> List[Tuple[PipelineRun, TestCase]]:
     """
@@ -716,7 +715,6 @@ def get_test_runners(
 
     Args:
         pipeline (Pipeline): The pipeline instance
-        context (Optional[ResultContext]): Context key pairs
         case_filter: Optional[Callable[[TestCase], bool]] = None
 
     Raises:
