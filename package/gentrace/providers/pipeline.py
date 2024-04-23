@@ -37,6 +37,8 @@ class Pipeline:
                 "api_key": GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"],
                 "host": GENTRACE_CONFIG_STATE["GENTRACE_BASE_PATH"],
             }
+            
+        self.pipeline_handlers = {}        
 
         if openai_config:
             try:
@@ -55,6 +57,7 @@ class Pipeline:
                         )
 
             self.openai_config = openai_config
+            self.__setup_openai_config()
         else:
             self.openai_config = None
 
@@ -75,12 +78,12 @@ class Pipeline:
                         f"Invalid key ({key}) in supplied Pinecone configuration."
                     )
             self.pinecone_config = pinecone_config
+            self.__setup_pinecone_config()
         else:
             self.pinecone_config = None
 
-        self.pipeline_handlers = {}
 
-    def setup(self):
+    def __setup_pinecone_config(self):
         if self.pinecone_config:
             try:
                 from gentrace.providers.vectorstores.pinecone import (
@@ -95,6 +98,7 @@ class Pipeline:
                     "Please install Pinecone as a dependency with, e.g. `pip install pinecone-client`"
                 )
 
+    def __setup_openai_config(self):
         if self.openai_config:
             if is_openai_v1():
                 from gentrace.providers.llms.openai_v1 import GentraceSyncOpenAI
@@ -114,6 +118,10 @@ class Pipeline:
                     raise ImportError(
                         "Please install OpenAI as a dependency with, e.g. `pip install openai`"
                     )
+                
+    def setup(self):
+        self.__setup_pinecone_config()
+        self.__setup_openai_config()
 
     def start(self, context: Optional[Context] = None):
         from gentrace.providers.pipeline_run import PipelineRun

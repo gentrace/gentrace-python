@@ -333,13 +333,13 @@ files = [
 
 [[package]]
 name = "gentrace-py"
-version = "0.28.5"
+version = "0.30.0"
 description = "Python SDK for the Gentrace API"
 category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.28.5.tar.gz", hash = "sha256:1d602b0476899bc691668e72dfd9b289ebf5ddec46523cac08ed945ec665f95a"},
+    {file = "gentrace_py-0.30.0.tar.gz", hash = "sha256:76ddf3d4d3781d20531261cca7550bb474a650f212e6759bb18c757ce08739fa"},
 ]
 
 [package.dependencies]
@@ -359,7 +359,7 @@ vectorstores = ["pinecone-client (>=2.2.1,<3.0.0)"]
 
 [package.source]
 type = "file"
-url = "../package/dist/gentrace_py-0.28.5.tar.gz"
+url = "../package/dist/gentrace_py-0.30.0.tar.gz"
 
 [[package]]
 name = "h11"
@@ -624,14 +624,14 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.4.3)", "pytest-
 
 [[package]]
 name = "pluggy"
-version = "1.4.0"
+version = "1.5.0"
 description = "plugin and hook calling mechanisms for python"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pluggy-1.4.0-py3-none-any.whl", hash = "sha256:7db9f7b503d67d1c5b95f59773ebb58a8c1c288129a88665838012cfb07b8981"},
-    {file = "pluggy-1.4.0.tar.gz", hash = "sha256:8c85c2876142a764e5b7548e7d9a0e0ddb46f5185161049a79b7e974454223be"},
+    {file = "pluggy-1.5.0-py3-none-any.whl", hash = "sha256:44e1ad92c8ca002de6377e165f3e0f1be63266ab4d554740532335b9d75ea669"},
+    {file = "pluggy-1.5.0.tar.gz", hash = "sha256:2cffa88e94fdc978c4c574f15f9e59b7f4201d439195c3715ca9e2486f1d0cf1"},
 ]
 
 [package.extras]
@@ -1089,4 +1089,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "721b6ea60309a914a9954f115e900ae017a96dbe839642c21b9b2629717e4c5f"
+content-hash = "62828cad1eabe2fcf2b6722638f1aa36bab7a40a2e57833ebc1f8f0d0c0a06de"
