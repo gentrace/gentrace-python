@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/gentrace/gentrace-python/compare/v0.30.0...v0.31.0) (2024-04-23)
+
+
+### Features
+
+* setup ai configs in pipeline constructor ([#221](https://github.com/gentrace/gentrace-python/issues/221)) ([d981b41](https://github.com/gentrace/gentrace-python/commit/d981b4178cdf043e0f574ddeeb2ce1028a571981))
+
 ## [0.30.0](https://github.com/gentrace/gentrace-python/compare/v0.29.1...v0.30.0) (2024-04-23)
 
 
