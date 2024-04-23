@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.30.0](https://github.com/gentrace/gentrace-python/compare/v0.29.1...v0.30.0) (2024-04-23)
+
+
+### Features
+
+* get_test_runners and submit_test_runners with example ([#219](https://github.com/gentrace/gentrace-python/issues/219)) ([46db714](https://github.com/gentrace/gentrace-python/commit/46db71479815dc28ab83a082da287551899e1dec))
+
 ## [0.29.1](https://github.com/gentrace/gentrace-python/compare/v0.29.0...v0.29.1) (2024-04-18)
 
 
