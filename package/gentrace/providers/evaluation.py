@@ -3,7 +3,7 @@ import json
 import os
 import uuid
 from itertools import zip_longest
-from typing import Any, Callable, Dict, List, Optional, TypedDict, Union
+from typing import Any, Callable, Dict, List, Optional, TypedDict, Tuple
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
@@ -13,12 +13,12 @@ from gentrace.model.evaluator_v2 import EvaluatorV2
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_case_v2 import TestCaseV2
-from gentrace.models import CreateMultipleTestCases, TestResult
+from gentrace.models import TestResult
 from gentrace.providers.context import ResultContext
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
-from gentrace.providers.pipeline_run import flush
+from gentrace.providers.pipeline_run import flush, PipelineRun
 from gentrace.providers.utils import (
     decrement_test_counter,
     get_test_counter,
@@ -88,9 +88,46 @@ def get_evaluators(
 
 
 
+def get_evaluators(
+    pipeline_id: Optional[str] = None,
+    pipeline_slug: Optional[str] = None,
+) -> List[EvaluatorV2]:
+    """
+    Retrieves evaluators  for a given pipeline ID from the Gentrace API.
+
+    Args:
+        pipeline_slug (str): The pipeline slug to retrieve evaluators for.
+        pipeline_id (str): The ID of the pipeline to retrieve evaluators for.
+
+    Raises:
+        ValueError: If the SDK is not initialized. Call init() first.
+
+    Returns:
+        list: A list of evaluators.
+    """
+
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    if not pipeline_id and not pipeline_slug:
+        pipeline_slug = "null"  # get template evaluators
+
+    response = api.v2_evaluators_get(
+        {"pipelineId": pipeline_id, "pipelineSlug": pipeline_slug}
+    )
+
+    evaluators = response.body.get("data", [])
+
+    return evaluators
+
+
 def get_test_cases(
-        pipeline_id: Optional[str] = None,
-        pipeline_slug: Optional[str] = None,
+    pipeline_id: Optional[str] = None,
+    pipeline_slug: Optional[str] = None,
 ) -> List[TestCase]:
     """
     Retrieves test cases for a given pipeline ID from the Gentrace API.
@@ -141,7 +178,7 @@ def get_test_cases(
 
 
 def get_test_case(
-        case_id: str,
+    case_id: str,
 ) -> TestCaseV2:
     """
     Retrieves a test case for a given test case ID from the Gentrace API.
@@ -193,8 +230,8 @@ class UpdateTestCaseResponse(TypedDict):
 
 
 def create_test_cases(
-        pipeline_slug: str,
-        payload: List[TestCaseDict],
+    pipeline_slug: str,
+    payload: List[TestCaseDict],
 ) -> int:
     """Creates multiple test cases for a specified pipeline using the Gentrace API.
 
@@ -221,14 +258,16 @@ def create_test_cases(
     if not pipeline_slug:
         raise ValueError("pipeline_slug must be passed")
 
-    response = api.v1_test_case_post({"pipelineSlug": pipeline_slug, "testCases": payload})
+    response = api.v1_test_case_post(
+        {"pipelineSlug": pipeline_slug, "testCases": payload}
+    )
     count = response.body.get("creationCount", None)
     return count
 
 
 def create_test_case(
-        pipeline_slug: str,
-        payload: SingleTestCasePayload,
+    pipeline_slug: str,
+    payload: SingleTestCasePayload,
 ) -> str:
     """
     Creates a single test case for a specified pipeline using the Gentrace API.
@@ -293,9 +332,12 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
     return case_id
 
 
-def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
-                              context: Optional[ResultContext] = None,
-                              result_name: Optional[str] = None) -> Result:
+def submit_prepared_test_runs(
+    pipeline_slug: str,
+    test_runs: List[Dict],
+    context: Optional[ResultContext] = None,
+    result_name: Optional[str] = None,
+) -> Result:
     """
     INTERNAL TO PACKAGE:
 
@@ -328,18 +370,24 @@ def submit_prepared_test_runs(pipeline_slug: str, test_runs: List[Dict],
             else test_run["inputs"]
         )
 
-    params = construct_submission_payload(pipeline_slug, test_runs, context, result_name)
+    params = construct_submission_payload(
+        pipeline_slug, test_runs, context, result_name
+    )
     response = api.v1_test_result_simple_post(params)
     return response.body
 
 
-def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], context: Optional[ResultContext] = None,
-                                 result_name: Optional[str] = None):
+def construct_submission_payload(
+    pipeline_identifier: str,
+    test_runs: List[Dict],
+    context: Optional[ResultContext] = None,
+    result_name: Optional[str] = None,
+):
     """
     Constructs a dictionary payload for submitting test runs to a server.
 
     Args:
-        pipeline_slug (str): The pipeline slug
+        pipeline_identifier (str): The pipeline slug, or pipeline ID
         test_results (List[Dict]): A list of dictionaries containing test results.
         context (Optional[ResultContext]): Context key pairs
         result_name (str, optional): The name of the test result. Defaults to None.
@@ -348,9 +396,13 @@ def construct_submission_payload(pipeline_slug: str, test_runs: List[Dict], cont
         Dict: A dictionary payload containing the pipeline slug, test runs, and optional branch and commit information.
     """
     params = {
-        "pipelineSlug": pipeline_slug,
         "testRuns": test_runs,
     }
+
+    if is_valid_uuid(pipeline_identifier):
+        params["pipelineId"] = pipeline_identifier
+    else:
+        params["pipelineSlug"] = pipeline_identifier
 
     if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
         params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
@@ -384,11 +436,11 @@ class OutputStep(TypedDict):
 
 
 def submit_test_result(
-        pipeline_slug: str,
-        test_cases: List[TestCase],
-        outputs_list: List[Dict[str, Any]],
-        context: Optional[ResultContext] = None,
-        result_name: Optional[str] = None
+    pipeline_slug: str,
+    test_cases: List[TestCase],
+    outputs_list: List[Dict[str, Any]],
+    context: Optional[ResultContext] = None,
+    result_name: Optional[str] = None,
 ) -> Result:
     """
     Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
@@ -421,9 +473,11 @@ def submit_test_result(
     for test_case, outputs in zip_longest(test_cases, outputs_list, fillvalue=None):
         result = {
             "caseId": test_case["id"],
-            "inputs": json.loads(test_case["inputs"])
-            if isinstance(test_case["inputs"], str)
-            else test_case["inputs"],
+            "inputs": (
+                json.loads(test_case["inputs"])
+                if isinstance(test_case["inputs"], str)
+                else test_case["inputs"]
+            ),
             "outputs": outputs,
         }
 
@@ -433,8 +487,8 @@ def submit_test_result(
 
 
 def get_pipelines(
-        label: Optional[str] = None,
-        slug: Optional[str] = None,
+    label: Optional[str] = None,
+    slug: Optional[str] = None,
 ) -> List[Pipeline]:
     """
     Get pipelines from the Gentrace API, optionally filtered by label or by slug
@@ -490,7 +544,7 @@ def get_test_result(result_id: str) -> ExpandedTestResult:
 
 
 def get_test_results(
-        pipeline_slug: str,
+    pipeline_slug: str,
 ) -> List[TestResult]:
     """
     Fetches test results using the Gentrace API.
@@ -535,7 +589,7 @@ class EvaluationDict(EvaluationDictBase, total=False):
 
 
 def bulk_create_evaluations(
-        payloads: List[EvaluationDict],
+    payloads: List[EvaluationDict],
 ):
     """
     Creates multiple evaluations using the Gentrace API.
@@ -559,18 +613,19 @@ def bulk_create_evaluations(
     api_client = ApiClient(configuration=config)
     api = V2Api(api_client=api_client)
 
-    result = api.v2_evaluations_bulk_post({
-        "data": payloads
-    })
+    result = api.v2_evaluations_bulk_post({"data": payloads})
 
     count = result.body.get("count", None)
     return count
 
 
-def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = None,
-             case_filter: Optional[Callable[[TestCase], bool]] = None,
-             result_name: Optional[str] = None
-             ) -> Result:
+def run_test(
+    pipeline_slug: str,
+    handler,
+    context: Optional[ResultContext] = None,
+    case_filter: Optional[Callable[[TestCase], bool]] = None,
+    result_name: Optional[str] = None,
+) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
     provided callback (once per test case), and submitting the result report back to Gentrace.
@@ -673,36 +728,13 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
             test_runs.append(test_run)
 
-        params = {
-            "pipelineId": matching_pipeline["id"],
-            "testRuns": test_runs,
-        }
-
-        if GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]:
-            params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RUN_NAME"]
-
-        if GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]:
-            params["name"] = GENTRACE_CONFIG_STATE["GENTRACE_RESULT_NAME"]
-
-        if result_name:
-            params["name"] = result_name
-
-        if os.getenv("GENTRACE_BRANCH") or GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"]:
-            params["branch"] = GENTRACE_CONFIG_STATE["GENTRACE_BRANCH"] or os.getenv(
-                "GENTRACE_BRANCH"
-            )
-
-        if os.getenv("GENTRACE_COMMIT") or GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"]:
-            params["commit"] = GENTRACE_CONFIG_STATE["GENTRACE_COMMIT"] or os.getenv(
-                "GENTRACE_COMMIT"
-            )
-
-        if context and context.get("metadata"):
-            params["metadata"] = context.get("metadata")
-
+        params = construct_submission_payload(
+            matching_pipeline["id"], test_runs, context, result_name
+        )
         params["collectionMethod"] = "runner"
 
         response = api.v1_test_result_post(params)
+
         return response.body
     except Exception as e:
         raise e
@@ -711,6 +743,153 @@ def run_test(pipeline_slug: str, handler, context: Optional[ResultContext] = Non
 
         # OK to flush here and introduce more latency since this is just used for test anyway
         flush()
+
+
+def get_test_runners(
+    pipeline: Pipeline,
+    case_filter: Optional[Callable[[TestCase], bool]] = None,
+) -> List[Tuple[PipelineRun, TestCase]]:
+    """
+    Retrieves test runners for a given pipeline
+
+    Args:
+        pipeline (Pipeline): The pipeline instance
+        case_filter: Optional[Callable[[TestCase], bool]] = None
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        A list of (PipelineRun, TestCase) tuples
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V1Api(api_client=api_client)
+
+    if not pipeline:
+        raise ValueError(f"Invalid pipeline found")
+
+    if is_valid_uuid(pipeline.id):
+        response = api.v1_test_case_get({"pipelineId": pipeline.id})
+    else:
+        response = api.v1_test_case_get({"pipelineSlug": pipeline.slug})
+
+    test_cases = response.body.get("testCases", [])
+
+    test_runners = []
+
+    for test_case in test_cases:
+        if case_filter and not case_filter(test_case):
+            continue
+
+        pipeline_run = pipeline.start()
+        test_runners.append((pipeline_run, test_case))
+
+    return test_runners
+
+
+def submit_test_runners(
+    pipeline: Pipeline,
+    pipeline_run_test_cases: List[Tuple[PipelineRun, TestCase]],
+    context: Optional[ResultContext] = None,
+    case_filter: Optional[Callable[[TestCase], bool]] = None,
+    result_name: Optional[str] = None,
+) -> Result:
+    """
+    Submits test runners for a given pipeline
+
+    Args:
+        pipeline (Pipeline): The pipeline instance
+        pipeline_run_test_cases (List[Tuple[PipelineRun, TestCase]]): A list of (PipelineRun, TestCase) tuples
+        context (Optional[ResultContext]): Context key pairs
+        case_filter: Optional[Callable[[TestCase], bool]] = None
+        result_name (str, optional): The name of the test result. Defaults to None.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        Response data from the Gentrace API's /test-result POST method. This should just be a dictionary
+        similar to the following:
+
+        {
+            "resultId": "161c623d-ee92-417f-823a-cf9f7eccf557",
+        }
+    """
+    try:
+        config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+        if not config:
+            raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+        api_client = ApiClient(configuration=config)
+        api = V1Api(api_client=api_client)
+
+        if not pipeline:
+            raise ValueError(f"Invalid pipeline found")
+
+        test_runs = []
+
+        for pipeline_run, test_case in pipeline_run_test_cases:
+            if case_filter and not case_filter(test_case):
+                continue
+
+            merged_metadata = {}
+
+            step_runs_data = []
+            for step_run in pipeline_run.step_runs:
+                # Extract metadata without mutating original contexts
+                this_context = copy.deepcopy(pipeline_run.context)
+                this_context_metadata = this_context.get("metadata", {})
+                step_run_context = copy.deepcopy(step_run.context)
+                step_run_context_metadata = step_run_context.get("metadata", {})
+
+                merged_metadata.update(this_context_metadata)
+                merged_metadata.update(step_run_context_metadata)
+
+                this_context.pop("metadata", None)
+                step_run_context.pop("metadata", None)
+
+                this_context.pop("previousRunId", None)
+                step_run_context.pop("previousRunId", None)
+
+                step_runs_data.append(
+                    {
+                        "providerName": step_run.provider,
+                        "invocation": step_run.invocation,
+                        "modelParams": step_run.model_params,
+                        "inputs": step_run.inputs,
+                        "outputs": step_run.outputs,
+                        "elapsedTime": step_run.elapsed_time,
+                        "startTime": step_run.start_time,
+                        "endTime": step_run.end_time,
+                        "context": {**this_context, **step_run_context},
+                    }
+                )
+
+            test_run = {
+                "caseId": test_case["id"],
+                "metadata": merged_metadata,
+                "previousRunId": pipeline_run.context.get("previousRunId"),
+                "stepRuns": step_runs_data,
+            }
+
+            if pipeline_run.get_id():
+                test_run["id"] = pipeline_run.get_id()
+
+            test_runs.append(test_run)
+
+        params = construct_submission_payload(
+            pipeline.id or pipeline.slug, test_runs, context, result_name
+        )
+        params["collectionMethod"] = "runner"
+
+        response = api.v1_test_result_post(params)
+        return response.body
+    except Exception as e:
+        raise e
 
 
 __all__ = [
@@ -726,7 +905,9 @@ __all__ = [
     "get_pipelines",
     "construct_submission_payload",
     "run_test",
+    "get_test_runners",
+    "submit_test_runners",
     "bulk_create_evaluations",
     "OutputStep",
-    "EvaluationDict"
+    "EvaluationDict",
 ]
