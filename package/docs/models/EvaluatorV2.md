@@ -24,6 +24,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **organizationId** | str, uuid.UUID,  | str,  | The ID of the organization that the evaluator belongs to | [optional] value must be a uuid
 **templateDescription** | str,  | str,  | For evaluator templates, the description of the template | [optional] 
 **heuristicFn** | None, str,  | NoneClass, str,  | For heuristic evaluators, the heuristic function to use | [optional] 
+**heuristicFnLanguage** | str,  | str,  | For heuristic evaluators, the coding language of the heuristic function (such as \&quot;JAVASCRIPT\&quot;, \&quot;PYTHON\&quot;) | [optional] 
 **aiPromptFormat** | None, str,  | NoneClass, str,  | For AI evaluators, the prompt template that should be sent to the AI model | [optional] 
 **[aiImageUrls](#aiImageUrls)** | list, tuple,  | tuple,  | For AI image evaluators, the paths to the image URLs | [optional] 
 **humanPrompt** | None, str,  | NoneClass, str,  | For human evaluators, the instructions for the human to follow | [optional] 

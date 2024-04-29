@@ -173,6 +173,7 @@ class EvaluatorV2(
                         *_args,
                         _configuration=_configuration,
                     )
+            heuristicFnLanguage = schemas.StrSchema
             
             
             class aiPromptFormat(
@@ -337,6 +338,7 @@ class EvaluatorV2(
                 "organizationId": organizationId,
                 "templateDescription": templateDescription,
                 "heuristicFn": heuristicFn,
+                "heuristicFnLanguage": heuristicFnLanguage,
                 "aiPromptFormat": aiPromptFormat,
                 "aiImageUrls": aiImageUrls,
                 "humanPrompt": humanPrompt,
@@ -404,6 +406,9 @@ class EvaluatorV2(
     def __getitem__(self, name: typing_extensions.Literal["heuristicFn"]) -> MetaOapg.properties.heuristicFn: ...
     
     @typing.overload
+    def __getitem__(self, name: typing_extensions.Literal["heuristicFnLanguage"]) -> MetaOapg.properties.heuristicFnLanguage: ...
+    
+    @typing.overload
     def __getitem__(self, name: typing_extensions.Literal["aiPromptFormat"]) -> MetaOapg.properties.aiPromptFormat: ...
     
     @typing.overload
@@ -430,7 +435,7 @@ class EvaluatorV2(
     @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "who", "valueType", "runCondition", "archivedAt", "icon", "options", "aiModel", "pipelineId", "processorId", "organizationId", "templateDescription", "heuristicFn", "aiPromptFormat", "aiImageUrls", "humanPrompt", "classifierValuePath", "classifierExpectedValuePath", "multiClassOptions", "prodEvalActive", "samplingProbability", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "who", "valueType", "runCondition", "archivedAt", "icon", "options", "aiModel", "pipelineId", "processorId", "organizationId", "templateDescription", "heuristicFn", "heuristicFnLanguage", "aiPromptFormat", "aiImageUrls", "humanPrompt", "classifierValuePath", "classifierExpectedValuePath", "multiClassOptions", "prodEvalActive", "samplingProbability", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -484,6 +489,9 @@ class EvaluatorV2(
     def get_item_oapg(self, name: typing_extensions.Literal["heuristicFn"]) -> typing.Union[MetaOapg.properties.heuristicFn, schemas.Unset]: ...
     
     @typing.overload
+    def get_item_oapg(self, name: typing_extensions.Literal["heuristicFnLanguage"]) -> typing.Union[MetaOapg.properties.heuristicFnLanguage, schemas.Unset]: ...
+    
+    @typing.overload
     def get_item_oapg(self, name: typing_extensions.Literal["aiPromptFormat"]) -> typing.Union[MetaOapg.properties.aiPromptFormat, schemas.Unset]: ...
     
     @typing.overload
@@ -510,7 +518,7 @@ class EvaluatorV2(
     @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "who", "valueType", "runCondition", "archivedAt", "icon", "options", "aiModel", "pipelineId", "processorId", "organizationId", "templateDescription", "heuristicFn", "aiPromptFormat", "aiImageUrls", "humanPrompt", "classifierValuePath", "classifierExpectedValuePath", "multiClassOptions", "prodEvalActive", "samplingProbability", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "who", "valueType", "runCondition", "archivedAt", "icon", "options", "aiModel", "pipelineId", "processorId", "organizationId", "templateDescription", "heuristicFn", "heuristicFnLanguage", "aiPromptFormat", "aiImageUrls", "humanPrompt", "classifierValuePath", "classifierExpectedValuePath", "multiClassOptions", "prodEvalActive", "samplingProbability", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -533,6 +541,7 @@ class EvaluatorV2(
         organizationId: typing.Union[MetaOapg.properties.organizationId, str, uuid.UUID, schemas.Unset] = schemas.unset,
         templateDescription: typing.Union[MetaOapg.properties.templateDescription, str, schemas.Unset] = schemas.unset,
         heuristicFn: typing.Union[MetaOapg.properties.heuristicFn, None, str, schemas.Unset] = schemas.unset,
+        heuristicFnLanguage: typing.Union[MetaOapg.properties.heuristicFnLanguage, str, schemas.Unset] = schemas.unset,
         aiPromptFormat: typing.Union[MetaOapg.properties.aiPromptFormat, None, str, schemas.Unset] = schemas.unset,
         aiImageUrls: typing.Union[MetaOapg.properties.aiImageUrls, list, tuple, schemas.Unset] = schemas.unset,
         humanPrompt: typing.Union[MetaOapg.properties.humanPrompt, None, str, schemas.Unset] = schemas.unset,
@@ -563,6 +572,7 @@ class EvaluatorV2(
             organizationId=organizationId,
             templateDescription=templateDescription,
             heuristicFn=heuristicFn,
+            heuristicFnLanguage=heuristicFnLanguage,
             aiPromptFormat=aiPromptFormat,
             aiImageUrls=aiImageUrls,
             humanPrompt=humanPrompt,
