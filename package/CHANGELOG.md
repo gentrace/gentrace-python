@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://github.com/gentrace/gentrace-python/compare/v0.31.0...v0.31.1) (2024-04-29)
+
+
+### Bug Fixes
+
+* add heuristicFnLanguage to evaluator ([#223](https://github.com/gentrace/gentrace-python/issues/223)) ([1109895](https://github.com/gentrace/gentrace-python/commit/1109895efea01def7ca92d4a686a2b489b2b33cb))
+
 ## [0.31.0](https://github.com/gentrace/gentrace-python/compare/v0.30.0...v0.31.0) (2024-04-23)
 
 
