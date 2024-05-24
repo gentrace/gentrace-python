@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.2](https://github.com/gentrace/gentrace-python/compare/v0.31.1...v0.31.2) (2024-05-24)
+
+
+### Bug Fixes
+
+* only import openai when used ([#225](https://github.com/gentrace/gentrace-python/issues/225)) ([1cd2075](https://github.com/gentrace/gentrace-python/commit/1cd2075b4dc7867599a05566405df81421c3b75a))
+
 ## [0.31.1](https://github.com/gentrace/gentrace-python/compare/v0.31.0...v0.31.1) (2024-04-29)
 
 
