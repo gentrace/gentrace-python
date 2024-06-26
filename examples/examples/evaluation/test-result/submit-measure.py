@@ -5,12 +5,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-PIPELINE_SLUG = "main"
+PIPELINE_SLUG = "testing-pipeline-id"
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     run_name="vivek python run 2",
-    host="http://localhost:3000/api",
 )
 
 pipeline = gentrace.Pipeline(
@@ -23,7 +22,7 @@ pipeline = gentrace.Pipeline(
 pipeline.setup()
 
 pipeline = gentrace.Pipeline(
-    "main",
+    PIPELINE_SLUG,
     openai_config={
         "api_key": os.getenv("OPENAI_KEY"),
     },
@@ -44,6 +43,6 @@ def create_measure_callback(test_case):
     )
     return [output, runner]
 
-result = gentrace.run_test("main", create_measure_callback)
+result = gentrace.run_test(PIPELINE_SLUG, create_measure_callback)
 
 

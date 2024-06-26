@@ -8,7 +8,7 @@ load_dotenv()
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     result_name="vivek python run",
-    host="http://localhost:3000/api",
+    host="https://staging.gentrace.ai/api",
 )
 
 cases = gentrace.get_test_cases(pipeline_slug="guess-the-year")

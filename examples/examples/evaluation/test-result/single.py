@@ -9,6 +9,6 @@ gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"), host="http://localhost:3000/api"
 )
 
-result = gentrace.get_test_result("ede8271a-699f-4db7-a198-2c51a99e2dab")
+result = gentrace.get_test_result("0649dde6-79b2-460a-91be-2ffea9c44de2")
 
 print(result)
