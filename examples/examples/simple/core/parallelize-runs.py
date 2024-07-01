@@ -1,18 +1,23 @@
 import os
-import gentrace
+import time
 from multiprocessing.pool import ThreadPool
+
+import gentrace
 from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def example_response(inputs):
-  return "This is a generated response from the AI";
+    return "This is a generated response from the AI"
+
 
 def enable_parallelism(function, inputs, parallel_threads):
     # modify this parallelization approach as needed
-    pool = ThreadPool(processes=parallel_threads) 
+    pool = ThreadPool(processes=parallel_threads)
     outputs = pool.map(function, inputs)
     return outputs
+
 
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
@@ -29,12 +34,19 @@ pipeline_by_id = gentrace.Pipeline(id=PIPELINE_ID)
 
 pipeline = pipeline_by_slug
 
+
+def measure_func(inputs):
+    time.sleep(0.3)
+    return example_response(inputs)
+
+
 def example_handler(pipeline_run_test_case):
-    (runner, test_case) = pipeline_run_test_case 
+    (runner, test_case) = pipeline_run_test_case
     runner.measure(
-        lambda inputs: example_response(inputs),
+        measure_func,
         inputs=test_case.get("inputs")
     )
+
 
 pipeline_run_test_cases = gentrace.get_test_runners(pipeline)
 
