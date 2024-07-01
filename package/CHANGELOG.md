@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.3](https://github.com/gentrace/gentrace-python/compare/v0.31.2...v0.31.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* Elapsed time is provided to the API sever as milliseconds ([#227](https://github.com/gentrace/gentrace-python/issues/227)) ([f4b088c](https://github.com/gentrace/gentrace-python/commit/f4b088cbeb1e929d5252e79eb3eccdc8e51811be))
+
 ## [0.31.2](https://github.com/gentrace/gentrace-python/compare/v0.31.1...v0.31.2) (2024-05-24)
 
 
