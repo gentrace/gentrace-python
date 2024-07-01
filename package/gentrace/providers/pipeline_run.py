@@ -185,8 +185,13 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        output = func(**input_params)
+        outputs = await func(**input_params)
         end_time = time.time()
+
+        outputs_for_step_run = outputs
+
+        if not isinstance(outputs_for_step_run, dict):
+            outputs_for_step_run = {"value": outputs_for_step_run}
 
         elapsed_time = int((end_time - start_time) * 1000)
 
@@ -195,11 +200,11 @@ class PipelineRun:
                 step_info.get("provider", "undeclared"),
                 step_info.get("invocation", "undeclared"),
                 elapsed_time,
-                start_time,
-                end_time,
+                to_date_string(start_time),
+                to_date_string(end_time),
                 input_params,
                 step_info.get("model_params", {}),
-                output,
+                outputs_for_step_run,
                 step_info.get("context", {}),
             )
         )
