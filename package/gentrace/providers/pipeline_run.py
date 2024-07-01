@@ -11,10 +11,10 @@ from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
 from gentrace.apis.tags.v2_api import V2Api
 from gentrace.configuration import Configuration
+from gentrace.model.run_v2 import RunV2
 from gentrace.providers.context import Context
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.step_run import StepRun
-from gentrace.model.run_v2 import RunV2
 from gentrace.providers.utils import (
     GENTRACE_CONFIG_STATE,
     from_date_string,
@@ -46,8 +46,9 @@ def flush():
         concurrent.futures.wait(_pipeline_tasks)
         _pipeline_tasks.clear()
 
+
 def get_run(
-    run_id: str,
+        run_id: str,
 ) -> RunV2:
     """
     Retrieves a run for a given run ID from the Gentrace API.
@@ -72,6 +73,7 @@ def get_run(
     response = api.v2_runs_id_get({"id": run_id})
     run = response.body
     return run
+
 
 class PipelineRun:
     def __init__(
@@ -186,7 +188,7 @@ class PipelineRun:
         output = func(**input_params)
         end_time = time.time()
 
-        elapsed_time = end_time - start_time
+        elapsed_time = int((end_time - start_time) * 1000)
 
         self.add_step_run(
             StepRun(
@@ -240,7 +242,7 @@ class PipelineRun:
         if not isinstance(outputs_for_step_run, dict):
             outputs_for_step_run = {"value": outputs_for_step_run}
 
-        elapsed_time = int(end_time - start_time)
+        elapsed_time = int((end_time - start_time) * 1000)
 
         self.add_step_run(
             StepRun(
@@ -286,7 +288,7 @@ class PipelineRun:
         if last_element:
             step_start_time = from_date_string(last_element.end_time)
             end_time_new = time.time()
-            elapsed_time = int(end_time_new - step_start_time)
+            elapsed_time = int((end_time_new - step_start_time) * 1000)
             self.step_runs.append(
                 StepRun(
                     step_info.get("provider", "undeclared"),
