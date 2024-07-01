@@ -1,6 +1,6 @@
 import asyncio
 import os
-from multiprocessing.pool import ThreadPool
+import time
 
 import gentrace
 from dotenv import load_dotenv
@@ -9,14 +9,8 @@ load_dotenv()
 
 
 def example_response(inputs):
+    time.sleep(1)
     return "This is a generated response from the AI"
-
-
-def enable_parallelism(function, inputs, parallel_threads):
-    # modify this parallelization approach as needed
-    pool = ThreadPool(processes=parallel_threads)
-    outputs = pool.map(function, inputs)
-    return outputs
 
 
 gentrace.init(
