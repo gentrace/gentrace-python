@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.5](https://github.com/gentrace/gentrace-python/compare/v0.31.4...v0.31.5) (2024-07-02)
+
+
+### Bug Fixes
+
+* Fix ameasure() outputs ([#231](https://github.com/gentrace/gentrace-python/issues/231)) ([984bc5b](https://github.com/gentrace/gentrace-python/commit/984bc5bc221eaf74642c107a5e86be4b72c5a47f))
+
 ## [0.31.4](https://github.com/gentrace/gentrace-python/compare/v0.31.3...v0.31.4) (2024-07-01)
 
 
