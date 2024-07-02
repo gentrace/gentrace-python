@@ -209,6 +209,8 @@ class PipelineRun:
             )
         )
 
+        return outputs
+
     def measure(self, func: Callable[..., Any], **kwargs):
         """
         Measures the execution time of a function and logs the result as a `StepRun`.
