@@ -1,16 +1,30 @@
 import asyncio
 import os
 import time
+from datetime import datetime
+from typing import Optional
 
 import gentrace
 from dotenv import load_dotenv
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
 
-def example_response(inputs):
+class User(BaseModel):
+    id: int
+    name: str
+    email: str
+    age: int = Field(..., ge=0)
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=datetime.now)
+    notes: Optional[str] = None
+
+
+def example_response(user):
     time.sleep(1)
-    return "This is a generated response from the AI"
+    print("User: ", user.name)
+    return user
 
 
 gentrace.init(
@@ -29,15 +43,21 @@ pipeline_by_id = gentrace.Pipeline(id=PIPELINE_ID)
 pipeline = pipeline_by_slug
 
 
-async def measure_func(inputs):
-    return example_response(inputs)
+async def measure_func(user):
+    return example_response(user)
 
 
 async def example_handler(pipeline_run_test_case):
     (runner, test_case) = pipeline_run_test_case
+    user = User(
+        id=1,
+        name="John Doe",
+        email="john@example.com",
+        age=30,
+    )
     await runner.ameasure(
         measure_func,
-        inputs=test_case.get("inputs")
+        user=user
     )
 
 
