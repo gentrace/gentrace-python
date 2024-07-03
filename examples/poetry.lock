@@ -330,13 +330,13 @@ files = [
 
 [[package]]
 name = "gentrace-py"
-version = "0.31.3"
+version = "0.31.5"
 description = "Python SDK for the Gentrace API"
 category = "main"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.31.3.tar.gz", hash = "sha256:c2ea6d815bb0ca8ef03e477545395fc3025fcbf780ad6fc2bee171b88f618ef2"},
+    {file = "gentrace_py-0.31.5.tar.gz", hash = "sha256:a65cf01baf8efa4e9e5a4d6f7468c8446675132dc85f90c81da234fd627f3e1b"},
 ]
 
 [package.dependencies]
@@ -356,7 +356,7 @@ vectorstores = ["pinecone-client (>=2.2.1,<3.0.0)"]
 
 [package.source]
 type = "file"
-url = "../package/dist/gentrace_py-0.31.3.tar.gz"
+url = "../package/dist/gentrace_py-0.31.5.tar.gz"
 
 [[package]]
 name = "h11"
@@ -1074,4 +1074,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "a1e7162fa7caaf5665417d907c4891515b030ea9b7a526dd452955e3081132af"
+content-hash = "405b318c40802d3f70a6577646a45ef0f671404bed2439ed3563257d8243196e"
