@@ -22,16 +22,25 @@ class StepRun:
         self.elapsed_time = elapsed_time
         self.start_time = start_time
         self.end_time = end_time
-        self.inputs = self._convert_to_dict(copy.deepcopy(inputs))
+        self.inputs = self._convert_to_dict(inputs)
         self.model_params = model_params
-        self.outputs = self._convert_to_dict(copy.deepcopy(outputs))
-        self.context = copy.deepcopy(context or {})
+        self.outputs = self._convert_to_dict(outputs)
+        self.context = self._convert_to_dict(context or {})
 
     def _convert_to_dict(self, obj: Any) -> Any:
         if hasattr(obj, '__dict__'):
+            # Check for DynamicSchema Gentrace custom types
+            if hasattr(obj, 'from_openapi_data_oapg'):
+                # Primitive type
+                if not hasattr(obj, 'items'):
+                    return obj
+                obj = {k: self._convert_to_dict(v) for k, v in obj.items()}
+                return obj
+
             # Check for model_dump first (works for both v1 and v2)
             if hasattr(obj, 'model_dump'):
                 return obj.model_dump()
+
             # Fallback to dict() if model_dump is not available
             elif hasattr(obj, 'dict'):
                 return obj.dict()

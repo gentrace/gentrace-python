@@ -43,22 +43,14 @@ pipeline_by_id = gentrace.Pipeline(id=PIPELINE_ID)
 pipeline = pipeline_by_slug
 
 
-async def measure_func(user):
-    return example_response(user)
+async def measure_func(x=None):
+    return x
 
 
 async def example_handler(pipeline_run_test_case):
     (runner, test_case) = pipeline_run_test_case
-    user = User(
-        id=1,
-        name="John Doe",
-        email="john@example.com",
-        age=30,
-    )
-    await runner.ameasure(
-        measure_func,
-        user=user
-    )
+    result = await runner.ameasure(measure_func, x=test_case)
+    return result
 
 
 async def main():
