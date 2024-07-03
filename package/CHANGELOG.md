@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.6](https://github.com/gentrace/gentrace-python/compare/v0.31.5...v0.31.6) (2024-07-03)
+
+
+### Bug Fixes
+
+* Add custom class input/output serialization ([#233](https://github.com/gentrace/gentrace-python/issues/233)) ([dcea498](https://github.com/gentrace/gentrace-python/commit/dcea4983a0635073af897e3e4aaf32f01c970216))
+
 ## [0.31.5](https://github.com/gentrace/gentrace-python/compare/v0.31.4...v0.31.5) (2024-07-02)
 
 
