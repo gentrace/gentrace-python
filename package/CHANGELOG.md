@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.7](https://github.com/gentrace/gentrace-python/compare/v0.31.6...v0.31.7) (2024-07-03)
+
+
+### Bug Fixes
+
+* Fix dynamic schema serialization ([#235](https://github.com/gentrace/gentrace-python/issues/235)) ([f542112](https://github.com/gentrace/gentrace-python/commit/f5421127f4bd4ffde8b1de84d1759d83e982d69a))
+
 ## [0.31.6](https://github.com/gentrace/gentrace-python/compare/v0.31.5...v0.31.6) (2024-07-03)
 
 
