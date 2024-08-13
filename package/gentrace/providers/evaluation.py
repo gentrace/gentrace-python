@@ -2,14 +2,15 @@ import copy
 import json
 import os
 import uuid
+from datetime import datetime
 from itertools import zip_longest
-from typing import Any, Callable, Dict, List, Optional, TypedDict, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
 from gentrace.apis.tags.v2_api import V2Api
-from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.evaluator_v2 import EvaluatorV2
+from gentrace.model.expanded_test_result import ExpandedTestResult
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.test_case import TestCase
 from gentrace.model.test_case_v2 import TestCaseV2
@@ -18,7 +19,7 @@ from gentrace.providers.context import ResultContext
 from gentrace.providers.init import (
     GENTRACE_CONFIG_STATE,
 )
-from gentrace.providers.pipeline_run import flush, PipelineRun
+from gentrace.providers.pipeline_run import PipelineRun, flush
 from gentrace.providers.utils import (
     decrement_test_counter,
     get_test_counter,
@@ -48,11 +49,11 @@ def is_valid_uuid(val: str):
     except ValueError:
         return False
 
+
 def get_evaluators(
         pipeline_id: Optional[str] = None,
         pipeline_slug: Optional[str] = None,
 ) -> List[EvaluatorV2]:
-
     """
     Retrieves evaluators  for a given pipeline ID from the Gentrace API.
 
@@ -75,7 +76,7 @@ def get_evaluators(
     api = V2Api(api_client=api_client)
 
     if not pipeline_id and not pipeline_slug:
-        pipeline_slug = 'null' # get template evaluators
+        pipeline_slug = 'null'  # get template evaluators
 
     response = api.v2_evaluators_get({
         "pipelineId": pipeline_id,
@@ -87,47 +88,9 @@ def get_evaluators(
     return evaluators
 
 
-
-def get_evaluators(
-    pipeline_id: Optional[str] = None,
-    pipeline_slug: Optional[str] = None,
-) -> List[EvaluatorV2]:
-    """
-    Retrieves evaluators  for a given pipeline ID from the Gentrace API.
-
-    Args:
-        pipeline_slug (str): The pipeline slug to retrieve evaluators for.
-        pipeline_id (str): The ID of the pipeline to retrieve evaluators for.
-
-    Raises:
-        ValueError: If the SDK is not initialized. Call init() first.
-
-    Returns:
-        list: A list of evaluators.
-    """
-
-    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
-    if not config:
-        raise ValueError("Gentrace API key not initialized. Call init() first.")
-
-    api_client = ApiClient(configuration=config)
-    api = V2Api(api_client=api_client)
-
-    if not pipeline_id and not pipeline_slug:
-        pipeline_slug = "null"  # get template evaluators
-
-    response = api.v2_evaluators_get(
-        {"pipelineId": pipeline_id, "pipelineSlug": pipeline_slug}
-    )
-
-    evaluators = response.body.get("data", [])
-
-    return evaluators
-
-
 def get_test_cases(
-    pipeline_id: Optional[str] = None,
-    pipeline_slug: Optional[str] = None,
+        pipeline_id: Optional[str] = None,
+        pipeline_slug: Optional[str] = None,
 ) -> List[TestCase]:
     """
     Retrieves test cases for a given pipeline ID from the Gentrace API.
@@ -178,7 +141,7 @@ def get_test_cases(
 
 
 def get_test_case(
-    case_id: str,
+        case_id: str,
 ) -> TestCaseV2:
     """
     Retrieves a test case for a given test case ID from the Gentrace API.
@@ -230,8 +193,8 @@ class UpdateTestCaseResponse(TypedDict):
 
 
 def create_test_cases(
-    pipeline_slug: str,
-    payload: List[TestCaseDict],
+        pipeline_slug: str,
+        payload: List[TestCaseDict],
 ) -> int:
     """Creates multiple test cases for a specified pipeline using the Gentrace API.
 
@@ -266,8 +229,8 @@ def create_test_cases(
 
 
 def create_test_case(
-    pipeline_slug: str,
-    payload: SingleTestCasePayload,
+        pipeline_slug: str,
+        payload: SingleTestCasePayload,
 ) -> str:
     """
     Creates a single test case for a specified pipeline using the Gentrace API.
@@ -333,10 +296,10 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
 
 
 def submit_prepared_test_runs(
-    pipeline_slug: str,
-    test_runs: List[Dict],
-    context: Optional[ResultContext] = None,
-    result_name: Optional[str] = None,
+        pipeline_slug: str,
+        test_runs: List[Dict],
+        context: Optional[ResultContext] = None,
+        result_name: Optional[str] = None,
 ) -> Result:
     """
     INTERNAL TO PACKAGE:
@@ -378,10 +341,10 @@ def submit_prepared_test_runs(
 
 
 def construct_submission_payload(
-    pipeline_identifier: str,
-    test_runs: List[Dict],
-    context: Optional[ResultContext] = None,
-    result_name: Optional[str] = None,
+        pipeline_identifier: str,
+        test_runs: List[Dict],
+        context: Optional[ResultContext] = None,
+        result_name: Optional[str] = None,
 ):
     """
     Constructs a dictionary payload for submitting test runs to a server.
@@ -436,11 +399,11 @@ class OutputStep(TypedDict):
 
 
 def submit_test_result(
-    pipeline_slug: str,
-    test_cases: List[TestCase],
-    outputs_list: List[Dict[str, Any]],
-    context: Optional[ResultContext] = None,
-    result_name: Optional[str] = None,
+        pipeline_slug: str,
+        test_cases: List[TestCase],
+        outputs_list: List[Dict[str, Any]],
+        context: Optional[ResultContext] = None,
+        result_name: Optional[str] = None,
 ) -> Result:
     """
     Submits a test result by creating TestRun objects from given test cases and corresponding outputs.
@@ -487,8 +450,8 @@ def submit_test_result(
 
 
 def get_pipelines(
-    label: Optional[str] = None,
-    slug: Optional[str] = None,
+        label: Optional[str] = None,
+        slug: Optional[str] = None,
 ) -> List[Pipeline]:
     """
     Get pipelines from the Gentrace API, optionally filtered by label or by slug
@@ -544,7 +507,7 @@ def get_test_result(result_id: str) -> ExpandedTestResult:
 
 
 def get_test_results(
-    pipeline_slug: str,
+        pipeline_slug: str,
 ) -> List[TestResult]:
     """
     Fetches test results using the Gentrace API.
@@ -589,7 +552,7 @@ class EvaluationDict(EvaluationDictBase, total=False):
 
 
 def bulk_create_evaluations(
-    payloads: List[EvaluationDict],
+        payloads: List[EvaluationDict],
 ):
     """
     Creates multiple evaluations using the Gentrace API.
@@ -620,11 +583,11 @@ def bulk_create_evaluations(
 
 
 def run_test(
-    pipeline_slug: str,
-    handler,
-    context: Optional[ResultContext] = None,
-    case_filter: Optional[Callable[[TestCase], bool]] = None,
-    result_name: Optional[str] = None,
+        pipeline_slug: str,
+        handler,
+        context: Optional[ResultContext] = None,
+        case_filter: Optional[Callable[[TestCase], bool]] = None,
+        result_name: Optional[str] = None,
 ) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
@@ -746,8 +709,8 @@ def run_test(
 
 
 def get_test_runners(
-    pipeline: Pipeline,
-    case_filter: Optional[Callable[[TestCase], bool]] = None,
+        pipeline: Pipeline,
+        case_filter: Optional[Callable[[TestCase], bool]] = None,
 ) -> List[Tuple[PipelineRun, TestCase]]:
     """
     Retrieves test runners for a given pipeline
@@ -770,7 +733,7 @@ def get_test_runners(
     api = V1Api(api_client=api_client)
 
     if not pipeline:
-        raise ValueError(f"Invalid pipeline found")
+        raise ValueError("Invalid pipeline found")
 
     if is_valid_uuid(pipeline.id):
         response = api.v1_test_case_get({"pipelineId": pipeline.id})
@@ -792,11 +755,11 @@ def get_test_runners(
 
 
 def submit_test_runners(
-    pipeline: Pipeline,
-    pipeline_run_test_cases: List[Tuple[PipelineRun, TestCase]],
-    context: Optional[ResultContext] = None,
-    case_filter: Optional[Callable[[TestCase], bool]] = None,
-    result_name: Optional[str] = None,
+        pipeline: Pipeline,
+        pipeline_run_test_cases: List[Tuple[PipelineRun, TestCase]],
+        context: Optional[ResultContext] = None,
+        case_filter: Optional[Callable[[TestCase], bool]] = None,
+        result_name: Optional[str] = None,
 ) -> Result:
     """
     Submits test runners for a given pipeline
@@ -828,7 +791,7 @@ def submit_test_runners(
         api = V1Api(api_client=api_client)
 
         if not pipeline:
-            raise ValueError(f"Invalid pipeline found")
+            raise ValueError("Invalid pipeline found")
 
         test_runs = []
 
@@ -892,6 +855,152 @@ def submit_test_runners(
         raise e
 
 
+class DatasetV2(TypedDict):
+    id: str
+    name: str
+    description: Optional[str]
+    pipelineId: str
+    createdAt: datetime
+    updatedAt: datetime
+    archivedAt: Optional[datetime]
+
+
+class CreateDatasetV2(TypedDict):
+    name: str
+    description: Optional[str]
+    pipelineId: str
+
+
+class UpdateDatasetV2(TypedDict, total=False):
+    name: Optional[str]
+    description: Optional[str]
+    archived: Optional[bool]
+
+
+class DatasetListResponse(TypedDict):
+    data: List[DatasetV2]
+
+
+def get_datasets(
+        pipeline_slug: Optional[str] = None,
+        pipeline_id: Optional[str] = None,
+        archived: Optional[bool] = None
+) -> DatasetListResponse:
+    """
+    Get datasets from the Gentrace API, optionally filtered by pipeline slug, pipeline ID, or archived status.
+
+    Args:
+        pipeline_slug (str, optional): The slug of the pipeline to filter datasets by. Defaults to None.
+        pipeline_id (str, optional): The ID of the pipeline to filter datasets by. Defaults to None.
+        archived (bool, optional): Filter datasets by archived status. Defaults to None.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        DatasetListResponse: The response containing an array of datasets returned by the Gentrace API.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    query_params = {}
+    if pipeline_slug:
+        query_params["pipelineSlug"] = pipeline_slug
+    if pipeline_id:
+        query_params["pipelineId"] = pipeline_id
+    if archived is not None:
+        query_params["archived"] = archived
+
+    response = api.v2_datasets_get(
+        query_params=query_params,
+    )
+    return DatasetListResponse(data=response.body.get("data", []))
+
+
+def create_dataset(dataset_data: CreateDatasetV2) -> DatasetV2:
+    """
+    Create a new dataset using the Gentrace API.
+
+    Args:
+        dataset_data (CreateDatasetV2): The data for creating the new dataset.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        DatasetV2: The created dataset returned by the Gentrace API.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_datasets_post(
+        body=dataset_data,
+    )
+    return DatasetV2(**response.body)
+
+
+def get_dataset(dataset_id: str) -> DatasetV2:
+    """
+    Get a single dataset from the Gentrace API by its ID.
+
+    Args:
+        dataset_id (str): The ID of the dataset to retrieve.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        DatasetV2: The dataset returned by the Gentrace API.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_datasets_id_get(
+        path_params={"id": dataset_id}
+    )
+    return DatasetV2(**response.body)
+
+
+def update_dataset(dataset_id: str, update_data: UpdateDatasetV2) -> DatasetV2:
+    """
+    Update an existing dataset using the Gentrace API.
+
+    Args:
+        dataset_id (str): The ID of the dataset to update.
+        update_data (UpdateDatasetV2): The data for updating the dataset.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        DatasetV2: The updated dataset returned by the Gentrace API.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_datasets_id_post(
+        body=update_data,
+        path_params={"id": dataset_id}
+    )
+    return DatasetV2(**response.body)
+
+
 __all__ = [
     "get_evaluators",
     "get_test_cases",
@@ -910,4 +1019,8 @@ __all__ = [
     "bulk_create_evaluations",
     "OutputStep",
     "EvaluationDict",
+    "get_dataset",
+    "update_dataset",
+    "create_dataset",
+    "get_datasets",
 ]

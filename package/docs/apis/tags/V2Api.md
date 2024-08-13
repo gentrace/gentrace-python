@@ -5,6 +5,10 @@ All URIs are relative to *https://gentrace.ai/api*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**v2_datasets_get**](#v2_datasets_get) | **get** /v2/datasets | List datasets
+[**v2_datasets_id_get**](#v2_datasets_id_get) | **get** /v2/datasets/{id} | Get a single dataset
+[**v2_datasets_id_post**](#v2_datasets_id_post) | **post** /v2/datasets/{id} | Update a dataset
+[**v2_datasets_post**](#v2_datasets_post) | **post** /v2/datasets | Create a new dataset
 [**v2_evaluations_bulk_post**](#v2_evaluations_bulk_post) | **post** /v2/evaluations/bulk | Bulk create evaluations
 [**v2_evaluators_get**](#v2_evaluators_get) | **get** /v2/evaluators | Get evaluators
 [**v2_feedback_id_get**](#v2_feedback_id_get) | **get** /v2/feedback/{id} | Get feedback
@@ -15,8 +19,568 @@ Method | HTTP request | Description
 [**v2_pipelines_get**](#v2_pipelines_get) | **get** /v2/pipelines | Get pipelines
 [**v2_runs_id_get**](#v2_runs_id_get) | **get** /v2/runs/{id} | Get a run
 [**v2_test_cases_get**](#v2_test_cases_get) | **get** /v2/test-cases | Get test cases
+[**v2_test_cases_id_delete**](#v2_test_cases_id_delete) | **delete** /v2/test-cases/{id} | Delete a test case
 [**v2_test_cases_id_get**](#v2_test_cases_id_get) | **get** /v2/test-cases/{id} | Get a test case
 [**v2_test_results_get**](#v2_test_results_get) | **get** /v2/test-results | Get test results
+
+# **v2_datasets_get**
+<a name="v2_datasets_get"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} v2_datasets_get()
+
+List datasets
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from gentrace.model.dataset_v2 import DatasetV2
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only optional values
+    query_params = {
+        'pipelineSlug': "pipelineSlug_example",
+        'pipelineId': "pipelineId_example",
+        'archived': True,
+    }
+    try:
+        # List datasets
+        api_response = api_instance.v2_datasets_get(
+            query_params=query_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_datasets_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+query_params | RequestQueryParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### query_params
+#### RequestQueryParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+pipelineSlug | PipelineSlugSchema | | optional
+pipelineId | PipelineIdSchema | | optional
+archived | ArchivedSchema | | optional
+
+
+# PipelineSlugSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
+
+# PipelineIdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+# ArchivedSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+bool,  | BoolClass,  |  | 
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_datasets_get.ApiResponseFor200) | Datasets retrieved successfully
+400 | [ApiResponseFor400](#v2_datasets_get.ApiResponseFor400) | Bad request
+500 | [ApiResponseFor500](#v2_datasets_get.ApiResponseFor500) | Server error
+
+#### v2_datasets_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[data](#data)** | list, tuple,  | tuple,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# data
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) | [**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) | [**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) |  | 
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**[data](#data)** | list, tuple,  | tuple,  |  | [optional] 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# data
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  |  | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) | [**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) | [**DatasetV2**]({{complexTypePrefix}}DatasetV2.md) |  | 
+
+#### v2_datasets_get.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v2_datasets_get.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **v2_datasets_id_get**
+<a name="v2_datasets_id_get"></a>
+> DatasetV2 v2_datasets_id_get(id)
+
+Get a single dataset
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from gentrace.model.dataset_v2 import DatasetV2
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'id': "id_example",
+    }
+    try:
+        # Get a single dataset
+        api_response = api_instance.v2_datasets_id_get(
+            path_params=path_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_datasets_id_get: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+path_params | RequestPathParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+id | IdSchema | | 
+
+# IdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_datasets_id_get.ApiResponseFor200) | Dataset retrieved successfully
+404 | [ApiResponseFor404](#v2_datasets_id_get.ApiResponseFor404) | Dataset not found
+500 | [ApiResponseFor500](#v2_datasets_id_get.ApiResponseFor500) | Server error
+
+#### v2_datasets_id_get.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+#### v2_datasets_id_get.ApiResponseFor404
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v2_datasets_id_get.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **v2_datasets_id_post**
+<a name="v2_datasets_id_post"></a>
+> DatasetV2 v2_datasets_id_post(idupdate_dataset_v2)
+
+Update a dataset
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from gentrace.model.update_dataset_v2 import UpdateDatasetV2
+from gentrace.model.dataset_v2 import DatasetV2
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'id': "id_example",
+    }
+    body = UpdateDatasetV2(
+        name="name_example",
+        description="description_example",
+        is_golden=True,
+        is_archived=True,
+    )
+    try:
+        # Update a dataset
+        api_response = api_instance.v2_datasets_id_post(
+            path_params=path_params,
+            body=body,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_datasets_id_post: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+path_params | RequestPathParams | |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**UpdateDatasetV2**](../../models/UpdateDatasetV2.md) |  | 
+
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+id | IdSchema | | 
+
+# IdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_datasets_id_post.ApiResponseFor200) | Dataset updated successfully
+400 | [ApiResponseFor400](#v2_datasets_id_post.ApiResponseFor400) | Bad request
+404 | [ApiResponseFor404](#v2_datasets_id_post.ApiResponseFor404) | Dataset not found
+500 | [ApiResponseFor500](#v2_datasets_id_post.ApiResponseFor500) | Server error
+
+#### v2_datasets_id_post.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+#### v2_datasets_id_post.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v2_datasets_id_post.ApiResponseFor404
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v2_datasets_id_post.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **v2_datasets_post**
+<a name="v2_datasets_post"></a>
+> DatasetV2 v2_datasets_post(create_dataset_v2)
+
+Create a new dataset
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from gentrace.model.create_dataset_v2 import CreateDatasetV2
+from gentrace.model.dataset_v2 import DatasetV2
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    body = CreateDatasetV2(
+        name="name_example",
+        description="description_example",
+        pipeline_id="pipeline_id_example",
+        pipeline_slug="pipeline_slug_example",
+        is_golden=True,
+    )
+    try:
+        # Create a new dataset
+        api_response = api_instance.v2_datasets_post(
+            body=body,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_datasets_post: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+body | typing.Union[SchemaForRequestBodyApplicationJson] | required |
+content_type | str | optional, default is 'application/json' | Selects the schema and serialization of the request body
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### body
+
+# SchemaForRequestBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**CreateDatasetV2**](../../models/CreateDatasetV2.md) |  | 
+
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_datasets_post.ApiResponseFor200) | Dataset created successfully
+400 | [ApiResponseFor400](#v2_datasets_post.ApiResponseFor400) | Bad request
+500 | [ApiResponseFor500](#v2_datasets_post.ApiResponseFor500) | Server error
+
+#### v2_datasets_post.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+Type | Description  | Notes
+------------- | ------------- | -------------
+[**DatasetV2**](../../models/DatasetV2.md) |  | 
+
+
+#### v2_datasets_post.ApiResponseFor400
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+#### v2_datasets_post.ApiResponseFor500
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
 
 # **v2_evaluations_bulk_post**
 <a name="v2_evaluations_bulk_post"></a>
@@ -1229,6 +1793,8 @@ headers | Unset | headers were not defined |
 
 Get test cases
 
+At least one of datasetId, pipelineId, or pipelineSlug must be provided
+
 ### Example
 
 * Bearer Authentication (bearerAuth):
@@ -1259,6 +1825,7 @@ with gentrace.ApiClient(configuration) as api_client:
 
     # example passing only optional values
     query_params = {
+        'datasetId': "datasetId_example",
         'pipelineId': "pipelineId_example",
         'pipelineSlug': "pipelineSlug_example",
     }
@@ -1286,9 +1853,17 @@ skip_deserialization | bool | default is False | when True, headers and body wil
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
+datasetId | DatasetIdSchema | | optional
 pipelineId | PipelineIdSchema | | optional
 pipelineSlug | PipelineSlugSchema | | optional
 
+
+# DatasetIdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str,  | str,  |  | 
 
 # PipelineIdSchema
 
@@ -1367,6 +1942,130 @@ list, tuple,  | tuple,  |  |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**TestCaseV2**]({{complexTypePrefix}}TestCaseV2.md) | [**TestCaseV2**]({{complexTypePrefix}}TestCaseV2.md) | [**TestCaseV2**]({{complexTypePrefix}}TestCaseV2.md) |  | 
+
+### Authorization
+
+[bearerAuth](../../../README.md#bearerAuth)
+
+[[Back to top]](#__pageTop) [[Back to API list]](../../../README.md#documentation-for-api-endpoints) [[Back to Model list]](../../../README.md#documentation-for-models) [[Back to README]](../../../README.md)
+
+# **v2_test_cases_id_delete**
+<a name="v2_test_cases_id_delete"></a>
+> {str: (bool, date, datetime, dict, float, int, list, str, none_type)} v2_test_cases_id_delete(id)
+
+Delete a test case
+
+### Example
+
+* Bearer Authentication (bearerAuth):
+```python
+import gentrace
+from gentrace.apis.tags import v2_api
+from pprint import pprint
+# Defining the host is optional and defaults to https://gentrace.ai/api
+# See configuration.py for a list of all supported configuration parameters.
+configuration = gentrace.Configuration(
+    host = "https://gentrace.ai/api"
+)
+
+# The client must configure the authentication and authorization parameters
+# in accordance with the API server security policy.
+# Examples for each auth method are provided below, use the example that
+# satisfies your auth use case.
+
+# Configure Bearer authorization: bearerAuth
+configuration = gentrace.Configuration(
+    access_token = 'YOUR_BEARER_TOKEN'
+)
+# Enter a context with an instance of the API client
+with gentrace.ApiClient(configuration) as api_client:
+    # Create an instance of the API class
+    api_instance = v2_api.V2Api(api_client)
+
+    # example passing only required values which don't have defaults set
+    path_params = {
+        'id': "id_example",
+    }
+    try:
+        # Delete a test case
+        api_response = api_instance.v2_test_cases_id_delete(
+            path_params=path_params,
+        )
+        pprint(api_response)
+    except gentrace.ApiException as e:
+        print("Exception when calling V2Api->v2_test_cases_id_delete: %s\n" % e)
+```
+### Parameters
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+path_params | RequestPathParams | |
+accept_content_types | typing.Tuple[str] | default is ('application/json', 'application/json; charset&#x3D;utf-8', ) | Tells the server the content type(s) that are accepted by the client
+stream | bool | default is False | if True then the response.content will be streamed and loaded from a file like object. When downloading a file, set this to True to force the code to deserialize the content to a FileSchema file
+timeout | typing.Optional[typing.Union[int, typing.Tuple]] | default is None | the timeout used by the rest client
+skip_deserialization | bool | default is False | when True, headers and body will be unset and an instance of api_client.ApiResponseWithoutDeserialization will be returned
+
+### path_params
+#### RequestPathParams
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+id | IdSchema | | 
+
+# IdSchema
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+str, uuid.UUID,  | str,  |  | value must be a uuid
+
+### Return Types, Responses
+
+Code | Class | Description
+------------- | ------------- | -------------
+n/a | api_client.ApiResponseWithoutDeserialization | When skip_deserialization is True this response is returned
+200 | [ApiResponseFor200](#v2_test_cases_id_delete.ApiResponseFor200) | Test case deleted successfully
+404 | [ApiResponseFor404](#v2_test_cases_id_delete.ApiResponseFor404) | Test case not found
+
+#### v2_test_cases_id_delete.ApiResponseFor200
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | typing.Union[SchemaFor200ResponseBodyApplicationJson, SchemaFor200ResponseBodyApplicationJsonCharsetutf8, ] |  |
+headers | Unset | headers were not defined |
+
+# SchemaFor200ResponseBodyApplicationJson
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**success** | bool,  | BoolClass,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# SchemaFor200ResponseBodyApplicationJsonCharsetutf8
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  |  | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**success** | bool,  | BoolClass,  |  | 
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+#### v2_test_cases_id_delete.ApiResponseFor404
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+response | urllib3.HTTPResponse | Raw response |
+body | Unset | body was not defined |
+headers | Unset | headers were not defined |
 
 ### Authorization
 
