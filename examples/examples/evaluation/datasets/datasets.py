@@ -42,3 +42,25 @@ print("\nAll datasets (including archived):")
 for dataset in all_datasets['data']:
     archived_status = "Archived" if dataset.get('archivedAt') else "Active"
     print(f"- {dataset['name']} (ID: {dataset['id']}, Status: {archived_status})")
+
+# Create a test case
+new_test_case = gentrace.create_test_case(pipeline_slug, {
+    "name": "Sample Test Case",
+    "inputs": {
+        "question": "In what year did the French Revolution begin?",
+        "context": "The French Revolution was a period of major social and political "
+                   "upheaval in France that began in 1789 with the Storming of the "
+                   "Bastille and ended in the late 1790s with the ascent of Napoleon "
+                   "Bonaparte."
+    },
+    "expectedOutputs": {
+        "answer": "1789"
+    }
+})
+print(f"\nCreated new test case with ID: {new_test_case}")
+
+# Delete a test case
+test_case_id_to_delete = new_test_case  # Using the ID of the test case we just created
+deletion_success = gentrace.delete_test_case(test_case_id_to_delete)
+print(f"\nDeletion of test case {test_case_id_to_delete} "
+      f"{'succeeded' if deletion_success else 'failed'}")

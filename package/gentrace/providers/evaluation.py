@@ -295,6 +295,30 @@ def update_test_case(pipeline_slug: str, payload: UpdateTestCasePayload) -> str:
     return case_id
 
 
+def delete_test_case(test_case_id: str) -> bool:
+    """
+    Deletes a test case using the Gentrace API.
+
+    Args:
+        test_case_id (str): The ID of the test case to delete.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        bool: True if the test case was successfully deleted, False otherwise.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V2Api(api_client=api_client)
+
+    response = api.v2_test_cases_id_delete(path_params={"id": test_case_id})
+    return response.body.get("success", False)
+
+
 def submit_prepared_test_runs(
         pipeline_slug: str,
         test_runs: List[Dict],
@@ -1007,6 +1031,7 @@ __all__ = [
     "get_test_case",
     "create_test_cases",
     "create_test_case",
+    "delete_test_case",
     "get_test_results",
     "get_test_result",
     "update_test_case",
