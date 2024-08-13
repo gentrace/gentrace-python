@@ -91,16 +91,19 @@ def get_evaluators(
 def get_test_cases(
         pipeline_id: Optional[str] = None,
         pipeline_slug: Optional[str] = None,
+        dataset_id: Optional[str] = None,
 ) -> List[TestCase]:
     """
-    Retrieves test cases for a given pipeline ID from the Gentrace API.
+    Retrieves test cases for a given dataset ID, pipeline ID, or pipeline slug from the Gentrace API.
 
     Args:
-        pipeline_slug (str): The pipeline slug to retrieve test cases for.
+        dataset_id (str): The ID of the dataset to retrieve test cases for.
         pipeline_id (str): The ID of the pipeline to retrieve test cases for.
+        pipeline_slug (str): The pipeline slug to retrieve test cases for.
 
     Raises:
         ValueError: If the SDK is not initialized. Call init() first.
+        ValueError: If neither dataset_id, pipeline_id, nor pipeline_slug is provided.
 
     Returns:
         list: A list of test cases.
@@ -113,32 +116,39 @@ def get_test_cases(
     api_client = ApiClient(configuration=config)
     api = V1Api(api_client=api_client)
 
-    if not pipeline_id and not pipeline_slug:
-        raise ValueError("pipeline_slug or pipeline_id must be passed")
+    if not dataset_id and not pipeline_id and not pipeline_slug:
+        raise ValueError("Either dataset_id, pipeline_id, or pipeline_slug must be defined.")
 
-    effective_pipeline_id = pipeline_id
+    if dataset_id:
+        response = api.v1_test_case_get({"datasetId": dataset_id})
+    else:
+        if pipeline_slug and not is_valid_uuid(pipeline_slug):
+            all_pipelines = get_pipelines(slug=pipeline_slug)
 
-    if pipeline_slug and not is_valid_uuid(pipeline_slug):
-        all_pipelines = get_pipelines(slug=pipeline_slug)
+            matching_pipeline = next(
+                (
+                    pipeline
+                    for pipeline in all_pipelines
+                    if pipeline["slug"] == pipeline_slug
+                ),
+                None,
+            )
 
-        matching_pipeline = next(
-            (
-                pipeline
-                for pipeline in all_pipelines
-                if pipeline["slug"] == pipeline_slug
-            ),
-            None,
-        )
+            if not matching_pipeline:
+                raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
 
-        if not matching_pipeline:
-            raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
+            pipeline_id = matching_pipeline.get("id")
 
-        effective_pipeline_id = matching_pipeline.get("id")
+        params = {}
+        if pipeline_id:
+            params["pipelineId"] = pipeline_id
+        elif pipeline_slug:
+            params["pipelineSlug"] = pipeline_slug
 
-    response = api.v1_test_case_get({"pipelineId": effective_pipeline_id})
+        response = api.v1_test_case_get(params)
+
     test_cases = response.body.get("testCases", [])
     return test_cases
-
 
 def get_test_case(
         case_id: str,
