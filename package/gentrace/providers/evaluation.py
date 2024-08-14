@@ -743,15 +743,17 @@ def run_test(
 
 
 def get_test_runners(
-        pipeline: Pipeline,
-        case_filter: Optional[Callable[[TestCase], bool]] = None,
-) -> List[Tuple[PipelineRun, TestCase]]:
+    pipeline: Pipeline,
+    dataset_id: Optional[str] = None,
+    case_filter: Optional[Callable[[Dict[str, Any]], bool]] = None
+) -> List[Tuple[PipelineRun, Dict[str, Any]]]:
     """
     Retrieves test runners for a given pipeline
 
     Args:
         pipeline (Pipeline): The pipeline instance
-        case_filter: Optional[Callable[[TestCase], bool]] = None
+        dataset_id (Optional[str]): Optional dataset ID to filter test cases by.
+        case_filter (Optional[Callable[[Dict[str, Any]], bool]]): Optional function to filter test cases
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -769,24 +771,32 @@ def get_test_runners(
     if not pipeline:
         raise ValueError("Invalid pipeline found")
 
+    params = {}
+    if dataset_id:
+        params["datasetId"] = dataset_id
     if is_valid_uuid(pipeline.id):
-        response = api.v1_test_case_get({"pipelineId": pipeline.id})
+        params["pipelineId"] = pipeline.id
     else:
-        response = api.v1_test_case_get({"pipelineSlug": pipeline.slug})
+        params["pipelineSlug"] = pipeline.slug
 
+    response = api.v1_test_case_get(params)
     test_cases = response.body.get("testCases", [])
 
     test_runners = []
+    total_test_cases = len(test_cases)
+    filtered_test_cases = 0
 
     for test_case in test_cases:
         if case_filter and not case_filter(test_case):
             continue
 
+        filtered_test_cases += 1
         pipeline_run = pipeline.start()
         test_runners.append((pipeline_run, test_case))
 
+    print(f"Total test cases: {total_test_cases}")
+    print(f"Filtered test cases: {filtered_test_cases}")
     return test_runners
-
 
 def submit_test_runners(
         pipeline: Pipeline,
