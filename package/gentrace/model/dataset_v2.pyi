@@ -71,7 +71,6 @@ class DatasetV2(
                         *_args,
                         _configuration=_configuration,
                     )
-            isGolden = schemas.BoolSchema
             __annotations__ = {
                 "id": id,
                 "createdAt": createdAt,
@@ -80,7 +79,6 @@ class DatasetV2(
                 "pipelineId": pipelineId,
                 "archivedAt": archivedAt,
                 "description": description,
-                "isGolden": isGolden,
             }
     
     createdAt: MetaOapg.properties.createdAt
@@ -111,12 +109,9 @@ class DatasetV2(
     def __getitem__(self, name: typing_extensions.Literal["description"]) -> MetaOapg.properties.description: ...
     
     @typing.overload
-    def __getitem__(self, name: typing_extensions.Literal["isGolden"]) -> MetaOapg.properties.isGolden: ...
-    
-    @typing.overload
     def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
     
-    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "pipelineId", "archivedAt", "description", "isGolden", ], str]):
+    def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "pipelineId", "archivedAt", "description", ], str]):
         # dict_instance[name] accessor
         return super().__getitem__(name)
     
@@ -143,12 +138,9 @@ class DatasetV2(
     def get_item_oapg(self, name: typing_extensions.Literal["description"]) -> typing.Union[MetaOapg.properties.description, schemas.Unset]: ...
     
     @typing.overload
-    def get_item_oapg(self, name: typing_extensions.Literal["isGolden"]) -> typing.Union[MetaOapg.properties.isGolden, schemas.Unset]: ...
-    
-    @typing.overload
     def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
     
-    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "pipelineId", "archivedAt", "description", "isGolden", ], str]):
+    def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "createdAt", "updatedAt", "name", "pipelineId", "archivedAt", "description", ], str]):
         return super().get_item_oapg(name)
     
 
@@ -162,7 +154,6 @@ class DatasetV2(
         updatedAt: typing.Union[MetaOapg.properties.updatedAt, decimal.Decimal, int, float, ],
         archivedAt: typing.Union['UnixSecondsNullable', schemas.Unset] = schemas.unset,
         description: typing.Union[MetaOapg.properties.description, None, str, schemas.Unset] = schemas.unset,
-        isGolden: typing.Union[MetaOapg.properties.isGolden, bool, schemas.Unset] = schemas.unset,
         _configuration: typing.Optional[schemas.Configuration] = None,
         **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
     ) -> 'DatasetV2':
@@ -176,7 +167,6 @@ class DatasetV2(
             updatedAt=updatedAt,
             archivedAt=archivedAt,
             description=description,
-            isGolden=isGolden,
             _configuration=_configuration,
             **kwargs,
         )
