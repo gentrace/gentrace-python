@@ -34,7 +34,6 @@ pipeline_by_id = gentrace.Pipeline(id=PIPELINE_ID)
 
 pipeline = pipeline_by_slug
 
-
 def measure_func(inputs):
     time.sleep(0.3)
     return example_response(inputs)
@@ -48,7 +47,10 @@ def example_handler(pipeline_run_test_case):
     )
 
 
-pipeline_run_test_cases = gentrace.get_test_runners(pipeline)
+pipeline_run_test_cases = gentrace.get_test_runners(
+    pipeline,
+    dataset_id="70a96925-db53-5c59-82b4-f42e988950a9"
+)
 
 enable_parallelism(example_handler, pipeline_run_test_cases, 4)
 

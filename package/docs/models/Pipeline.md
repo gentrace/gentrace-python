@@ -10,6 +10,7 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **organizationId** | str,  | str,  | The ID of the organization that owns the pipeline | 
 **createdAt** | str, datetime,  | str,  | The date and time when the pipeline was created | value must conform to RFC-3339 date-time
+**goldenDatasetId** | None, str,  | NoneClass, str,  | The ID of the golden dataset associated with the pipeline | 
 **id** | str, uuid.UUID,  | str,  | The ID of the pipeline | value must be a uuid
 **slug** | str,  | str,  | The slug of the pipeline | 
 **[labels](#labels)** | list, tuple,  | tuple,  | The labels attached to the pipeline | 

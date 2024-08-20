@@ -12,6 +12,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **archivedAt** | [**UnixSecondsNullable**](UnixSecondsNullable.md) | [**UnixSecondsNullable**](UnixSecondsNullable.md) |  | 
 **createdAt** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
 **privateUserEmail** | None, str,  | NoneClass, str,  | If null, this is a team pipeline. If not null, this is a private pipeline for the specified email. | 
+**goldenDatasetId** | None, str,  | NoneClass, str,  | The ID of the golden dataset associated with the pipeline | 
 **id** | str, uuid.UUID,  | str,  | The ID of the pipeline | value must be a uuid
 **branch** | None, str,  | NoneClass, str,  | The branch that the pipeline is associated with | 
 **privateMemberId** | None, str,  | NoneClass, str,  | If null, this is a team pipeline. If not null, this is a private pipeline for the specified member ID. | 

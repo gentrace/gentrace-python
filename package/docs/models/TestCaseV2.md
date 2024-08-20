@@ -10,8 +10,10 @@ Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **archivedAt** | [**UnixSecondsNullable**](UnixSecondsNullable.md) | [**UnixSecondsNullable**](UnixSecondsNullable.md) |  | 
 **createdAt** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float
+**deletedAt** | [**UnixSecondsNullable**](UnixSecondsNullable.md) | [**UnixSecondsNullable**](UnixSecondsNullable.md) |  | 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test case as a JSON object | 
 **name** | str,  | str,  | The name of the test case | 
+**datasetId** | str, uuid.UUID,  | str,  | The ID of the dataset that the test case belongs to | value must be a uuid
 **id** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **pipelineId** | str, uuid.UUID,  | str,  | The ID of the pipeline that the test case belongs to | value must be a uuid
 **updatedAt** | decimal.Decimal, int, float,  | decimal.Decimal,  | Timestamp in seconds since the UNIX epoch. Can be transformed into a Date object. | value must be a 32 bit float

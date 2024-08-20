@@ -8,8 +8,9 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
+**[testCases](#testCases)** | list, tuple,  | tuple,  |  | 
 **pipelineSlug** | str,  | str,  | Slug for the pipeline | [optional] 
-**[testCases](#testCases)** | list, tuple,  | tuple,  |  | [optional] 
+**datasetId** | str,  | str,  | ID of the dataset | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # testCases
@@ -34,9 +35,9 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 ### Dictionary Keys
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
-**[expectedOutputs](#expectedOutputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Expected outputs for the test case | 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Input for the test case. Must be a valid JSON object and not an array. | 
 **name** | str,  | str,  | Name of the test case. | 
+**[expectedOutputs](#expectedOutputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Expected outputs for the test case | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
