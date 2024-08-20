@@ -615,13 +615,13 @@ def bulk_create_evaluations(
     count = result.body.get("count", None)
     return count
 
-
 def run_test(
         pipeline_slug: str,
         handler,
         context: Optional[ResultContext] = None,
         case_filter: Optional[Callable[[TestCase], bool]] = None,
         result_name: Optional[str] = None,
+        dataset_id: Optional[str] = None,
 ) -> Result:
     """
     Runs a test by pulling down test cases from Gentrace, running them through †he
@@ -634,6 +634,7 @@ def run_test(
         context (Optional[ResultContext]): Context key pairs
         case_filter: Optional[Callable[[TestCase], bool]] = None
         result_name (str, optional): The name of the test result. Defaults to None.
+        dataset_id (str, optional): The ID of the dataset to retrieve test cases for. Defaults to None.
 
     Raises:
         ValueError: If the Gentrace API key is not initialized.
@@ -670,7 +671,10 @@ def run_test(
         if not matching_pipeline:
             raise ValueError(f"Could not find the specified pipeline ({pipeline_slug})")
 
-        test_cases = get_test_cases(matching_pipeline["id"])
+        if dataset_id:
+            test_cases = get_test_cases(dataset_id=dataset_id)
+        else:
+            test_cases = get_test_cases(pipeline_id=matching_pipeline["id"])
 
         test_runs = []
 
