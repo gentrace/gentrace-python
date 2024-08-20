@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.0](https://github.com/gentrace/gentrace-python/compare/v0.31.7...v0.32.0) (2024-08-20)
+
+
+### Features
+
+* Add datasets ([#237](https://github.com/gentrace/gentrace-python/issues/237)) ([2a79458](https://github.com/gentrace/gentrace-python/commit/2a794582f733e8885d258729f07144a764950cf4))
+
 ## [0.31.7](https://github.com/gentrace/gentrace-python/compare/v0.31.6...v0.31.7) (2024-07-03)
 
 
