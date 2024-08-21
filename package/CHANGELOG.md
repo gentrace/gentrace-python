@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.1](https://github.com/gentrace/gentrace-python/compare/v0.32.0...v0.32.1) (2024-08-21)
+
+
+### Bug Fixes
+
+* Add dataset ID to create_test_case(s) ([#239](https://github.com/gentrace/gentrace-python/issues/239)) ([035a2b7](https://github.com/gentrace/gentrace-python/commit/035a2b73eae791608beba4f205dc3cfefdc7c43e))
+
 ## [0.32.0](https://github.com/gentrace/gentrace-python/compare/v0.31.7...v0.32.0) (2024-08-20)
 
 
