@@ -11,6 +11,7 @@ gentrace.init(
 
 response = gentrace.create_test_cases(
     pipeline_slug="main",
+    dataset_id="70a96925-db53-5c59-82b4-f42e988950a9",
     payload=[
         {
             "name": "Batman -> Black Window #1",

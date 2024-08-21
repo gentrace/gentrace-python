@@ -10,7 +10,7 @@ gentrace.init(
 )
 
 case_id = gentrace.create_test_case(
-    pipeline_slug="testing-pipeline-id",
+    "guess-the-year",
     dataset_id="70a96925-db53-5c59-82b4-f42e988950a9",
     payload={
         "name": "Updated test case name",
