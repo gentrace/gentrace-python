@@ -203,72 +203,95 @@ class UpdateTestCaseResponse(TypedDict):
 
 
 def create_test_cases(
-        pipeline_slug: str,
-        payload: List[TestCaseDict],
+        pipeline_slug: Optional[str] = None,
+        payload: List[TestCaseDict] = [],
+        dataset_id: Optional[str] = None
 ) -> int:
     """Creates multiple test cases for a specified pipeline using the Gentrace API.
 
     Parameters:
-    - pipeline_slug (str): The unique identifier of the pipeline to which the test cases should be added.
+    - pipeline_slug (Optional[str]): The unique identifier of the pipeline to which the test cases should be added.
     - payload (List[TestCaseDict]): The array payload containing the test cases to be created.
+    - dataset_id (Optional[str]): The unique identifier of the dataset to which the test cases should be added.
 
     Returns:
     - int: Count of test cases created.
 
     Raises:
-    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+    - ValueError: If the Gentrace API key is not initialized, if neither pipeline_slug nor dataset_id is provided,
+                  or if the payload list is empty.
 
     Note:
     Ensure that the Gentrace API is initialized by calling init() before using this function.
+    If both pipeline_slug and dataset_id are provided, dataset_id will be prioritized.
     """
     config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
     if not config:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
+    if not payload:
+        raise ValueError("Payload list cannot be empty")
+
     api_client = ApiClient(configuration=config)
     api = V1Api(api_client=api_client)
 
-    if not pipeline_slug:
-        raise ValueError("pipeline_slug must be passed")
+    if not dataset_id and not pipeline_slug:
+        raise ValueError("Either pipeline_slug or dataset_id must be provided")
 
-    response = api.v1_test_case_post(
-        {"pipelineSlug": pipeline_slug, "testCases": payload}
-    )
+    request_payload = {"testCases": payload}
+    if dataset_id:
+        request_payload["datasetId"] = dataset_id
+    elif pipeline_slug:
+        request_payload["pipelineSlug"] = pipeline_slug
+
+    response = api.v1_test_case_post(request_payload)
     count = response.body.get("creationCount", None)
     return count
 
-
 def create_test_case(
-        pipeline_slug: str,
-        payload: SingleTestCasePayload,
+        pipeline_slug: Optional[str] = None,
+        payload: Optional[SingleTestCasePayload] = None,
+        dataset_id: Optional[str] = None
 ) -> str:
     """
-    Creates a single test case for a specified pipeline using the Gentrace API.
+    Creates a single test case for a specified pipeline or dataset using the Gentrace API.
 
     Parameters:
-    - pipeline_slug (str): The unique identifier of the pipeline to which the test case should be added.
     - payload (SingleTestCasePayload): The payload containing the test case to be created.
+    - pipeline_slug (Optional[str]): The unique identifier of the pipeline to which the test case should be added.
+    - dataset_id (Optional[str]): The unique identifier of the dataset to which the test case should be added.
 
     Returns:
     - str: The identifier (caseId) of the created test case.
 
     Raises:
-    - ValueError: If the Gentrace API key is not initialized or if the pipeline_slug is not passed.
+    - ValueError: If the Gentrace API key is not initialized, if neither pipeline_slug nor dataset_id is provided,
+                  or if the payload is not provided.
 
     Note:
     Ensure that the Gentrace API is initialized by calling init() before using this function.
+    If both pipeline_slug and dataset_id are provided, dataset_id will be prioritized.
     """
     config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
     if not config:
         raise ValueError("Gentrace API key not initialized. Call init() first.")
 
+    if payload is None:
+        raise ValueError("Payload must be provided")
+
     api_client = ApiClient(configuration=config)
     api = V1Api(api_client=api_client)
 
-    if not pipeline_slug:
-        raise ValueError("pipeline_slug must be passed")
+    if not dataset_id and not pipeline_slug:
+        raise ValueError("Either pipeline_slug or dataset_id must be provided")
 
-    response = api.v1_test_case_post({"pipelineSlug": pipeline_slug, **payload})
+    request_payload = {**payload}
+    if dataset_id:
+        request_payload["datasetId"] = dataset_id
+    elif pipeline_slug:
+        request_payload["pipelineSlug"] = pipeline_slug
+
+    response = api.v1_test_case_post(request_payload)
     case_id = response.body.get("caseId", None)
     return case_id
 
