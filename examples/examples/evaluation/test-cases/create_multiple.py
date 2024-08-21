@@ -21,9 +21,6 @@ response = gentrace.create_test_cases(
                 "sender": "Batman",
                 "receiver": "Black Widow",
             },
-            "expectedOutputs": {
-                "value": "Dear Natasha,\n I have run into a problem..."
-            },
         },
         {
             "name": "Superman -> Wonder Woman #3",
