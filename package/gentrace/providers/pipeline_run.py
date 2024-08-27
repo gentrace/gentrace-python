@@ -417,6 +417,19 @@ class PipelineRun:
 
         if len(step_runs_data) == 0:
             return {"pipelineRunId": None}
+            
+        print("Step Runs:")
+        for idx, step_run in enumerate(step_runs_data, 1):
+            print(f"Step {idx}:")
+            print(f"  Provider: {step_run.get('provider', 'N/A')}")
+            print(f"  Invocation: {step_run.get('invocation', 'N/A')}")
+            print(f"  Elapsed Time: {step_run.get('elapsedTime', 'N/A')} ms")
+            print(f"  Start Time: {step_run.get('startTime', 'N/A')}")
+            print(f"  End Time: {step_run.get('endTime', 'N/A')}")
+            print("  Input Params:", step_run.get('inputParams', {}))
+            print("  Model Params:", step_run.get('modelParams', {}))
+            print("  Outputs:", step_run.get('outputs', {}))
+            print()  # Add a blank line between steps for readability
 
         if not wait_for_server:
             fire_and_forget(

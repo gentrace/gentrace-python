@@ -5,7 +5,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 
 import pystache
-from openai import AsyncOpenAI, OpenAI, chat, completions, embeddings
+from openai import AsyncOpenAI, OpenAI, beta, chat, completions, embeddings
 
 from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.pipeline_run import PipelineRun
@@ -23,6 +23,11 @@ ExtractedChat = chat.__class__
 ExtractedChatCompletions = chat.completions.__class__
 ExtractedEmbeddings = embeddings.__class__
 
+# New extractions
+ExtractedBeta = beta.__class__
+ExtractedBetaChat = beta.chat.__class__
+ExtractedBetaChatCompletions = beta.chat.completions.__class__
+
 if prior_value is not None:
     os.environ["OPENAI_API_KEY"] = prior_value
 else:
@@ -35,6 +40,11 @@ ExtractedAsyncCompletions = dummy_client.completions.__class__
 ExtractedAsyncChat = dummy_client.chat.__class__
 ExtractedAsyncChatCompletions = dummy_client.chat.completions.__class__
 ExtractedAsyncEmbeddings = dummy_client.embeddings.__class__
+
+# New async extractions
+ExtractedAsyncBeta = dummy_client.beta.__class__
+ExtractedAsyncBetaChat = dummy_client.beta.chat.__class__
+ExtractedAsyncBetaChatCompletions = dummy_client.beta.chat.completions.__class__
 
 
 class GentraceAsyncOpenAI(AsyncOpenAI):
@@ -58,6 +68,11 @@ class GentraceAsyncOpenAI(AsyncOpenAI):
         self.embeddings = GentraceAsyncEmbeddings(client=self, gentrace_config=self.config,
                                                   pipeline=self.pipeline,
                                                   pipeline_run=self.pipeline_run)
+        self.beta = ExtractedAsyncBeta(self)
+        self.beta.chat = ExtractedAsyncBetaChat(self)
+        self.beta.chat.completions = GentraceAsyncBetaChatCompletions(client=self, gentrace_config=self.config,
+                                                                      pipeline=self.pipeline,
+                                                                      pipeline_run=self.pipeline_run)
 
 
 class GentraceAsyncEmbeddings(ExtractedAsyncEmbeddings):
@@ -96,6 +111,14 @@ class GentraceAsyncEmbeddings(ExtractedAsyncEmbeddings):
             pipeline_run = PipelineRun(pipeline=pipeline, context=context)
 
         if pipeline_run:
+            print("Adding step run for GentraceAsyncEmbeddings.create")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Input params:", input_params)
+            print("Model:", {"model": model})
+            print("Completion:", completion.dict())
+            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateEmbeddingStepRun(
                     elapsed_time,
@@ -174,6 +197,17 @@ class GentraceAsyncCompletions(ExtractedAsyncCompletions):
 
                 full_response = create_completion_stream_response(modified_response)
 
+                print("Adding step run for GentraceAsyncCompletions.create (stream)")
+                print("Elapsed time:", int((end_time - start_time) * 1000))
+                print("Start time:", to_date_string(start_time))
+                print("End time:", to_date_string(end_time))
+                print("Base completion options:", base_completion_options)
+                print("Prompt template:", prompt_template)
+                print("Prompt inputs:", prompt_inputs)
+                print("Full response:", full_response)
+                print("Pipeline run ID:", pipeline_run_id if is_self_contained else None)
+                print("Stream:", stream)
+                print("Context:", context)
                 create_completion_step_run(
                     self.pipeline_run,
                     pipeline_slug,
@@ -209,6 +243,16 @@ class GentraceAsyncCompletions(ExtractedAsyncCompletions):
         completion = await super().create(**new_completion_options)
         end_time = time.time()
 
+        print("Adding step run for GentraceAsyncCompletions.create (non-stream)")
+        print("Elapsed time:", int((end_time - start_time) * 1000))
+        print("Start time:", to_date_string(start_time))
+        print("End time:", to_date_string(end_time))
+        print("Base completion options:", base_completion_options)
+        print("Prompt template:", prompt_template)
+        print("Prompt inputs:", prompt_inputs)
+        print("Completion:", completion.dict())
+        print("Stream:", stream)
+        print("Context:", context)
         create_completion_step_run(
             self.pipeline_run,
             pipeline_slug,
@@ -300,6 +344,17 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
                     )
 
                 if pipeline_run:
+                    print("Adding step run for GentraceAsyncChatCompletions.create")
+                    print("Elapsed time:", elapsed_time)
+                    print("Start time:", to_date_string(start_time))
+                    print("End time:", to_date_string(end_time))
+                    print("Messages:", messages)
+                    print("User:", user)
+                    print("Content inputs:", content_inputs_array)
+                    print("Model params:", model_params)
+                    print("Content templates:", content_templates_array)
+                    print("Completion:", full_response)
+                    print("Context:", context)
                     pipeline_run.add_step_run(
                         OpenAICreateChatCompletionStepRun(
                             elapsed_time,
@@ -344,6 +399,17 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
             )
 
         if pipeline_run:
+            print("Adding step run for GentraceAsyncChatCompletions.create")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Messages:", messages)
+            print("User:", user)
+            print("Content inputs:", content_inputs_array)
+            print("Model params:", model_params)
+            print("Content templates:", content_templates_array)
+            print("Completion:", completion.dict())
+            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -371,6 +437,177 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
         return completion
 
 
+class GentraceAsyncBetaChatCompletions(ExtractedAsyncBetaChatCompletions):
+    def __init__(self, *, gentrace_config: Dict[str, Any], client: AsyncOpenAI, pipeline: Optional[Pipeline] = None,
+                 pipeline_run: Optional[PipelineRun] = None):
+        super().__init__(client)
+
+        self.pipeline = pipeline
+        self.pipeline_run = pipeline_run
+        self.gentrace_config = gentrace_config
+
+    async def parse(self, *args, **kwargs):
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("gentrace", {})
+        extra_headers = kwargs.pop("extra_headers", {}) or {}
+        extra_headers["X-Gentrace-Helper-Method"] = "true"
+
+        # Render chat messages before calling super().parse()
+        messages = kwargs.get("messages", [])
+        rendered_messages = create_rendered_chat_messages(messages)
+        kwargs["messages"] = rendered_messages
+
+        start_time = time.time()
+        result = await super().parse(*args, **kwargs, extra_headers=extra_headers)
+        end_time = time.time()
+        elapsed_time = int((end_time - start_time) * 1000)
+
+        pipeline_run = self.pipeline_run
+        is_self_contained = not pipeline_run and pipeline_slug
+
+        if is_self_contained:
+            pipeline = Pipeline(
+                slug=pipeline_slug,
+                **self.gentrace_config
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+                context=context,
+            )
+
+        if pipeline_run:
+            # Extract necessary data from args and kwargs
+            user = kwargs.get("user")
+            content_inputs_array = [
+                message.get("contentInputs") for message in messages if "contentInputs" in message
+            ]
+            content_templates_array = [
+                message.get("contentTemplate") for message in messages if "contentTemplate" in message
+            ]
+            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
+
+            print("Adding step run for GentraceAsyncBetaChatCompletions.parse")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Messages:", rendered_messages)
+            print("User:", user)
+            print("Content inputs:", content_inputs_array)
+            print("Model params:", model_params)
+            print("Content templates:", content_templates_array)
+            print("Result:", result.dict())
+            print("Context:", context)
+            pipeline_run.add_step_run(
+                OpenAICreateChatCompletionStepRun(
+                    elapsed_time,
+                    to_date_string(start_time),
+                    to_date_string(end_time),
+                    {
+                        "messages": rendered_messages,
+                        "user": user,
+                        "contentInputs": content_inputs_array,
+                    },
+                    {**model_params, "contentTemplates": content_templates_array},
+                    result.dict(),
+                    context,
+                )
+            )
+
+            if is_self_contained:
+                submit_result = pipeline_run.submit()
+                setattr(result, "pipelineRunId",
+                        submit_result["pipelineRunId"] if "pipelineRunId" in submit_result else None)
+
+        return result
+
+
+class GentraceSyncBetaChatCompletions(ExtractedBetaChatCompletions):
+    def __init__(self, *, gentrace_config: Dict[str, Any], client: OpenAI, pipeline: Optional[Pipeline] = None,
+                 pipeline_run: Optional[PipelineRun] = None):
+        super().__init__(client)
+
+        self.pipeline = pipeline
+        self.pipeline_run = pipeline_run
+        self.gentrace_config = gentrace_config
+
+    def parse(self, *args, **kwargs):
+        pipeline_slug = kwargs.pop("pipeline_slug", None)
+        context = kwargs.pop("gentrace", {})
+        extra_headers = kwargs.pop("extra_headers", {}) or {}
+        extra_headers["X-Gentrace-Helper-Method"] = "true"
+
+        # Render chat messages before calling super().parse()
+        messages = kwargs.get("messages", [])
+        rendered_messages = create_rendered_chat_messages(messages)
+        kwargs["messages"] = rendered_messages
+
+        start_time = time.time()
+        result = super().parse(*args, **kwargs, extra_headers=extra_headers)
+        end_time = time.time()
+        elapsed_time = int((end_time - start_time) * 1000)
+
+        pipeline_run = self.pipeline_run
+        is_self_contained = not pipeline_run and pipeline_slug
+
+        if is_self_contained:
+            pipeline = Pipeline(
+                slug=pipeline_slug,
+                **self.gentrace_config
+            )
+
+            pipeline_run = PipelineRun(
+                pipeline=pipeline,
+                context=context,
+            )
+
+        if pipeline_run:
+            # Extract necessary data from args and kwargs
+            user = kwargs.get("user")
+            content_inputs_array = [
+                message.get("contentInputs") for message in messages if "contentInputs" in message
+            ]
+            content_templates_array = [
+                message.get("contentTemplate") for message in messages if "contentTemplate" in message
+            ]
+            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
+
+            print("Adding step run for GentraceSyncBetaChatCompletions.parse")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Messages:", rendered_messages)
+            print("User:", user)
+            print("Content inputs:", content_inputs_array)
+            print("Model params:", model_params)
+            print("Content templates:", content_templates_array)
+            print("Result:", result.dict())
+            print("Context:", context)
+            pipeline_run.add_step_run(
+                OpenAICreateChatCompletionStepRun(
+                    elapsed_time,
+                    to_date_string(start_time),
+                    to_date_string(end_time),
+                    {
+                        "messages": rendered_messages,
+                        "user": user,
+                        "contentInputs": content_inputs_array,
+                    },
+                    {**model_params, "contentTemplates": content_templates_array},
+                    result.dict(),
+                    context,
+                )
+            )
+
+            if is_self_contained:
+                submit_result = pipeline_run.submit()
+                setattr(result, "pipelineRunId",
+                        submit_result["pipelineRunId"] if "pipelineRunId" in submit_result else None)
+
+        return result
+
+
+
 class GentraceSyncOpenAI(OpenAI):
     pipeline_run: Optional[PipelineRun] = None
 
@@ -389,9 +626,15 @@ class GentraceSyncOpenAI(OpenAI):
         self.chat.completions = GentraceSyncChatCompletions(client=self, gentrace_config=self.config,
                                                             pipeline=self.pipeline,
                                                             pipeline_run=self.pipeline_run)
+
         self.embeddings = GentraceSyncEmbeddings(client=self, gentrace_config=self.config,
                                                  pipeline=self.pipeline,
                                                  pipeline_run=self.pipeline_run)
+        self.beta = ExtractedBeta(self)
+        self.beta.chat = ExtractedBetaChat(self)
+        self.beta.chat.completions = GentraceSyncBetaChatCompletions(client=self, gentrace_config=self.config,
+                                                                     pipeline=self.pipeline,
+                                                                     pipeline_run=self.pipeline_run)
 
 
 class GentraceSyncEmbeddings(ExtractedEmbeddings):
@@ -432,6 +675,14 @@ class GentraceSyncEmbeddings(ExtractedEmbeddings):
             )
 
         if pipeline_run:
+            print("Adding step run for GentraceSyncEmbeddings.create")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Input params:", input_params)
+            print("Model:", {"model": model})
+            print("Completion:", completion.dict())
+            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateEmbeddingStepRun(
                     elapsed_time,
@@ -523,6 +774,10 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
         self.gentrace_config = gentrace_config
 
     def create(self, *args, **kwargs):
+        extra_headers = kwargs.get("extra_headers", {})
+        if extra_headers.get("X-Gentrace-Helper-Method") == "true":
+            return super().create(*args, **kwargs)
+
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         pipeline_slug = kwargs.pop("pipeline_slug", None)
@@ -583,6 +838,17 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
                     )
 
                 if pipeline_run:
+                    print("Adding step run for GentraceSyncChatCompletions.create")
+                    print("Elapsed time:", elapsed_time)
+                    print("Start time:", to_date_string(start_time))
+                    print("End time:", to_date_string(end_time))
+                    print("Messages:", messages)
+                    print("User:", user)
+                    print("Content inputs:", content_inputs_array)
+                    print("Model params:", model_params)
+                    print("Content templates:", content_templates_array)
+                    print("Completion:", full_response)
+                    print("Context:", context)
                     pipeline_run.add_step_run(
                         OpenAICreateChatCompletionStepRun(
                             elapsed_time,
@@ -632,6 +898,17 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
             )
 
         if pipeline_run:
+            print("Adding step run for GentraceSyncChatCompletions.create")
+            print("Elapsed time:", elapsed_time)
+            print("Start time:", to_date_string(start_time))
+            print("End time:", to_date_string(end_time))
+            print("Messages:", messages)
+            print("User:", user)
+            print("Content inputs:", content_inputs_array)
+            print("Model params:", model_params)
+            print("Content templates:", content_templates_array)
+            print("Completion:", completion.dict())
+            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -734,6 +1011,17 @@ class GentraceSyncCompletions(ExtractedCompletions):
 
                 full_response = create_completion_stream_response(modified_response)
 
+                print("Adding step run for GentraceSyncCompletions.create (stream)")
+                print("Elapsed time:", int((end_time - start_time) * 1000))
+                print("Start time:", to_date_string(start_time))
+                print("End time:", to_date_string(end_time))
+                print("Base completion options:", base_completion_options)
+                print("Prompt template:", prompt_template)
+                print("Prompt inputs:", prompt_inputs)
+                print("Full response:", full_response)
+                print("Pipeline run ID:", pipeline_run_id if is_self_contained else None)
+                print("Stream:", stream)
+                print("Context:", context)
                 create_completion_step_run(
                     self.pipeline_run,
                     pipeline_slug,
@@ -770,6 +1058,16 @@ class GentraceSyncCompletions(ExtractedCompletions):
 
         end_time = time.time()
 
+        print("Adding step run for GentraceSyncCompletions.create")
+        print("Elapsed time:", int((end_time - start_time) * 1000))
+        print("Start time:", to_date_string(start_time))
+        print("End time:", to_date_string(end_time))
+        print("Base completion options:", base_completion_options)
+        print("Prompt template:", prompt_template)
+        print("Prompt inputs:", prompt_inputs)
+        print("Completion:", completion.dict())
+        print("Stream:", stream)
+        print("Context:", context)
         create_completion_step_run(
             self.pipeline_run,
             pipeline_slug,
@@ -832,6 +1130,14 @@ def create_completion_step_run(
         )
 
     if pipeline_run:
+        print("Adding step run in create_completion_step_run")
+        print("Elapsed time:", elapsed_time)
+        print("Start time:", to_date_string(start_time))
+        print("End time:", to_date_string(end_time))
+        print("Inputs:", inputs_dict)
+        print("Model params:", {**partial_model_params, "promptTemplate": prompt_template})
+        print("Completion:", completion_dict)
+        print("Context:", context)
         pipeline_run.add_step_run(
             OpenAICreateCompletionStepRun(
                 elapsed_time,

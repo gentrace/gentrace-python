@@ -24,8 +24,11 @@ class StepRun:
         self.end_time = end_time
         self.inputs = self._convert_to_dict(inputs)
         self.model_params = model_params
+        print("Outputs before conversion:", outputs)
         self.outputs = self._convert_to_dict(outputs)
+        print("Outputs after conversion:", self.outputs)
         self.context = self._convert_to_dict(context or {})
+
 
     def _convert_to_dict(self, obj: Any) -> Any:
         if hasattr(obj, '__dict__'):
