@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.2](https://github.com/gentrace/gentrace-python/compare/v0.32.1...v0.32.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* Wrap parse() structured output ([#242](https://github.com/gentrace/gentrace-python/issues/242)) ([d91a13a](https://github.com/gentrace/gentrace-python/commit/d91a13a4960a29e6aa4374bef59db326b8740150))
+
 ## [0.32.1](https://github.com/gentrace/gentrace-python/compare/v0.32.0...v0.32.1) (2024-08-21)
 
 
