@@ -281,6 +281,11 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
         self.gentrace_config = gentrace_config
 
     async def create(self, *args, **kwargs):
+        extra_headers = kwargs.get("extra_headers", {})
+        if extra_headers.get("X-Gentrace-Helper-Method") == "true":
+            extra_headers.pop("X-Gentrace-Helper-Method", None)
+            kwargs["extra_headers"] = extra_headers
+            return await super().create(*args, **kwargs)
         messages = kwargs.get("messages")
         user = kwargs.get("user")
         stream = kwargs.get("stream")
@@ -485,7 +490,7 @@ class GentraceAsyncBetaChatCompletions(ExtractedAsyncBetaChatCompletions):
             content_templates_array = [
                 message.get("contentTemplate") for message in messages if "contentTemplate" in message
             ]
-            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
+            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user", "response_format"]}
 
             print("Adding step run for GentraceAsyncBetaChatCompletions.parse")
             print("Elapsed time:", elapsed_time)
@@ -570,7 +575,7 @@ class GentraceSyncBetaChatCompletions(ExtractedBetaChatCompletions):
             content_templates_array = [
                 message.get("contentTemplate") for message in messages if "contentTemplate" in message
             ]
-            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user"]}
+            model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user", "response_format"]}
 
             print("Adding step run for GentraceSyncBetaChatCompletions.parse")
             print("Elapsed time:", elapsed_time)
@@ -776,6 +781,8 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
     def create(self, *args, **kwargs):
         extra_headers = kwargs.get("extra_headers", {})
         if extra_headers.get("X-Gentrace-Helper-Method") == "true":
+            extra_headers.pop("X-Gentrace-Helper-Method", None)
+            kwargs["extra_headers"] = extra_headers
             return super().create(*args, **kwargs)
 
         messages = kwargs.get("messages")

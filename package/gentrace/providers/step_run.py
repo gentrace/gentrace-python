@@ -23,10 +23,8 @@ class StepRun:
         self.start_time = start_time
         self.end_time = end_time
         self.inputs = self._convert_to_dict(inputs)
-        self.model_params = model_params
-        print("Outputs before conversion:", outputs)
+        self.model_params = self._convert_to_dict(model_params)
         self.outputs = self._convert_to_dict(outputs)
-        print("Outputs after conversion:", self.outputs)
         self.context = self._convert_to_dict(context or {})
 
 
@@ -42,11 +40,13 @@ class StepRun:
 
             # Check for model_dump first (works for both v1 and v2)
             if hasattr(obj, 'model_dump'):
+                print("Model dump:", obj)
                 return obj.model_dump()
 
             # Fallback to dict() if model_dump is not available
             elif hasattr(obj, 'dict'):
                 return obj.dict()
+
             # If neither method is available, use vars() to extrace the object's attributes
             else:
                 return vars(obj)
