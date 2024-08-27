@@ -111,14 +111,6 @@ class GentraceAsyncEmbeddings(ExtractedAsyncEmbeddings):
             pipeline_run = PipelineRun(pipeline=pipeline, context=context)
 
         if pipeline_run:
-            print("Adding step run for GentraceAsyncEmbeddings.create")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Input params:", input_params)
-            print("Model:", {"model": model})
-            print("Completion:", completion.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateEmbeddingStepRun(
                     elapsed_time,
@@ -197,17 +189,6 @@ class GentraceAsyncCompletions(ExtractedAsyncCompletions):
 
                 full_response = create_completion_stream_response(modified_response)
 
-                print("Adding step run for GentraceAsyncCompletions.create (stream)")
-                print("Elapsed time:", int((end_time - start_time) * 1000))
-                print("Start time:", to_date_string(start_time))
-                print("End time:", to_date_string(end_time))
-                print("Base completion options:", base_completion_options)
-                print("Prompt template:", prompt_template)
-                print("Prompt inputs:", prompt_inputs)
-                print("Full response:", full_response)
-                print("Pipeline run ID:", pipeline_run_id if is_self_contained else None)
-                print("Stream:", stream)
-                print("Context:", context)
                 create_completion_step_run(
                     self.pipeline_run,
                     pipeline_slug,
@@ -243,16 +224,6 @@ class GentraceAsyncCompletions(ExtractedAsyncCompletions):
         completion = await super().create(**new_completion_options)
         end_time = time.time()
 
-        print("Adding step run for GentraceAsyncCompletions.create (non-stream)")
-        print("Elapsed time:", int((end_time - start_time) * 1000))
-        print("Start time:", to_date_string(start_time))
-        print("End time:", to_date_string(end_time))
-        print("Base completion options:", base_completion_options)
-        print("Prompt template:", prompt_template)
-        print("Prompt inputs:", prompt_inputs)
-        print("Completion:", completion.dict())
-        print("Stream:", stream)
-        print("Context:", context)
         create_completion_step_run(
             self.pipeline_run,
             pipeline_slug,
@@ -349,17 +320,6 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
                     )
 
                 if pipeline_run:
-                    print("Adding step run for GentraceAsyncChatCompletions.create")
-                    print("Elapsed time:", elapsed_time)
-                    print("Start time:", to_date_string(start_time))
-                    print("End time:", to_date_string(end_time))
-                    print("Messages:", messages)
-                    print("User:", user)
-                    print("Content inputs:", content_inputs_array)
-                    print("Model params:", model_params)
-                    print("Content templates:", content_templates_array)
-                    print("Completion:", full_response)
-                    print("Context:", context)
                     pipeline_run.add_step_run(
                         OpenAICreateChatCompletionStepRun(
                             elapsed_time,
@@ -404,17 +364,6 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
             )
 
         if pipeline_run:
-            print("Adding step run for GentraceAsyncChatCompletions.create")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Messages:", messages)
-            print("User:", user)
-            print("Content inputs:", content_inputs_array)
-            print("Model params:", model_params)
-            print("Content templates:", content_templates_array)
-            print("Completion:", completion.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -492,17 +441,6 @@ class GentraceAsyncBetaChatCompletions(ExtractedAsyncBetaChatCompletions):
             ]
             model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user", "response_format"]}
 
-            print("Adding step run for GentraceAsyncBetaChatCompletions.parse")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Messages:", rendered_messages)
-            print("User:", user)
-            print("Content inputs:", content_inputs_array)
-            print("Model params:", model_params)
-            print("Content templates:", content_templates_array)
-            print("Result:", result.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -577,17 +515,6 @@ class GentraceSyncBetaChatCompletions(ExtractedBetaChatCompletions):
             ]
             model_params = {k: v for k, v in kwargs.items() if k not in ["messages", "user", "response_format"]}
 
-            print("Adding step run for GentraceSyncBetaChatCompletions.parse")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Messages:", rendered_messages)
-            print("User:", user)
-            print("Content inputs:", content_inputs_array)
-            print("Model params:", model_params)
-            print("Content templates:", content_templates_array)
-            print("Result:", result.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -680,14 +607,6 @@ class GentraceSyncEmbeddings(ExtractedEmbeddings):
             )
 
         if pipeline_run:
-            print("Adding step run for GentraceSyncEmbeddings.create")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Input params:", input_params)
-            print("Model:", {"model": model})
-            print("Completion:", completion.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateEmbeddingStepRun(
                     elapsed_time,
@@ -845,17 +764,6 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
                     )
 
                 if pipeline_run:
-                    print("Adding step run for GentraceSyncChatCompletions.create")
-                    print("Elapsed time:", elapsed_time)
-                    print("Start time:", to_date_string(start_time))
-                    print("End time:", to_date_string(end_time))
-                    print("Messages:", messages)
-                    print("User:", user)
-                    print("Content inputs:", content_inputs_array)
-                    print("Model params:", model_params)
-                    print("Content templates:", content_templates_array)
-                    print("Completion:", full_response)
-                    print("Context:", context)
                     pipeline_run.add_step_run(
                         OpenAICreateChatCompletionStepRun(
                             elapsed_time,
@@ -905,17 +813,6 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
             )
 
         if pipeline_run:
-            print("Adding step run for GentraceSyncChatCompletions.create")
-            print("Elapsed time:", elapsed_time)
-            print("Start time:", to_date_string(start_time))
-            print("End time:", to_date_string(end_time))
-            print("Messages:", messages)
-            print("User:", user)
-            print("Content inputs:", content_inputs_array)
-            print("Model params:", model_params)
-            print("Content templates:", content_templates_array)
-            print("Completion:", completion.dict())
-            print("Context:", context)
             pipeline_run.add_step_run(
                 OpenAICreateChatCompletionStepRun(
                     elapsed_time,
@@ -1018,17 +915,6 @@ class GentraceSyncCompletions(ExtractedCompletions):
 
                 full_response = create_completion_stream_response(modified_response)
 
-                print("Adding step run for GentraceSyncCompletions.create (stream)")
-                print("Elapsed time:", int((end_time - start_time) * 1000))
-                print("Start time:", to_date_string(start_time))
-                print("End time:", to_date_string(end_time))
-                print("Base completion options:", base_completion_options)
-                print("Prompt template:", prompt_template)
-                print("Prompt inputs:", prompt_inputs)
-                print("Full response:", full_response)
-                print("Pipeline run ID:", pipeline_run_id if is_self_contained else None)
-                print("Stream:", stream)
-                print("Context:", context)
                 create_completion_step_run(
                     self.pipeline_run,
                     pipeline_slug,
@@ -1065,16 +951,6 @@ class GentraceSyncCompletions(ExtractedCompletions):
 
         end_time = time.time()
 
-        print("Adding step run for GentraceSyncCompletions.create")
-        print("Elapsed time:", int((end_time - start_time) * 1000))
-        print("Start time:", to_date_string(start_time))
-        print("End time:", to_date_string(end_time))
-        print("Base completion options:", base_completion_options)
-        print("Prompt template:", prompt_template)
-        print("Prompt inputs:", prompt_inputs)
-        print("Completion:", completion.dict())
-        print("Stream:", stream)
-        print("Context:", context)
         create_completion_step_run(
             self.pipeline_run,
             pipeline_slug,
@@ -1137,14 +1013,6 @@ def create_completion_step_run(
         )
 
     if pipeline_run:
-        print("Adding step run in create_completion_step_run")
-        print("Elapsed time:", elapsed_time)
-        print("Start time:", to_date_string(start_time))
-        print("End time:", to_date_string(end_time))
-        print("Inputs:", inputs_dict)
-        print("Model params:", {**partial_model_params, "promptTemplate": prompt_template})
-        print("Completion:", completion_dict)
-        print("Context:", context)
         pipeline_run.add_step_run(
             OpenAICreateCompletionStepRun(
                 elapsed_time,

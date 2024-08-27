@@ -40,7 +40,6 @@ class StepRun:
 
             # Check for model_dump first (works for both v1 and v2)
             if hasattr(obj, 'model_dump'):
-                print("Model dump:", obj)
                 return obj.model_dump()
 
             # Fallback to dict() if model_dump is not available
