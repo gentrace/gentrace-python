@@ -46,6 +46,7 @@ def create_completion_step_run(
         pipeline_run_id: Optional[str] = None,
         stream=False,
         context={},
+        error: Optional[str] = None,
 ):
     elapsed_time = int((end_time - start_time) * 1000)
 
@@ -86,6 +87,7 @@ def create_completion_step_run(
                 {**partial_model_params, "promptTemplate": prompt_template},
                 completion,
                 context,
+                error,
             )
         )
 
@@ -558,6 +560,7 @@ def intercept_chat_completion_async(original_fn, gentrace_config: Configuration)
         pipeline_id = kwargs.pop("pipeline_id", None)
         pipeline_slug = kwargs.pop("pipeline_slug", None)
         context = kwargs.pop("gentrace", {})
+
         model_params = {
             k: v for k, v in kwargs.items() if k not in ["messages", "user"]
         }
@@ -916,6 +919,7 @@ class OpenAICreateCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -927,6 +931,7 @@ class OpenAICreateCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -941,6 +946,7 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -952,6 +958,7 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -966,6 +973,7 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -977,5 +985,6 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response

@@ -1,5 +1,6 @@
-import gentrace
 import os
+
+import gentrace
 from dotenv import load_dotenv
 
 load_dotenv()

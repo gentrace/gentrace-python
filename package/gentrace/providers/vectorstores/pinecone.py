@@ -377,6 +377,7 @@ class PineconeFetchStepRun(StepRun):
             inputs: dict,
             response: dict,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         super().__init__(
             "pinecone",
@@ -388,6 +389,7 @@ class PineconeFetchStepRun(StepRun):
             {},
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -402,6 +404,7 @@ class PineconeQueryStepRun(StepRun):
             model_params: dict,
             response: dict,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         super().__init__(
             "pinecone",
@@ -413,6 +416,7 @@ class PineconeQueryStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -426,6 +430,7 @@ class PineconeUpdateStepRun(StepRun):
             inputs: dict,
             response: dict,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         super().__init__(
             "pinecone",
@@ -437,6 +442,7 @@ class PineconeUpdateStepRun(StepRun):
             {},
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -450,6 +456,7 @@ class PineconeUpsertStepRun(StepRun):
             inputs: dict,
             response: dict,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         super().__init__(
             "pinecone",
@@ -461,6 +468,7 @@ class PineconeUpsertStepRun(StepRun):
             {},
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -474,6 +482,7 @@ class PineconeDeleteStepRun(StepRun):
             inputs: dict,
             response: dict,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         super().__init__(
             "pinecone",
@@ -485,5 +494,6 @@ class PineconeDeleteStepRun(StepRun):
             {},
             response,
             context,
+            error,
         )
         self.response = response

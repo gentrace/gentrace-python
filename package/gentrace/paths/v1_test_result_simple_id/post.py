@@ -171,11 +171,32 @@ class SchemaForRequestBodyApplicationJson(
                                             _configuration=_configuration,
                                             **kwargs,
                                         )
+                                
+                                
+                                class error(
+                                    schemas.StrBase,
+                                    schemas.NoneBase,
+                                    schemas.Schema,
+                                    schemas.NoneStrMixin
+                                ):
+                                
+                                
+                                    def __new__(
+                                        cls,
+                                        *_args: typing.Union[None, str, ],
+                                        _configuration: typing.Optional[schemas.Configuration] = None,
+                                    ) -> 'error':
+                                        return super().__new__(
+                                            cls,
+                                            *_args,
+                                            _configuration=_configuration,
+                                        )
                                 __annotations__ = {
                                     "id": id,
                                     "caseId": caseId,
                                     "inputs": inputs,
                                     "outputs": outputs,
+                                    "error": error,
                                 }
                         
                         inputs: MetaOapg.properties.inputs
@@ -194,9 +215,12 @@ class SchemaForRequestBodyApplicationJson(
                         def __getitem__(self, name: typing_extensions.Literal["outputs"]) -> MetaOapg.properties.outputs: ...
                         
                         @typing.overload
+                        def __getitem__(self, name: typing_extensions.Literal["error"]) -> MetaOapg.properties.error: ...
+                        
+                        @typing.overload
                         def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
                         
-                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "inputs", "outputs", ], str]):
+                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "inputs", "outputs", "error", ], str]):
                             # dict_instance[name] accessor
                             return super().__getitem__(name)
                         
@@ -214,9 +238,12 @@ class SchemaForRequestBodyApplicationJson(
                         def get_item_oapg(self, name: typing_extensions.Literal["outputs"]) -> typing.Union[MetaOapg.properties.outputs, schemas.Unset]: ...
                         
                         @typing.overload
+                        def get_item_oapg(self, name: typing_extensions.Literal["error"]) -> typing.Union[MetaOapg.properties.error, schemas.Unset]: ...
+                        
+                        @typing.overload
                         def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
                         
-                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "inputs", "outputs", ], str]):
+                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "inputs", "outputs", "error", ], str]):
                             return super().get_item_oapg(name)
                         
                     
@@ -227,6 +254,7 @@ class SchemaForRequestBodyApplicationJson(
                             caseId: typing.Union[MetaOapg.properties.caseId, str, uuid.UUID, ],
                             id: typing.Union[MetaOapg.properties.id, None, str, uuid.UUID, schemas.Unset] = schemas.unset,
                             outputs: typing.Union[MetaOapg.properties.outputs, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
+                            error: typing.Union[MetaOapg.properties.error, None, str, schemas.Unset] = schemas.unset,
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'items':
@@ -237,6 +265,7 @@ class SchemaForRequestBodyApplicationJson(
                                 caseId=caseId,
                                 id=id,
                                 outputs=outputs,
+                                error=error,
                                 _configuration=_configuration,
                                 **kwargs,
                             )

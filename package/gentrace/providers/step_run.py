@@ -16,6 +16,7 @@ class StepRun:
             model_params: any,
             outputs: any,
             context: Optional[Context] = None,
+            error: Optional[str] = None,
     ):
         self.provider = provider
         self.invocation = invocation
@@ -26,7 +27,7 @@ class StepRun:
         self.model_params = self._convert_to_dict(model_params)
         self.outputs = self._convert_to_dict(outputs)
         self.context = self._convert_to_dict(context or {})
-
+        self.error = error
 
     def _convert_to_dict(self, obj: Any) -> Any:
         if hasattr(obj, '__dict__'):
