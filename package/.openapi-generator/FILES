@@ -1,5 +1,6 @@
 docs/apis/tags/V1Api.md
 docs/apis/tags/V2Api.md
+docs/apis/tags/V3Api.md
 docs/models/BooleanType.md
 docs/models/CreateDatasetV2.md
 docs/models/CreateEvaluationV2.md
@@ -7,6 +8,8 @@ docs/models/CreateFeedbackV2.md
 docs/models/CreateMultipleTestCases.md
 docs/models/CreateSingleTestCase.md
 docs/models/DatasetV2.md
+docs/models/EvaluationV2.md
+docs/models/EvaluationV3.md
 docs/models/EvaluatorV2.md
 docs/models/ExpandedPipeline.md
 docs/models/ExpandedTestResult.md
@@ -17,6 +20,8 @@ docs/models/FeedbackV2.md
 docs/models/FilterableMetadataInput.md
 docs/models/FolderV2.md
 docs/models/FullRun.md
+docs/models/LocalEvaluation.md
+docs/models/LocalEvaluationDebug.md
 docs/models/MetadataValueObject.md
 docs/models/Pipeline.md
 docs/models/PipelineV2.md
@@ -46,6 +51,7 @@ gentrace/api_client.py
 gentrace/apis/__init__.py
 gentrace/apis/tags/v1_api.py
 gentrace/apis/tags/v2_api.py
+gentrace/apis/tags/v3_api.py
 gentrace/configuration.py
 gentrace/exceptions.py
 gentrace/model/__init__.py
@@ -63,6 +69,10 @@ gentrace/model/create_single_test_case.py
 gentrace/model/create_single_test_case.pyi
 gentrace/model/dataset_v2.py
 gentrace/model/dataset_v2.pyi
+gentrace/model/evaluation_v2.py
+gentrace/model/evaluation_v2.pyi
+gentrace/model/evaluation_v3.py
+gentrace/model/evaluation_v3.pyi
 gentrace/model/evaluator_v2.py
 gentrace/model/evaluator_v2.pyi
 gentrace/model/expanded_pipeline.py
@@ -82,6 +92,10 @@ gentrace/model/filterable_metadata_input.pyi
 gentrace/model/folder_v2.py
 gentrace/model/folder_v2.pyi
 gentrace/model/full_run.py
+gentrace/model/local_evaluation.py
+gentrace/model/local_evaluation.pyi
+gentrace/model/local_evaluation_debug.py
+gentrace/model/local_evaluation_debug.pyi
 gentrace/model/metadata_value_object.py
 gentrace/model/metadata_value_object.pyi
 gentrace/model/pipeline.py

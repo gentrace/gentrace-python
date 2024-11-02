@@ -12,6 +12,7 @@ from gentrace.apis.paths.v1_test_result_simple_id import V1TestResultSimpleId
 from gentrace.apis.paths.v1_test_result_status import V1TestResultStatus
 from gentrace.apis.paths.v2_datasets import V2Datasets
 from gentrace.apis.paths.v2_datasets_id import V2DatasetsId
+from gentrace.apis.paths.v2_evaluations import V2Evaluations
 from gentrace.apis.paths.v2_evaluations_bulk import V2EvaluationsBulk
 from gentrace.apis.paths.v2_evaluators import V2Evaluators
 from gentrace.apis.paths.v2_feedback import V2Feedback
@@ -23,6 +24,7 @@ from gentrace.apis.paths.v2_runs_id import V2RunsId
 from gentrace.apis.paths.v2_test_cases import V2TestCases
 from gentrace.apis.paths.v2_test_cases_id import V2TestCasesId
 from gentrace.apis.paths.v2_test_results import V2TestResults
+from gentrace.apis.paths.v3_evaluations import V3Evaluations
 from gentrace.paths import PathValues
 
 PathToApi = typing_extensions.TypedDict(
@@ -41,6 +43,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.V2_DATASETS: V2Datasets,
         PathValues.V2_DATASETS_ID: V2DatasetsId,
         PathValues.V2_FEEDBACK: V2Feedback,
+        PathValues.V2_EVALUATIONS: V2Evaluations,
         PathValues.V2_FEEDBACK_ID: V2FeedbackId,
         PathValues.V2_RUNS_ID: V2RunsId,
         PathValues.V2_TESTRESULTS: V2TestResults,
@@ -51,6 +54,7 @@ PathToApi = typing_extensions.TypedDict(
         PathValues.V2_FOLDERS_ID: V2FoldersId,
         PathValues.V2_EVALUATORS: V2Evaluators,
         PathValues.V2_EVALUATIONS_BULK: V2EvaluationsBulk,
+        PathValues.V3_EVALUATIONS: V3Evaluations,
     }
 )
 
@@ -69,6 +73,7 @@ path_to_api = PathToApi(
         PathValues.V2_DATASETS: V2Datasets,
         PathValues.V2_DATASETS_ID: V2DatasetsId,
         PathValues.V2_FEEDBACK: V2Feedback,
+        PathValues.V2_EVALUATIONS: V2Evaluations,
         PathValues.V2_FEEDBACK_ID: V2FeedbackId,
         PathValues.V2_RUNS_ID: V2RunsId,
         PathValues.V2_TESTRESULTS: V2TestResults,
@@ -79,5 +84,6 @@ path_to_api = PathToApi(
         PathValues.V2_FOLDERS_ID: V2FoldersId,
         PathValues.V2_EVALUATORS: V2Evaluators,
         PathValues.V2_EVALUATIONS_BULK: V2EvaluationsBulk,
+        PathValues.V3_EVALUATIONS: V3Evaluations,
     }
 )

@@ -686,8 +686,10 @@ with gentrace.ApiClient(configuration) as api_client:
                 elapsed_time=1,
                 start_time="1970-01-01T00:00:00.00Z",
                 end_time="1970-01-01T00:00:00.00Z",
+                error="error_example",
             )
         ],
+        error="error_example",
     )
     try:
         # Create a run
@@ -1593,6 +1595,8 @@ with gentrace.ApiClient(configuration) as api_client:
             dict(
                 id="id_example",
                 case_id="case_id_example",
+                name="name_example",
+                inputs=dict(),
                 metadata=dict(
                     "key": MetadataValueObject(),
                 ),
@@ -1614,8 +1618,10 @@ with gentrace.ApiClient(configuration) as api_client:
                         elapsed_time=1,
                         start_time="1970-01-01T00:00:00.00Z",
                         end_time="1970-01-01T00:00:00.00Z",
+                        error="error_example",
                     )
                 ],
+                error="error_example",
             )
         ],
     )
@@ -1679,10 +1685,27 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **[stepRuns](#stepRuns)** | list, tuple,  | tuple,  |  | 
-**caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
+**caseId** | str, uuid.UUID,  | str,  | The ID of the test case. Mutually exclusive with &#x27;name&#x27; and &#x27;inputs&#x27;. | [optional] value must be a uuid
+**name** | str,  | str,  | The name of the test run. Used with &#x27;inputs&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
+**[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# inputs
+
+The input data for the test run. Used with 'name' and mutually exclusive with 'caseId'.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # metadata
 
@@ -1805,6 +1828,7 @@ Create a new test result from runs
 import gentrace
 from gentrace.apis.tags import v1_api
 from gentrace.model.metadata_value_object import MetadataValueObject
+from gentrace.model.local_evaluation import LocalEvaluation
 from gentrace.model.step_run import StepRun
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api
@@ -1838,10 +1862,14 @@ with gentrace.ApiClient(configuration) as api_client:
         metadata=dict(
             "key": MetadataValueObject(),
         ),
+        trigger_remote_evals=True,
         test_runs=[
             dict(
                 id="id_example",
                 case_id="case_id_example",
+                name="name_example",
+                inputs=dict(),
+                expected_outputs=dict(),
                 metadata=dict(),
                 step_runs=[
                     StepRun(
@@ -1861,8 +1889,32 @@ with gentrace.ApiClient(configuration) as api_client:
                         elapsed_time=1,
                         start_time="1970-01-01T00:00:00.00Z",
                         end_time="1970-01-01T00:00:00.00Z",
+                        error="error_example",
                     )
                 ],
+                evaluations=[
+                    LocalEvaluation(
+                        name="name_example",
+                        value=3.14,
+                        label="label_example",
+                        debug=LocalEvaluationDebug(
+                            resolved_prompt="resolved_prompt_example",
+                            response="response_example",
+                            final_classification="final_classification_example",
+                            processor_logs=[
+                                [
+                                    None
+                                ]
+                            ],
+                            logs=[],
+                            error=dict(
+                                message="message_example",
+                                date="1970-01-01T00:00:00.00Z",
+                            ),
+                        ),
+                    )
+                ],
+                error="error_example",
             )
         ],
     )
@@ -1906,6 +1958,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**triggerRemoteEvals** | bool,  | BoolClass,  | Optional flag to trigger remote evaluations | [optional] if omitted the server will use the default value of True
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # metadata
@@ -1943,10 +1996,43 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  |  |
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **[stepRuns](#stepRuns)** | list, tuple,  | tuple,  | Use outputs.steps insteads. | 
-**caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
+**caseId** | str, uuid.UUID,  | str,  | The ID of the test case. Mutually exclusive with &#x27;name&#x27; and &#x27;inputs&#x27;. | [optional] value must be a uuid
+**name** | str,  | str,  | Used for supplying local data. The name of the test run. Used with &#x27;inputs&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
+**[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Used for supplying local data. The input data for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
+**[expectedOutputs](#expectedOutputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Used for supplying local data. The expected outputs for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. Optional, since not all evaluators require expected outputs. | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**[evaluations](#evaluations)** | list, tuple,  | tuple,  | Optional array of local evaluations | [optional] 
+**error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# inputs
+
+Used for supplying local data. The input data for the test run. Used with 'name' and mutually exclusive with 'caseId'.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  | Used for supplying local data. The input data for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# expectedOutputs
+
+Used for supplying local data. The expected outputs for the test run. Used with 'name' and mutually exclusive with 'caseId'. Optional, since not all evaluators require expected outputs.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+dict, frozendict.frozendict,  | frozendict.frozendict,  | Used for supplying local data. The expected outputs for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. Optional, since not all evaluators require expected outputs. | 
+
+### Dictionary Keys
+Key | Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | ------------- | -------------
+**any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # metadata
 
@@ -1973,6 +2059,20 @@ list, tuple,  | tuple,  | Use outputs.steps insteads. |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) |  | 
+
+# evaluations
+
+Optional array of local evaluations
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  | Optional array of local evaluations | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) |  | 
 
 ### Return Types, Responses
 
@@ -2064,6 +2164,7 @@ with gentrace.ApiClient(configuration) as api_client:
                 case_id="case_id_example",
                 inputs=dict(),
                 outputs=dict(),
+                error="error_example",
             )
         ],
     )
@@ -2130,6 +2231,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
 **[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
+**error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -2257,6 +2359,7 @@ Create a new test result from test runs
 import gentrace
 from gentrace.apis.tags import v1_api
 from gentrace.model.metadata_value_object import MetadataValueObject
+from gentrace.model.local_evaluation import LocalEvaluation
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api
 # See configuration.py for a list of all supported configuration parameters.
@@ -2287,12 +2390,36 @@ with gentrace.ApiClient(configuration) as api_client:
         metadata=dict(
             "key": MetadataValueObject(),
         ),
+        trigger_remote_evals=True,
         test_runs=[
             dict(
                 id="id_example",
                 case_id="case_id_example",
                 inputs=dict(),
                 outputs=dict(),
+                evaluations=[
+                    LocalEvaluation(
+                        name="name_example",
+                        value=3.14,
+                        label="label_example",
+                        debug=LocalEvaluationDebug(
+                            resolved_prompt="resolved_prompt_example",
+                            response="response_example",
+                            final_classification="final_classification_example",
+                            processor_logs=[
+                                [
+                                    None
+                                ]
+                            ],
+                            logs=[],
+                            error=dict(
+                                message="message_example",
+                                date="1970-01-01T00:00:00.00Z",
+                            ),
+                        ),
+                    )
+                ],
+                error="error_example",
             )
         ],
     )
@@ -2334,6 +2461,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **commit** | None, str,  | NoneClass, str,  | The commit that the test result was created from | [optional] 
 **name** | None, str,  | NoneClass, str,  | The name of the test result | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**triggerRemoteEvals** | bool,  | BoolClass,  | Optional flag to trigger remote evaluations | [optional] if omitted the server will use the default value of True
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # metadata
@@ -2374,6 +2502,8 @@ Key | Input Type | Accessed Type | Description | Notes
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
 **[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
+**[evaluations](#evaluations)** | list, tuple,  | tuple,  | Optional array of local evaluations | [optional] 
+**error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # inputs
@@ -2403,6 +2533,20 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs f
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# evaluations
+
+Optional array of local evaluations
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple,  | tuple,  | Optional array of local evaluations | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) |  | 
 
 ### Return Types, Responses
 

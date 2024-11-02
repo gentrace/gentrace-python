@@ -47,6 +47,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **elapsedTime** | decimal.Decimal, int,  | decimal.Decimal,  | The milliseconds to complete the run | 
 **order** | decimal.Decimal, int,  | decimal.Decimal,  | The order of the step run. The last step has the highest \&quot;order\&quot; number. | 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # modelParams

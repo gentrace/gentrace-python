@@ -18,6 +18,8 @@ from gentrace.model.create_feedback_v2 import CreateFeedbackV2
 from gentrace.model.create_multiple_test_cases import CreateMultipleTestCases
 from gentrace.model.create_single_test_case import CreateSingleTestCase
 from gentrace.model.dataset_v2 import DatasetV2
+from gentrace.model.evaluation_v2 import EvaluationV2
+from gentrace.model.evaluation_v3 import EvaluationV3
 from gentrace.model.evaluator_v2 import EvaluatorV2
 from gentrace.model.expanded_pipeline import ExpandedPipeline
 from gentrace.model.expanded_test_result import ExpandedTestResult
@@ -28,6 +30,8 @@ from gentrace.model.feedback_v2 import FeedbackV2
 from gentrace.model.filterable_metadata_input import FilterableMetadataInput
 from gentrace.model.folder_v2 import FolderV2
 from gentrace.model.full_run import FullRun
+from gentrace.model.local_evaluation import LocalEvaluation
+from gentrace.model.local_evaluation_debug import LocalEvaluationDebug
 from gentrace.model.metadata_value_object import MetadataValueObject
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.pipeline_v2 import PipelineV2

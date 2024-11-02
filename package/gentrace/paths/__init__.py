@@ -19,6 +19,7 @@ class PathValues(str, enum.Enum):
     V2_DATASETS = "/v2/datasets"
     V2_DATASETS_ID = "/v2/datasets/{id}"
     V2_FEEDBACK = "/v2/feedback"
+    V2_EVALUATIONS = "/v2/evaluations"
     V2_FEEDBACK_ID = "/v2/feedback/{id}"
     V2_RUNS_ID = "/v2/runs/{id}"
     V2_TESTRESULTS = "/v2/test-results"
@@ -29,3 +30,4 @@ class PathValues(str, enum.Enum):
     V2_FOLDERS_ID = "/v2/folders/{id}"
     V2_EVALUATORS = "/v2/evaluators"
     V2_EVALUATIONS_BULK = "/v2/evaluations/bulk"
+    V3_EVALUATIONS = "/v3/evaluations"

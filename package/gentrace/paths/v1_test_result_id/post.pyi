@@ -83,7 +83,6 @@ class SchemaForRequestBodyApplicationJson(
                         class MetaOapg:
                             required = {
                                 "stepRuns",
-                                "caseId",
                             }
                             
                             class properties:
@@ -113,6 +112,36 @@ class SchemaForRequestBodyApplicationJson(
                                             _configuration=_configuration,
                                         )
                                 caseId = schemas.UUIDSchema
+                                name = schemas.StrSchema
+                                
+                                
+                                class inputs(
+                                    schemas.DictSchema
+                                ):
+                                
+                                
+                                    class MetaOapg:
+                                        additional_properties = schemas.AnyTypeSchema
+                                    
+                                    def __getitem__(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
+                                        # dict_instance[name] accessor
+                                        return super().__getitem__(name)
+                                    
+                                    def get_item_oapg(self, name: typing.Union[str, ]) -> MetaOapg.additional_properties:
+                                        return super().get_item_oapg(name)
+                                
+                                    def __new__(
+                                        cls,
+                                        *_args: typing.Union[dict, frozendict.frozendict, ],
+                                        _configuration: typing.Optional[schemas.Configuration] = None,
+                                        **kwargs: typing.Union[MetaOapg.additional_properties, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader, ],
+                                    ) -> 'inputs':
+                                        return super().__new__(
+                                            cls,
+                                            *_args,
+                                            _configuration=_configuration,
+                                            **kwargs,
+                                        )
                                 
                                 
                                 class metadata(
@@ -175,15 +204,37 @@ class SchemaForRequestBodyApplicationJson(
                                 
                                     def __getitem__(self, i: int) -> 'StepRun':
                                         return super().__getitem__(i)
+                                
+                                
+                                class error(
+                                    schemas.StrBase,
+                                    schemas.NoneBase,
+                                    schemas.Schema,
+                                    schemas.NoneStrMixin
+                                ):
+                                
+                                
+                                    def __new__(
+                                        cls,
+                                        *_args: typing.Union[None, str, ],
+                                        _configuration: typing.Optional[schemas.Configuration] = None,
+                                    ) -> 'error':
+                                        return super().__new__(
+                                            cls,
+                                            *_args,
+                                            _configuration=_configuration,
+                                        )
                                 __annotations__ = {
                                     "id": id,
                                     "caseId": caseId,
+                                    "name": name,
+                                    "inputs": inputs,
                                     "metadata": metadata,
                                     "stepRuns": stepRuns,
+                                    "error": error,
                                 }
                         
                         stepRuns: MetaOapg.properties.stepRuns
-                        caseId: MetaOapg.properties.caseId
                         
                         @typing.overload
                         def __getitem__(self, name: typing_extensions.Literal["id"]) -> MetaOapg.properties.id: ...
@@ -192,15 +243,24 @@ class SchemaForRequestBodyApplicationJson(
                         def __getitem__(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
                         
                         @typing.overload
+                        def __getitem__(self, name: typing_extensions.Literal["name"]) -> MetaOapg.properties.name: ...
+                        
+                        @typing.overload
+                        def __getitem__(self, name: typing_extensions.Literal["inputs"]) -> MetaOapg.properties.inputs: ...
+                        
+                        @typing.overload
                         def __getitem__(self, name: typing_extensions.Literal["metadata"]) -> MetaOapg.properties.metadata: ...
                         
                         @typing.overload
                         def __getitem__(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
                         
                         @typing.overload
+                        def __getitem__(self, name: typing_extensions.Literal["error"]) -> MetaOapg.properties.error: ...
+                        
+                        @typing.overload
                         def __getitem__(self, name: str) -> schemas.UnsetAnyTypeSchema: ...
                         
-                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "metadata", "stepRuns", ], str]):
+                        def __getitem__(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "name", "inputs", "metadata", "stepRuns", "error", ], str]):
                             # dict_instance[name] accessor
                             return super().__getitem__(name)
                         
@@ -209,7 +269,13 @@ class SchemaForRequestBodyApplicationJson(
                         def get_item_oapg(self, name: typing_extensions.Literal["id"]) -> typing.Union[MetaOapg.properties.id, schemas.Unset]: ...
                         
                         @typing.overload
-                        def get_item_oapg(self, name: typing_extensions.Literal["caseId"]) -> MetaOapg.properties.caseId: ...
+                        def get_item_oapg(self, name: typing_extensions.Literal["caseId"]) -> typing.Union[MetaOapg.properties.caseId, schemas.Unset]: ...
+                        
+                        @typing.overload
+                        def get_item_oapg(self, name: typing_extensions.Literal["name"]) -> typing.Union[MetaOapg.properties.name, schemas.Unset]: ...
+                        
+                        @typing.overload
+                        def get_item_oapg(self, name: typing_extensions.Literal["inputs"]) -> typing.Union[MetaOapg.properties.inputs, schemas.Unset]: ...
                         
                         @typing.overload
                         def get_item_oapg(self, name: typing_extensions.Literal["metadata"]) -> typing.Union[MetaOapg.properties.metadata, schemas.Unset]: ...
@@ -218,9 +284,12 @@ class SchemaForRequestBodyApplicationJson(
                         def get_item_oapg(self, name: typing_extensions.Literal["stepRuns"]) -> MetaOapg.properties.stepRuns: ...
                         
                         @typing.overload
+                        def get_item_oapg(self, name: typing_extensions.Literal["error"]) -> typing.Union[MetaOapg.properties.error, schemas.Unset]: ...
+                        
+                        @typing.overload
                         def get_item_oapg(self, name: str) -> typing.Union[schemas.UnsetAnyTypeSchema, schemas.Unset]: ...
                         
-                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "metadata", "stepRuns", ], str]):
+                        def get_item_oapg(self, name: typing.Union[typing_extensions.Literal["id", "caseId", "name", "inputs", "metadata", "stepRuns", "error", ], str]):
                             return super().get_item_oapg(name)
                         
                     
@@ -228,9 +297,12 @@ class SchemaForRequestBodyApplicationJson(
                             cls,
                             *_args: typing.Union[dict, frozendict.frozendict, ],
                             stepRuns: typing.Union[MetaOapg.properties.stepRuns, list, tuple, ],
-                            caseId: typing.Union[MetaOapg.properties.caseId, str, uuid.UUID, ],
                             id: typing.Union[MetaOapg.properties.id, None, str, uuid.UUID, schemas.Unset] = schemas.unset,
+                            caseId: typing.Union[MetaOapg.properties.caseId, str, uuid.UUID, schemas.Unset] = schemas.unset,
+                            name: typing.Union[MetaOapg.properties.name, str, schemas.Unset] = schemas.unset,
+                            inputs: typing.Union[MetaOapg.properties.inputs, dict, frozendict.frozendict, schemas.Unset] = schemas.unset,
                             metadata: typing.Union[MetaOapg.properties.metadata, dict, frozendict.frozendict, None, schemas.Unset] = schemas.unset,
+                            error: typing.Union[MetaOapg.properties.error, None, str, schemas.Unset] = schemas.unset,
                             _configuration: typing.Optional[schemas.Configuration] = None,
                             **kwargs: typing.Union[schemas.AnyTypeSchema, dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, None, list, tuple, bytes],
                         ) -> 'items':
@@ -238,9 +310,12 @@ class SchemaForRequestBodyApplicationJson(
                                 cls,
                                 *_args,
                                 stepRuns=stepRuns,
-                                caseId=caseId,
                                 id=id,
+                                caseId=caseId,
+                                name=name,
+                                inputs=inputs,
                                 metadata=metadata,
+                                error=error,
                                 _configuration=_configuration,
                                 **kwargs,
                             )

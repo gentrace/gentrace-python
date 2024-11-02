@@ -26,6 +26,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **[steps](#steps)** | list, tuple,  | tuple,  |  | [optional] 
 **case** | [**TestCase**](TestCase.md) | [**TestCase**](TestCase.md) |  | [optional] 
 **[evaluations](#evaluations)** | list, tuple,  | tuple,  |  | [optional] 
+**error** | None, str,  | NoneClass, str,  | Error message if the test run failed | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
 # steps

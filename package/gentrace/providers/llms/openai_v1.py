@@ -120,6 +120,7 @@ class GentraceAsyncEmbeddings(ExtractedAsyncEmbeddings):
                     {"model": model},
                     completion.dict(),
                     context,
+                    None,
                 )
             )
 
@@ -336,6 +337,7 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
                             },
                             full_response,
                             context,
+                            None,
                         )
                     )
 
@@ -380,6 +382,7 @@ class GentraceAsyncChatCompletions(ExtractedAsyncChatCompletions):
                     },
                     completion.dict(),
                     context,
+                    None,
                 )
             )
 
@@ -454,6 +457,7 @@ class GentraceAsyncBetaChatCompletions(ExtractedAsyncBetaChatCompletions):
                     {**model_params, "contentTemplates": content_templates_array},
                     result.dict(),
                     context,
+                    None,
                 )
             )
 
@@ -528,6 +532,7 @@ class GentraceSyncBetaChatCompletions(ExtractedBetaChatCompletions):
                     {**model_params, "contentTemplates": content_templates_array},
                     result.dict(),
                     context,
+                    None,
                 )
             )
 
@@ -616,6 +621,7 @@ class GentraceSyncEmbeddings(ExtractedEmbeddings):
                     {"model": model},
                     completion.dict(),
                     context,
+                    None,
                 )
             )
 
@@ -780,6 +786,7 @@ class GentraceSyncChatCompletions(ExtractedChatCompletions):
                             },
                             full_response,
                             context,
+                            None,
                         )
                     )
 
@@ -1022,6 +1029,7 @@ def create_completion_step_run(
                 {**partial_model_params, "promptTemplate": prompt_template},
                 completion_dict,
                 context,
+                None,
             )
         )
 
@@ -1076,6 +1084,7 @@ class OpenAICreateCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -1087,6 +1096,7 @@ class OpenAICreateCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -1101,6 +1111,7 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -1112,6 +1123,7 @@ class OpenAICreateChatCompletionStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response
 
@@ -1126,6 +1138,7 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
     ):
         super().__init__(
             "openai",
@@ -1137,5 +1150,6 @@ class OpenAICreateEmbeddingStepRun(StepRun):
             model_params,
             response,
             context,
+            error,
         )
         self.response = response

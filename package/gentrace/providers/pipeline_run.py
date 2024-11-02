@@ -83,9 +83,16 @@ class PipelineRun:
         self.pipeline_run_id: str = id or str(uuid.uuid4())
         self.step_runs: List[StepRun] = []
         self.context: Context = context or {}
+        self.error: Optional[str] = None
 
     def get_id(self):
         return self.pipeline_run_id
+    
+    def set_error(self, error: str | None):
+        self.error = error
+
+    def get_error(self):
+        return self.error
 
     def get_pipeline(self):
         return self.pipeline
@@ -185,7 +192,13 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        outputs = await func(**input_params)
+        error = None
+        outputs = {}
+        try:
+            outputs = await func(**input_params)
+        except Exception as e:
+            error = e
+
         end_time = time.time()
 
         outputs_for_step_run = outputs
@@ -206,8 +219,12 @@ class PipelineRun:
                 step_info.get("model_params", {}),
                 outputs_for_step_run,
                 step_info.get("context", {}),
+                str(error) if error else None,
             )
         )
+
+        if error:
+            raise error
 
         return outputs
 
@@ -241,7 +258,13 @@ class PipelineRun:
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
-        outputs = func(**input_params)
+        outputs = {}
+        error = None
+        try:
+            outputs = func(**input_params)
+        except Exception as e:
+            error = e
+
         end_time = time.time()
 
         outputs_for_step_run = outputs
@@ -262,8 +285,12 @@ class PipelineRun:
                 step_info.get("model_params", {}),
                 outputs_for_step_run,
                 step_info.get("context", {}),
+                str(error) if error else None,
             )
         )
+
+        if error:
+            raise error
 
         return outputs
 
@@ -307,6 +334,7 @@ class PipelineRun:
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),
                     step_info.get("context", {}),
+                    step_info.get("error", None),
                 )
             )
         else:
@@ -323,6 +351,7 @@ class PipelineRun:
                     step_info.get("modelParams", {}),
                     step_info.get("outputs", {}),
                     step_info.get("context", {}),
+                    step_info.get("error", None),
                 )
             )
 
