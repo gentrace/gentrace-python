@@ -4,7 +4,7 @@ import os
 import uuid
 from datetime import datetime
 from itertools import zip_longest
-from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict
+from typing import Any, Callable, Dict, List, Optional, Tuple, TypedDict, Union
 
 from gentrace.api_client import ApiClient
 from gentrace.apis.tags.v1_api import V1Api
@@ -821,9 +821,96 @@ def get_test_runners(
         pipeline_run = pipeline.start()
         test_runners.append((pipeline_run, test_case))
 
-    print(f"Total test cases: {total_test_cases}")
-    print(f"Filtered test cases: {filtered_test_cases}")
     return test_runners
+
+def construct_step_runs(test_case: Union[TestCase, TestCaseV2, Dict[str, Any]], pipeline_run: PipelineRun) -> Dict[str, Any]:
+    """
+    Constructs step runs data from a test case and pipeline run.
+
+    Args:
+        test_case (Union[TestCase, TestCaseV2, Dict[str, Any]]): The test case data.
+        pipeline_run (PipelineRun): The pipeline run instance.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the constructed step runs data.
+    """
+    merged_metadata = {}
+    step_runs_data = []
+
+    for step_run in pipeline_run.step_runs:
+        this_context = copy.deepcopy(pipeline_run.context)
+        this_context_metadata = this_context.get("metadata", {})
+        step_run_context = copy.deepcopy(step_run.context)
+        step_run_context_metadata = step_run_context.get("metadata", {})
+
+        merged_metadata.update(this_context_metadata)
+        merged_metadata.update(step_run_context_metadata)
+
+        this_context.pop("metadata", None)
+        step_run_context.pop("metadata", None)
+
+        this_context.pop("previousRunId", None)
+        step_run_context.pop("previousRunId", None)
+
+        step_runs_data.append({
+            "providerName": step_run.provider,
+            "invocation": step_run.invocation,
+            "modelParams": step_run.model_params,
+            "inputs": step_run.inputs,
+            "outputs": step_run.outputs,
+            "elapsedTime": step_run.elapsed_time,
+            "startTime": step_run.start_time,
+            "endTime": step_run.end_time,
+            "context": {**this_context, **step_run_context},
+        })
+
+    test_run = {
+        "caseId": test_case.get("id"),
+        "metadata": merged_metadata,
+        "previousRunId": pipeline_run.context.get("previousRunId"),
+        "stepRuns": step_runs_data,
+    }
+
+    if pipeline_run.get_id():
+        test_run["id"] = pipeline_run.get_id()
+
+    return test_run
+
+def update_test_result_with_runners(
+    result_id: str,
+    runners: List[Tuple[PipelineRun, Union[TestCase, TestCaseV2, Dict[str, Any]]]]
+) -> Dict[str, Any]:
+    """
+    Updates a test result with the provided runners.
+
+    Args:
+        result_id (str): The ID of the test result to update.
+        runners (List[Tuple[PipelineRun, Union[TestCase, TestCaseV2, Dict[str, Any]]]]): Additional test runs to add to the existing test result.
+
+    Returns:
+        Dict[str, Any]: The response data from the Gentrace API.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+    """
+    config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+    if not config:
+        raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+    api_client = ApiClient(configuration=config)
+    api = V1Api(api_client=api_client)
+
+    test_runs = []
+
+    for pipeline_run, test_case in runners:
+        test_run = construct_step_runs(test_case, pipeline_run)
+        test_runs.append(test_run)
+
+    response = api.v1_test_result_id_post(
+        body={"testRuns": test_runs},
+        path_params={"id": result_id}
+    )
+    return response.body
 
 def submit_test_runners(
         pipeline: Pipeline,
@@ -846,12 +933,7 @@ def submit_test_runners(
         ValueError: If the Gentrace API key is not initialized.
 
     Returns:
-        Response data from the Gentrace API's /test-result POST method. This should just be a dictionary
-        similar to the following:
-
-        {
-            "resultId": "161c623d-ee92-417f-823a-cf9f7eccf557",
-        }
+        Response data from the Gentrace API's /test-result POST method.
     """
     try:
         config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
@@ -870,49 +952,7 @@ def submit_test_runners(
             if case_filter and not case_filter(test_case):
                 continue
 
-            merged_metadata = {}
-
-            step_runs_data = []
-            for step_run in pipeline_run.step_runs:
-                # Extract metadata without mutating original contexts
-                this_context = copy.deepcopy(pipeline_run.context)
-                this_context_metadata = this_context.get("metadata", {})
-                step_run_context = copy.deepcopy(step_run.context)
-                step_run_context_metadata = step_run_context.get("metadata", {})
-
-                merged_metadata.update(this_context_metadata)
-                merged_metadata.update(step_run_context_metadata)
-
-                this_context.pop("metadata", None)
-                step_run_context.pop("metadata", None)
-
-                this_context.pop("previousRunId", None)
-                step_run_context.pop("previousRunId", None)
-
-                step_runs_data.append(
-                    {
-                        "providerName": step_run.provider,
-                        "invocation": step_run.invocation,
-                        "modelParams": step_run.model_params,
-                        "inputs": step_run.inputs,
-                        "outputs": step_run.outputs,
-                        "elapsedTime": step_run.elapsed_time,
-                        "startTime": step_run.start_time,
-                        "endTime": step_run.end_time,
-                        "context": {**this_context, **step_run_context},
-                    }
-                )
-
-            test_run = {
-                "caseId": test_case["id"],
-                "metadata": merged_metadata,
-                "previousRunId": pipeline_run.context.get("previousRunId"),
-                "stepRuns": step_runs_data,
-            }
-
-            if pipeline_run.get_id():
-                test_run["id"] = pipeline_run.get_id()
-
+            test_run = construct_step_runs(test_case, pipeline_run)
             test_runs.append(test_run)
 
         params = construct_submission_payload(
@@ -924,6 +964,9 @@ def submit_test_runners(
         return response.body
     except Exception as e:
         raise e
+
+
+
 
 
 class DatasetV2(TypedDict):
@@ -1095,4 +1138,9 @@ __all__ = [
     "update_dataset",
     "create_dataset",
     "get_datasets",
+    "update_test_result_with_runners",
 ]
+
+
+
+
