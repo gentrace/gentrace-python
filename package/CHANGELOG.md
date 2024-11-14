@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.33.0](https://github.com/gentrace/gentrace-python/compare/v0.32.2...v0.33.0) (2024-11-14)
+
+
+### Features
+
+* run/step errors ([#244](https://github.com/gentrace/gentrace-python/issues/244)) ([20f0d42](https://github.com/gentrace/gentrace-python/commit/20f0d42706d574251c44457271314dbe67c35d98))
+
+
+### Bug Fixes
+
+* Remove pytest requirements ([#247](https://github.com/gentrace/gentrace-python/issues/247)) ([e243955](https://github.com/gentrace/gentrace-python/commit/e243955ec821fc1766deac27ca3bea6fa4f8911e))
+
 ## [0.32.2](https://github.com/gentrace/gentrace-python/compare/v0.32.1...v0.32.2) (2024-08-27)
 
 
