@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.1](https://github.com/gentrace/gentrace-python/compare/v0.33.0...v0.33.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* Update lock file ([#251](https://github.com/gentrace/gentrace-python/issues/251)) ([ad7bb12](https://github.com/gentrace/gentrace-python/commit/ad7bb12ba524df6b0fb4f7747b9c50188b9cbb00))
+
 ## [0.33.0](https://github.com/gentrace/gentrace-python/compare/v0.32.2...v0.33.0) (2024-11-14)
 
 
