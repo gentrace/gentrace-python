@@ -8,6 +8,9 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
+  issues: write
+  packages: write
 
 jobs:
   release-please:
@@ -26,7 +29,7 @@ jobs:
         id: setup-python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.11"
         if: ${{ steps.release.outputs['package--release_created'] }}
 
       - name: Install Poetry
@@ -36,7 +39,7 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
         if: ${{ steps.release.outputs['package--release_created'] }}
-      
+
       - name: Poetry install and build
         run: |
           cd package
