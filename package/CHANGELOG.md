@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.34.0](https://github.com/gentrace/gentrace-python/compare/v0.33.1...v0.34.0) (2024-12-17)
+
+
+### Features
+
+* add path to run ([#256](https://github.com/gentrace/gentrace-python/issues/256)) ([420a82f](https://github.com/gentrace/gentrace-python/commit/420a82f61efa9b513c72c74338748bb37599da21))
+
+
+### Bug Fixes
+
+* Fix dependencies for Python Poetry environments ([#253](https://github.com/gentrace/gentrace-python/issues/253)) ([0c2a8e4](https://github.com/gentrace/gentrace-python/commit/0c2a8e49b3813f3c8eb90d335d495df6f09949b0))
+
 ## [0.33.1](https://github.com/gentrace/gentrace-python/compare/v0.33.0...v0.33.1) (2024-11-14)
 
 
