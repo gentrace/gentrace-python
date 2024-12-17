@@ -26,6 +26,7 @@ docs/models/MetadataValueObject.md
 docs/models/Pipeline.md
 docs/models/PipelineV2.md
 docs/models/ResolvedStepRun.md
+docs/models/RunPathSection.md
 docs/models/RunRequest.md
 docs/models/RunResponse.md
 docs/models/RunV2.md
@@ -104,6 +105,8 @@ gentrace/model/pipeline_v2.py
 gentrace/model/pipeline_v2.pyi
 gentrace/model/resolved_step_run.py
 gentrace/model/resolved_step_run.pyi
+gentrace/model/run_path_section.py
+gentrace/model/run_path_section.pyi
 gentrace/model/run_request.py
 gentrace/model/run_request.pyi
 gentrace/model/run_response.py

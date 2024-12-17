@@ -36,6 +36,7 @@ from gentrace.model.metadata_value_object import MetadataValueObject
 from gentrace.model.pipeline import Pipeline
 from gentrace.model.pipeline_v2 import PipelineV2
 from gentrace.model.resolved_step_run import ResolvedStepRun
+from gentrace.model.run_path_section import RunPathSection
 from gentrace.model.run_request import RunRequest
 from gentrace.model.run_response import RunResponse
 from gentrace.model.run_v2 import RunV2

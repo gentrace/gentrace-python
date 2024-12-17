@@ -17,11 +17,11 @@ from gentrace.paths.v1_test_case.get import V1TestCaseGet
 from gentrace.paths.v1_test_case.patch import V1TestCasePatch
 from gentrace.paths.v1_test_case.post import V1TestCasePost
 from gentrace.paths.v1_test_result.get import V1TestResultGet
-from gentrace.paths.v1_test_result.post import V1TestResultPost
 from gentrace.paths.v1_test_result_id.get import V1TestResultIdGet
 from gentrace.paths.v1_test_result_id.post import V1TestResultIdPost
-from gentrace.paths.v1_test_result_simple.post import V1TestResultSimplePost
+from gentrace.paths.v1_test_result.post import V1TestResultPost
 from gentrace.paths.v1_test_result_simple_id.post import V1TestResultSimpleIdPost
+from gentrace.paths.v1_test_result_simple.post import V1TestResultSimplePost
 from gentrace.paths.v1_test_result_status.get import V1TestResultStatusGet
 
 

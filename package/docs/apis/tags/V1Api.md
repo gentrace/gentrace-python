@@ -1564,6 +1564,7 @@ Add more test runs to a result
 import gentrace
 from gentrace.apis.tags import v1_api
 from gentrace.model.metadata_value_object import MetadataValueObject
+from gentrace.model.run_path_section import RunPathSection
 from gentrace.model.step_run import StepRun
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api
@@ -1619,6 +1620,12 @@ with gentrace.ApiClient(configuration) as api_client:
                         start_time="1970-01-01T00:00:00.00Z",
                         end_time="1970-01-01T00:00:00.00Z",
                         error="error_example",
+                    )
+                ],
+                path=[
+                    RunPathSection(
+                        type="suite",
+                        name="name_example",
                     )
                 ],
                 error="error_example",
@@ -1690,6 +1697,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **name** | str,  | str,  | The name of the test run. Used with &#x27;inputs&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
 **[inputs](#inputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The input data for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
+**[path](#path)** | list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | [optional] 
 **error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -1730,6 +1738,20 @@ list, tuple,  | tuple,  |  |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) | [**StepRun**]({{complexTypePrefix}}StepRun.md) |  | 
+
+# path
+
+Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) |  | 
 
 ### path_params
 #### RequestPathParams
@@ -1828,6 +1850,7 @@ Create a new test result from runs
 import gentrace
 from gentrace.apis.tags import v1_api
 from gentrace.model.metadata_value_object import MetadataValueObject
+from gentrace.model.run_path_section import RunPathSection
 from gentrace.model.local_evaluation import LocalEvaluation
 from gentrace.model.step_run import StepRun
 from pprint import pprint
@@ -1912,6 +1935,12 @@ with gentrace.ApiClient(configuration) as api_client:
                                 date="1970-01-01T00:00:00.00Z",
                             ),
                         ),
+                    )
+                ],
+                path=[
+                    RunPathSection(
+                        type="suite",
+                        name="name_example",
                     )
                 ],
                 error="error_example",
@@ -2003,6 +2032,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **[expectedOutputs](#expectedOutputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | Used for supplying local data. The expected outputs for the test run. Used with &#x27;name&#x27; and mutually exclusive with &#x27;caseId&#x27;. Optional, since not all evaluators require expected outputs. | [optional] 
 **[metadata](#metadata)** | dict, frozendict.frozendict, None,  | frozendict.frozendict, NoneClass,  |  | [optional] 
 **[evaluations](#evaluations)** | list, tuple,  | tuple,  | Optional array of local evaluations | [optional] 
+**[path](#path)** | list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | [optional] 
 **error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -2074,6 +2104,20 @@ Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) |  | 
 
+# path
+
+Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) |  | 
+
 ### Return Types, Responses
 
 Code | Class | Description
@@ -2132,6 +2176,7 @@ Add more test runs to a result (simple version)
 ```python
 import gentrace
 from gentrace.apis.tags import v1_api
+from gentrace.model.run_path_section import RunPathSection
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api
 # See configuration.py for a list of all supported configuration parameters.
@@ -2164,6 +2209,12 @@ with gentrace.ApiClient(configuration) as api_client:
                 case_id="case_id_example",
                 inputs=dict(),
                 outputs=dict(),
+                path=[
+                    RunPathSection(
+                        type="suite",
+                        name="name_example",
+                    )
+                ],
                 error="error_example",
             )
         ],
@@ -2231,6 +2282,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **caseId** | str, uuid.UUID,  | str,  | The ID of the test case | value must be a uuid
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
 **[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
+**[path](#path)** | list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | [optional] 
 **error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -2261,6 +2313,20 @@ dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs f
 Key | Input Type | Accessed Type | Description | Notes
 ------------ | ------------- | ------------- | ------------- | -------------
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, uuid.UUID, int, float, decimal.Decimal, bool, None, list, tuple, bytes, io.FileIO, io.BufferedReader,  | frozendict.frozendict, str, decimal.Decimal, BoolClass, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
+
+# path
+
+Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) |  | 
 
 ### path_params
 #### RequestPathParams
@@ -2359,6 +2425,7 @@ Create a new test result from test runs
 import gentrace
 from gentrace.apis.tags import v1_api
 from gentrace.model.metadata_value_object import MetadataValueObject
+from gentrace.model.run_path_section import RunPathSection
 from gentrace.model.local_evaluation import LocalEvaluation
 from pprint import pprint
 # Defining the host is optional and defaults to https://gentrace.ai/api
@@ -2417,6 +2484,12 @@ with gentrace.ApiClient(configuration) as api_client:
                                 date="1970-01-01T00:00:00.00Z",
                             ),
                         ),
+                    )
+                ],
+                path=[
+                    RunPathSection(
+                        type="suite",
+                        name="name_example",
                     )
                 ],
                 error="error_example",
@@ -2503,6 +2576,7 @@ Key | Input Type | Accessed Type | Description | Notes
 **id** | None, str, uuid.UUID,  | NoneClass, str,  | The ID of the test run | [optional] value must be a uuid
 **[outputs](#outputs)** | dict, frozendict.frozendict,  | frozendict.frozendict,  | The returned outputs for the test case | [optional] 
 **[evaluations](#evaluations)** | list, tuple,  | tuple,  | Optional array of local evaluations | [optional] 
+**[path](#path)** | list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | [optional] 
 **error** | None, str,  | NoneClass, str,  |  | [optional] 
 **any_string_name** | dict, frozendict.frozendict, str, date, datetime, int, float, bool, decimal.Decimal, None, list, tuple, bytes, io.FileIO, io.BufferedReader | frozendict.frozendict, str, BoolClass, decimal.Decimal, NoneClass, tuple, bytes, FileIO | any string name can be used but the value must be the correct type | [optional]
 
@@ -2547,6 +2621,20 @@ list, tuple,  | tuple,  | Optional array of local evaluations |
 Class Name | Input Type | Accessed Type | Description | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) | [**LocalEvaluation**]({{complexTypePrefix}}LocalEvaluation.md) |  | 
+
+# path
+
+Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests.
+
+## Model Type Info
+Input Type | Accessed Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+list, tuple, None,  | tuple, NoneClass,  | Optional path which describes the organizational hierarchy of this test run in relation to all the pipeline tests. | 
+
+### Tuple Items
+Class Name | Input Type | Accessed Type | Description | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+[**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) | [**RunPathSection**]({{complexTypePrefix}}RunPathSection.md) |  | 
 
 ### Return Types, Responses
 
