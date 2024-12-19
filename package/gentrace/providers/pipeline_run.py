@@ -88,7 +88,7 @@ class PipelineRun:
     def get_id(self):
         return self.pipeline_run_id
     
-    def set_error(self, error: str | None):
+    def set_error(self, error: Optional[str]):
         self.error = error
 
     def get_error(self):
