@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.34.1](https://github.com/gentrace/gentrace-python/compare/v0.34.0...v0.34.1) (2024-12-19)
+
+
+### Bug Fixes
+
+* Fix accidental Python 3.9 typing issue  ([#257](https://github.com/gentrace/gentrace-python/issues/257)) ([25f0022](https://github.com/gentrace/gentrace-python/commit/25f0022eb7eb3e7fe03c1bd38463ec02a4f5d08e))
+
 ## [0.34.0](https://github.com/gentrace/gentrace-python/compare/v0.33.1...v0.34.0) (2024-12-17)
 
 
