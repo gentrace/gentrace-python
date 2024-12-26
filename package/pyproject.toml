@@ -7,7 +7,7 @@ packages = [
     { include = "gentrace" },
 ]
 repository = "https://github.com/gentrace/gentrace-python"
-version = "0.35.0"
+version = "0.35.1"
 
 [tool.poetry.dependencies]
 python = ">=3.8.1,<4.0"
