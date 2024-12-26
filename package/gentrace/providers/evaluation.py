@@ -1129,6 +1129,7 @@ def update_test_result_with_runners(
                         "startTime": step_run.start_time,
                         "endTime": step_run.end_time,
                         "context": {**this_context, **step_run_context},
+                        "error": step_run.error,
                     }
                 )
 
@@ -1137,7 +1138,14 @@ def update_test_result_with_runners(
                 "metadata": merged_metadata,
                 "previousRunId": pipeline_run.context.get("previousRunId"),
                 "stepRuns": step_runs_data,
+                "error": pipeline_run.get_error(),
             }
+
+            if "name" in test_case:
+                test_run["name"] = test_case["name"]
+            
+            if "inputs" in test_case:
+                test_run["inputs"] = test_case["inputs"]
 
             if pipeline_run.get_id():
                 test_run["id"] = pipeline_run.get_id()

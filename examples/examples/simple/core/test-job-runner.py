@@ -1,5 +1,6 @@
 import os
 import random
+import json
 from typing import Dict, Any
 
 from openai import OpenAI
@@ -19,7 +20,7 @@ load_dotenv()
 # Initialize Gentrace
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    host="http://localhost:3000/api",
+    # host="http://localhost:3000/api",
 )
 
 # # Initialize OpenAI client
@@ -50,8 +51,15 @@ class WriteEmailInput(BaseModel):
     instructions: str
 
 async def write_email(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    return "mocked email"
-    # """Write email interaction function."""
+    result = {
+        "from": inputs.get('fromName'),
+        "fromEmail": inputs.get('fromEmail'),
+        "to": inputs.get('toEmail'),
+        "instructions": inputs.get('instructions')
+    }
+    raise Exception("Failed to process email inputs")
+
+    return json.dumps({k: v for k, v in result.items() if v is not None})
     # completion = await client.chat.completions.create(
     #     model="gpt-4o-mini",
     #     messages=[
@@ -130,6 +138,7 @@ choose_model_interaction = define_interaction({
     "inputType": ChooseModelInput,
     "parameters": [model_parameter]
 })
+
 
 if __name__ == "__main__":
     # Start listening for test jobs

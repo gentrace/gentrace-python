@@ -21,6 +21,9 @@ from gentrace.providers.pipeline import Pipeline
 from gentrace.providers.utils import log_debug, log_info, log_warn
 import pystache
 from gentrace.providers.evaluation import update_test_result_with_runners
+from websockets.client import connect as ws_connect
+from asyncio import Semaphore
+import requests
 
 T = TypeVar("T")
 
@@ -187,15 +190,77 @@ async def handle_message(message: Dict, transport: Dict) -> None:
             return
             
         with override_context(message.get("overrides", {})):
-            for test_case in message["data"]:
-                try:
-                    runner = pipeline.start()
-                    await runner.ameasure(interaction["fn"], inputs=test_case["inputs"])
+            # Get parallelism from message, default to 1 if not specified
+            parallelism = message.get("parallelism", 1)
+            semaphore = Semaphore(parallelism)
+            
+            async def run_with_semaphore(test_case: Dict):
+                async with semaphore:
+                    return await run_test_case_through_interaction(pipeline, interaction, test_case)
+            
+            # Run all test cases in parallel with semaphore control
+            try:
+                results = await asyncio.gather(
+                    *[run_with_semaphore(test_case) for test_case in message["data"]],
+                    return_exceptions=True
+                )
+                
+                # Process results and update test results
+                error_results = []
+                print("❤️ [RESULTS] Starting to process results", len(results))
+                for result in results:
+                    if isinstance(result, Exception):
+                        log_warn(f"Error in parallel execution: {result}")
+                        error_results.append(str(result))
+                        print("✅ [ERROR] Found exception in results", str(result))
+                        continue
+                    runner, test_case = result
+                    print("🟡 [RUNNER] Processing runner and test case", runner, test_case)
                     update_test_result_with_runners(message["testJobId"], [(runner, test_case)])
-                except Exception as e:
-                    log_warn(f"Error running test case {test_case['id']}: {e}")
-                    runner.set_error(str(e))
-                    update_test_result_with_runners(message["testJobId"], [(runner, test_case)])
+                
+                # Send final status update
+                if not GENTRACE_CONFIG_STATE["global_gentrace_config"]:
+                    print("😈 [CONFIG] Missing Gentrace configuration")
+                    raise ValueError("Gentrace configuration not initialized")
+                
+                config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+                host = config.host or "https://gentrace.ai/api"
+                print("❤️ [CONFIG] Using host", host)
+                
+               
+                # Get auth settings from config
+                auth_settings = config.auth_settings()
+                
+                # Prepare headers from config with auth
+                headers = {
+                    "Content-Type": "application/json",
+                }
+                
+                # Add bearer token if available
+                if 'bearerAuth' in auth_settings:
+                    headers[auth_settings['bearerAuth']['key']] = auth_settings['bearerAuth']['value']
+                
+                print("✅ [HEADERS] Prepared request headers", headers)
+                
+                # Make status update request
+                status_url = f"{host}/v1/test-result/status"
+                status_payload = {
+                    "id": message["testJobId"],
+                    "finished": True
+                }
+                print("🟡 [REQUEST] Making status update request", status_url, status_payload)
+                
+                response = requests.post(
+                    status_url,
+                    headers=headers,
+                    json=status_payload
+                )
+                print("😈 [RESPONSE] Got response", response.status_code, response.text)
+                
+                if not response.ok:
+                    log_warn(f"Failed to update test status: {response.text}")
+            except Exception as e:
+                log_warn(f"Error in parallel test execution: {e}")
 
     elif message_type == "run-test-suite":
         test_suite = test_suites.get(message["testSuiteName"])
@@ -246,10 +311,14 @@ async def update_test_status(test_job_id: str, finished: bool, error: Optional[s
 async def run_websocket(environment_name: Optional[str] = None) -> None:
     """Run the WebSocket connection to the Gentrace server."""
     if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
+        print("🟡 [WS-INIT] API key not set", GENTRACE_CONFIG_STATE)
         raise ValueError("Gentrace API key not set")
-        
+    
+    print("here 4")
     ws_base_path = get_ws_base_path()
     env = environment_name or GENTRACE_CONFIG_STATE.get("GENTRACE_ENVIRONMENT_NAME") or socket.gethostname()
+    
+    print("here 5")
     
     transport = {
         "type": "ws",
@@ -261,6 +330,7 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
     async def setup():
         """Setup function to register existing interactions and test suites."""
         # Register existing interactions
+        print("❤️ [WS-SETUP] Starting setup", {"interactions": len(interactions), "test_suites": len(test_suites)})
         for interaction in interactions.values():
             parameters = []
             for param in interaction.get("parameters", []):
@@ -287,11 +357,14 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                     "name": test_suite["name"]
                 }
             }, transport)
+   
+    print("here 6")
+    websocket = await ws_connect(ws_base_path)
+    transport["ws"] = websocket
     
-    async with websockets.connect(ws_base_path) as websocket:
-        transport["ws"] = websocket
+    try:
+        print("✅ [WS-CONN] WebSocket connection opened", {"ws_base_path": ws_base_path})
         
-        print("WebSocket connection opened, sending setup message")
         # Send initial setup message
         setup_message = {
             "id": str(uuid.uuid4()),
@@ -308,13 +381,14 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         async def send_ping():
             while not transport["isClosed"]:
                 try:
-                    print("Sending ping")
+                    print("😈 [WS-PING] Sending ping")
                     await websocket.send(json.dumps({
                         "id": str(uuid.uuid4()),
                         "ping": True
                     }))
                     await asyncio.sleep(30)  # 30 seconds interval
                 except Exception as e:
+                    print("❤️ [WS-PING] Error in ping", {"error": str(e)})
                     if not transport["isClosed"]:
                         break
 
@@ -324,6 +398,7 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
             while True:
                 message = await websocket.recv()
                 message_data = json.loads(message)
+                print("✅ [WS-MSG] Received message", {"message_type": message_data.get("data", {}).get("type")})
                 
                 if "pluginId" in message_data.get("data", {}):
                     transport["pluginId"] = message_data["data"]["pluginId"]
@@ -356,13 +431,17 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                 await ping_task
             except asyncio.CancelledError:
                 pass
+    finally:
+        await websocket.close()
 
 async def listen_inner(environment_name: Optional[str] = None, retries: int = 0) -> None:
+    print("here 2")
     """Internal function to handle WebSocket connection with retries."""
     if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
         raise ValueError("Gentrace API key not set")
         
     try:
+        print("here 3")
         await run_websocket(environment_name)
     except Exception as e:
         print(f"Error in WebSocket connection: {e}")
@@ -373,6 +452,7 @@ async def listen_inner(environment_name: Optional[str] = None, retries: int = 0)
             raise
 
 def listen(environment_name: Optional[str] = None) -> None:
+    print("here 1")
     """Start listening for test jobs from the Gentrace server."""
     asyncio.run(listen_inner(environment_name))
 
@@ -383,3 +463,13 @@ async def handle_webhook(body: Dict, send_response: Callable[[Dict], None]) -> N
         "type": "http",
         "sendResponse": send_response
     })
+
+async def run_test_case_through_interaction(pipeline: Pipeline, interaction: Dict, test_case: Dict) -> Tuple[Any, Dict]:
+    """Run a single test case through an interaction and return the runner and test case."""
+    runner = pipeline.start()
+    try:
+        await runner.ameasure(interaction["fn"], inputs=test_case["inputs"])
+    except Exception as e:
+        log_warn(f"Error running test case {test_case['id']}: {e}")
+        runner.set_error(str(e))
+    return runner, test_case
