@@ -188,7 +188,6 @@ class PipelineRun:
         await measure(add, x=1, y=2, step_info={"provider": "my_provider", "invocation": "add invocation"})
         """
         input_params = {k: v for k, v in kwargs.items() if k not in ["step_info"]}
-
         step_info = kwargs.get("step_info", {})
 
         start_time = time.time()
@@ -208,20 +207,20 @@ class PipelineRun:
 
         elapsed_time = int((end_time - start_time) * 1000)
 
-        self.add_step_run(
-            StepRun(
-                step_info.get("provider", "undeclared"),
-                step_info.get("invocation", "undeclared"),
-                elapsed_time,
-                to_date_string(start_time),
-                to_date_string(end_time),
-                input_params,
-                step_info.get("model_params", {}),
-                outputs_for_step_run,
-                step_info.get("context", {}),
-                str(error) if error else None,
-            )
+        step_run = StepRun(
+            step_info.get("provider", "undeclared"),
+            step_info.get("invocation", "undeclared"),
+            elapsed_time,
+            to_date_string(start_time),
+            to_date_string(end_time),
+            input_params,
+            step_info.get("model_params", {}),
+            outputs_for_step_run,
+            step_info.get("context", {}),
+            str(error) if error else None,
         )
+
+        self.add_step_run(step_run)
 
         if error:
             raise error

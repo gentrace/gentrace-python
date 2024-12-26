@@ -821,8 +821,6 @@ def get_test_runners(
         pipeline_run = pipeline.start()
         test_runners.append((pipeline_run, test_case))
 
-    print(f"Total test cases: {total_test_cases}")
-    print(f"Filtered test cases: {filtered_test_cases}")
     return test_runners
 
 def submit_test_runners(
@@ -1072,6 +1070,97 @@ def update_dataset(dataset_id: str, update_data: UpdateDatasetV2) -> DatasetV2:
     return DatasetV2(**response.body)
 
 
+def update_test_result_with_runners(
+        result_id: str,
+        pipeline_run_test_cases: List[Tuple[PipelineRun, TestCase]],
+) -> Dict[str, Any]:
+    """
+    Updates a test result with additional test runs.
+
+    Args:
+        result_id (str): The ID of the test result to update.
+        pipeline_run_test_cases (List[Tuple[PipelineRun, TestCase]]): A list of (PipelineRun, TestCase) tuples
+            representing additional test runs to add to the existing test result.
+
+    Raises:
+        ValueError: If the Gentrace API key is not initialized.
+
+    Returns:
+        Dict[str, Any]: Response data from the Gentrace API's /test-result/{id} POST method.
+    """
+    try:
+        config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
+        if not config:
+            raise ValueError("Gentrace API key not initialized. Call init() first.")
+
+        api_client = ApiClient(configuration=config)
+        api = V1Api(api_client=api_client)
+
+        test_runs = []
+
+        for pipeline_run, test_case in pipeline_run_test_cases:
+            merged_metadata = {}
+
+            step_runs_data = []
+            for step_run in pipeline_run.step_runs:
+                # Extract metadata without mutating original contexts
+                this_context = copy.deepcopy(pipeline_run.context)
+                this_context_metadata = this_context.get("metadata", {})
+                step_run_context = copy.deepcopy(step_run.context)
+                step_run_context_metadata = step_run_context.get("metadata", {})
+
+                merged_metadata.update(this_context_metadata)
+                merged_metadata.update(step_run_context_metadata)
+
+                this_context.pop("metadata", None)
+                step_run_context.pop("metadata", None)
+
+                this_context.pop("previousRunId", None)
+                step_run_context.pop("previousRunId", None)
+
+                step_runs_data.append(
+                    {
+                        "providerName": step_run.provider,
+                        "invocation": step_run.invocation,
+                        "modelParams": step_run.model_params,
+                        "inputs": step_run.inputs,
+                        "outputs": step_run.outputs,
+                        "elapsedTime": step_run.elapsed_time,
+                        "startTime": step_run.start_time,
+                        "endTime": step_run.end_time,
+                        "context": {**this_context, **step_run_context},
+                        "error": step_run.error,
+                    }
+                )
+
+            test_run = {
+                "caseId": test_case["id"],
+                "metadata": merged_metadata,
+                "previousRunId": pipeline_run.context.get("previousRunId"),
+                "stepRuns": step_runs_data,
+                "error": pipeline_run.get_error(),
+            }
+
+            if "name" in test_case:
+                test_run["name"] = test_case["name"]
+            
+            if "inputs" in test_case:
+                test_run["inputs"] = test_case["inputs"]
+
+            if pipeline_run.get_id():
+                test_run["id"] = pipeline_run.get_id()
+
+            test_runs.append(test_run)
+
+        response = api.v1_test_result_id_post(
+            path_params={"id": result_id},
+            body={"testRuns": test_runs}
+        )
+        return response.body
+    except Exception as e:
+        raise e
+
+
 __all__ = [
     "get_evaluators",
     "get_test_cases",
@@ -1089,6 +1178,7 @@ __all__ = [
     "get_test_runners",
     "submit_test_runners",
     "bulk_create_evaluations",
+    "update_test_result_with_runners",
     "OutputStep",
     "EvaluationDict",
     "get_dataset",
