@@ -456,13 +456,46 @@ def listen(environment_name: Optional[str] = None) -> None:
     """Start listening for test jobs from the Gentrace server."""
     asyncio.run(listen_inner(environment_name))
 
-async def handle_webhook(body: Dict, send_response: Callable[[Dict], None]) -> None:
-    """Handle webhook requests for test job execution."""
-    print("Gentrace HTTP message received:", json.dumps(body, indent=2))
-    await handle_message(body, {
+async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], None]] = None) -> Dict:
+    """
+    Handle webhook requests for test job execution.
+    
+    Args:
+        body: The webhook request body
+        send_response: Optional callback function to send response back to the webhook caller
+    
+    Returns:
+        Dict containing the response data
+    """
+    print("❤️ [WEBHOOK] Received webhook request", {"body": body})
+    
+    response_data = {}
+    
+    # Create an HTTP transport for webhook communication
+    transport = {
         "type": "http",
-        "sendResponse": send_response
-    })
+        "sendResponse": send_response if send_response else lambda x: response_data.update(x)
+    }
+    
+    try:
+        # Process the webhook message using the existing message handler
+        await handle_message(body, transport)
+        
+        # If no send_response provided, return the collected response
+        if not send_response:
+            return response_data
+            
+    except Exception as e:
+        print("✅ [WEBHOOK-ERROR] Error handling webhook", {"error": str(e)})
+        error_response = {
+            "type": "error",
+            "error": str(e)
+        }
+        
+        # If send_response provided, use it, otherwise return error
+        if send_response:
+            send_response(error_response)
+        return error_response
 
 async def run_test_case_through_interaction(pipeline: Pipeline, interaction: Dict, test_case: Dict) -> Tuple[Any, Dict]:
     """Run a single test case through an interaction and return the runner and test case."""

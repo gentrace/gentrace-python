@@ -12,6 +12,8 @@ pinecone-client = "^2.2.1"
 python = "^3.8.1"
 python-dotenv = "^1.0.0"
 pydantic = {version = "^1.10.0", extras = ["email"]}
+fastapi = "^0.110.0"
+uvicorn = "^0.27.1"
 gentrace-py = {path = "../package/dist/gentrace_py-0.34.1.tar.gz", develop = true}
 
 [tool.poetry.group.lint.dependencies]
