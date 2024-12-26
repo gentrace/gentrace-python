@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.1](https://github.com/gentrace/gentrace-python/compare/v0.35.0...v0.35.1) (2024-12-26)
+
+
+### Bug Fixes
+
+* Fix Poetry lock file [#262](https://github.com/gentrace/gentrace-python/issues/262) ([140d791](https://github.com/gentrace/gentrace-python/commit/140d7910d24e19f783ce85498918d1f475889de5))
+
 ## [0.35.0](https://github.com/gentrace/gentrace-python/compare/v0.34.1...v0.35.0) (2024-12-26)
 
 
