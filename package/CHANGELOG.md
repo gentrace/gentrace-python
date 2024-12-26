@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.35.0](https://github.com/gentrace/gentrace-python/compare/v0.34.1...v0.35.0) (2024-12-26)
+
+
+### Features
+
+* Add experiments alpha ([#259](https://github.com/gentrace/gentrace-python/issues/259)) ([3adb79f](https://github.com/gentrace/gentrace-python/commit/3adb79fedc9f5625ae2abe3cecdbb9561c69974e))
+
 ## [0.34.1](https://github.com/gentrace/gentrace-python/compare/v0.34.0...v0.34.1) (2024-12-19)
 
 
