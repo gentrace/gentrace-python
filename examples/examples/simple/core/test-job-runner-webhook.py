@@ -27,13 +27,7 @@ app = FastAPI()
 # Initialize Gentrace
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    # host="http://localhost:3000/api",
 )
-
-# # Initialize OpenAI client
-# client = OpenAI(
-#     api_key=os.getenv("OPENAI_KEY"),
-# )
 
 # Define parameters
 write_email_prompt_parameter = template_parameter({
@@ -58,32 +52,14 @@ class WriteEmailInput(BaseModel):
     instructions: str
 
 async def write_email(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    result = {
-        "from": inputs.get('fromName'),
-        "fromEmail": inputs.get('fromEmail'),
-        "to": inputs.get('toEmail'),
-        "instructions": inputs.get('instructions')
-    }
-    # raise Exception("Failed to process email inputs")
-
-    return json.dumps({k: v for k, v in result.items() if v is not None})
-    # completion = await client.chat.completions.create(
-    #     model="gpt-4o-mini",
-    #     messages=[
-    #         {
-    #             "role": "user",
-    #             "content": write_email_prompt_parameter["render"]({
-    #                 "fromName": inputs["fromName"],
-    #                 "fromEmail": inputs["fromEmail"],
-    #                 "toEmail": inputs["toEmail"],
-    #                 "instructions": inputs["instructions"],
-    #             }),
-    #         }
-    #     ],
-    # )
-    # return {
-    #     "body": completion.choices[0].message.content,
-    # }
+    # TODO: Actually interpolate the inputs
+    rendered_email = write_email_prompt_parameter.render({
+        "fromName": "John Smith",
+        "fromEmail": "john.smith@example.com", 
+        "toEmail": "jane.doe@example.com",
+        "instructions": "Please write a friendly introduction email",
+    })
+    return rendered_email
 
 # Define write_email interaction
 write_email_interaction = define_interaction({
