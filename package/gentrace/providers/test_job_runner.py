@@ -27,8 +27,6 @@ import requests
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
-
 # Context management for overrides
 overrides_context: ContextVar[Dict[str, Any]] = ContextVar("overrides", default={})
 
@@ -115,10 +113,11 @@ def get_ws_base_path() -> str:
 
 async def handle_message(message: Dict, transport: Dict) -> None:
     """Handle incoming WebSocket messages."""
-    print("WebSocket message received:", message)
     message_type = message.get("type")
+    print(f"Received message type: {message_type}")
     
     if message_type == "environment-details":
+        print("Processing environment details request")
         await send_message({
             "type": "environment-details",
             "interactions": [
@@ -136,6 +135,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
         }, transport)
     
     elif message_type == "run-interaction-input-validation":
+        print(f"Running input validation for interaction: {message['interactionName']}")
         interaction = interactions.get(message["interactionName"])
         if not interaction:
             await send_message({
@@ -180,6 +180,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
         }, transport)
 
     elif message_type == "run-test-interaction":
+        print(f"Running test interaction: {message['interactionName']}")
         await send_message({"type": "confirmation", "ok": True}, transport)
         
         pipeline = Pipeline({"id": message["pipelineId"]})
@@ -204,28 +205,24 @@ async def handle_message(message: Dict, transport: Dict) -> None:
                     *[run_with_semaphore(test_case) for test_case in message["data"]],
                     return_exceptions=True
                 )
+                print(f"Completed test cases execution with {len(results)} results")
                 
                 # Process results and update test results
                 error_results = []
-                print("❤️ [RESULTS] Starting to process results", len(results))
                 for result in results:
                     if isinstance(result, Exception):
                         log_warn(f"Error in parallel execution: {result}")
                         error_results.append(str(result))
-                        print("✅ [ERROR] Found exception in results", str(result))
                         continue
                     runner, test_case = result
-                    print("🟡 [RUNNER] Processing runner and test case", runner, test_case)
                     update_test_result_with_runners(message["testJobId"], [(runner, test_case)])
                 
                 # Send final status update
                 if not GENTRACE_CONFIG_STATE["global_gentrace_config"]:
-                    print("😈 [CONFIG] Missing Gentrace configuration")
                     raise ValueError("Gentrace configuration not initialized")
                 
                 config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
                 host = config.host or "https://gentrace.ai/api"
-                print("❤️ [CONFIG] Using host", host)
                 
                
                 # Get auth settings from config
@@ -240,22 +237,18 @@ async def handle_message(message: Dict, transport: Dict) -> None:
                 if 'bearerAuth' in auth_settings:
                     headers[auth_settings['bearerAuth']['key']] = auth_settings['bearerAuth']['value']
                 
-                print("✅ [HEADERS] Prepared request headers", headers)
-                
                 # Make status update request
                 status_url = f"{host}/v1/test-result/status"
                 status_payload = {
                     "id": message["testJobId"],
                     "finished": True
                 }
-                print("🟡 [REQUEST] Making status update request", status_url, status_payload)
                 
                 response = requests.post(
                     status_url,
                     headers=headers,
                     json=status_payload
                 )
-                print("😈 [RESPONSE] Got response", response.status_code, response.text)
                 
                 if not response.ok:
                     log_warn(f"Failed to update test status: {response.text}")
@@ -263,6 +256,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
                 log_warn(f"Error in parallel test execution: {e}")
 
     elif message_type == "run-test-suite":
+        print(f"Running test suite: {message['testSuiteName']}")
         test_suite = test_suites.get(message["testSuiteName"])
         if not test_suite:
             log_warn(f"Test suite {message['testSuiteName']} not found")
@@ -284,7 +278,6 @@ async def send_message(message: Dict, transport: Dict) -> None:
         if transport.get("isClosed"):
             return
             
-        print("WebSocket sending message:", json.dumps(message, indent=2))
         await transport["ws"].send(json.dumps({
             "id": str(uuid.uuid4()),
             "for": transport["pluginId"],
@@ -311,14 +304,10 @@ async def update_test_status(test_job_id: str, finished: bool, error: Optional[s
 async def run_websocket(environment_name: Optional[str] = None) -> None:
     """Run the WebSocket connection to the Gentrace server."""
     if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
-        print("🟡 [WS-INIT] API key not set", GENTRACE_CONFIG_STATE)
         raise ValueError("Gentrace API key not set")
     
-    print("here 4")
     ws_base_path = get_ws_base_path()
     env = environment_name or GENTRACE_CONFIG_STATE.get("GENTRACE_ENVIRONMENT_NAME") or socket.gethostname()
-    
-    print("here 5")
     
     transport = {
         "type": "ws",
@@ -330,7 +319,6 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
     async def setup():
         """Setup function to register existing interactions and test suites."""
         # Register existing interactions
-        print("❤️ [WS-SETUP] Starting setup", {"interactions": len(interactions), "test_suites": len(test_suites)})
         for interaction in interactions.values():
             parameters = []
             for param in interaction.get("parameters", []):
@@ -357,15 +345,12 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                     "name": test_suite["name"]
                 }
             }, transport)
-   
-    print("here 6")
+
     websocket = await ws_connect(ws_base_path)
     transport["ws"] = websocket
     
     try:
-        print("✅ [WS-CONN] WebSocket connection opened", {"ws_base_path": ws_base_path})
-        
-        # Send initial setup message
+        print("WebSocket connection opened, sending setup message")
         setup_message = {
             "id": str(uuid.uuid4()),
             "init": "test-job-runner", 
@@ -381,24 +366,23 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         async def send_ping():
             while not transport["isClosed"]:
                 try:
-                    print("😈 [WS-PING] Sending ping")
+                    print("sending ping")
                     await websocket.send(json.dumps({
                         "id": str(uuid.uuid4()),
                         "ping": True
                     }))
                     await asyncio.sleep(30)  # 30 seconds interval
                 except Exception as e:
-                    print("❤️ [WS-PING] Error in ping", {"error": str(e)})
                     if not transport["isClosed"]:
                         break
 
         ping_task = asyncio.create_task(send_ping())
-        
+
         try:
             while True:
                 message = await websocket.recv()
                 message_data = json.loads(message)
-                print("✅ [WS-MSG] Received message", {"message_type": message_data.get("data", {}).get("type")})
+                print("WebSocket message received:", message)
                 
                 if "pluginId" in message_data.get("data", {}):
                     transport["pluginId"] = message_data["data"]["pluginId"]
@@ -419,11 +403,11 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                     log_warn(f"Error handling message: {e}")
                     
         except websockets.exceptions.ConnectionClosed:
-            transport["isClosed"] = True
             print("WebSocket connection closed")
-        except Exception as e:
             transport["isClosed"] = True
-            print(f"WebSocket error: {e}")
+        except Exception as e:
+            print(f"Error in WebSocket message handler: {e}")
+            transport["isClosed"] = True
         finally:
             transport["isClosed"] = True
             ping_task.cancel()
@@ -435,16 +419,13 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         await websocket.close()
 
 async def listen_inner(environment_name: Optional[str] = None, retries: int = 0) -> None:
-    print("here 2")
     """Internal function to handle WebSocket connection with retries."""
     if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
         raise ValueError("Gentrace API key not set")
         
     try:
-        print("here 3")
         await run_websocket(environment_name)
     except Exception as e:
-        print(f"Error in WebSocket connection: {e}")
         if retries < 5:  # Max 5 retries
             await asyncio.sleep(min(2 ** retries * 0.25, 10))
             await listen_inner(environment_name, retries + 1)
@@ -452,7 +433,6 @@ async def listen_inner(environment_name: Optional[str] = None, retries: int = 0)
             raise
 
 def listen(environment_name: Optional[str] = None) -> None:
-    print("here 1")
     """Start listening for test jobs from the Gentrace server."""
     asyncio.run(listen_inner(environment_name))
 
@@ -467,7 +447,7 @@ async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], No
     Returns:
         Dict containing the response data
     """
-    print("❤️ [WEBHOOK] Received webhook request", {"body": body})
+    print("Gentrace HTTP message received:", body)
     
     response_data = {}
     
@@ -486,7 +466,6 @@ async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], No
             return response_data
             
     except Exception as e:
-        print("✅ [WEBHOOK-ERROR] Error handling webhook", {"error": str(e)})
         error_response = {
             "type": "error",
             "error": str(e)
@@ -499,10 +478,12 @@ async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], No
 
 async def run_test_case_through_interaction(pipeline: Pipeline, interaction: Dict, test_case: Dict) -> Tuple[Any, Dict]:
     """Run a single test case through an interaction and return the runner and test case."""
+    print(f"Running test case {test_case['id']}")
     runner = pipeline.start()
     try:
         await runner.ameasure(interaction["fn"], inputs=test_case["inputs"])
+        print(f"Successfully completed test case {test_case['id']}")
     except Exception as e:
-        log_warn(f"Error running test case {test_case['id']}: {e}")
+        print(f"Failed to run test case {test_case['id']}: {str(e)}")
         runner.set_error(str(e))
     return runner, test_case

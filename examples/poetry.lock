@@ -364,7 +364,7 @@ description = "Python SDK for the Gentrace API"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.34.1.tar.gz", hash = "sha256:07ed07da517fe2416279eb506719e34f500b340e14d7cf0499023e9b62f637e9"},
+    {file = "gentrace_py-0.34.1.tar.gz", hash = "sha256:8c26de1bb4ad951ebe89182921783906ddcd5de990d5ace2816f2fed5adf4983"},
 ]
 
 [package.dependencies]
