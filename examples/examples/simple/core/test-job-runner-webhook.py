@@ -29,11 +29,6 @@ gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
 )
 
-# # Initialize OpenAI client
-# client = OpenAI(
-#     api_key=os.getenv("OPENAI_KEY"),
-# )
-
 # Define parameters
 write_email_prompt_parameter = template_parameter({
     "name": "Write email prompt",
