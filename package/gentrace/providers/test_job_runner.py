@@ -99,6 +99,15 @@ def enum_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
         "getValue": lambda: get_value(config["name"], config["defaultValue"])
     }
 
+def string_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a string parameter."""
+    return {
+        "name": config["name"],
+        "type": "string",
+        "defaultValue": config["defaultValue"],
+        "getValue": lambda: get_value(config["name"], config["defaultValue"])
+    }
+
 def get_ws_base_path() -> str:
     """Get the WebSocket base path based on configuration."""
     if not GENTRACE_CONFIG_STATE["global_gentrace_config"]:
