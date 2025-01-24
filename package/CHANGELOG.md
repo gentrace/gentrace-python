@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.36.0](https://github.com/gentrace/gentrace-python/compare/v0.35.1...v0.36.0) (2025-01-24)
+
+
+### Features
+
+* Add string_parameter function in test_job_runner ([#264](https://github.com/gentrace/gentrace-python/issues/264)) ([49fffa4](https://github.com/gentrace/gentrace-python/commit/49fffa47cf283dd5e6e53779f821bec198c00f50))
+
 ## [0.35.1](https://github.com/gentrace/gentrace-python/compare/v0.35.0...v0.35.1) (2024-12-26)
 
 
