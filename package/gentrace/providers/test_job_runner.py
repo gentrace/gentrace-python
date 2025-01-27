@@ -371,7 +371,7 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         }
         await websocket.send(json.dumps(setup_message))
 
-        # Start ping task
+        # Start ping and heartbeat tasks
         async def send_ping():
             while not transport["isClosed"]:
                 try:
@@ -385,7 +385,20 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                     if not transport["isClosed"]:
                         break
 
+        async def send_heartbeat():
+            while not transport["isClosed"]:
+                try:
+                    print("sending heartbeat")
+                    await send_message({
+                        "type": "heartbeat"
+                    }, transport)
+                    await asyncio.sleep(30)  # 30 seconds interval
+                except Exception as e:
+                    if not transport["isClosed"]:
+                        break
+
         ping_task = asyncio.create_task(send_ping())
+        heartbeat_task = asyncio.create_task(send_heartbeat())
 
         try:
             while True:
@@ -420,8 +433,9 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         finally:
             transport["isClosed"] = True
             ping_task.cancel()
+            heartbeat_task.cancel()
             try:
-                await ping_task
+                await asyncio.gather(ping_task, heartbeat_task, return_exceptions=True)
             except asyncio.CancelledError:
                 pass
     finally:

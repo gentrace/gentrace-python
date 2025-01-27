@@ -14,7 +14,7 @@ python-dotenv = "^1.0.0"
 pydantic = {version = "^1.10.0", extras = ["email"]}
 fastapi = "^0.110.0"
 uvicorn = "^0.27.1"
-gentrace-py = {path = "../package/dist/gentrace_py-0.34.1.tar.gz", develop = true}
+gentrace-py = {path = "../package/dist/gentrace_py-0.36.0.tar.gz", develop = true}
 
 [tool.poetry.group.lint.dependencies]
 black = "^23.3.0"
