@@ -77,7 +77,7 @@ def template_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
         "type": "template",
         "defaultValue": config["defaultValue"],
         "variables": config.get("variables", []),
-        "render": lambda values: pystache.render(config["defaultValue"], values)
+        "render": lambda values: pystache.render(get_value(config["name"], config["defaultValue"]), values)
     }
 
 def numeric_parameter(config: Dict[str, Any]) -> Dict[str, Any]:

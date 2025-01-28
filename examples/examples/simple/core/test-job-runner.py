@@ -51,12 +51,20 @@ class WriteEmailInput(BaseModel):
     instructions: str
 
 async def write_email(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    rendered_email = write_email_prompt_parameter.render({
-        "fromName": "John Smith",
-        "fromEmail": "john.smith@example.com", 
-        "toEmail": "jane.doe@example.com",
-        "instructions": "Please write a friendly introduction email",
-    })
+    print(f"✅ WRITE_EMAIL | Parameter: {write_email_prompt_parameter}")
+    print(f"✅ WRITE_EMAIL | Received inputs: {inputs}")
+    
+    # Extract values from inputs or use defaults
+    render_values = {
+        "fromName": inputs.get("fromName", "John Smith"),
+        "fromEmail": inputs.get("fromEmail", "john.smith@example.com"),
+        "toEmail": inputs.get("toEmail", "jane.doe@example.com"),
+        "instructions": inputs.get("instructions", "Please write a friendly introduction email"),
+    }
+    print(f"✅ WRITE_EMAIL | Using render values: {render_values}")
+    
+    rendered_email = write_email_prompt_parameter["render"](render_values)
+    print(f"✅ WRITE_EMAIL | Rendered email: {rendered_email}")
     return rendered_email
 
 # Define write_email interaction
