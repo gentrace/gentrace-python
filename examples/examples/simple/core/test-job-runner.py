@@ -3,7 +3,6 @@ import random
 import json
 from typing import Dict, Any
 
-from openai import OpenAI
 import gentrace
 from dotenv import load_dotenv
 from gentrace.providers.test_job_runner import (
@@ -63,7 +62,7 @@ async def write_email(inputs: Dict[str, Any]) -> Dict[str, Any]:
     }
     print(f"✅ WRITE_EMAIL | Using render values: {render_values}")
     
-    rendered_email = write_email_prompt_parameter["render"](render_values)
+    rendered_email = write_email_prompt_parameter.render(render_values)
     print(f"✅ WRITE_EMAIL | Rendered email: {rendered_email}")
     return rendered_email
 
@@ -98,7 +97,7 @@ class GuessYearInput(BaseModel):
 
 async def guess_the_year(inputs: Dict[str, Any]) -> int:
     """Guess the year interaction function."""
-    return int(2022 + (random_year_parameter["getValue"]() * random.random()))
+    return int(2022 + (random_year_parameter.get_value() * random.random()))
 
 guess_year_interaction = define_interaction({
     "name": "Guess the year",
@@ -119,7 +118,7 @@ class ChooseModelInput(BaseModel):
 
 async def choose_model(inputs: Dict[str, Any]) -> str:
     """Choose model interaction function."""
-    return f"I will use the model {model_parameter['getValue']()}."
+    return f"I will use the model {model_parameter.get_value()}."
 
 choose_model_interaction = define_interaction({
     "name": "Choose model",
