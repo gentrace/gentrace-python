@@ -53,10 +53,6 @@ all = [
 llms = ["openai"]
 vectorstores = ["pinecone-client"]
 
-[[tool.poetry.source]]
-name = "testpypi"
-url = "https://test.pypi.org/legacy/"
-
 [tool.ruff]
 exclude = [".venv"]
 # TODO: Figure out how to solve these by changing Mustache templates.
