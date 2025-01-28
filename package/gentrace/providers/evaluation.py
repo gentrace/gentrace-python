@@ -1114,32 +1114,35 @@ def update_test_result_with_runners(
 
                 this_context.pop("metadata", None)
                 step_run_context.pop("metadata", None)
-
                 this_context.pop("previousRunId", None)
                 step_run_context.pop("previousRunId", None)
 
-                step_runs_data.append(
-                    {
-                        "providerName": step_run.provider,
-                        "invocation": step_run.invocation,
-                        "modelParams": step_run.model_params,
-                        "inputs": step_run.inputs,
-                        "outputs": step_run.outputs,
-                        "elapsedTime": step_run.elapsed_time,
-                        "startTime": step_run.start_time,
-                        "endTime": step_run.end_time,
-                        "context": {**this_context, **step_run_context},
-                        "error": step_run.error,
-                    }
-                )
+                step_run_data = {
+                    "providerName": step_run.provider,
+                    "invocation": step_run.invocation,
+                    "modelParams": step_run.model_params,
+                    "inputs": step_run.inputs,
+                    "outputs": step_run.outputs,
+                    "elapsedTime": step_run.elapsed_time,
+                    "startTime": step_run.start_time,
+                    "endTime": step_run.end_time,
+                    "context": {**this_context, **step_run_context},
+                }
+
+                if step_run.error:
+                    step_run_data["error"] = step_run.error
+
+                step_runs_data.append(step_run_data)
 
             test_run = {
                 "caseId": test_case["id"],
                 "metadata": merged_metadata,
                 "previousRunId": pipeline_run.context.get("previousRunId"),
                 "stepRuns": step_runs_data,
-                "error": pipeline_run.get_error(),
             }
+
+            if pipeline_run.get_error():
+                test_run["error"] = pipeline_run.get_error()
 
             if "name" in test_case:
                 test_run["name"] = test_case["name"]
