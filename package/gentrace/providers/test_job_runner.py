@@ -244,7 +244,6 @@ async def handle_message(message: Dict, transport: Dict) -> None:
 
     elif message_type == "run-test-interaction":
         print(f"Running test interaction: {message['interactionName']} with overrides: {message.get('overrides', {})}")
-        await send_message({"type": "confirmation", "ok": True}, transport)
         
         pipeline = Pipeline({"id": message["pipelineId"]})
         interaction = interactions.get(message["interactionName"])
