@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.37.0](https://github.com/gentrace/gentrace-python/compare/v0.36.0...v0.37.0) (2025-01-28)
+
+
+### Features
+
+* add heartbeat task, fix various overriding bugs ([#266](https://github.com/gentrace/gentrace-python/issues/266)) ([e7bfacc](https://github.com/gentrace/gentrace-python/commit/e7bfacc5fe17a986deeb52ffbd62b6b8ad99e1d6))
+
+
+### Bug Fixes
+
+* **test_job_runner:** Remove premature confirmation message ([#268](https://github.com/gentrace/gentrace-python/issues/268)) ([99f1a2b](https://github.com/gentrace/gentrace-python/commit/99f1a2b05702a14f5780539bafea0cccc6eea4b0))
+
 ## [0.36.0](https://github.com/gentrace/gentrace-python/compare/v0.35.1...v0.36.0) (2025-01-24)
 
 
