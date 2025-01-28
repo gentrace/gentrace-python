@@ -20,7 +20,7 @@ load_dotenv()
 # Initialize Gentrace
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
-    # host="http://localhost:3000/api",
+    host="http://localhost:3000/api",
 )
 
 # # Initialize OpenAI client
