@@ -52,11 +52,35 @@ listeners: Dict[str, Callable] = {}
 
 def define_interaction(interaction: Dict) -> Callable:
     """Define a new interaction for testing."""
-    interactions[interaction["name"]] = interaction
+    # Convert parameters to dict format for API compatibility
+    api_parameters = []
+    if "parameters" in interaction:
+        for param in interaction["parameters"]:
+            param_dict = {
+                "name": param.name,
+                "type": param.type,
+                "defaultValue": param.default_value,
+            }
+            if isinstance(param, TemplateParameter):
+                param_dict["variables"] = param.variables
+            elif isinstance(param, EnumParameter):
+                param_dict["options"] = param.options
+            api_parameters.append(param_dict)
+    
+    # Create API-compatible interaction object
+    api_interaction = {
+        "name": interaction["name"],
+        "fn": interaction["fn"],
+        "parameters": api_parameters,
+    }
+    if "inputType" in interaction:
+        api_interaction["inputType"] = interaction["inputType"]
+    
+    interactions[interaction["name"]] = api_interaction
     for listener in listeners.values():
         listener({
             "type": "register-interaction",
-            "interaction": interaction
+            "interaction": api_interaction
         })
     return interaction["fn"]
 
@@ -70,43 +94,70 @@ def define_test_suite(test_suite: Dict) -> Callable:
         })
     return test_suite["fn"]
 
-def template_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
+class BaseParameter:
+    def __init__(self, name: str, default_value: Any):
+        self.name = name
+        self.default_value = default_value
+        self.type = "base"
+
+    def get_value(self) -> Any:
+        return get_value(self.name, self.default_value)
+
+class TemplateParameter(BaseParameter):
+    def __init__(self, name: str, default_value: str, variables: Optional[List[Dict]] = None):
+        super().__init__(name, default_value)
+        self.type = "template"
+        self.variables = variables or []
+
+    def render(self, values: Dict[str, Any]) -> str:
+        template = self.get_value()
+        return pystache.render(template, values)
+
+class NumericParameter(BaseParameter):
+    def __init__(self, name: str, default_value: Union[int, float]):
+        super().__init__(name, default_value)
+        self.type = "numeric"
+
+class EnumParameter(BaseParameter):
+    def __init__(self, name: str, default_value: str, options: List[str]):
+        super().__init__(name, default_value)
+        self.type = "enum"
+        self.options = options
+
+class StringParameter(BaseParameter):
+    def __init__(self, name: str, default_value: str):
+        super().__init__(name, default_value)
+        self.type = "string"
+
+def template_parameter(config: Dict[str, Any]) -> TemplateParameter:
     """Create a template parameter."""
-    return {
-        "name": config["name"],
-        "type": "template",
-        "defaultValue": config["defaultValue"],
-        "variables": config.get("variables", []),
-        "render": lambda values: pystache.render(config["defaultValue"], values)
-    }
+    return TemplateParameter(
+        name=config["name"],
+        default_value=config["defaultValue"],
+        variables=config.get("variables", [])
+    )
 
-def numeric_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
+def numeric_parameter(config: Dict[str, Any]) -> NumericParameter:
     """Create a numeric parameter."""
-    return {
-        "name": config["name"],
-        "type": "numeric",
-        "defaultValue": config["defaultValue"],
-        "getValue": lambda: get_value(config["name"], config["defaultValue"])
-    }
+    return NumericParameter(
+        name=config["name"],
+        default_value=config["defaultValue"]
+    )
 
-def enum_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
+def enum_parameter(config: Dict[str, Any]) -> EnumParameter:
     """Create an enum parameter."""
-    return {
-        "name": config["name"],
-        "type": "enum",
-        "defaultValue": config["defaultValue"],
-        "options": config["options"],
-        "getValue": lambda: get_value(config["name"], config["defaultValue"])
-    }
+    return EnumParameter(
+        name=config["name"],
+        default_value=config["defaultValue"],
+        options=config["options"]
+    )
 
-def string_parameter(config: Dict[str, Any]) -> Dict[str, Any]:
+def string_parameter(config: Dict[str, Any]) -> StringParameter:
     """Create a string parameter."""
-    return {
-        "name": config["name"],
-        "type": "string",
-        "defaultValue": config["defaultValue"],
-        "getValue": lambda: get_value(config["name"], config["defaultValue"])
-    }
+    return StringParameter(
+        name=config["name"],
+        default_value=config["defaultValue"]
+    )
 
 def get_ws_base_path() -> str:
     """Get the WebSocket base path based on configuration."""
@@ -127,16 +178,19 @@ async def handle_message(message: Dict, transport: Dict) -> None:
     
     if message_type == "environment-details":
         print("Processing environment details request")
+        # Convert parameters to API format for each interaction
+        api_interactions = []
+        for interaction in interactions.values():
+            api_interaction = {
+                "name": interaction["name"],
+                "hasValidation": bool(interaction.get("inputType")),
+                "parameters": interaction.get("parameters", [])
+            }
+            api_interactions.append(api_interaction)
+            
         await send_message({
             "type": "environment-details",
-            "interactions": [
-                {
-                    "name": interaction["name"],
-                    "hasValidation": bool(interaction.get("inputType")),
-                    "parameters": interaction.get("parameters", [])
-                }
-                for interaction in interactions.values()
-            ],
+            "interactions": api_interactions,
             "testSuites": [
                 {"name": suite["name"]}
                 for suite in test_suites.values()
@@ -189,7 +243,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
         }, transport)
 
     elif message_type == "run-test-interaction":
-        print(f"Running test interaction: {message['interactionName']}")
+        print(f"Running test interaction: {message['interactionName']} with overrides: {message.get('overrides', {})}")
         await send_message({"type": "confirmation", "ok": True}, transport)
         
         pipeline = Pipeline({"id": message["pipelineId"]})
@@ -215,7 +269,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
                     return_exceptions=True
                 )
                 print(f"Completed test cases execution with {len(results)} results")
-                
+               
                 # Process results and update test results
                 error_results = []
                 for result in results:
@@ -233,7 +287,6 @@ async def handle_message(message: Dict, transport: Dict) -> None:
                 config = GENTRACE_CONFIG_STATE["global_gentrace_config"]
                 host = config.host or "https://gentrace.ai/api"
                 
-               
                 # Get auth settings from config
                 auth_settings = config.auth_settings()
                 
@@ -371,7 +424,7 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         }
         await websocket.send(json.dumps(setup_message))
 
-        # Start ping task
+        # Start ping and heartbeat tasks
         async def send_ping():
             while not transport["isClosed"]:
                 try:
@@ -385,7 +438,20 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
                     if not transport["isClosed"]:
                         break
 
+        async def send_heartbeat():
+            while not transport["isClosed"]:
+                try:
+                    print("sending heartbeat")
+                    await send_message({
+                        "type": "heartbeat"
+                    }, transport)
+                    await asyncio.sleep(30)  # 30 seconds interval
+                except Exception as e:
+                    if not transport["isClosed"]:
+                        break
+
         ping_task = asyncio.create_task(send_ping())
+        heartbeat_task = asyncio.create_task(send_heartbeat())
 
         try:
             while True:
@@ -420,8 +486,9 @@ async def run_websocket(environment_name: Optional[str] = None) -> None:
         finally:
             transport["isClosed"] = True
             ping_task.cancel()
+            heartbeat_task.cancel()
             try:
-                await ping_task
+                await asyncio.gather(ping_task, heartbeat_task, return_exceptions=True)
             except asyncio.CancelledError:
                 pass
     finally:

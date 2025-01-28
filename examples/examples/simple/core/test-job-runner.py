@@ -3,7 +3,6 @@ import random
 import json
 from typing import Dict, Any
 
-from openai import OpenAI
 import gentrace
 from dotenv import load_dotenv
 from gentrace.providers.test_job_runner import (
@@ -12,6 +11,7 @@ from gentrace.providers.test_job_runner import (
     template_parameter,
     numeric_parameter,
     enum_parameter,
+    string_parameter,
 )
 from pydantic import BaseModel, EmailStr
 
@@ -51,12 +51,20 @@ class WriteEmailInput(BaseModel):
     instructions: str
 
 async def write_email(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    rendered_email = write_email_prompt_parameter.render({
-        "fromName": "John Smith",
-        "fromEmail": "john.smith@example.com", 
-        "toEmail": "jane.doe@example.com",
-        "instructions": "Please write a friendly introduction email",
-    })
+    print(f"✅ WRITE_EMAIL | Parameter: {write_email_prompt_parameter}")
+    print(f"✅ WRITE_EMAIL | Received inputs: {inputs}")
+    
+    # Extract values from inputs or use defaults
+    render_values = {
+        "fromName": inputs.get("fromName", "John Smith"),
+        "fromEmail": inputs.get("fromEmail", "john.smith@example.com"),
+        "toEmail": inputs.get("toEmail", "jane.doe@example.com"),
+        "instructions": inputs.get("instructions", "Please write a friendly introduction email"),
+    }
+    print(f"✅ WRITE_EMAIL | Using render values: {render_values}")
+    
+    rendered_email = write_email_prompt_parameter.render(render_values)
+    print(f"✅ WRITE_EMAIL | Rendered email: {rendered_email}")
     return rendered_email
 
 # Define write_email interaction
@@ -90,7 +98,7 @@ class GuessYearInput(BaseModel):
 
 async def guess_the_year(inputs: Dict[str, Any]) -> int:
     """Guess the year interaction function."""
-    return int(2022 + (random_year_parameter["getValue"]() * random.random()))
+    return int(2022 + (random_year_parameter.get_value() * random.random()))
 
 guess_year_interaction = define_interaction({
     "name": "Guess the year",
@@ -111,7 +119,7 @@ class ChooseModelInput(BaseModel):
 
 async def choose_model(inputs: Dict[str, Any]) -> str:
     """Choose model interaction function."""
-    return f"I will use the model {model_parameter['getValue']()}."
+    return f"I will use the model {model_parameter.get_value()}."
 
 choose_model_interaction = define_interaction({
     "name": "Choose model",
@@ -120,6 +128,25 @@ choose_model_interaction = define_interaction({
     "parameters": [model_parameter]
 })
 
+# User greeting parameter
+greeting_parameter = string_parameter({
+    "name": "User greeting",
+    "defaultValue": "Hello there!"
+})
+
+class GreetUserInput(BaseModel):
+    name: str
+
+async def greet_user(inputs: Dict[str, Any]) -> str:
+    """Greet user interaction function."""
+    return f"{greeting_parameter.get_value()} {inputs.get('name', 'User')}"
+
+greet_user_interaction = define_interaction({
+    "name": "Greet user",
+    "fn": greet_user,
+    "inputType": GreetUserInput,
+    "parameters": [greeting_parameter]
+})
 
 if __name__ == "__main__":
     # Start listening for test jobs
