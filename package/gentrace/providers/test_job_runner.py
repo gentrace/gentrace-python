@@ -559,15 +559,9 @@ async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], No
 
 async def run_test_case_through_interaction(pipeline: Pipeline, interaction: Dict, test_case: Dict) -> Tuple[Any, Dict]:
     """Run a single test case through an interaction and return the runner and test case."""
-    print(f"🟡 TEST_CASE | Starting test case {test_case['id']}")
-    print(f"🟡 TEST_CASE | Current overrides context: {overrides_context.get()}")
-    print(f"🟡 TEST_CASE | Using interaction: {interaction}")
     runner = pipeline.start()
     try:
-        print(f"🟡 TEST_CASE | Running interaction {interaction['name']} with inputs: {test_case['inputs']}")
         await runner.ameasure(interaction["fn"], inputs=test_case["inputs"])
-        print(f"🟡 TEST_CASE | Successfully completed test case {test_case['id']}")
     except Exception as e:
-        print(f"🟡 TEST_CASE | Failed to run test case {test_case['id']}: {str(e)}")
         runner.set_error(str(e))
     return runner, test_case
