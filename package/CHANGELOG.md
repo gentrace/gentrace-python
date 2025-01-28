@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.38.0](https://github.com/gentrace/gentrace-python/compare/v0.37.0...v0.38.0) (2025-01-28)
+
+
+### Features
+
+* Update docstring punctuation in get_value function ([#271](https://github.com/gentrace/gentrace-python/issues/271)) ([8e05a26](https://github.com/gentrace/gentrace-python/commit/8e05a26ccf18ef619431c94204d600f41eb5e660))
+
 ## [0.37.0](https://github.com/gentrace/gentrace-python/compare/v0.36.0...v0.37.0) (2025-01-28)
 
 
