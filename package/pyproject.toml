@@ -54,9 +54,7 @@ llms = ["openai"]
 vectorstores = ["pinecone-client"]
 
 [[tool.poetry.source]]
-default = false
 name = "testpypi"
-secondary = true
 url = "https://test.pypi.org/legacy/"
 
 [tool.ruff]
