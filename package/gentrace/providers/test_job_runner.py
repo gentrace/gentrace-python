@@ -40,7 +40,7 @@ def override_context(overrides: Dict[str, Any]):
         overrides_context.reset(token)
 
 def get_value(name: str, default_value: T) -> T:
-    """Get a value from the current context or return default."""
+    """Get a value from the current context or return default"""
     overrides = overrides_context.get()
     value = overrides.get(name, default_value)
     return value
