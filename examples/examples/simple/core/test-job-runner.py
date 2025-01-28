@@ -11,6 +11,7 @@ from gentrace.providers.test_job_runner import (
     template_parameter,
     numeric_parameter,
     enum_parameter,
+    string_parameter,
 )
 from pydantic import BaseModel, EmailStr
 
@@ -127,6 +128,25 @@ choose_model_interaction = define_interaction({
     "parameters": [model_parameter]
 })
 
+# User greeting parameter
+greeting_parameter = string_parameter({
+    "name": "User greeting",
+    "defaultValue": "Hello there!"
+})
+
+class GreetUserInput(BaseModel):
+    name: str
+
+async def greet_user(inputs: Dict[str, Any]) -> str:
+    """Greet user interaction function."""
+    return f"{greeting_parameter.get_value()} {inputs.get('name', 'User')}"
+
+greet_user_interaction = define_interaction({
+    "name": "Greet user",
+    "fn": greet_user,
+    "inputType": GreetUserInput,
+    "parameters": [greeting_parameter]
+})
 
 if __name__ == "__main__":
     # Start listening for test jobs
