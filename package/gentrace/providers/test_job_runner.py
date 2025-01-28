@@ -175,7 +175,6 @@ async def handle_message(message: Dict, transport: Dict) -> None:
     """Handle incoming WebSocket messages."""
     message_type = message.get("type")
     print(f"Received message type: {message_type}")
-    print(f"Full message: {json.dumps(message, indent=2)}")
     
     if message_type == "environment-details":
         print("Processing environment details request")
@@ -244,7 +243,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
         }, transport)
 
     elif message_type == "run-test-interaction":
-        print(f"😈 RUN_TEST | Running test interaction: {message['interactionName']} with overrides: {message.get('overrides', {})}")
+        print(f"Running test interaction: {message['interactionName']} with overrides: {message.get('overrides', {})}")
         await send_message({"type": "confirmation", "ok": True}, transport)
         
         pipeline = Pipeline({"id": message["pipelineId"]})
@@ -254,10 +253,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
             log_warn(f"Interaction {message['interactionName']} not found")
             return
             
-        print(f"😈 RUN_TEST | Found interaction: {interaction}")
-        
         with override_context(message.get("overrides", {})):
-            print(f"😈 RUN_TEST | Inside override_context, current overrides: {overrides_context.get()}")
             # Get parallelism from message, default to 1 if not specified
             parallelism = message.get("parallelism", 1)
             semaphore = Semaphore(parallelism)
@@ -268,13 +264,12 @@ async def handle_message(message: Dict, transport: Dict) -> None:
             
             # Run all test cases in parallel with semaphore control
             try:
-                print(f"😈 RUN_TEST | Starting test cases: {message['data']}")
                 results = await asyncio.gather(
                     *[run_with_semaphore(test_case) for test_case in message["data"]],
                     return_exceptions=True
                 )
                 print(f"Completed test cases execution with {len(results)} results")
-                
+               
                 # Process results and update test results
                 error_results = []
                 for result in results:
@@ -559,9 +554,12 @@ async def handle_webhook(body: Dict, send_response: Optional[Callable[[Dict], No
 
 async def run_test_case_through_interaction(pipeline: Pipeline, interaction: Dict, test_case: Dict) -> Tuple[Any, Dict]:
     """Run a single test case through an interaction and return the runner and test case."""
+    print(f"Running test case {test_case['id']}")
     runner = pipeline.start()
     try:
         await runner.ameasure(interaction["fn"], inputs=test_case["inputs"])
+        print(f"Successfully completed test case {test_case['id']}")
     except Exception as e:
+        print(f"Failed to run test case {test_case['id']}: {str(e)}")
         runner.set_error(str(e))
     return runner, test_case
