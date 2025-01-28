@@ -220,7 +220,7 @@ async def handle_message(message: Dict, transport: Dict) -> None:
         for test_case in message["data"]:
             try:
                 if interaction.get("inputType"):
-                    await interaction["inputType"].parse_obj(test_case["inputs"])
+                    interaction["inputType"].parse_obj(test_case["inputs"])
                     results.append({"id": test_case["id"], "status": "success"})
                 else:
                     results.append({
