@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.39.0](https://github.com/gentrace/gentrace-python/compare/v0.38.0...v0.39.0) (2025-01-28)
+
+
+### Features
+
+* update poetry.lock and pyproject.toml dependencies ([#273](https://github.com/gentrace/gentrace-python/issues/273)) ([a8c3559](https://github.com/gentrace/gentrace-python/commit/a8c3559bd4050fc0c7fd54f5fcff817c3ad05fbd))
+
 ## [0.38.0](https://github.com/gentrace/gentrace-python/compare/v0.37.0...v0.38.0) (2025-01-28)
 
 
