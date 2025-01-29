@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.0](https://github.com/gentrace/gentrace-python/compare/v0.40.0...v0.41.0) (2025-01-29)
+
+
+### Features
+
+* Update package version and improve signal handling ([#277](https://github.com/gentrace/gentrace-python/issues/277)) ([279c074](https://github.com/gentrace/gentrace-python/commit/279c074897185bb29e2b8bceaba272073e6ab656))
+
 ## [0.40.0](https://github.com/gentrace/gentrace-python/compare/v0.39.0...v0.40.0) (2025-01-28)
 
 
