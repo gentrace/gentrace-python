@@ -346,12 +346,12 @@ files = [
 
 [[package]]
 name = "gentrace-py"
-version = "0.36.0"
+version = "0.39.0"
 description = "Python SDK for the Gentrace API"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "gentrace_py-0.36.0.tar.gz", hash = "sha256:c19f0cbdf734809f6b16815bafe5febcf70bdba5d3fea4a4588e57f1430a0338"},
+    {file = "gentrace_py-0.39.0.tar.gz", hash = "sha256:1ba91df514d3b85c48e45b3ad258bb51d4ef52f54549ba400d48554160a986f9"},
 ]
 
 [package.dependencies]
@@ -371,7 +371,7 @@ vectorstores = ["pinecone-client (>=2.2.1,<3.0.0)"]
 
 [package.source]
 type = "file"
-url = "../package/dist/gentrace_py-0.36.0.tar.gz"
+url = "../package/dist/gentrace_py-0.39.0.tar.gz"
 
 [[package]]
 name = "h11"
@@ -1205,4 +1205,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8.1"
-content-hash = "f1171ee1db32b7a1593075a9742980fdbb541307b5affbd1041130a589848c20"
+content-hash = "65c24156fca0ded0f8b1f073793c8f92ea5557e582d1a0e6c5d4fd3eae74ac4c"
