@@ -497,15 +497,30 @@ async def listen_inner(environment_name: Optional[str] = None, retries: int = 0)
     """Internal function to handle WebSocket connection with retries."""
     if not GENTRACE_CONFIG_STATE["GENTRACE_API_KEY"]:
         raise ValueError("Gentrace API key not set")
+    
+    is_closing_process = False
+    
+    def signal_handler(signum, frame):
+        nonlocal is_closing_process
+        is_closing_process = True
+    
+    import signal
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
         
     try:
         await run_websocket(environment_name)
     except Exception as e:
-        if retries < 5:  # Max 5 retries
-            await asyncio.sleep(min(2 ** retries * 0.25, 10))
-            await listen_inner(environment_name, retries + 1)
-        else:
-            raise
+        log_warn(f"Error in WebSocket connection: {e}")
+        if is_closing_process:
+            return
+            
+        await asyncio.sleep(min(2 ** retries * 0.25, 10))
+        
+        if is_closing_process:
+            return
+            
+        await listen_inner(environment_name, retries + 1)
 
 def listen(environment_name: Optional[str] = None) -> None:
     """Start listening for test jobs from the Gentrace server."""
