@@ -9,10 +9,7 @@ import pytest
 
 from gentrace import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
-from gentrace.types import (
-    Pipeline,
-    PipelineListResponse,
-)
+from gentrace.types import Pipeline, PipelineList
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -189,7 +186,7 @@ class TestPipelines:
     @parametrize
     def test_method_list(self, client: Gentrace) -> None:
         pipeline = client.pipelines.list()
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -199,7 +196,7 @@ class TestPipelines:
             label="production",
             slug="my-pipeline",
         )
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -209,7 +206,7 @@ class TestPipelines:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         pipeline = response.parse()
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -219,7 +216,7 @@ class TestPipelines:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             pipeline = response.parse()
-            assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+            assert_matches_type(PipelineList, pipeline, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
@@ -396,7 +393,7 @@ class TestAsyncPipelines:
     @parametrize
     async def test_method_list(self, async_client: AsyncGentrace) -> None:
         pipeline = await async_client.pipelines.list()
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -406,7 +403,7 @@ class TestAsyncPipelines:
             label="production",
             slug="my-pipeline",
         )
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -416,7 +413,7 @@ class TestAsyncPipelines:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         pipeline = await response.parse()
-        assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+        assert_matches_type(PipelineList, pipeline, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -426,6 +423,6 @@ class TestAsyncPipelines:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             pipeline = await response.parse()
-            assert_matches_type(PipelineListResponse, pipeline, path=["response"])
+            assert_matches_type(PipelineList, pipeline, path=["response"])
 
         assert cast(Any, response.is_closed) is True

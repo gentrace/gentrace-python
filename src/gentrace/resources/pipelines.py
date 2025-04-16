@@ -23,7 +23,7 @@ from .._response import (
 )
 from .._base_client import make_request_options
 from ..types.pipeline import Pipeline
-from ..types.pipeline_list_response import PipelineListResponse
+from ..types.pipeline_list import PipelineList
 
 __all__ = ["PipelinesResource", "AsyncPipelinesResource"]
 
@@ -224,7 +224,7 @@ class PipelinesResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> PipelineListResponse:
+    ) -> PipelineList:
         """
         Retrieve a list of all pipelines
 
@@ -259,7 +259,7 @@ class PipelinesResource(SyncAPIResource):
                     pipeline_list_params.PipelineListParams,
                 ),
             ),
-            cast_to=PipelineListResponse,
+            cast_to=PipelineList,
         )
 
 
@@ -459,7 +459,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> PipelineListResponse:
+    ) -> PipelineList:
         """
         Retrieve a list of all pipelines
 
@@ -494,7 +494,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
                     pipeline_list_params.PipelineListParams,
                 ),
             ),
-            cast_to=PipelineListResponse,
+            cast_to=PipelineList,
         )
 
 

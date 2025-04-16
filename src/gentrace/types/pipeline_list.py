@@ -5,8 +5,8 @@ from typing import List
 from .._models import BaseModel
 from .pipeline import Pipeline
 
-__all__ = ["PipelineListResponse"]
+__all__ = ["PipelineList"]
 
 
-class PipelineListResponse(BaseModel):
+class PipelineList(BaseModel):
     data: List[Pipeline]

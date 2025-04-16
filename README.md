@@ -34,8 +34,8 @@ client = Gentrace(
     bearer_token=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
 )
 
-pipelines = client.pipelines.list()
-print(pipelines.data)
+pipeline_list = client.pipelines.list()
+print(pipeline_list.data)
 ```
 
 While you can provide a `bearer_token` keyword argument,
@@ -58,8 +58,8 @@ client = AsyncGentrace(
 
 
 async def main() -> None:
-    pipelines = await client.pipelines.list()
-    print(pipelines.data)
+    pipeline_list = await client.pipelines.list()
+    print(pipeline_list.data)
 
 
 asyncio.run(main())

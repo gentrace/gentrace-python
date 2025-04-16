@@ -3,7 +3,7 @@
 Types:
 
 ```python
-from gentrace.types import CreatePipelineBody, Pipeline, PipelineListResponse
+from gentrace.types import CreatePipelineBody, Pipeline, PipelineList
 ```
 
 Methods:
@@ -11,7 +11,7 @@ Methods:
 - <code title="post /v4/pipelines">client.pipelines.<a href="./src/gentrace/resources/pipelines.py">create</a>(\*\*<a href="src/gentrace/types/pipeline_create_params.py">params</a>) -> <a href="./src/gentrace/types/pipeline.py">Pipeline</a></code>
 - <code title="get /v4/pipelines/{id}">client.pipelines.<a href="./src/gentrace/resources/pipelines.py">retrieve</a>(id) -> <a href="./src/gentrace/types/pipeline.py">Pipeline</a></code>
 - <code title="post /v4/pipelines/{id}">client.pipelines.<a href="./src/gentrace/resources/pipelines.py">update</a>(id, \*\*<a href="src/gentrace/types/pipeline_update_params.py">params</a>) -> <a href="./src/gentrace/types/pipeline.py">Pipeline</a></code>
-- <code title="get /v4/pipelines">client.pipelines.<a href="./src/gentrace/resources/pipelines.py">list</a>(\*\*<a href="src/gentrace/types/pipeline_list_params.py">params</a>) -> <a href="./src/gentrace/types/pipeline_list_response.py">PipelineListResponse</a></code>
+- <code title="get /v4/pipelines">client.pipelines.<a href="./src/gentrace/resources/pipelines.py">list</a>(\*\*<a href="src/gentrace/types/pipeline_list_params.py">params</a>) -> <a href="./src/gentrace/types/pipeline_list.py">PipelineList</a></code>
 
 # Experiments
 
