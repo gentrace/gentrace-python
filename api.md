@@ -18,7 +18,7 @@ Methods:
 Types:
 
 ```python
-from gentrace.types import Experiment, ExperimentListResponse
+from gentrace.types import Experiment, ExperimentList
 ```
 
 Methods:
@@ -26,7 +26,7 @@ Methods:
 - <code title="post /v4/experiments">client.experiments.<a href="./src/gentrace/resources/experiments.py">create</a>(\*\*<a href="src/gentrace/types/experiment_create_params.py">params</a>) -> <a href="./src/gentrace/types/experiment.py">Experiment</a></code>
 - <code title="get /v4/experiments/{id}">client.experiments.<a href="./src/gentrace/resources/experiments.py">retrieve</a>(id) -> <a href="./src/gentrace/types/experiment.py">Experiment</a></code>
 - <code title="post /v4/experiments/{id}">client.experiments.<a href="./src/gentrace/resources/experiments.py">update</a>(id, \*\*<a href="src/gentrace/types/experiment_update_params.py">params</a>) -> <a href="./src/gentrace/types/experiment.py">Experiment</a></code>
-- <code title="get /v4/experiments">client.experiments.<a href="./src/gentrace/resources/experiments.py">list</a>(\*\*<a href="src/gentrace/types/experiment_list_params.py">params</a>) -> <a href="./src/gentrace/types/experiment_list_response.py">ExperimentListResponse</a></code>
+- <code title="get /v4/experiments">client.experiments.<a href="./src/gentrace/resources/experiments.py">list</a>(\*\*<a href="src/gentrace/types/experiment_list_params.py">params</a>) -> <a href="./src/gentrace/types/experiment_list.py">ExperimentList</a></code>
 
 # Datasets
 
@@ -41,7 +41,7 @@ Methods:
 - <code title="post /v4/datasets">client.datasets.<a href="./src/gentrace/resources/datasets.py">create</a>(\*\*<a href="src/gentrace/types/dataset_create_params.py">params</a>) -> <a href="./src/gentrace/types/dataset.py">Dataset</a></code>
 - <code title="get /v4/datasets/{id}">client.datasets.<a href="./src/gentrace/resources/datasets.py">retrieve</a>(id) -> <a href="./src/gentrace/types/dataset.py">Dataset</a></code>
 - <code title="post /v4/datasets/{id}">client.datasets.<a href="./src/gentrace/resources/datasets.py">update</a>(id, \*\*<a href="src/gentrace/types/dataset_update_params.py">params</a>) -> <a href="./src/gentrace/types/dataset.py">Dataset</a></code>
-- <code title="get /v4/datasets">client.datasets.<a href="./src/gentrace/resources/datasets.py">list</a>(\*\*<a href="src/gentrace/types/dataset_list_params.py">params</a>) -> <a href="./src/gentrace/types/dataset_list.py">str</a></code>
+- <code title="get /v4/datasets">client.datasets.<a href="./src/gentrace/resources/datasets.py">list</a>(\*\*<a href="src/gentrace/types/dataset_list_params.py">params</a>) -> <a href="./src/gentrace/types/dataset_list.py">DatasetList</a></code>
 
 # TestCases
 

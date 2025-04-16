@@ -5,8 +5,8 @@ from typing import List
 from .._models import BaseModel
 from .experiment import Experiment
 
-__all__ = ["ExperimentListResponse"]
+__all__ = ["ExperimentList"]
 
 
-class ExperimentListResponse(BaseModel):
+class ExperimentList(BaseModel):
     data: List[Experiment]

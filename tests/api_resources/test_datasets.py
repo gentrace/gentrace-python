@@ -9,7 +9,7 @@ import pytest
 
 from gentrace import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
-from gentrace.types import Dataset
+from gentrace.types import Dataset, DatasetList
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -163,7 +163,7 @@ class TestDatasets:
     @parametrize
     def test_method_list(self, client: Gentrace) -> None:
         dataset = client.datasets.list()
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -173,7 +173,7 @@ class TestDatasets:
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
             pipeline_slug="email-summarizer",
         )
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -183,7 +183,7 @@ class TestDatasets:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         dataset = response.parse()
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -193,7 +193,7 @@ class TestDatasets:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             dataset = response.parse()
-            assert_matches_type(str, dataset, path=["response"])
+            assert_matches_type(DatasetList, dataset, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
@@ -347,7 +347,7 @@ class TestAsyncDatasets:
     @parametrize
     async def test_method_list(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.list()
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -357,7 +357,7 @@ class TestAsyncDatasets:
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
             pipeline_slug="email-summarizer",
         )
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -367,7 +367,7 @@ class TestAsyncDatasets:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         dataset = await response.parse()
-        assert_matches_type(str, dataset, path=["response"])
+        assert_matches_type(DatasetList, dataset, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -377,6 +377,6 @@ class TestAsyncDatasets:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             dataset = await response.parse()
-            assert_matches_type(str, dataset, path=["response"])
+            assert_matches_type(DatasetList, dataset, path=["response"])
 
         assert cast(Any, response.is_closed) is True

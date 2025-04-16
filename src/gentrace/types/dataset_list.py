@@ -1,7 +1,12 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing_extensions import TypeAlias
+from typing import List
+
+from .dataset import Dataset
+from .._models import BaseModel
 
 __all__ = ["DatasetList"]
 
-DatasetList: TypeAlias = str
+
+class DatasetList(BaseModel):
+    data: List[Dataset]

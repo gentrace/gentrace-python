@@ -6,7 +6,7 @@ from typing import Dict
 
 import httpx
 
-from ..types import DatasetList, test_case_list_params, test_case_create_params
+from ..types import test_case_list_params, test_case_create_params
 from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
 from .._utils import (
     maybe_transform,
@@ -22,7 +22,6 @@ from .._response import (
 )
 from .._base_client import make_request_options
 from ..types.test_case import TestCase
-from ..types.dataset_list import DatasetList
 from ..types.test_case_list import TestCaseList
 from ..types.test_case_delete_response import TestCaseDeleteResponse
 
@@ -142,7 +141,7 @@ class TestCasesResource(SyncAPIResource):
         *,
         dataset_id: str | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: DatasetList | NotGiven = NOT_GIVEN,
+        pipeline_slug: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -334,7 +333,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         *,
         dataset_id: str | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: DatasetList | NotGiven = NOT_GIVEN,
+        pipeline_slug: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,

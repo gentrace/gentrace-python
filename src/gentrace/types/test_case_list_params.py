@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing_extensions import Annotated, TypedDict
 
 from .._utils import PropertyInfo
-from .dataset_list import DatasetList
 
 __all__ = ["TestCaseListParams"]
 
@@ -17,5 +16,5 @@ class TestCaseListParams(TypedDict, total=False):
     pipeline_id: Annotated[str, PropertyInfo(alias="pipelineId")]
     """Filter to the datasets for a specific pipeline by UUID"""
 
-    pipeline_slug: Annotated[DatasetList, PropertyInfo(alias="pipelineSlug")]
+    pipeline_slug: Annotated[str, PropertyInfo(alias="pipelineSlug")]
     """Pipeline slug"""

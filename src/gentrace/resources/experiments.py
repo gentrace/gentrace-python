@@ -23,7 +23,7 @@ from .._response import (
 )
 from .._base_client import make_request_options
 from ..types.experiment import Experiment
-from ..types.experiment_list_response import ExperimentListResponse
+from ..types.experiment_list import ExperimentList
 
 __all__ = ["ExperimentsResource", "AsyncExperimentsResource"]
 
@@ -200,7 +200,7 @@ class ExperimentsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ExperimentListResponse:
+    ) -> ExperimentList:
         """
         Retrieve a list of all experiments
 
@@ -224,7 +224,7 @@ class ExperimentsResource(SyncAPIResource):
                 timeout=timeout,
                 query=maybe_transform({"pipeline_id": pipeline_id}, experiment_list_params.ExperimentListParams),
             ),
-            cast_to=ExperimentListResponse,
+            cast_to=ExperimentList,
         )
 
 
@@ -400,7 +400,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> ExperimentListResponse:
+    ) -> ExperimentList:
         """
         Retrieve a list of all experiments
 
@@ -426,7 +426,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
                     {"pipeline_id": pipeline_id}, experiment_list_params.ExperimentListParams
                 ),
             ),
-            cast_to=ExperimentListResponse,
+            cast_to=ExperimentList,
         )
 
 

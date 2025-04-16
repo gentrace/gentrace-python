@@ -6,7 +6,7 @@ from typing import Optional
 
 import httpx
 
-from ..types import DatasetList, dataset_list_params, dataset_create_params, dataset_update_params
+from ..types import dataset_list_params, dataset_create_params, dataset_update_params
 from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
 from .._utils import (
     maybe_transform,
@@ -198,14 +198,14 @@ class DatasetsResource(SyncAPIResource):
         *,
         archived: bool | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: DatasetList | NotGiven = NOT_GIVEN,
+        pipeline_slug: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> str:
+    ) -> DatasetList:
         """
         Retrieve a list of all datasets
 
@@ -240,7 +240,7 @@ class DatasetsResource(SyncAPIResource):
                     dataset_list_params.DatasetListParams,
                 ),
             ),
-            cast_to=str,
+            cast_to=DatasetList,
         )
 
 
@@ -415,14 +415,14 @@ class AsyncDatasetsResource(AsyncAPIResource):
         *,
         archived: bool | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: DatasetList | NotGiven = NOT_GIVEN,
+        pipeline_slug: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> str:
+    ) -> DatasetList:
         """
         Retrieve a list of all datasets
 
@@ -457,7 +457,7 @@ class AsyncDatasetsResource(AsyncAPIResource):
                     dataset_list_params.DatasetListParams,
                 ),
             ),
-            cast_to=str,
+            cast_to=DatasetList,
         )
 
 

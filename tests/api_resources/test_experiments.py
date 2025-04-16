@@ -11,7 +11,7 @@ from gentrace import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
 from gentrace.types import (
     Experiment,
-    ExperimentListResponse,
+    ExperimentList,
 )
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
@@ -165,7 +165,7 @@ class TestExperiments:
     @parametrize
     def test_method_list(self, client: Gentrace) -> None:
         experiment = client.experiments.list()
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -173,7 +173,7 @@ class TestExperiments:
         experiment = client.experiments.list(
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
         )
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -183,7 +183,7 @@ class TestExperiments:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         experiment = response.parse()
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -193,7 +193,7 @@ class TestExperiments:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             experiment = response.parse()
-            assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+            assert_matches_type(ExperimentList, experiment, path=["response"])
 
         assert cast(Any, response.is_closed) is True
 
@@ -346,7 +346,7 @@ class TestAsyncExperiments:
     @parametrize
     async def test_method_list(self, async_client: AsyncGentrace) -> None:
         experiment = await async_client.experiments.list()
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -354,7 +354,7 @@ class TestAsyncExperiments:
         experiment = await async_client.experiments.list(
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
         )
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -364,7 +364,7 @@ class TestAsyncExperiments:
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         experiment = await response.parse()
-        assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+        assert_matches_type(ExperimentList, experiment, path=["response"])
 
     @pytest.mark.skip()
     @parametrize
@@ -374,6 +374,6 @@ class TestAsyncExperiments:
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             experiment = await response.parse()
-            assert_matches_type(ExperimentListResponse, experiment, path=["response"])
+            assert_matches_type(ExperimentList, experiment, path=["response"])
 
         assert cast(Any, response.is_closed) is True

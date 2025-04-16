@@ -8,6 +8,7 @@ from .test_case import TestCase as TestCase
 from .experiment import Experiment as Experiment
 from .dataset_list import DatasetList as DatasetList
 from .test_case_list import TestCaseList as TestCaseList
+from .experiment_list import ExperimentList as ExperimentList
 from .dataset_list_params import DatasetListParams as DatasetListParams
 from .pipeline_list_params import PipelineListParams as PipelineListParams
 from .dataset_create_params import DatasetCreateParams as DatasetCreateParams
@@ -19,6 +20,5 @@ from .pipeline_list_response import PipelineListResponse as PipelineListResponse
 from .pipeline_update_params import PipelineUpdateParams as PipelineUpdateParams
 from .test_case_create_params import TestCaseCreateParams as TestCaseCreateParams
 from .experiment_create_params import ExperimentCreateParams as ExperimentCreateParams
-from .experiment_list_response import ExperimentListResponse as ExperimentListResponse
 from .experiment_update_params import ExperimentUpdateParams as ExperimentUpdateParams
 from .test_case_delete_response import TestCaseDeleteResponse as TestCaseDeleteResponse
