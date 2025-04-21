@@ -30,7 +30,7 @@ class TestCase(BaseModel):
     expected_outputs: Optional[Dict[str, object]] = FieldInfo(alias="expectedOutputs", default=None)
     """Expected output data for the test case"""
 
-    inputs: Optional[Dict[str, object]] = None
+    inputs: Dict[str, object]
     """Input data for the test case"""
 
     name: str

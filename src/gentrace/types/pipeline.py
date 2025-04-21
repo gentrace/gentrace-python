@@ -1,6 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import Dict, List, Optional
+from typing import List, Optional
 from datetime import datetime
 
 from pydantic import Field as FieldInfo
@@ -40,12 +40,6 @@ class Pipeline(BaseModel):
 
     private_member_id: Optional[str] = FieldInfo(alias="privateMemberId", default=None)
     """Private member UUID"""
-
-    saved_result_display: Optional[Dict[str, object]] = FieldInfo(alias="savedResultDisplay", default=None)
-    """Saved result display configuration"""
-
-    saved_runs_display: Optional[Dict[str, object]] = FieldInfo(alias="savedRunsDisplay", default=None)
-    """Saved runs display configuration"""
 
     slug: str
     """Pipeline slug"""
