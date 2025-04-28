@@ -14,12 +14,6 @@ class ExperimentCreateParams(TypedDict, total=False):
     pipeline_id: Required[Annotated[str, PropertyInfo(alias="pipelineId")]]
     """The ID of the pipeline to create the experiment for"""
 
-    branch: str
-    """Git branch"""
-
-    commit: str
-    """Git commit hash"""
-
     metadata: Dict[str, object]
     """Optional metadata for the experiment"""
 

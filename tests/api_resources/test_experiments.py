@@ -33,8 +33,6 @@ class TestExperiments:
     def test_method_create_with_all_params(self, client: Gentrace) -> None:
         experiment = client.experiments.create(
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
-            branch="main",
-            commit="1234567890abcdef",
             metadata={"promptTemplate": "bar"},
             name="OpenAI o3-mini prompt",
         )
@@ -121,9 +119,9 @@ class TestExperiments:
     def test_method_update_with_all_params(self, client: Gentrace) -> None:
         experiment = client.experiments.update(
             id="123e4567-e89b-12d3-a456-426614174000",
-            metadata={"promptTemplate": "bar"},
-            name="Updated OpenAI experiment",
-            status="EVALUATING",
+            metadata={"key": "bar"},
+            name="OpenAI o3-mini prompt",
+            status="GENERATING",
         )
         assert_matches_type(Experiment, experiment, path=["response"])
 
@@ -214,8 +212,6 @@ class TestAsyncExperiments:
     async def test_method_create_with_all_params(self, async_client: AsyncGentrace) -> None:
         experiment = await async_client.experiments.create(
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
-            branch="main",
-            commit="1234567890abcdef",
             metadata={"promptTemplate": "bar"},
             name="OpenAI o3-mini prompt",
         )
@@ -302,9 +298,9 @@ class TestAsyncExperiments:
     async def test_method_update_with_all_params(self, async_client: AsyncGentrace) -> None:
         experiment = await async_client.experiments.update(
             id="123e4567-e89b-12d3-a456-426614174000",
-            metadata={"promptTemplate": "bar"},
-            name="Updated OpenAI experiment",
-            status="EVALUATING",
+            metadata={"key": "bar"},
+            name="OpenAI o3-mini prompt",
+            status="GENERATING",
         )
         assert_matches_type(Experiment, experiment, path=["response"])
 

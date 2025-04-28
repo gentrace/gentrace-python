@@ -76,41 +76,6 @@ Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typ
 
 Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
 
-## Nested params
-
-Nested parameters are dictionaries, typed using `TypedDict`, for example:
-
-```python
-from gentrace import Gentrace
-
-client = Gentrace()
-
-pipeline = client.pipelines.update(
-    id="123e4567-e89b-12d3-a456-426614174000",
-    saved_runs_display={
-        "evaluators": {"hide": ["b7d21c49-3a5e-4a6f-9d8b-f8c4e2d6a3b1"]},
-        "feedback": {"show": False},
-        "inputs": {
-            "as": "json",
-            "hide": ["internal_id"],
-            "pretty": True,
-            "show_compact": ["query"],
-        },
-        "metadata": {
-            "as": "tabular",
-            "show": ["timestamp", "latency"],
-        },
-        "outputs": {
-            "as": "json",
-            "hide": ["raw_response"],
-            "pretty": True,
-        },
-        "size": "full",
-    },
-)
-print(pipeline.saved_runs_display)
-```
-
 ## Handling errors
 
 When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `gentrace.APIConnectionError` is raised.

@@ -21,6 +21,7 @@ class TestDatasets:
     @parametrize
     def test_method_create(self, client: Gentrace) -> None:
         dataset = client.datasets.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         )
         assert_matches_type(Dataset, dataset, path=["response"])
@@ -29,8 +30,8 @@ class TestDatasets:
     @parametrize
     def test_method_create_with_all_params(self, client: Gentrace) -> None:
         dataset = client.datasets.create(
-            name="Dataset - negative user feedback - 2025-04-01",
             description="Negative user feedback collected from our production environment",
+            name="Dataset - negative user feedback - 2025-04-01",
             is_golden=False,
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
             pipeline_slug="email-summarizer",
@@ -41,6 +42,7 @@ class TestDatasets:
     @parametrize
     def test_raw_response_create(self, client: Gentrace) -> None:
         response = client.datasets.with_raw_response.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         )
 
@@ -53,6 +55,7 @@ class TestDatasets:
     @parametrize
     def test_streaming_response_create(self, client: Gentrace) -> None:
         with client.datasets.with_streaming_response.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         ) as response:
             assert not response.is_closed
@@ -119,8 +122,8 @@ class TestDatasets:
         dataset = client.datasets.update(
             id="123e4567-e89b-12d3-a456-426614174000",
             description="Negative user feedback collected from our production environment",
-            is_archived=False,
-            is_golden=False,
+            is_archived=True,
+            is_golden=True,
             name="Dataset - negative user feedback - 2025-04-01",
         )
         assert_matches_type(Dataset, dataset, path=["response"])
@@ -205,6 +208,7 @@ class TestAsyncDatasets:
     @parametrize
     async def test_method_create(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         )
         assert_matches_type(Dataset, dataset, path=["response"])
@@ -213,8 +217,8 @@ class TestAsyncDatasets:
     @parametrize
     async def test_method_create_with_all_params(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.create(
-            name="Dataset - negative user feedback - 2025-04-01",
             description="Negative user feedback collected from our production environment",
+            name="Dataset - negative user feedback - 2025-04-01",
             is_golden=False,
             pipeline_id="123e4567-e89b-12d3-a456-426614174000",
             pipeline_slug="email-summarizer",
@@ -225,6 +229,7 @@ class TestAsyncDatasets:
     @parametrize
     async def test_raw_response_create(self, async_client: AsyncGentrace) -> None:
         response = await async_client.datasets.with_raw_response.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         )
 
@@ -237,6 +242,7 @@ class TestAsyncDatasets:
     @parametrize
     async def test_streaming_response_create(self, async_client: AsyncGentrace) -> None:
         async with async_client.datasets.with_streaming_response.create(
+            description="Negative user feedback collected from our production environment",
             name="Dataset - negative user feedback - 2025-04-01",
         ) as response:
             assert not response.is_closed
@@ -303,8 +309,8 @@ class TestAsyncDatasets:
         dataset = await async_client.datasets.update(
             id="123e4567-e89b-12d3-a456-426614174000",
             description="Negative user feedback collected from our production environment",
-            is_archived=False,
-            is_golden=False,
+            is_archived=True,
+            is_golden=True,
             name="Dataset - negative user feedback - 2025-04-01",
         )
         assert_matches_type(Dataset, dataset, path=["response"])

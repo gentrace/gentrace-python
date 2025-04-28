@@ -2,18 +2,18 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Optional
 from typing_extensions import Literal, TypedDict
 
 __all__ = ["ExperimentUpdateParams"]
 
 
 class ExperimentUpdateParams(TypedDict, total=False):
-    metadata: Dict[str, object]
-    """Updated metadata for the experiment"""
+    metadata: Optional[Dict[str, object]]
+    """Metadata"""
 
-    name: str
-    """Updated name for the experiment"""
+    name: Optional[str]
+    """Friendly experiment name"""
 
     status: Literal["GENERATING", "EVALUATING"]
-    """Updated status of the experiment"""
+    """Status"""

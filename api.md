@@ -48,7 +48,7 @@ Methods:
 Types:
 
 ```python
-from gentrace.types import TestCase, TestCaseList, TestCaseDeleteResponse
+from gentrace.types import TestCase, TestCaseList
 ```
 
 Methods:
@@ -56,4 +56,4 @@ Methods:
 - <code title="post /v4/test-cases">client.test_cases.<a href="./src/gentrace/resources/test_cases.py">create</a>(\*\*<a href="src/gentrace/types/test_case_create_params.py">params</a>) -> <a href="./src/gentrace/types/test_case.py">TestCase</a></code>
 - <code title="get /v4/test-cases/{id}">client.test_cases.<a href="./src/gentrace/resources/test_cases.py">retrieve</a>(id) -> <a href="./src/gentrace/types/test_case.py">TestCase</a></code>
 - <code title="get /v4/test-cases">client.test_cases.<a href="./src/gentrace/resources/test_cases.py">list</a>(\*\*<a href="src/gentrace/types/test_case_list_params.py">params</a>) -> <a href="./src/gentrace/types/test_case_list.py">TestCaseList</a></code>
-- <code title="delete /v4/test-cases/{id}">client.test_cases.<a href="./src/gentrace/resources/test_cases.py">delete</a>(id) -> <a href="./src/gentrace/types/test_case_delete_response.py">TestCaseDeleteResponse</a></code>
+- <code title="delete /v4/test-cases/{id}">client.test_cases.<a href="./src/gentrace/resources/test_cases.py">delete</a>(id) -> None</code>

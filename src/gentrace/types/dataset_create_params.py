@@ -11,17 +11,17 @@ __all__ = ["DatasetCreateParams"]
 
 
 class DatasetCreateParams(TypedDict, total=False):
-    name: Required[str]
-    """The name of the dataset"""
+    description: Required[Optional[str]]
+    """Dataset description"""
 
-    description: Optional[str]
-    """The description of the dataset"""
+    name: Required[str]
+    """Dataset name"""
 
     is_golden: Annotated[bool, PropertyInfo(alias="isGolden")]
-    """Toggle to set the dataset as the golden dataset for the pipeline"""
+    """Whether the dataset is golden"""
 
     pipeline_id: Annotated[str, PropertyInfo(alias="pipelineId")]
-    """The ID of the pipeline to create the dataset for"""
+    """Pipeline ID (mutually exclusive with pipelineSlug)"""
 
     pipeline_slug: Annotated[str, PropertyInfo(alias="pipelineSlug")]
-    """The slug of the pipeline to create the dataset for"""
+    """Pipeline slug (mutually exclusive with pipelineId)"""

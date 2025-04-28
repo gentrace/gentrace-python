@@ -9,11 +9,7 @@ import pytest
 
 from gentrace import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
-from gentrace.types import (
-    TestCase,
-    TestCaseList,
-    TestCaseDeleteResponse,
-)
+from gentrace.types import TestCase, TestCaseList
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 
@@ -76,7 +72,7 @@ class TestTestCases:
     @parametrize
     def test_method_retrieve(self, client: Gentrace) -> None:
         test_case = client.test_cases.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
         assert_matches_type(TestCase, test_case, path=["response"])
 
@@ -84,7 +80,7 @@ class TestTestCases:
     @parametrize
     def test_raw_response_retrieve(self, client: Gentrace) -> None:
         response = client.test_cases.with_raw_response.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
 
         assert response.is_closed is True
@@ -96,7 +92,7 @@ class TestTestCases:
     @parametrize
     def test_streaming_response_retrieve(self, client: Gentrace) -> None:
         with client.test_cases.with_streaming_response.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -156,33 +152,33 @@ class TestTestCases:
     @parametrize
     def test_method_delete(self, client: Gentrace) -> None:
         test_case = client.test_cases.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
-        assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+        assert test_case is None
 
     @pytest.mark.skip()
     @parametrize
     def test_raw_response_delete(self, client: Gentrace) -> None:
         response = client.test_cases.with_raw_response.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         test_case = response.parse()
-        assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+        assert test_case is None
 
     @pytest.mark.skip()
     @parametrize
     def test_streaming_response_delete(self, client: Gentrace) -> None:
         with client.test_cases.with_streaming_response.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             test_case = response.parse()
-            assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+            assert test_case is None
 
         assert cast(Any, response.is_closed) is True
 
@@ -253,7 +249,7 @@ class TestAsyncTestCases:
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncGentrace) -> None:
         test_case = await async_client.test_cases.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
         assert_matches_type(TestCase, test_case, path=["response"])
 
@@ -261,7 +257,7 @@ class TestAsyncTestCases:
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncGentrace) -> None:
         response = await async_client.test_cases.with_raw_response.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
 
         assert response.is_closed is True
@@ -273,7 +269,7 @@ class TestAsyncTestCases:
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncGentrace) -> None:
         async with async_client.test_cases.with_streaming_response.retrieve(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -333,33 +329,33 @@ class TestAsyncTestCases:
     @parametrize
     async def test_method_delete(self, async_client: AsyncGentrace) -> None:
         test_case = await async_client.test_cases.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
-        assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+        assert test_case is None
 
     @pytest.mark.skip()
     @parametrize
     async def test_raw_response_delete(self, async_client: AsyncGentrace) -> None:
         response = await async_client.test_cases.with_raw_response.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         )
 
         assert response.is_closed is True
         assert response.http_request.headers.get("X-Stainless-Lang") == "python"
         test_case = await response.parse()
-        assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+        assert test_case is None
 
     @pytest.mark.skip()
     @parametrize
     async def test_streaming_response_delete(self, async_client: AsyncGentrace) -> None:
         async with async_client.test_cases.with_streaming_response.delete(
-            "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+            "123e4567-e89b-12d3-a456-426614174000",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
 
             test_case = await response.parse()
-            assert_matches_type(TestCaseDeleteResponse, test_case, path=["response"])
+            assert test_case is None
 
         assert cast(Any, response.is_closed) is True
 

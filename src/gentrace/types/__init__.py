@@ -21,4 +21,3 @@ from .pipeline_update_params import PipelineUpdateParams as PipelineUpdateParams
 from .test_case_create_params import TestCaseCreateParams as TestCaseCreateParams
 from .experiment_create_params import ExperimentCreateParams as ExperimentCreateParams
 from .experiment_update_params import ExperimentUpdateParams as ExperimentUpdateParams
-from .test_case_delete_response import TestCaseDeleteResponse as TestCaseDeleteResponse

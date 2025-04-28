@@ -7,7 +7,7 @@ from typing import Dict
 import httpx
 
 from ..types import test_case_list_params, test_case_create_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import NOT_GIVEN, Body, Query, Headers, NoneType, NotGiven
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -20,7 +20,6 @@ from .._response import (
 from .._base_client import make_request_options
 from ..types.test_case import TestCase
 from ..types.test_case_list import TestCaseList
-from ..types.test_case_delete_response import TestCaseDeleteResponse
 
 __all__ = ["TestCasesResource", "AsyncTestCasesResource"]
 
@@ -62,7 +61,7 @@ class TestCasesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCase:
         """
-        Creates a new test case definition for a given dataset
+        Create a new test case
 
         Args:
           dataset_id: Dataset UUID
@@ -110,7 +109,7 @@ class TestCasesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCase:
         """
-        Retrieves the details of a specific test case
+        Retrieve the details of a test case by ID
 
         Args:
           id: Test Case UUID
@@ -147,7 +146,7 @@ class TestCasesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCaseList:
         """
-        Retrieve a list of all test cases for a given dataset
+        List test cases
 
         Args:
           dataset_id: Dataset ID
@@ -193,9 +192,9 @@ class TestCasesResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> TestCaseDeleteResponse:
+    ) -> None:
         """
-        Deletes a test case by its ID (soft delete)
+        Delete a test case by ID
 
         Args:
           id: Test Case UUID
@@ -210,12 +209,13 @@ class TestCasesResource(SyncAPIResource):
         """
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return self._delete(
             f"/v4/test-cases/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=TestCaseDeleteResponse,
+            cast_to=NoneType,
         )
 
 
@@ -254,7 +254,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCase:
         """
-        Creates a new test case definition for a given dataset
+        Create a new test case
 
         Args:
           dataset_id: Dataset UUID
@@ -302,7 +302,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCase:
         """
-        Retrieves the details of a specific test case
+        Retrieve the details of a test case by ID
 
         Args:
           id: Test Case UUID
@@ -339,7 +339,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> TestCaseList:
         """
-        Retrieve a list of all test cases for a given dataset
+        List test cases
 
         Args:
           dataset_id: Dataset ID
@@ -385,9 +385,9 @@ class AsyncTestCasesResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> TestCaseDeleteResponse:
+    ) -> None:
         """
-        Deletes a test case by its ID (soft delete)
+        Delete a test case by ID
 
         Args:
           id: Test Case UUID
@@ -402,12 +402,13 @@ class AsyncTestCasesResource(AsyncAPIResource):
         """
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
+        extra_headers = {"Accept": "*/*", **(extra_headers or {})}
         return await self._delete(
             f"/v4/test-cases/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=TestCaseDeleteResponse,
+            cast_to=NoneType,
         )
 
 

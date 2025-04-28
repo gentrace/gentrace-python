@@ -14,9 +14,6 @@ class PipelineListParams(TypedDict, total=False):
     folder_id: Annotated[Optional[str], PropertyInfo(alias="folderId")]
     """The ID of the folder to filter pipelines by"""
 
-    label: str
-    """Filter pipelines by label"""
-
     slug: Slug
     """Filter pipelines by slug"""
 

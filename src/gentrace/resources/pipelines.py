@@ -2,8 +2,7 @@
 
 from __future__ import annotations
 
-from typing import List, Optional
-from typing_extensions import Literal
+from typing import Optional
 
 import httpx
 
@@ -49,12 +48,8 @@ class PipelinesResource(SyncAPIResource):
         self,
         *,
         slug: str,
-        branch: Optional[str] | NotGiven = NOT_GIVEN,
         display_name: Optional[str] | NotGiven = NOT_GIVEN,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_private: Optional[bool] | NotGiven = NOT_GIVEN,
-        labels: List[str] | NotGiven = NOT_GIVEN,
-        version: Literal[1, 2] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -63,23 +58,14 @@ class PipelinesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Creates a new pipeline definition
+        Create a new pipeline
 
         Args:
-          slug: A URL-friendly identifier (lowercase alphanumeric with dashes)
+          slug: Pipeline slug
 
-          branch: The branch of the pipeline
+          display_name: Pipeline display name
 
-          display_name: The display name of the pipeline
-
-          folder_id: The ID of the folder containing the pipeline. If not provided, the pipeline will
-              be created at root level
-
-          is_private: Whether the pipeline is private
-
-          labels: Labels for the pipeline
-
-          version: The version of the pipeline
+          folder_id: Folder UUID
 
           extra_headers: Send extra headers
 
@@ -94,12 +80,8 @@ class PipelinesResource(SyncAPIResource):
             body=maybe_transform(
                 {
                     "slug": slug,
-                    "branch": branch,
                     "display_name": display_name,
                     "folder_id": folder_id,
-                    "is_private": is_private,
-                    "labels": labels,
-                    "version": version,
                 },
                 pipeline_create_params.PipelineCreateParams,
             ),
@@ -121,7 +103,7 @@ class PipelinesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Retrieves the details of a specific pipeline
+        Retrieve the details of a pipeline by ID
 
         Args:
           id: Pipeline UUID
@@ -148,12 +130,9 @@ class PipelinesResource(SyncAPIResource):
         self,
         id: str,
         *,
-        branch: Optional[str] | NotGiven = NOT_GIVEN,
         display_name: Optional[str] | NotGiven = NOT_GIVEN,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
         is_archived: bool | NotGiven = NOT_GIVEN,
-        labels: List[str] | NotGiven = NOT_GIVEN,
-        saved_runs_display: Optional[pipeline_update_params.SavedRunsDisplay] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -162,23 +141,16 @@ class PipelinesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Updates a pipeline with the given ID
+        Update the details of a pipeline by ID
 
         Args:
           id: Pipeline UUID
 
-          branch: The branch of the pipeline
+          display_name: Pipeline display name
 
-          display_name: The display name of the pipeline
-
-          folder_id: The ID of the folder containing the pipeline. If not provided, the pipeline will
-              be created at root level
+          folder_id: Folder UUID
 
           is_archived: Whether the pipeline is archived
-
-          labels: Labels for the pipeline
-
-          saved_runs_display: Saved runs display configuration
 
           extra_headers: Send extra headers
 
@@ -194,12 +166,9 @@ class PipelinesResource(SyncAPIResource):
             f"/v4/pipelines/{id}",
             body=maybe_transform(
                 {
-                    "branch": branch,
                     "display_name": display_name,
                     "folder_id": folder_id,
                     "is_archived": is_archived,
-                    "labels": labels,
-                    "saved_runs_display": saved_runs_display,
                 },
                 pipeline_update_params.PipelineUpdateParams,
             ),
@@ -213,7 +182,6 @@ class PipelinesResource(SyncAPIResource):
         self,
         *,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        label: str | NotGiven = NOT_GIVEN,
         slug: pipeline_list_params.Slug | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -223,12 +191,10 @@ class PipelinesResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> PipelineList:
         """
-        Retrieve a list of all pipelines
+        List pipelines
 
         Args:
           folder_id: The ID of the folder to filter pipelines by
-
-          label: Filter pipelines by label
 
           slug: Filter pipelines by slug
 
@@ -250,7 +216,6 @@ class PipelinesResource(SyncAPIResource):
                 query=maybe_transform(
                     {
                         "folder_id": folder_id,
-                        "label": label,
                         "slug": slug,
                     },
                     pipeline_list_params.PipelineListParams,
@@ -284,12 +249,8 @@ class AsyncPipelinesResource(AsyncAPIResource):
         self,
         *,
         slug: str,
-        branch: Optional[str] | NotGiven = NOT_GIVEN,
         display_name: Optional[str] | NotGiven = NOT_GIVEN,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_private: Optional[bool] | NotGiven = NOT_GIVEN,
-        labels: List[str] | NotGiven = NOT_GIVEN,
-        version: Literal[1, 2] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -298,23 +259,14 @@ class AsyncPipelinesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Creates a new pipeline definition
+        Create a new pipeline
 
         Args:
-          slug: A URL-friendly identifier (lowercase alphanumeric with dashes)
+          slug: Pipeline slug
 
-          branch: The branch of the pipeline
+          display_name: Pipeline display name
 
-          display_name: The display name of the pipeline
-
-          folder_id: The ID of the folder containing the pipeline. If not provided, the pipeline will
-              be created at root level
-
-          is_private: Whether the pipeline is private
-
-          labels: Labels for the pipeline
-
-          version: The version of the pipeline
+          folder_id: Folder UUID
 
           extra_headers: Send extra headers
 
@@ -329,12 +281,8 @@ class AsyncPipelinesResource(AsyncAPIResource):
             body=await async_maybe_transform(
                 {
                     "slug": slug,
-                    "branch": branch,
                     "display_name": display_name,
                     "folder_id": folder_id,
-                    "is_private": is_private,
-                    "labels": labels,
-                    "version": version,
                 },
                 pipeline_create_params.PipelineCreateParams,
             ),
@@ -356,7 +304,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Retrieves the details of a specific pipeline
+        Retrieve the details of a pipeline by ID
 
         Args:
           id: Pipeline UUID
@@ -383,12 +331,9 @@ class AsyncPipelinesResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        branch: Optional[str] | NotGiven = NOT_GIVEN,
         display_name: Optional[str] | NotGiven = NOT_GIVEN,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
         is_archived: bool | NotGiven = NOT_GIVEN,
-        labels: List[str] | NotGiven = NOT_GIVEN,
-        saved_runs_display: Optional[pipeline_update_params.SavedRunsDisplay] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
@@ -397,23 +342,16 @@ class AsyncPipelinesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Pipeline:
         """
-        Updates a pipeline with the given ID
+        Update the details of a pipeline by ID
 
         Args:
           id: Pipeline UUID
 
-          branch: The branch of the pipeline
+          display_name: Pipeline display name
 
-          display_name: The display name of the pipeline
-
-          folder_id: The ID of the folder containing the pipeline. If not provided, the pipeline will
-              be created at root level
+          folder_id: Folder UUID
 
           is_archived: Whether the pipeline is archived
-
-          labels: Labels for the pipeline
-
-          saved_runs_display: Saved runs display configuration
 
           extra_headers: Send extra headers
 
@@ -429,12 +367,9 @@ class AsyncPipelinesResource(AsyncAPIResource):
             f"/v4/pipelines/{id}",
             body=await async_maybe_transform(
                 {
-                    "branch": branch,
                     "display_name": display_name,
                     "folder_id": folder_id,
                     "is_archived": is_archived,
-                    "labels": labels,
-                    "saved_runs_display": saved_runs_display,
                 },
                 pipeline_update_params.PipelineUpdateParams,
             ),
@@ -448,7 +383,6 @@ class AsyncPipelinesResource(AsyncAPIResource):
         self,
         *,
         folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        label: str | NotGiven = NOT_GIVEN,
         slug: pipeline_list_params.Slug | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -458,12 +392,10 @@ class AsyncPipelinesResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> PipelineList:
         """
-        Retrieve a list of all pipelines
+        List pipelines
 
         Args:
           folder_id: The ID of the folder to filter pipelines by
-
-          label: Filter pipelines by label
 
           slug: Filter pipelines by slug
 
@@ -485,7 +417,6 @@ class AsyncPipelinesResource(AsyncAPIResource):
                 query=await async_maybe_transform(
                     {
                         "folder_id": folder_id,
-                        "label": label,
                         "slug": slug,
                     },
                     pipeline_list_params.PipelineListParams,

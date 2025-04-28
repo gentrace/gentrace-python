@@ -47,8 +47,8 @@ class DatasetsResource(SyncAPIResource):
     def create(
         self,
         *,
+        description: Optional[str],
         name: str,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
         is_golden: bool | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
         pipeline_slug: str | NotGiven = NOT_GIVEN,
@@ -60,18 +60,18 @@ class DatasetsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Creates a new dataset definition
+        Create a new dataset
 
         Args:
-          name: The name of the dataset
+          description: Dataset description
 
-          description: The description of the dataset
+          name: Dataset name
 
-          is_golden: Toggle to set the dataset as the golden dataset for the pipeline
+          is_golden: Whether the dataset is golden
 
-          pipeline_id: The ID of the pipeline to create the dataset for
+          pipeline_id: Pipeline ID (mutually exclusive with pipelineSlug)
 
-          pipeline_slug: The slug of the pipeline to create the dataset for
+          pipeline_slug: Pipeline slug (mutually exclusive with pipelineId)
 
           extra_headers: Send extra headers
 
@@ -85,8 +85,8 @@ class DatasetsResource(SyncAPIResource):
             "/v4/datasets",
             body=maybe_transform(
                 {
-                    "name": name,
                     "description": description,
+                    "name": name,
                     "is_golden": is_golden,
                     "pipeline_id": pipeline_id,
                     "pipeline_slug": pipeline_slug,
@@ -111,7 +111,7 @@ class DatasetsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Retrieves the details of a specific dataset
+        Retrieve the details of a dataset by ID
 
         Args:
           id: Dataset UUID
@@ -150,18 +150,18 @@ class DatasetsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Updates a dataset with the given ID
+        Update the details of a dataset by ID
 
         Args:
           id: Dataset UUID
 
-          description: The description of the dataset
+          description: Dataset description
 
-          is_archived: Toggles the archived status of the dataset
+          is_archived: Archive the dataset
 
-          is_golden: Toggles whether the dataset is the golden dataset for the pipeline
+          is_golden: Set the dataset as the golden dataset
 
-          name: The name of the dataset
+          name: Dataset name
 
           extra_headers: Send extra headers
 
@@ -204,7 +204,7 @@ class DatasetsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DatasetList:
         """
-        Retrieve a list of all datasets
+        List datasets
 
         Args:
           archived: Flag to include archived datasets
@@ -264,8 +264,8 @@ class AsyncDatasetsResource(AsyncAPIResource):
     async def create(
         self,
         *,
+        description: Optional[str],
         name: str,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
         is_golden: bool | NotGiven = NOT_GIVEN,
         pipeline_id: str | NotGiven = NOT_GIVEN,
         pipeline_slug: str | NotGiven = NOT_GIVEN,
@@ -277,18 +277,18 @@ class AsyncDatasetsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Creates a new dataset definition
+        Create a new dataset
 
         Args:
-          name: The name of the dataset
+          description: Dataset description
 
-          description: The description of the dataset
+          name: Dataset name
 
-          is_golden: Toggle to set the dataset as the golden dataset for the pipeline
+          is_golden: Whether the dataset is golden
 
-          pipeline_id: The ID of the pipeline to create the dataset for
+          pipeline_id: Pipeline ID (mutually exclusive with pipelineSlug)
 
-          pipeline_slug: The slug of the pipeline to create the dataset for
+          pipeline_slug: Pipeline slug (mutually exclusive with pipelineId)
 
           extra_headers: Send extra headers
 
@@ -302,8 +302,8 @@ class AsyncDatasetsResource(AsyncAPIResource):
             "/v4/datasets",
             body=await async_maybe_transform(
                 {
-                    "name": name,
                     "description": description,
+                    "name": name,
                     "is_golden": is_golden,
                     "pipeline_id": pipeline_id,
                     "pipeline_slug": pipeline_slug,
@@ -328,7 +328,7 @@ class AsyncDatasetsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Retrieves the details of a specific dataset
+        Retrieve the details of a dataset by ID
 
         Args:
           id: Dataset UUID
@@ -367,18 +367,18 @@ class AsyncDatasetsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Dataset:
         """
-        Updates a dataset with the given ID
+        Update the details of a dataset by ID
 
         Args:
           id: Dataset UUID
 
-          description: The description of the dataset
+          description: Dataset description
 
-          is_archived: Toggles the archived status of the dataset
+          is_archived: Archive the dataset
 
-          is_golden: Toggles whether the dataset is the golden dataset for the pipeline
+          is_golden: Set the dataset as the golden dataset
 
-          name: The name of the dataset
+          name: Dataset name
 
           extra_headers: Send extra headers
 
@@ -421,7 +421,7 @@ class AsyncDatasetsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> DatasetList:
         """
-        Retrieve a list of all datasets
+        List datasets
 
         Args:
           archived: Flag to include archived datasets

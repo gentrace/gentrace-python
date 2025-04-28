@@ -1,7 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import List, Optional
-from datetime import datetime
+from typing import Optional
 
 from pydantic import Field as FieldInfo
 
@@ -14,13 +13,10 @@ class Pipeline(BaseModel):
     id: str
     """Pipeline UUID"""
 
-    archived_at: Optional[datetime] = FieldInfo(alias="archivedAt", default=None)
+    archived_at: Optional[str] = FieldInfo(alias="archivedAt", default=None)
     """Archive timestamp (ISO 8601)"""
 
-    branch: Optional[str] = None
-    """Branch name"""
-
-    created_at: datetime = FieldInfo(alias="createdAt")
+    created_at: str = FieldInfo(alias="createdAt")
     """Creation timestamp (ISO 8601)"""
 
     display_name: Optional[str] = FieldInfo(alias="displayName", default=None)
@@ -32,20 +28,8 @@ class Pipeline(BaseModel):
     golden_dataset_id: Optional[str] = FieldInfo(alias="goldenDatasetId", default=None)
     """Golden dataset UUID"""
 
-    labels: List[str]
-    """Labels"""
-
-    organization_id: str = FieldInfo(alias="organizationId")
-    """Organization UUID"""
-
-    private_member_id: Optional[str] = FieldInfo(alias="privateMemberId", default=None)
-    """Private member UUID"""
-
     slug: str
     """Pipeline slug"""
 
-    updated_at: datetime = FieldInfo(alias="updatedAt")
+    updated_at: str = FieldInfo(alias="updatedAt")
     """Last update timestamp (ISO 8601)"""
-
-    version: int
-    """Pipeline version (version 2 and beyond have tracing support)"""

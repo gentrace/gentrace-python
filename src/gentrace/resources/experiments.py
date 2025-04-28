@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Optional
 from typing_extensions import Literal
 
 import httpx
@@ -49,8 +49,6 @@ class ExperimentsResource(SyncAPIResource):
         self,
         *,
         pipeline_id: str,
-        branch: str | NotGiven = NOT_GIVEN,
-        commit: str | NotGiven = NOT_GIVEN,
         metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -61,14 +59,10 @@ class ExperimentsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Creates a new experiment definition
+        Create a new experiment
 
         Args:
           pipeline_id: The ID of the pipeline to create the experiment for
-
-          branch: Git branch
-
-          commit: Git commit hash
 
           metadata: Optional metadata for the experiment
 
@@ -87,8 +81,6 @@ class ExperimentsResource(SyncAPIResource):
             body=maybe_transform(
                 {
                     "pipeline_id": pipeline_id,
-                    "branch": branch,
-                    "commit": commit,
                     "metadata": metadata,
                     "name": name,
                 },
@@ -112,7 +104,7 @@ class ExperimentsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Retrieves the details of a specific experiment
+        Retrieve the details of a experiment by ID
 
         Args:
           id: Experiment UUID
@@ -139,8 +131,8 @@ class ExperimentsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        metadata: Optional[Dict[str, object]] | NotGiven = NOT_GIVEN,
+        name: Optional[str] | NotGiven = NOT_GIVEN,
         status: Literal["GENERATING", "EVALUATING"] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -150,16 +142,16 @@ class ExperimentsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Updates an experiment with the given ID
+        Update the details of a experiment by ID
 
         Args:
           id: Experiment UUID
 
-          metadata: Updated metadata for the experiment
+          metadata: Metadata
 
-          name: Updated name for the experiment
+          name: Friendly experiment name
 
-          status: Updated status of the experiment
+          status: Status
 
           extra_headers: Send extra headers
 
@@ -199,7 +191,7 @@ class ExperimentsResource(SyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ExperimentList:
         """
-        Retrieve a list of all experiments
+        List experiments
 
         Args:
           pipeline_id: Filter to the datasets for a specific pipeline by UUID
@@ -249,8 +241,6 @@ class AsyncExperimentsResource(AsyncAPIResource):
         self,
         *,
         pipeline_id: str,
-        branch: str | NotGiven = NOT_GIVEN,
-        commit: str | NotGiven = NOT_GIVEN,
         metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
         name: str | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
@@ -261,14 +251,10 @@ class AsyncExperimentsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Creates a new experiment definition
+        Create a new experiment
 
         Args:
           pipeline_id: The ID of the pipeline to create the experiment for
-
-          branch: Git branch
-
-          commit: Git commit hash
 
           metadata: Optional metadata for the experiment
 
@@ -287,8 +273,6 @@ class AsyncExperimentsResource(AsyncAPIResource):
             body=await async_maybe_transform(
                 {
                     "pipeline_id": pipeline_id,
-                    "branch": branch,
-                    "commit": commit,
                     "metadata": metadata,
                     "name": name,
                 },
@@ -312,7 +296,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Retrieves the details of a specific experiment
+        Retrieve the details of a experiment by ID
 
         Args:
           id: Experiment UUID
@@ -339,8 +323,8 @@ class AsyncExperimentsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        metadata: Optional[Dict[str, object]] | NotGiven = NOT_GIVEN,
+        name: Optional[str] | NotGiven = NOT_GIVEN,
         status: Literal["GENERATING", "EVALUATING"] | NotGiven = NOT_GIVEN,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
@@ -350,16 +334,16 @@ class AsyncExperimentsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> Experiment:
         """
-        Updates an experiment with the given ID
+        Update the details of a experiment by ID
 
         Args:
           id: Experiment UUID
 
-          metadata: Updated metadata for the experiment
+          metadata: Metadata
 
-          name: Updated name for the experiment
+          name: Friendly experiment name
 
-          status: Updated status of the experiment
+          status: Status
 
           extra_headers: Send extra headers
 
@@ -399,7 +383,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
     ) -> ExperimentList:
         """
-        Retrieve a list of all experiments
+        List experiments
 
         Args:
           pipeline_id: Filter to the datasets for a specific pipeline by UUID

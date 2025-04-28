@@ -12,13 +12,13 @@ __all__ = ["DatasetUpdateParams"]
 
 class DatasetUpdateParams(TypedDict, total=False):
     description: Optional[str]
-    """The description of the dataset"""
+    """Dataset description"""
 
     is_archived: Annotated[bool, PropertyInfo(alias="isArchived")]
-    """Toggles the archived status of the dataset"""
+    """Archive the dataset"""
 
     is_golden: Annotated[bool, PropertyInfo(alias="isGolden")]
-    """Toggles whether the dataset is the golden dataset for the pipeline"""
+    """Set the dataset as the golden dataset"""
 
     name: str
-    """The name of the dataset"""
+    """Dataset name"""

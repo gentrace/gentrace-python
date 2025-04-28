@@ -21,7 +21,7 @@ class TestPipelines:
     @parametrize
     def test_method_create(self, client: Gentrace) -> None:
         pipeline = client.pipelines.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -29,13 +29,9 @@ class TestPipelines:
     @parametrize
     def test_method_create_with_all_params(self, client: Gentrace) -> None:
         pipeline = client.pipelines.create(
-            slug="email-summarizer",
-            branch="main",
-            display_name="My Pipeline",
-            folder_id="98461244-7a78-4042-a7b5-7634dd2cfeb7",
-            is_private=False,
-            labels=["label1", "label2"],
-            version=1,
+            slug="my-awesome-pipeline",
+            display_name="My Awesome Pipeline",
+            folder_id="6527747a-ba86-441a-aebd-1ad94460bc89",
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -43,7 +39,7 @@ class TestPipelines:
     @parametrize
     def test_raw_response_create(self, client: Gentrace) -> None:
         response = client.pipelines.with_raw_response.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         )
 
         assert response.is_closed is True
@@ -55,7 +51,7 @@ class TestPipelines:
     @parametrize
     def test_streaming_response_create(self, client: Gentrace) -> None:
         with client.pipelines.with_streaming_response.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -120,31 +116,9 @@ class TestPipelines:
     def test_method_update_with_all_params(self, client: Gentrace) -> None:
         pipeline = client.pipelines.update(
             id="123e4567-e89b-12d3-a456-426614174000",
-            branch="main",
-            display_name="My Pipeline",
-            folder_id="98461244-7a78-4042-a7b5-7634dd2cfeb7",
+            display_name="My Awesome Pipeline",
+            folder_id="6527747a-ba86-441a-aebd-1ad94460bc89",
             is_archived=False,
-            labels=["label1", "label2"],
-            saved_runs_display={
-                "evaluators": {"hide": ["b7d21c49-3a5e-4a6f-9d8b-f8c4e2d6a3b1"]},
-                "feedback": {"show": False},
-                "inputs": {
-                    "as": "json",
-                    "hide": ["internal_id"],
-                    "pretty": True,
-                    "show_compact": ["query"],
-                },
-                "metadata": {
-                    "as": "tabular",
-                    "show": ["timestamp", "latency"],
-                },
-                "outputs": {
-                    "as": "json",
-                    "hide": ["raw_response"],
-                    "pretty": True,
-                },
-                "size": "full",
-            },
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -193,7 +167,6 @@ class TestPipelines:
     def test_method_list_with_all_params(self, client: Gentrace) -> None:
         pipeline = client.pipelines.list(
             folder_id="123e4567-e89b-12d3-a456-426614174000",
-            label="production",
             slug="my-pipeline",
         )
         assert_matches_type(PipelineList, pipeline, path=["response"])
@@ -228,7 +201,7 @@ class TestAsyncPipelines:
     @parametrize
     async def test_method_create(self, async_client: AsyncGentrace) -> None:
         pipeline = await async_client.pipelines.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -236,13 +209,9 @@ class TestAsyncPipelines:
     @parametrize
     async def test_method_create_with_all_params(self, async_client: AsyncGentrace) -> None:
         pipeline = await async_client.pipelines.create(
-            slug="email-summarizer",
-            branch="main",
-            display_name="My Pipeline",
-            folder_id="98461244-7a78-4042-a7b5-7634dd2cfeb7",
-            is_private=False,
-            labels=["label1", "label2"],
-            version=1,
+            slug="my-awesome-pipeline",
+            display_name="My Awesome Pipeline",
+            folder_id="6527747a-ba86-441a-aebd-1ad94460bc89",
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -250,7 +219,7 @@ class TestAsyncPipelines:
     @parametrize
     async def test_raw_response_create(self, async_client: AsyncGentrace) -> None:
         response = await async_client.pipelines.with_raw_response.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         )
 
         assert response.is_closed is True
@@ -262,7 +231,7 @@ class TestAsyncPipelines:
     @parametrize
     async def test_streaming_response_create(self, async_client: AsyncGentrace) -> None:
         async with async_client.pipelines.with_streaming_response.create(
-            slug="email-summarizer",
+            slug="my-awesome-pipeline",
         ) as response:
             assert not response.is_closed
             assert response.http_request.headers.get("X-Stainless-Lang") == "python"
@@ -327,31 +296,9 @@ class TestAsyncPipelines:
     async def test_method_update_with_all_params(self, async_client: AsyncGentrace) -> None:
         pipeline = await async_client.pipelines.update(
             id="123e4567-e89b-12d3-a456-426614174000",
-            branch="main",
-            display_name="My Pipeline",
-            folder_id="98461244-7a78-4042-a7b5-7634dd2cfeb7",
+            display_name="My Awesome Pipeline",
+            folder_id="6527747a-ba86-441a-aebd-1ad94460bc89",
             is_archived=False,
-            labels=["label1", "label2"],
-            saved_runs_display={
-                "evaluators": {"hide": ["b7d21c49-3a5e-4a6f-9d8b-f8c4e2d6a3b1"]},
-                "feedback": {"show": False},
-                "inputs": {
-                    "as": "json",
-                    "hide": ["internal_id"],
-                    "pretty": True,
-                    "show_compact": ["query"],
-                },
-                "metadata": {
-                    "as": "tabular",
-                    "show": ["timestamp", "latency"],
-                },
-                "outputs": {
-                    "as": "json",
-                    "hide": ["raw_response"],
-                    "pretty": True,
-                },
-                "size": "full",
-            },
         )
         assert_matches_type(Pipeline, pipeline, path=["response"])
 
@@ -400,7 +347,6 @@ class TestAsyncPipelines:
     async def test_method_list_with_all_params(self, async_client: AsyncGentrace) -> None:
         pipeline = await async_client.pipelines.list(
             folder_id="123e4567-e89b-12d3-a456-426614174000",
-            label="production",
             slug="my-pipeline",
         )
         assert_matches_type(PipelineList, pipeline, path=["response"])
