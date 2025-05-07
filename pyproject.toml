@@ -1,6 +1,6 @@
 [project]
 name = "gentrace"
-version = "0.0.1-alpha.0"
+version = "0.1.7"
 description = "The official Python library for the gentrace API"
 dynamic = ["readme"]
 license = "MIT"

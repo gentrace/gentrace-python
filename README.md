@@ -20,7 +20,7 @@ pip install git+ssh://git@github.com/gentrace/gentrace-python.git
 ```
 
 > [!NOTE]
-> Once this package is [published to PyPI](https://app.stainless.com/docs/guides/publish), this will become: `pip install --pre gentrace`
+> Once this package is [published to PyPI](https://app.stainless.com/docs/guides/publish), this will become: `pip install gentrace`
 
 ## Usage
 
