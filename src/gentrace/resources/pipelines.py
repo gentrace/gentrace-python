@@ -31,7 +31,7 @@ class PipelinesResource(SyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/gentrace-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/gentrace/gentrace-python#accessing-raw-response-data-eg-headers
         """
         return PipelinesResourceWithRawResponse(self)
 
@@ -40,7 +40,7 @@ class PipelinesResource(SyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/gentrace-python#with_streaming_response
+        For more information, see https://www.github.com/gentrace/gentrace-python#with_streaming_response
         """
         return PipelinesResourceWithStreamingResponse(self)
 
@@ -232,7 +232,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
         This property can be used as a prefix for any HTTP method call to return
         the raw response object instead of the parsed content.
 
-        For more information, see https://www.github.com/stainless-sdks/gentrace-python#accessing-raw-response-data-eg-headers
+        For more information, see https://www.github.com/gentrace/gentrace-python#accessing-raw-response-data-eg-headers
         """
         return AsyncPipelinesResourceWithRawResponse(self)
 
@@ -241,7 +241,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
         """
         An alternative to `.with_raw_response` that doesn't eagerly read the response body.
 
-        For more information, see https://www.github.com/stainless-sdks/gentrace-python#with_streaming_response
+        For more information, see https://www.github.com/gentrace/gentrace-python#with_streaming_response
         """
         return AsyncPipelinesResourceWithStreamingResponse(self)
 
