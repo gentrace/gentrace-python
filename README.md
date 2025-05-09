@@ -31,17 +31,17 @@ import os
 from gentrace import Gentrace
 
 client = Gentrace(
-    bearer_token=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
+    api_key=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
 )
 
 pipeline_list = client.pipelines.list()
 print(pipeline_list.data)
 ```
 
-While you can provide a `bearer_token` keyword argument,
+While you can provide an `api_key` keyword argument,
 we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
-to add `GENTRACE_API_KEY="My Bearer Token"` to your `.env` file
-so that your Bearer Token is not stored in source control.
+to add `GENTRACE_API_KEY="My API Key"` to your `.env` file
+so that your API Key is not stored in source control.
 
 ## Async usage
 
@@ -53,7 +53,7 @@ import asyncio
 from gentrace import AsyncGentrace
 
 client = AsyncGentrace(
-    bearer_token=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
+    api_key=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
 )
 
 
