@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.0 (2025-05-10)
+
+Full Changelog: [v0.1.7...v0.2.0](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v0.2.0)
+
+### Features
+
+* **api:** Change to API key from Bearer Token ([0002317](https://github.com/gentrace/gentrace-python/commit/00023175ec93452e4e188b3f0ea0b0c1e384aa0a))
+
+
+### Bug Fixes
+
+* **package:** support direct resource imports ([d4cbf5e](https://github.com/gentrace/gentrace-python/commit/d4cbf5e345b436c3a9edadcae8215e1fc882cba2))
+
+
+### Chores
+
+* **internal:** avoid errors for isinstance checks on proxies ([02c9e3d](https://github.com/gentrace/gentrace-python/commit/02c9e3dceee7d4bde615c9528694447f3adf24eb))
+* **internal:** version bump ([86c6815](https://github.com/gentrace/gentrace-python/commit/86c68153521fa5cb19c697bc1758325e5384a1a2))
+
 ## 0.1.7 (2025-05-07)
 
 Full Changelog: [v0.0.1-alpha.0...v0.1.7](https://github.com/gentrace/gentrace-python/compare/v0.0.1-alpha.0...v0.1.7)
