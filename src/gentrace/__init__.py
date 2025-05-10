@@ -76,6 +76,7 @@ test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_clie
 
 from .lib.init import init
 from .lib.traced import traced
+from .lib.experiment import experiment
 from .lib.interaction import interaction
 
 __all__ = [
@@ -118,10 +119,11 @@ __all__ = [
     "DefaultHttpxClient",
     "DefaultAsyncHttpxClient",
 
-    # Custom library functions
+    # Start custom Gentrace exports
     "init",
     "traced",
     "interaction",
+    "experiment",
 ]
 
 _setup_logging()
