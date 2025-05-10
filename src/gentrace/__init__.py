@@ -37,6 +37,9 @@ from ._exceptions import (
 from ._base_client import DefaultHttpxClient, DefaultAsyncHttpxClient
 from ._utils._logs import setup_logging as _setup_logging
 
+from .lib.traced import traced
+from .lib.init import init
+
 __all__ = [
     "types",
     "__version__",
@@ -76,6 +79,10 @@ __all__ = [
     "DEFAULT_CONNECTION_LIMITS",
     "DefaultHttpxClient",
     "DefaultAsyncHttpxClient",
+
+    # Custom library functions
+    "traced",
+    "init",
 ]
 
 _setup_logging()
