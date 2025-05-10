@@ -40,6 +40,8 @@ classifiers = [
 Homepage = "https://github.com/gentrace/gentrace-python"
 Repository = "https://github.com/gentrace/gentrace-python"
 
+[project.optional-dependencies]
+openai = ["openai"]
 
 [tool.rye]
 managed = true

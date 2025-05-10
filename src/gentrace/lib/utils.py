@@ -3,6 +3,7 @@ import logging
 import warnings
 from typing import Any, Set, Dict
 
+from pydantic import BaseModel
 from opentelemetry.util import types as otel_types
 
 logger = logging.getLogger("gentrace")  # Define logger at module level
@@ -13,6 +14,24 @@ OTLP_MIN_INT_SIZE = -(2**63)  # Min 64-bit signed integer
 CIRCULAR_REFERENCE_PLACEHOLDER = "[CircularReference]"
 
 
+def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
+    """Checks if an object is a Pydantic model and converts it to a dict.
+    Returns the original object if it's not a Pydantic model or conversion fails.
+    """
+    if isinstance(obj, BaseModel):
+        try:
+            # Pydantic V2
+            return obj.model_dump()
+        except AttributeError:
+            # Pydantic V1
+            try:
+                return obj.dict()  # type: ignore
+            except AttributeError:
+                # Should not happen if isinstance check passed and it's a Pydantic model
+                pass  # Fall through, returning original obj
+    return obj
+
+
 def _gentrace_json_dumps(value: Any) -> str:
     """Helper to dump objects to JSON string, handling circular references and non-serializable types.
 
@@ -20,7 +39,8 @@ def _gentrace_json_dumps(value: Any) -> str:
     or convert the function arguments and outputs to a serializable format.
     """
 
-    """Helper to dump objects to JSON string, handling circular references and non-serializable types."""
+    # Attempt to convert top-level value if it's a Pydantic model
+    value = _convert_pydantic_model_to_dict_if_applicable(value)
 
     seen_objects_for_this_dump: Set[int] = set()
 
@@ -30,6 +50,17 @@ def _gentrace_json_dumps(value: Any) -> str:
             return CIRCULAR_REFERENCE_PLACEHOLDER
 
         seen_objects_for_this_dump.add(obj_id)
+
+        # Attempt to convert Pydantic models to dict
+        # Must be done before trying str(obj) as Pydantic models might have custom __str__
+        processed_obj = _convert_pydantic_model_to_dict_if_applicable(obj)
+
+        # If the object was a Pydantic model and successfully converted,
+        # processed_obj will be a dict. Otherwise, it's the original obj.
+        # We only proceed to str(obj) if it wasn't a Pydantic model or conversion failed.
+        if processed_obj is not obj:  # Check if conversion happened
+            # If it was converted (e.g. to a dict), it's ready for json.dumps
+            return processed_obj
 
         try:
             return str(obj)

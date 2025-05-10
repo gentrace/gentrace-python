@@ -12,21 +12,22 @@ from .constants import ANONYMOUS_SPAN_NAME
 
 P = ParamSpec("P")
 R = TypeVar("R")  # Represents the return type of a sync function, or the awaitable result of an async function
-F = TypeVar("F", bound=Callable[..., Any]) # Represents the callable being decorated
+F = TypeVar("F", bound=Callable[..., Any])  # Represents the callable being decorated
+
 
 @overload
 def traced(
     name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 
+
 @overload
 def traced(
     name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ) -> Callable[[Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]]: ...
 
-def traced(
-    name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
-) -> Any:
+
+def traced(name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None) -> Any:
     """
     Wraps a function with OpenTelemetry tracing to track its execution.
 
@@ -66,7 +67,7 @@ def traced(
         if resolved_name is None:
             resolved_name = getattr(original_fn, "__name__", ANONYMOUS_SPAN_NAME)
             if not isinstance(resolved_name, str):
-                 resolved_name = ANONYMOUS_SPAN_NAME
+                resolved_name = ANONYMOUS_SPAN_NAME
 
         actual_span_name: str = resolved_name
         tracer = trace.get_tracer("gentrace")
@@ -103,11 +104,12 @@ def traced(
                         span.set_status(Status(StatusCode.ERROR, description=str(e)))
                         span.set_attribute("error.type", e.__class__.__name__)
                         raise
+
             # The `async_wrapper` is typed as returning `Any` for internal simplicity.
             # However, due to `@functools.wraps` and the `iscoroutinefunction` check,
             # it correctly matches the signature of `original_fn` (type `F`).
             # We ignore the type checker's complaint about returning `Any` when `F` is expected.
-            return async_wrapper # type: ignore[return-value]
+            return async_wrapper  # type: ignore[return-value]
         else:
 
             @functools.wraps(original_fn)
@@ -129,7 +131,7 @@ def traced(
                         )
                         # original_fn is F, which in this branch is Callable[P, R]
                         # The result of calling it is R.
-                        result = original_fn(*args, **kwargs) 
+                        result = original_fn(*args, **kwargs)
 
                         serialized_result = _gentrace_json_dumps(result)
 
@@ -140,10 +142,11 @@ def traced(
                         span.set_status(Status(StatusCode.ERROR, description=str(e)))
                         span.set_attribute("error.type", e.__class__.__name__)
                         raise
+
             # The `sync_wrapper` is typed as returning `Any` for internal simplicity.
             # However, due to `@functools.wraps`, it correctly matches the
             # signature of `original_fn` (type `F`). We ignore the type checker's
             # complaint about returning `Any` when `F` is expected.
-            return sync_wrapper # type: ignore[return-value]
+            return sync_wrapper  # type: ignore[return-value]
 
     return decorator
