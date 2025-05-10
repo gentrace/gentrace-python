@@ -35,7 +35,7 @@ async def main() -> None:
 
     response = await test_cases_async.list(dataset_id=dataset_id)
     for test_case in response.data:
-        print(f"ID: {test_case.id}, Name: {test_case.name}")
+        print(test_case.inputs)
 
 
 if __name__ == "__main__":

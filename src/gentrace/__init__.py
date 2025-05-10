@@ -52,13 +52,31 @@ from .lib.client_instance import _get_sync_client_instance, _get_async_client_in
 
 
 class _ResourceWrapper:
+    """A wrapper class that provides lazy access to Gentrace API resources.
+
+    This class acts as a proxy to access resources (like pipelines, experiments, etc.) from
+    either a synchronous or asynchronous Gentrace client. It lazily initializes the client
+    only when a resource method is actually accessed.
+
+    Args:
+        client_accessor_func: A callable that returns either a Gentrace or AsyncGentrace client instance
+        resource_name: The name of the resource to wrap (e.g. "pipelines", "experiments")
+    """
+
     def __init__(self, client_accessor_func: Callable[[], Union[Gentrace, AsyncGentrace]], resource_name: str):
         """Initializes the resource wrapper."""
         self._client_accessor_func = client_accessor_func
         self._resource_name = resource_name
 
     def __getattr__(self, name: str) -> Any:
-        """Gets an attribute from the underlying resource."""
+        """Gets an attribute from the underlying resource.
+
+        Args:
+            name: The name of the attribute to access on the resource
+
+        Returns:
+            The requested attribute from the underlying resource
+        """
         client = self._client_accessor_func()
         resource_obj = getattr(client, self._resource_name)
         return getattr(resource_obj, name)
@@ -74,10 +92,14 @@ experiments_async = cast(AsyncExperimentsResource, _ResourceWrapper(_get_async_c
 datasets_async = cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_instance, "datasets"))
 test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
 
+from .lib.eval import eval
 from .lib.init import init
 from .lib.traced import traced
 from .lib.experiment import experiment
 from .lib.interaction import interaction
+from .lib.eval_dataset import TestInput, eval_dataset
+
+### End custom Gentrace imports
 
 __all__ = [
     "types",
@@ -118,12 +140,15 @@ __all__ = [
     "DEFAULT_CONNECTION_LIMITS",
     "DefaultHttpxClient",
     "DefaultAsyncHttpxClient",
-
     # Start custom Gentrace exports
     "init",
     "traced",
     "interaction",
     "experiment",
+    "eval",
+    "eval_dataset",
+    "TestInput",
+    # End custom Gentrace exports
 ]
 
 _setup_logging()

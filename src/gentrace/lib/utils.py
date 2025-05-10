@@ -122,4 +122,18 @@ def gentrace_format_otel_attributes(attributes: Dict[str, Any]) -> Dict[str, ote
     return {key: gentrace_format_otel_value(value) for key, value in attributes.items()}
 
 
-__all__ = ["gentrace_format_otel_attributes", "gentrace_format_otel_value", "_gentrace_json_dumps"]
+# Placeholder for Pydantic version check
+def is_pydantic_v1() -> bool:
+    """Checks if the installed Pydantic version is V1."""
+    # Actual implementation would involve checking pydantic.__version__
+    # For now, returning a default, e.g., False if V2 is assumed more common.
+    # Replace with real logic: from pydantic import VERSION; return VERSION.startswith("1.")
+    try:
+        from pydantic import VERSION
+
+        return VERSION.startswith("1.")
+    except ImportError:
+        return False  # Or raise an error if pydantic is a core dependency
+
+
+__all__ = ["gentrace_format_otel_attributes", "gentrace_format_otel_value", "_gentrace_json_dumps", "is_pydantic_v1"]
