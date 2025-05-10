@@ -1,12 +1,13 @@
-import unittest
-from unittest.mock import MagicMock, patch
-import asyncio
 import uuid
+import asyncio
+import unittest
 from typing import Any, Dict, Tuple, Callable
+from unittest.mock import MagicMock, patch
 
-from gentrace.lib.interaction import interaction
-from opentelemetry.trace.status import StatusCode, Status
+from opentelemetry.trace.status import Status, StatusCode
+
 from gentrace.lib.utils import _gentrace_json_dumps
+from gentrace.lib.interaction import interaction
 
 
 class TestInteraction(unittest.TestCase):

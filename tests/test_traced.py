@@ -1,10 +1,11 @@
-import unittest
-from unittest.mock import MagicMock, patch
 import uuid
+import unittest
 from typing import Tuple
+from unittest.mock import MagicMock, patch
+
+from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.traced import traced
-from opentelemetry.trace.status import StatusCode, Status
 
 
 class TestTraced(unittest.TestCase):

@@ -1,5 +1,5 @@
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from gentrace.lib.init import init as function_under_test
 
