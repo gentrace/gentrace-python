@@ -2,7 +2,7 @@ import inspect
 import logging
 import functools
 import contextvars
-from typing import Any, Dict, List, TypeVar, Callable, Optional, Coroutine
+from typing import Any, Dict, TypeVar, Callable, Optional, Coroutine
 from typing_extensions import ParamSpec, TypedDict
 
 from .experiment_control import start_experiment_api, finish_experiment_api
@@ -24,10 +24,6 @@ class ExperimentContext(TypedDict):
 experiment_context_var: contextvars.ContextVar[Optional[ExperimentContext]] = \
     contextvars.ContextVar("gentrace_experiment_context", default=None)
 
-# Context variable to hold the list of eval functions registered for the current experiment
-_experiment_eval_functions_var: contextvars.ContextVar[Optional[List[Callable[[], Any]]]] = \
-    contextvars.ContextVar("gentrace_experiment_eval_functions", default=None)
-
 def get_current_experiment_context() -> Optional[ExperimentContext]:
     """
     Retrieves the ExperimentContext (experiment_id, pipeline_id) from the 
@@ -37,22 +33,6 @@ def get_current_experiment_context() -> Optional[ExperimentContext]:
         The current ExperimentContext or None if not within an experiment() context.
     """
     return experiment_context_var.get()
-
-def register_eval_function(func: Callable[[], Any]) -> None:
-    """
-    Registers an evaluation function to be run by the current experiment.
-    This function is intended to be called by an @eval decorator.
-    """
-    registry = _experiment_eval_functions_var.get()
-    if registry is None:
-        # This might happen if @eval is used outside an @experiment.
-        # Depending on desired strictness, this could raise an error or log a warning.
-        logger.warning(
-            f"The @eval decorator was used on function `{getattr(func, '__name__', 'unknown')}` "
-            f"outside of an active @experiment context. This @eval function will not be automatically executed. Ensure @eval is called within an @experiment decorated function."
-        )
-        return
-    registry.append(func)
 
 class ExperimentOptions(TypedDict, total=False):
     """ Optional parameters for running an experiment. """
@@ -77,14 +57,14 @@ def experiment(
         asynchronous context variable. This context is accessible via
         `get_current_experiment_context()` within the decorated function.
     3.  The primary use of this decorated function is to serve as a context for calling
-        evaluation utilities like `eval()` and `eval_dataset()`. These utilities,
-        when called within the decorated function, will:
+        evaluation functions (e.g., those decorated with `@eval`) or other tracing utilities
+        like `eval_dataset()`. These utilities, when called within the decorated function, will:
         a.  Access the `experiment_id` and `pipeline_id` from the context.
         b.  Typically create their own OpenTelemetry spans for individual test cases or
             evaluations, tagging these spans with the `experiment_id`.
             (Note: This `@experiment` decorator itself does NOT create an overarching
             OpenTelemetry span for the entire experiment function. OTEL span creation
-            is deferred to the evaluation utilities like `eval` or functions
+            is deferred to the evaluation utilities or functions
             decorated with `@traced` called within this experiment context).
     4.  If the decorated function is synchronous, it will be run in a way that integrates
         with the surrounding asynchronous operations, and the decorated function will
@@ -107,23 +87,42 @@ def experiment(
     Usage Example:
         ```python
         from gentrace import experiment, eval, compose_email
+        import asyncio
 
-        @experiment(pipeline_id="<uuid>")
-        async def email_evals():
-
-            @eval
-            def should_include_hello(message: str) -> str:
+        @experiment(pipeline_id="<your-pipeline-id>")
+        async def email_evals_experiment():
+            @eval(name="check_subject_and_body_1")
+            async def check_email_content_1(subject_to_check: str, body_to_check: str):
                 email = compose_email(
-                    subject="Hello",
-                    body="Hello, how are you?",
+                    subject=subject_to_check,
+                    body=body_to_check,
                     to="test@example.com",
                     from_="test@example.com",
                 )
-
-                assert "Hello" in email
+                assert subject_to_check in email
+                assert body_to_check in email
                 return email
             
-        asyncio.run(email_evals())
+            # Invoke the @eval decorated function immediately after definition
+            await check_email_content_1(subject_to_check="Hello Test", body_to_check="This is a test email.")
+            
+            @eval(name="check_subject_and_body_2")
+            async def check_email_content_2(subject_to_check: str, body_to_check: str):
+                email = compose_email(
+                    subject=subject_to_check,
+                    body=body_to_check,
+                    to="test@example.com",
+                    from_="test@example.com",
+                )
+                assert subject_to_check in email
+                assert body_to_check in email
+                return email
+
+            # Invoke again, perhaps with different params or as a separate test case
+            await check_email_content_2(subject_to_check="Another Subject", body_to_check="Another body.")
+
+        # To run the experiment:
+        # asyncio.run(email_evals_experiment())
         ```
     """
 
@@ -153,37 +152,14 @@ def experiment(
             token = experiment_context_var.set(context_data)
             
             result: Optional[Any] = None
-            current_eval_functions: List[Callable[[], Any]] = []
-            eval_registry_token: Optional[contextvars.Token[Optional[List[Callable[[], Any]]]]] = None
 
             try:
-                # Set up the registry for @eval functions defined within this experiment
-                eval_registry_token = _experiment_eval_functions_var.set(current_eval_functions)
-
                 if inspect.iscoroutinefunction(func):
                     result = await func(*args, **kwargs)
                 else:
                     result = func(*args, **kwargs)
-                
-                # After the main function has run, execute registered @eval functions
-                if current_eval_functions:
-                    logger.debug(f"Experiment `{exp_name_option or pipeline_id}`: Executing {len(current_eval_functions)} registered @eval function(s).")
-                    for i, eval_func in enumerate(current_eval_functions):
-                        eval_name = getattr(eval_func, '__name__', f'eval_function_{i+1}')
-                        try:
-                            logger.debug(f"Executing @eval function: `{eval_name}`.")
-                            if inspect.iscoroutinefunction(eval_func):
-                                await eval_func()
-                            else:
-                                eval_func()
-                            logger.debug(f"@eval function `{eval_name}` completed successfully.")
-                        except AssertionError as e:
-                            logger.error(f"@eval function `{eval_name}` failed with an AssertionError. Details: {e}")
-                        except Exception as e:
-                            logger.error(f"@eval function `{eval_name}` encountered an unexpected error. Details: {e}")
+
             finally:
-                if eval_registry_token:
-                    _experiment_eval_functions_var.reset(eval_registry_token)
                 experiment_context_var.reset(token)
                 if experiment_id_val:
                     await finish_experiment_api(id=experiment_id_val)
@@ -192,4 +168,4 @@ def experiment(
         return wrapper
     return inner_decorator
 
-__all__ = ["experiment", "get_current_experiment_context", "ExperimentContext", "ExperimentOptions", "register_eval_function"] 
+__all__ = ["experiment", "get_current_experiment_context", "ExperimentContext", "ExperimentOptions"] 

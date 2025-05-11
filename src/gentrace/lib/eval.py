@@ -1,5 +1,6 @@
 import inspect
 import logging
+import warnings
 import functools
 from typing import Any, Dict, TypeVar, Callable, Optional, Coroutine, overload
 from typing_extensions import ParamSpec
@@ -7,9 +8,9 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps  # For safe serialization of output
+from .utils import _gentrace_json_dumps  # For safe serialization of output  # For safe serialization of output
 from .constants import ANONYMOUS_SPAN_NAME
-from .experiment import ExperimentContext, register_eval_function, get_current_experiment_context
+from .experiment import ExperimentContext, get_current_experiment_context
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -48,8 +49,8 @@ def eval(
     """
     Decorator factory to mark a function as a single evaluation test case within an experiment.
 
-    This decorator must be used on a function that is called within the scope of an
-    `@experiment()` decorated function.
+    This decorator must be used on a function that is then called directly from within the
+    scope of an `@experiment()` decorated function.
 
     When the decorated function is called:
     1. It retrieves the current `experiment_id` and `pipeline_id` from the context
@@ -66,11 +67,12 @@ def eval(
 
     Args:
         name: A descriptive name for this evaluation test case. This will be used as part
-              of the OTEL span name and as an attribute.
+              of the OTEL span name and as an attribute (gentrace.test_case_name).
         metadata: Optional dictionary of arbitrary metadata to attach to this evaluation's span.
 
     Returns:
-        A decorator that wraps the user's function.
+        A decorator that wraps the user's function. The wrapped function, when called,
+        will execute the evaluation logic.
     """
     def inner_decorator(func: Callable[P, Any]) -> Callable[P, Coroutine[Any, Any, Any]]:
         @functools.wraps(func)
@@ -83,7 +85,7 @@ def eval(
                     f"@eval(name='{name}') on function '{func_name}' must be called within an active @experiment context."
                 )
 
-            span_name = f"Eval: {name}"
+            span_name = name
             
             with _tracer.start_as_current_span(span_name) as span:
                 span.set_attribute("gentrace.experiment_id", experiment_context["experiment_id"])
@@ -92,8 +94,10 @@ def eval(
                 if metadata:
                     for key, value in metadata.items():
                         if key in RESERVED_METADATA_KEYS:
-                            logger.warning(
-                                f"Metadata key `{key}` is reserved and will be ignored for @eval test case `{name}`. Avoid using reserved keys for metadata."
+                            warnings.warn(
+                                f"Metadata key `{key}` is reserved and will be ignored for @eval test case `{name}`. Avoid using reserved keys for metadata.",
+                                UserWarning,
+                                stacklevel=2
                             )
                             continue
                         try:
@@ -126,10 +130,6 @@ def eval(
                     span.set_status(Status(StatusCode.ERROR, description=str(e)))
                     span.set_attribute("error.type", e.__class__.__name__)
                     raise
-        
-        # Register the OpenTelemetry-instrumented wrapper for auto-execution
-        # by the @experiment decorator.
-        register_eval_function(wrapper)
         
         return wrapper
     return inner_decorator
