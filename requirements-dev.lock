@@ -20,8 +20,15 @@ argcomplete==3.1.2
 certifi==2023.7.22
     # via httpcore
     # via httpx
+    # via requests
+charset-normalizer==3.4.2
+    # via requests
 colorlog==6.7.0
     # via nox
+deprecated==1.2.18
+    # via opentelemetry-api
+    # via opentelemetry-exporter-otlp-proto-http
+    # via opentelemetry-semantic-conventions
 dirty-equals==0.6.0
 distlib==0.3.7
     # via virtualenv
@@ -32,6 +39,8 @@ exceptiongroup==1.2.2
     # via pytest
 filelock==3.12.4
     # via virtualenv
+googleapis-common-protos==1.70.0
+    # via opentelemetry-exporter-otlp-proto-http
 h11==0.14.0
     # via httpcore
 httpcore==1.0.2
@@ -42,7 +51,9 @@ httpx==0.28.1
 idna==3.4
     # via anyio
     # via httpx
+    # via requests
 importlib-metadata==7.0.0
+    # via opentelemetry-api
 iniconfig==2.0.0
     # via pytest
 markdown-it-py==3.0.0
@@ -56,13 +67,37 @@ nest-asyncio==1.6.0
 nodeenv==1.8.0
     # via pyright
 nox==2023.4.22
+opentelemetry-api==1.32.1
+    # via opentelemetry-exporter-otlp-proto-http
+    # via opentelemetry-instrumentation
+    # via opentelemetry-sdk
+    # via opentelemetry-semantic-conventions
+opentelemetry-exporter-otlp-proto-common==1.32.1
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-exporter-otlp-proto-http==1.32.1
+    # via gentrace
+opentelemetry-instrumentation==0.53b1
+    # via gentrace
+opentelemetry-proto==1.32.1
+    # via opentelemetry-exporter-otlp-proto-common
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-sdk==1.32.1
+    # via gentrace
+    # via opentelemetry-exporter-otlp-proto-http
+opentelemetry-semantic-conventions==0.53b1
+    # via opentelemetry-instrumentation
+    # via opentelemetry-sdk
 packaging==23.2
     # via nox
+    # via opentelemetry-instrumentation
     # via pytest
 platformdirs==3.11.0
     # via virtualenv
 pluggy==1.5.0
     # via pytest
+protobuf==5.29.4
+    # via googleapis-common-protos
+    # via opentelemetry-proto
 pydantic==2.10.3
     # via gentrace
 pydantic-core==2.27.1
@@ -77,6 +112,8 @@ python-dateutil==2.8.2
     # via time-machine
 pytz==2023.3.post1
     # via dirty-equals
+requests==2.32.3
+    # via opentelemetry-exporter-otlp-proto-http
 respx==0.22.0
 rich==13.7.1
 ruff==0.9.4
@@ -95,10 +132,16 @@ typing-extensions==4.12.2
     # via anyio
     # via gentrace
     # via mypy
+    # via opentelemetry-sdk
     # via pydantic
     # via pydantic-core
     # via pyright
+urllib3==2.4.0
+    # via requests
 virtualenv==20.24.5
     # via nox
+wrapt==1.17.2
+    # via deprecated
+    # via opentelemetry-instrumentation
 zipp==3.17.0
     # via importlib-metadata
