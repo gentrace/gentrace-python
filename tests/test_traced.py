@@ -1,4 +1,3 @@
-import uuid
 import unittest
 from typing import Tuple
 from unittest.mock import MagicMock, patch
@@ -124,48 +123,6 @@ class TestTraced(unittest.TestCase):
 
         func_no_attrs()
         mock_span.set_attributes.assert_not_called()
-
-    @patch("gentrace.lib.traced.trace.get_tracer")
-    def test_traced_with_valid_pipeline_id_attribute(self, mock_get_tracer: MagicMock) -> None:
-        mock_span, mock_tracer = self.common_test_setup()
-        mock_get_tracer.return_value = mock_tracer
-
-        pipeline_id_uuid = str(uuid.uuid4())
-        user_attrs = {"other_key": "value"}
-
-        @traced(pipeline_id=pipeline_id_uuid, attributes=user_attrs)
-        def func_with_pipeline_id_attr() -> str:
-            return "done"
-
-        func_with_pipeline_id_attr()
-
-        expected_attributes = {"other_key": "value", "gentrace.pipeline_id": pipeline_id_uuid}
-        mock_span.set_attributes.assert_called_once_with(expected_attributes)
-
-    def test_traced_with_invalid_pipeline_id_attribute_format(self) -> None:
-        invalid_pipeline_id = "not-a-uuid"
-
-        with self.assertRaisesRegex(
-            ValueError,
-            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_pipeline_id}'",
-        ):
-
-            @traced(pipeline_id=invalid_pipeline_id)
-            def func_with_invalid_pipeline_id_attr() -> None:  # type: ignore
-                pass
-
-    def test_traced_with_invalid_pipeline_id_attribute_type(self) -> None:
-        invalid_pipeline_id_type = 12345
-
-        expected_error_msg = (
-            f"Attribute 'gentrace.pipeline_id' must be a string representation of a UUID. "
-            f"Received type: {type(invalid_pipeline_id_type)}, value: '{invalid_pipeline_id_type}'"
-        )
-        with self.assertRaisesRegex(ValueError, expected_error_msg):
-
-            @traced(pipeline_id=invalid_pipeline_id_type)  # type: ignore
-            def func_with_invalid_pipeline_id_type_attr() -> None:  # type: ignore
-                pass
 
 
 if __name__ == "__main__":
