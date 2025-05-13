@@ -31,31 +31,34 @@ logger = logging.getLogger("gentrace")
 
 # Type Variables for eval_dataset
 InputPayload = TypeVar("InputPayload", bound=Mapping[str, Any])  # Type of the raw inputs within a TestCase
-TInput = TypeVar("TInput")           # Type of the (potentially parsed) input to interaction fn
-TResult = TypeVar("TResult")         # Return type of the interaction fn
-SchemaPydanticModel = TypeVar("SchemaPydanticModel", bound=BaseModel) # Type for Pydantic schema
+TInput = TypeVar("TInput")  # Type of the (potentially parsed) input to interaction fn
+TResult = TypeVar("TResult")  # Return type of the interaction fn
+SchemaPydanticModel = TypeVar("SchemaPydanticModel", bound=BaseModel)  # Type for Pydantic schema
 
 _tracer = trace.get_tracer("gentrace.sdk")
+
 
 class TestInputProtocol(Protocol, Generic[InputPayload]):
     id: Optional[str]
     name: Optional[str]
     inputs: InputPayload
 
-    def __getitem__(self, key: str) -> Any:
-        ...
+    def __getitem__(self, key: str) -> Any: ...
+
 
 class TestInput(TypedDict, Generic[InputPayload], total=False):
     name: str
     inputs: InputPayload
 
+
 DataProviderType: TypeAlias = Callable[
     [],
     Union[
         Awaitable[Sequence[Union[TestCase, TestInput[InputPayload]]]],
-        Sequence[Union[TestCase, TestInput[InputPayload]]]
-    ]
+        Sequence[Union[TestCase, TestInput[InputPayload]]],
+    ],
 ]
+
 
 async def _run_single_test_case_for_dataset(
     test_case_name: str,
@@ -89,7 +92,7 @@ async def _run_single_test_case_for_dataset(
                 model_schema = input_schema
                 try:
                     if is_pydantic_v1():
-                        validated = model_schema.parse_obj(raw_inputs) # type: ignore
+                        validated = model_schema.parse_obj(raw_inputs)  # type: ignore
                     else:
                         validated = model_schema.model_validate(raw_inputs)
 
@@ -97,7 +100,7 @@ async def _run_single_test_case_for_dataset(
                     if hasattr(validated, "model_dump"):
                         input_dict_for_log = validated.model_dump()
                     elif hasattr(validated, "dict"):
-                        input_dict_for_log = validated.dict() # type: ignore
+                        input_dict_for_log = validated.dict()  # type: ignore
                     else:
                         input_dict_for_log = validated
 
@@ -154,8 +157,8 @@ async def eval_dataset(
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[InputPayload], TResult],
-) -> Sequence[Optional[TResult]]:
-    ...
+) -> Sequence[Optional[TResult]]: ...
+
 
 @overload
 async def eval_dataset(
@@ -163,24 +166,24 @@ async def eval_dataset(
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[InputPayload], Awaitable[TResult]],
-) -> Sequence[Optional[TResult]]:
-    ...
+) -> Sequence[Optional[TResult]]: ...
+
 
 @overload
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     interaction: Callable[[InputPayload], TResult],
-) -> Sequence[Optional[TResult]]:
-    ...
+) -> Sequence[Optional[TResult]]: ...
+
 
 @overload
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     interaction: Callable[[InputPayload], Awaitable[TResult]],
-) -> Sequence[Optional[TResult]]:
-    ...
+) -> Sequence[Optional[TResult]]: ...
+
 
 async def eval_dataset(
     *,
@@ -221,9 +224,7 @@ async def eval_dataset(
     """
     experiment_context = get_current_experiment_context()
     if not experiment_context:
-        raise RuntimeError(
-            "eval_dataset must be called within the context of an @experiment() decorated function."
-        )
+        raise RuntimeError("eval_dataset must be called within the context of an @experiment() decorated function.")
 
     interaction_fn = interaction
     data_provider = data
@@ -238,9 +239,7 @@ async def eval_dataset(
             raw_test_cases = data_result
     except Exception as e:
         # Potentially log this with a Gentrace SDK logger if available
-        raise RuntimeError(
-            f"Failed to retrieve or process dataset from data provider: {e}"
-        ) from e
+        raise RuntimeError(f"Failed to retrieve or process dataset from data provider: {e}") from e
 
     evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
     for i, test_case in enumerate(raw_test_cases):
@@ -256,7 +255,7 @@ async def eval_dataset(
         else:
             protocol_case = test_case
             case_inputs = cast(InputPayload, protocol_case.inputs)
-            case_id = protocol_case.id 
+            case_id = protocol_case.id
             case_name_prop = protocol_case.name
 
         final_case_name: str
@@ -266,7 +265,7 @@ async def eval_dataset(
             final_case_name = f"Test Case (ID: {case_id})"
         else:
             final_case_name = f"Test Case {i + 1}"
-        
+
         task = _run_single_test_case_for_dataset(
             test_case_name=final_case_name,
             test_case_id=case_id,
@@ -280,4 +279,5 @@ async def eval_dataset(
     results = await asyncio.gather(*evaluation_tasks, return_exceptions=False)
     return results
 
-__all__ = ["eval_dataset", "TestInput"] 
+
+__all__ = ["eval_dataset", "TestInput"]

@@ -8,7 +8,7 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps  # For safe serialization of output  # For safe serialization of output
+from .utils import _gentrace_json_dumps  # For safe serialization of output
 from .constants import ANONYMOUS_SPAN_NAME
 from .experiment import ExperimentContext, get_current_experiment_context
 
