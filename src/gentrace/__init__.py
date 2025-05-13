@@ -75,6 +75,8 @@ datasets_async = cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_
 test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
 
 from .lib.init import init
+from .lib.traced import traced
+from .lib.interaction import interaction
 
 __all__ = [
     "types",
@@ -118,6 +120,8 @@ __all__ = [
 
     # Custom library functions
     "init",
+    "traced",
+    "interaction",
 ]
 
 _setup_logging()
