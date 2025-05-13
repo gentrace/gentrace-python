@@ -31,9 +31,10 @@ from gentrace.lib.interaction import interaction
 resource = Resource(attributes={"service.name": "my-otel-interaction-example-app"})
 tracer_provider = TracerProvider(resource=resource)
 
-api_key = os.getenv("GENTRACE_API_KEY")
-openai_api_key = os.getenv("OPENAI_API_KEY")
-gentrace_base_url = os.getenv("GENTRACE_BASE_URL")
+api_key = os.getenv("GENTRACE_API_KEY", "")
+openai_api_key = os.getenv("OPENAI_API_KEY", "")
+gentrace_base_url = os.getenv("GENTRACE_BASE_URL", "")
+pipeline_id = os.getenv("GENTRACE_PIPELINE_ID", "")
 
 if not api_key:
     raise ValueError("GENTRACE_API_KEY environment variable not set.")
@@ -58,8 +59,6 @@ span_processor = SimpleSpanProcessor(span_exporter)
 tracer_provider.add_span_processor(span_processor)
 trace.set_tracer_provider(tracer_provider)
 
-PIPELINE_ID = "26d64c23-e38c-56fd-9b45-9adc87de797b"
-
 
 @traced(name="sync_openai_llm_call", attributes={"llm_vendor": "OpenAI", "llm_model": "gpt-4o"})
 def sync_openai_llm_call(prompt: str) -> ChatCompletion:
@@ -75,7 +74,7 @@ async def async_openai_llm_call(prompt: str) -> ChatCompletion:
     return response
 
 
-@interaction(pipeline_id=PIPELINE_ID, name="my_sync_interaction_example", attributes={"custom_attr": "sync_value"})
+@interaction(pipeline_id=pipeline_id, name="my_sync_interaction_example", attributes={"custom_attr": "sync_value"})
 def my_synchronous_interaction(x: int, y: int) -> int:
     result = x * y
     llm_prompt = f"Summarize the result of a synchronous operation: {x} * {y} = {result}"
@@ -86,7 +85,7 @@ def my_synchronous_interaction(x: int, y: int) -> int:
     return result
 
 
-@interaction(pipeline_id=PIPELINE_ID, name="my_async_interaction_example", attributes={"custom_attr": "async_value"})
+@interaction(pipeline_id=pipeline_id, name="my_async_interaction_example", attributes={"custom_attr": "async_value"})
 async def my_asynchronous_interaction(name: str, delay: float = 0.1) -> str:
     await asyncio.sleep(delay)
     llm_prompt = (

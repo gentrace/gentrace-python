@@ -45,13 +45,22 @@ print("Gentrace initialised!")
 Wrap the function that contains your AI logic so each call is traced.
 
 ```python
+import openai
+
 from gentrace.lib import interaction
 
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 
-@interaction(GENTRACE_PIPELINE_ID)
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+@interaction(pipeline_id=GENTRACE_PIPELINE_ID)
 async def query_ai(query: str) -> str | None:
-    # Your AI logic here (e.g. call OpenAI)
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": query}]
+    )
+    return response.choices[0].message.content
     ...
 ```
 
@@ -69,12 +78,13 @@ GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def simple_evals() -> None:
+
     @eval(name="capital-of-france")
     async def paris_test() -> None:
         result = await query_ai("What is the capital of France?")
         assert result and "Paris" in result
 
-    # Immediately invoke the test
+    # Immediately invoke the eval
     await paris_test()
 
 asyncio.run(simple_evals())
@@ -84,16 +94,14 @@ asyncio.run(simple_evals())
 
 ```python
 import asyncio, os
-from gentrace.lib import experiment, eval_dataset
-from gentrace.types.test_case import TestCase
+from gentrace import experiment, eval_dataset, test_cases_async
 
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 GENTRACE_DATASET_ID = os.environ["GENTRACE_DATASET_ID"]
 
 async def fetch_test_cases() -> list[TestCase]:
-    from gentrace import AsyncGentrace
-    client = AsyncGentrace()
-    cases = await client.test_cases.list(dataset_id=GENTRACE_DATASET_ID)
+    # Each test case has the structure: { input: str  }
+    cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
     return cases.data
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
@@ -113,7 +121,7 @@ OpenTelemetry **must** be running for spans created by `interaction`, `experimen
 Install the required packages:
 
 ```sh
-pip install opentelemetry-sdk opentelemetry-exporter-otlp-proto-http
+pip install opentelemetry-sdk opentelemetry-exporter-otlp-proto-http opentelemetry-instrumentation
 ```
 
 Example setup:
@@ -121,20 +129,22 @@ Example setup:
 ```python
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import BatchSpanProcessor
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry import trace
 import os
 
+GENTRACE_BASE_URL = os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
+GENTRACE_API_KEY = os.environ['GENTRACE_API_KEY']
+
 resource = Resource.create({"service.name": "my-gentrace-app"})
 provider = TracerProvider(resource=resource)
 trace.set_tracer_provider(provider)
-
 exporter = OTLPSpanExporter(
-    endpoint=f"{os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')}/otel/v1/traces",
-    headers={"Authorization": f"Bearer {os.environ['GENTRACE_API_KEY']}"},
+    endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
+    headers={"Authorization": f"Bearer {GENTRACE_API_KEY}"},
 )
-processor = BatchSpanProcessor(exporter)
+processor = SimpleSpanProcessor(exporter)
 provider.add_span_processor(processor)
 
 print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
@@ -143,6 +153,16 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 ## Examples
 
 Check the [`examples/`](examples) directory for runnable scripts that demonstrate the patterns above.
+
+Each example script requires specific environment variables to be set. Check the documentation at the top of each script for details on the required variables.
+
+```sh
+GENTRACE_API_KEY=<api-key> \
+OPENAI_API_KEY=<openai-api-key> \
+GENTRACE_BASE_URL=https://gentrace.ai/api \
+GENTRACE_PIPELINE_ID=<pipeline-id> \
+python examples/interaction.py
+```
 
 ## Requirements
 
