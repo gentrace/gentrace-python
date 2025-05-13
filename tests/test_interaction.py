@@ -41,15 +41,13 @@ class TestInteraction(unittest.TestCase):
         self.assertEqual(result, {"a": 1, "processed": True})
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_process")
-        
+
         mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
 
         mock_span.add_event.assert_any_call(
             "gentrace.fn.args", {"args": _gentrace_json_dumps([input_data]), "kwargs": _gentrace_json_dumps({})}
         )
-        mock_span.add_event.assert_any_call(
-            "gentrace.fn.output", {"output": _gentrace_json_dumps(result)}
-        )
+        mock_span.add_event.assert_any_call("gentrace.fn.output", {"output": _gentrace_json_dumps(result)})
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()
 
@@ -66,20 +64,19 @@ class TestInteraction(unittest.TestCase):
 
         with self.assertRaises(ValueError) as context:
             sync_error_interaction()
-        
+
         self.assertTrue("Sync Interaction Error" in str(context.exception))
         mock_tracer.start_as_current_span.assert_called_once_with("sync_error_interaction")
         mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
         mock_span.record_exception.assert_called_once_with(error)
-        
+
         mock_span.set_status.assert_called_once()
         called_status = mock_span.set_status.call_args[0][0]
         self.assertIsInstance(called_status, Status)
         self.assertEqual(called_status.status_code, StatusCode.ERROR)
         self.assertEqual(called_status.description, str(error))
-        
-        mock_span.set_attribute.assert_called_once_with("error.type", "ValueError")
 
+        mock_span.set_attribute.assert_called_once_with("error.type", "ValueError")
 
     @patch("gentrace.lib.traced.trace.get_tracer")
     def test_interaction_custom_attributes_merged(self, mock_get_tracer: MagicMock) -> None:
@@ -95,7 +92,7 @@ class TestInteraction(unittest.TestCase):
         func_with_custom_attrs()
 
         expected_attributes = {
-            **user_attrs, 
+            **user_attrs,
             "gentrace.pipeline_id": pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
@@ -115,10 +112,10 @@ class TestInteraction(unittest.TestCase):
 
         expected_attributes = {
             "user_key": "value",
-            "gentrace.pipeline_id": pipeline_id, 
+            "gentrace.pipeline_id": pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
-    
+
     @patch("gentrace.lib.traced.trace.get_tracer")
     def test_interaction_anonymous_function_name(self, mock_get_tracer: MagicMock) -> None:
         _mock_span, mock_tracer = self.common_test_setup()
@@ -127,29 +124,30 @@ class TestInteraction(unittest.TestCase):
 
         anon_interaction_func: Callable[[], str] = interaction(pipeline_id=pipeline_id)(lambda: "anon_result")
         anon_interaction_func()
-        
+
         mock_tracer.start_as_current_span.assert_called_once_with("<lambda>")
 
     def test_interaction_sync_invalid_pipeline_id(self) -> None:
         invalid_id = "not-a-valid-uuid"
         with self.assertRaisesRegex(
-            ValueError,
-            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
+            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
         ):
+
             @interaction(pipeline_id=invalid_id)
-            def sync_invalid_id_func() -> None: # type: ignore
+            def sync_invalid_id_func() -> None:  # type: ignore
                 pass
 
     def test_interaction_async_invalid_pipeline_id(self) -> None:
         invalid_id = "another-invalid-uuid"
         with self.assertRaisesRegex(
-            ValueError,
-            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
+            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
         ):
+
             @interaction(pipeline_id=invalid_id)
-            async def async_invalid_id_func() -> None: # type: ignore
+            async def async_invalid_id_func() -> None:  # type: ignore
                 await asyncio.sleep(0)
                 pass
 
+
 if __name__ == "__main__":
-    unittest.main() 
+    unittest.main()

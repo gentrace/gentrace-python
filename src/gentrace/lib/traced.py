@@ -17,17 +17,19 @@ F = TypeVar("F", bound=Callable[..., Any])  # Represents the callable being deco
 
 @overload
 def traced(
-    name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+    *, pipeline_id: Optional[str] = None, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
 
 
 @overload
 def traced(
-    name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+    *, pipeline_id: Optional[str] = None, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ) -> Callable[[Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]]: ...
 
 
-def traced(name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None) -> Any:
+def traced(
+    *, pipeline_id: Optional[str] = None, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+) -> Any:
     """
     Wraps a function with OpenTelemetry tracing to track its execution.
 
@@ -35,6 +37,7 @@ def traced(name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = No
     return value, and any exceptions.
 
     Args:
+        pipeline_id: Optional pipeline ID for the span.
         name: Optional custom name for the span. Defaults to the
               function's __name__ or 'anonymous_function'.
         attributes: Optional dictionary of additional attributes to set on the span.
@@ -46,21 +49,24 @@ def traced(name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = No
     """
 
     final_attributes: Optional[Dict[str, Any]] = None
+
     if attributes is not None:
         final_attributes = gentrace_format_otel_attributes(attributes)
 
-    if final_attributes and "gentrace.pipeline_id" in final_attributes:
-        pid_value = final_attributes["gentrace.pipeline_id"]
-        if not isinstance(pid_value, str):
+    if pipeline_id is not None:
+        if type(pipeline_id) is not str:
             raise ValueError(
-                f"Attribute 'gentrace.pipeline_id' must be a string representation of a UUID. Received type: {type(pid_value)}, value: '{pid_value}'"
+                f"Attribute 'gentrace.pipeline_id' must be a string representation of a UUID. Received type: {type(pipeline_id)}, value: '{pipeline_id}'"
             )
         try:
-            uuid.UUID(pid_value)
+            uuid.UUID(pipeline_id)
         except ValueError as err:
             raise ValueError(
-                f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{pid_value}'"
+                f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{pipeline_id}'"
             ) from err
+        if final_attributes is None:
+            final_attributes = {}
+        final_attributes["gentrace.pipeline_id"] = pipeline_id
 
     def decorator(original_fn: F) -> F:
         resolved_name = name

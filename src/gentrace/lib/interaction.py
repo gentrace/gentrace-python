@@ -1,3 +1,4 @@
+import uuid
 from typing import Any, Dict, TypeVar, Callable, Optional, cast
 
 from .traced import traced
@@ -6,6 +7,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 
 def interaction(
+    *,
     pipeline_id: str,
     name: Optional[str] = None,
     attributes: Optional[Dict[str, Any]] = None,
@@ -44,12 +46,19 @@ def interaction(
             return await fetch(url)
     """
 
+    try:
+        uuid.UUID(pipeline_id)
+    except ValueError as e:
+        raise ValueError(
+            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{pipeline_id}'"
+        ) from e
+
     def decorator(func: F) -> F:
         """
         The actual decorator that takes the function to be wrapped.
         """
         user_provided_attributes = attributes or {}
-        
+
         # Ensure the SDK-provided pipeline_id attribute takes precedence
         final_attributes = {
             **user_provided_attributes,
@@ -66,4 +75,4 @@ def interaction(
     return decorator
 
 
-__all__ = ["interaction"] 
+__all__ = ["interaction"]
