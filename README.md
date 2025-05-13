@@ -90,7 +90,7 @@ async def simple_evals() -> None:
 asyncio.run(simple_evals())
 ```
 
-The `@eval` decorator creates a 'test result' span for `paris_test`. When `query_ai` (an `@interaction`-decorated function) is called within `paris_test`, its own interaction span is also created. This interaction span is nested under the 'test result' span, creating a trace of the evaluation. Both spans are sent to Gentrace.
+The `@eval` decorator creates a 'test' span for `paris_test`. When `query_ai` (an `@interaction`-decorated function) is called within `paris_test`, its own interaction span is also created. This interaction span is nested under the 'test' span, creating a trace of the evaluation. Both spans are sent to Gentrace.
 
 #### Running Dataset Evaluations (`eval_dataset`)
 
@@ -143,7 +143,9 @@ async def dataset_evals() -> None:
 asyncio.run(dataset_evals())
 ```
 
-The `eval_dataset` utility creates a 'test result' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created. This interaction span is nested within its corresponding 'test result' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
+The `eval_dataset` utility creates a 'test' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created. 
+
+This interaction span is nested within its corresponding 'test' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
 
 ## OpenTelemetry Integration
 
@@ -185,7 +187,7 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 
 ## Setup
 
-Create a virtual environment and install dependencies:
+Create a virtual environment with `uv` and install dependencies:
 
 ```sh
 uv venv
