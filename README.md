@@ -22,7 +22,7 @@ The Gentrace SDK exposes several key functions to help you instrument and evalua
 - **`eval`** – Decorator that defines a single evaluation (test case) to run inside an experiment.
 - **`eval_dataset`** – Helper that runs an interaction against every test-case in a dataset.
 
-All of these utilities rely on OpenTelemetry to capture spans – make sure you have an OTel SDK running (see [OpenTelemetry Integration](#opentelemetry-integration)).
+All of these utilities rely on OpenTelemetry to capture and export spans, which represent units of work or operations within your application. These spans are then sent to Gentrace for visualization and analysis. Make sure you have an OTel SDK running (see [OpenTelemetry Integration](#opentelemetry-integration)).
 
 ## Basic Usage
 
@@ -61,8 +61,8 @@ async def query_ai(query: str) -> str | None:
         messages=[{"role": "user", "content": query}]
     )
     return response.choices[0].message.content
-    ...
-```
+
+Each call to a function decorated with `@interaction` (like `query_ai` above) creates a span, capturing its execution details and any associated metadata, inputs, and outputs. This span is then sent to Gentrace.
 
 ### 3. Testing and Evaluation
 
@@ -90,6 +90,8 @@ async def simple_evals() -> None:
 asyncio.run(simple_evals())
 ```
 
+The `@eval` decorator creates a 'test result' span for `paris_test`. When `query_ai` (an `@interaction`-decorated function) is called within `paris_test`, its own interaction span is also created. This interaction span is nested under the 'test result' span, creating a trace of the evaluation. Both spans are sent to Gentrace.
+
 #### Running Dataset Evaluations (`eval_dataset`)
 
 ```python
@@ -109,11 +111,11 @@ async def fetch_test_cases() -> list[TestCase]:
     cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
     return cases.data
 
-# You can also provide custom test cases
+# You can also provide locally defined test cases
 class QueryInputs(TypedDict):
     query: str
 
-def custom_test_cases():
+def custom_test_cases() -> list[TestInput[QueryInputs]]:
     return [
         TestInput[QueryInputs](name="Test Case 1", inputs={"query": "Hello, World!"}),
         TestInput[QueryInputs](name="Test Case 2", inputs={"query": "How does this work?"}),
@@ -125,7 +127,7 @@ class QueryInputsSchema(BaseModel):
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def dataset_evals() -> None:
-    # Using dataset from Gentrace, extra validation with Pydantic
+    # Using dataset from Gentrace, extra validation of test case input structure with Pydantic
     await eval_dataset(
         data=fetch_test_cases,
         interaction=query_ai,
@@ -140,6 +142,8 @@ async def dataset_evals() -> None:
 
 asyncio.run(dataset_evals())
 ```
+
+The `eval_dataset` utility creates a 'test result' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created. This interaction span is nested within its corresponding 'test result' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
 
 ## OpenTelemetry Integration
 
