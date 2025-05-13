@@ -152,15 +152,25 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 
 ## Examples
 
+## Setup
+
+Create a virtual environment and install dependencies:
+
+```sh
+uv venv
+source venv/bin/activate # May differ for your shell (e.g. fish → venv/bin/activate.fish)
+uv pip install .[openai]
+```
+
 Check the [`examples/`](examples) directory for runnable scripts that demonstrate the patterns above.
 
 Each example script requires specific environment variables to be set. Check the documentation at the top of each script for details on the required variables.
 
 ```sh
-GENTRACE_API_KEY=<api-key> \
-OPENAI_API_KEY=<openai-api-key> \
+GENTRACE_API_KEY=api-key \
+OPENAI_API_KEY=openai-api-key \
 GENTRACE_BASE_URL=https://gentrace.ai/api \
-GENTRACE_PIPELINE_ID=<pipeline-id> \
+GENTRACE_PIPELINE_ID=pipeline-id \
 python examples/interaction.py
 ```
 
