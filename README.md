@@ -95,19 +95,46 @@ asyncio.run(simple_evals())
 ```python
 import asyncio, os
 from gentrace import experiment, eval_dataset, test_cases_async
+from gentrace.types import TestCase
+from gentrace.lib.eval_dataset import TestInput
+from typing_extensions import TypedDict
+from pydantic import BaseModel
 
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 GENTRACE_DATASET_ID = os.environ["GENTRACE_DATASET_ID"]
 
+# You can fetch test cases from Gentrace
 async def fetch_test_cases() -> list[TestCase]:
     # Each test case has the structure: { input: str  }
     cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
     return cases.data
 
+# You can also provide custom test cases
+class QueryInputs(TypedDict):
+    query: str
+
+def custom_test_cases():
+    return [
+        TestInput[QueryInputs](name="Test Case 1", inputs={"query": "Hello, World!"}),
+        TestInput[QueryInputs](name="Test Case 2", inputs={"query": "How does this work?"}),
+    ]
+
+# Optionally, validate the structure of your inputs with Pydantic
+class QueryInputsSchema(BaseModel):
+    query: str
+
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def dataset_evals() -> None:
+    # Using dataset from Gentrace, extra validation with Pydantic
     await eval_dataset(
         data=fetch_test_cases,
+        interaction=query_ai,
+        schema=QueryInputsSchema,
+    )
+    
+    # Using custom test cases
+    await eval_dataset(
+        data=custom_test_cases,
         interaction=query_ai,
     )
 
