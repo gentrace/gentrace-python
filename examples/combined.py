@@ -19,7 +19,7 @@ To run this example, ensure the following environment variables are set:
 import os
 import atexit
 import asyncio
-from typing import Any, Dict, Sequence
+from typing import Any, Dict
 from typing_extensions import TypedDict
 
 # OpenTelemetry API and SDK components
@@ -87,18 +87,6 @@ def dataset_interaction(inputs: InteractionInput) -> InteractionOutput:
     return InteractionOutput(result=result_text)
 
 
-async def fetch_dataset_cases() -> Sequence[TestInput[InteractionInput]]:
-    print(f"Simulating fetch for dataset {dataset_id}")
-    return [
-        TestInput[InteractionInput](
-            name="Sample Case 1", inputs={"prompt": "Write a story about a dragon.", "temperature": 0.7}
-        ),
-        TestInput[InteractionInput](
-            name="Sample Case 2: Short Prompt", inputs={"prompt": "Summarize AI.", "temperature": 0.5}
-        ),
-    ]
-
-
 @interaction(pipeline_id=pipeline_id, name="Simulated LLM Call")
 async def simulated_llm_call(prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
     print(f"Running @interaction function with prompt: '{prompt[:30]}...'")
@@ -133,7 +121,14 @@ async def run_combined_evaluation() -> None:
 
     print("\nRunning eval_dataset...")
     dataset_results = await eval_dataset(
-        data=fetch_dataset_cases,
+        data=lambda: [
+            TestInput[InteractionInput](
+                name="Sample Case 1", inputs={"prompt": "Write a story about a dragon.", "temperature": 0.7}
+            ),
+            TestInput[InteractionInput](
+                name="Sample Case 2: Short Prompt", inputs={"prompt": "Summarize AI.", "temperature": 0.5}
+            ),
+        ],
         interaction=dataset_interaction,
     )
     print(f"eval_dataset completed. Results: {dataset_results}")
