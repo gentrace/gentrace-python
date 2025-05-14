@@ -4,10 +4,16 @@ import unittest
 from typing import Any, Dict, Tuple, Callable
 from unittest.mock import MagicMock, patch
 
+from opentelemetry import baggage as otel_baggage, context as otel_context
 from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.utils import _gentrace_json_dumps
-from gentrace.lib.constants import GENTRACE_PIPELINE_ID_ATTR, GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
+from gentrace.lib.constants import (
+    GENTRACE_SAMPLE_KEY_ATTR,
+    GENTRACE_PIPELINE_ID_ATTR,
+    GENTRACE_FN_ARGS_EVENT_NAME,
+    GENTRACE_FN_OUTPUT_EVENT_NAME,
+)
 from gentrace.lib.interaction import interaction
 
 
@@ -136,6 +142,29 @@ class TestInteraction(unittest.TestCase):
             @interaction(pipeline_id=invalid_id)
             def sync_invalid_id_func() -> None:  # type: ignore
                 pass
+
+    @patch("gentrace.lib.traced.trace.get_tracer")
+    def test_interaction_baggage_propagation(self, mock_get_tracer: MagicMock) -> None:
+        _mock_span, mock_tracer = self.common_test_setup()
+        mock_get_tracer.return_value = mock_tracer
+        pipeline_id = str(uuid.uuid4())
+
+        baggage_value_inside_func = None
+
+        @interaction(pipeline_id=pipeline_id)
+        def sync_check_baggage() -> None:
+            nonlocal baggage_value_inside_func
+            current_context = otel_context.get_current()
+            baggage_value_inside_func = otel_baggage.get_baggage(GENTRACE_SAMPLE_KEY_ATTR, context=current_context)
+
+        sync_check_baggage()
+
+        self.assertEqual(
+            baggage_value_inside_func,
+            "true",
+            "GENTRACE_SAMPLE_KEY_ATTR should be 'true' in baggage inside the interaction-decorated function.",
+        )
+        mock_tracer.start_as_current_span.assert_called_once_with("sync_check_baggage")
 
     def test_interaction_async_invalid_pipeline_id(self) -> None:
         invalid_id = "another-invalid-uuid"
