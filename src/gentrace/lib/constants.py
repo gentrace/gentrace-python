@@ -1,5 +1,7 @@
 ANONYMOUS_SPAN_NAME = "anonymous_function"
 
+GENTRACE_PIPELINE_ID_ATTR = "gentrace.pipeline_id"
+
 GENTRACE_FN_ARGS_EVENT_NAME = "gentrace.fn.args"
 GENTRACE_FN_OUTPUT_EVENT_NAME = "gentrace.fn.output"
 
@@ -14,4 +16,5 @@ __all__ = [
     "GENTRACE_EXPERIMENT_ID_ATTR",
     "GENTRACE_TEST_CASE_NAME_ATTR",
     "GENTRACE_TEST_CASE_ID_ATTR",
+    "GENTRACE_PIPELINE_ID_ATTR",
 ]

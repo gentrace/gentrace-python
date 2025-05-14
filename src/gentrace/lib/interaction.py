@@ -2,6 +2,7 @@ import uuid
 from typing import Any, Dict, TypeVar, Callable, Optional, cast
 
 from .traced import traced
+from .constants import GENTRACE_PIPELINE_ID_ATTR
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -58,11 +59,10 @@ def interaction(
         The actual decorator that takes the function to be wrapped.
         """
         user_provided_attributes = attributes or {}
-
         # Ensure the SDK-provided pipeline_id attribute takes precedence
         final_attributes = {
             **user_provided_attributes,
-            "gentrace.pipeline_id": pipeline_id,
+            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
         }
 
         # The `traced` decorator factory returns a decorator which, when applied to `func` (type F),

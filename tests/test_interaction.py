@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.utils import _gentrace_json_dumps
-from gentrace.lib.constants import GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
+from gentrace.lib.constants import GENTRACE_PIPELINE_ID_ATTR, GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
 from gentrace.lib.interaction import interaction
 
 
@@ -43,7 +43,7 @@ class TestInteraction(unittest.TestCase):
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_process")
 
-        mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
+        mock_span.set_attributes.assert_called_once_with({GENTRACE_PIPELINE_ID_ATTR: pipeline_id})
 
         expected_serialized_args = _gentrace_json_dumps([{"data": input_data}])
         mock_span.add_event.assert_any_call(GENTRACE_FN_ARGS_EVENT_NAME, {"args": expected_serialized_args})
@@ -67,7 +67,7 @@ class TestInteraction(unittest.TestCase):
 
         self.assertTrue("Sync Interaction Error" in str(context.exception))
         mock_tracer.start_as_current_span.assert_called_once_with("sync_error_interaction")
-        mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
+        mock_span.set_attributes.assert_called_once_with({GENTRACE_PIPELINE_ID_ATTR: pipeline_id})
         mock_span.record_exception.assert_called_once_with(error)
 
         mock_span.set_status.assert_called_once()
@@ -93,7 +93,7 @@ class TestInteraction(unittest.TestCase):
 
         expected_attributes = {
             **user_attrs,
-            "gentrace.pipeline_id": pipeline_id,
+            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
 
@@ -102,7 +102,7 @@ class TestInteraction(unittest.TestCase):
         mock_span, mock_tracer = self.common_test_setup()
         mock_get_tracer.return_value = mock_tracer
         pipeline_id = str(uuid.uuid4())
-        user_attrs_with_conflict = {"gentrace.pipeline_id": "user-pipeline-id", "user_key": "value"}
+        user_attrs_with_conflict = {GENTRACE_PIPELINE_ID_ATTR: "user-pipeline-id", "user_key": "value"}
 
         @interaction(pipeline_id=pipeline_id, attributes=user_attrs_with_conflict)
         def func_with_conflict() -> str:
@@ -112,7 +112,7 @@ class TestInteraction(unittest.TestCase):
 
         expected_attributes = {
             "user_key": "value",
-            "gentrace.pipeline_id": pipeline_id,
+            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
 
