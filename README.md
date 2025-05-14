@@ -217,7 +217,7 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 ## Setup
 Create a virtual environment with [`uv`](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) and install dependencies:
 
-```sh
+```bash
 uv venv
 source venv/bin/activate # May differ for your shell (e.g. fish → venv/bin/activate.fish)
 uv pip install .[openai]
@@ -227,7 +227,7 @@ Check the [`examples/`](examples) directory for runnable scripts that demonstrat
 
 Each example script requires specific environment variables to be set. Check the documentation at the top of each script for details on the required variables.
 
-```sh
+```bash
 GENTRACE_API_KEY=api-key \
 OPENAI_API_KEY=openai-api-key \
 GENTRACE_BASE_URL=https://gentrace.ai/api \
