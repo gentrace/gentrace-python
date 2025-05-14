@@ -215,8 +215,7 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 ## Examples
 
 ## Setup
-
-Create a virtual environment with `uv` and install dependencies:
+Create a virtual environment with [`uv`](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) and install dependencies:
 
 ```sh
 uv venv
