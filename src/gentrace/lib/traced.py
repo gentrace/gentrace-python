@@ -7,7 +7,7 @@ from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
 from .utils import _gentrace_json_dumps, gentrace_format_otel_attributes
-from .constants import ANONYMOUS_SPAN_NAME
+from .constants import ANONYMOUS_SPAN_NAME, GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
 
 P = ParamSpec("P")
 R = TypeVar("R")  # Represents the return type of a sync function, or the awaitable result of an async function
@@ -72,7 +72,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         serialized_kwargs = _gentrace_json_dumps(kwargs)
 
                         span.add_event(
-                            "gentrace.fn.args",
+                            GENTRACE_FN_ARGS_EVENT_NAME,
                             {
                                 "args": serialized_args,
                                 "kwargs": serialized_kwargs,
@@ -84,7 +84,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
                         serialized_result = _gentrace_json_dumps(result)
 
-                        span.add_event("gentrace.fn.output", {"output": serialized_result})
+                        span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
                         return result
                     except Exception as e:
                         span.record_exception(e)
@@ -110,7 +110,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         serialized_kwargs = _gentrace_json_dumps(kwargs)
 
                         span.add_event(
-                            "gentrace.fn.args",
+                            GENTRACE_FN_ARGS_EVENT_NAME,
                             {
                                 "args": serialized_args,
                                 "kwargs": serialized_kwargs,
@@ -122,7 +122,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
                         serialized_result = _gentrace_json_dumps(result)
 
-                        span.add_event("gentrace.fn.output", {"output": serialized_result})
+                        span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
                         return result
                     except Exception as e:
                         span.record_exception(e)

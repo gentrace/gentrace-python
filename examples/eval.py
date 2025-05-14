@@ -116,7 +116,7 @@ async def run_evals_experiment() -> None:
         logger.warning(f"Caught expected error in '{check_email_potentially_failing.__name__}': {e}")
 
     @eval(name="Simple Log Test")
-    async def simple_log_test() -> Dict[str, str]:
+    def simple_log_test() -> Dict[str, str]:
         log_output = "This is a simple log test within an experiment."
         logger.info(f"    [{simple_log_test.__name__}] {log_output}")
         return {"log_message": log_output}
