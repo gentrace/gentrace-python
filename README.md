@@ -193,12 +193,18 @@ import os
 GENTRACE_BASE_URL = os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
 GENTRACE_API_KEY = os.environ['GENTRACE_API_KEY']
 
-resource = Resource.create({"service.name": "my-gentrace-app"})
+resource = Resource.create({
+    "service.name": "my-gentrace-app"
+})
+
 provider = TracerProvider(resource=resource)
 trace.set_tracer_provider(provider)
+
 exporter = OTLPSpanExporter(
     endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
-    headers={"Authorization": f"Bearer {GENTRACE_API_KEY}"},
+    headers={
+        "Authorization": f"Bearer {GENTRACE_API_KEY}"
+    },
 )
 processor = SimpleSpanProcessor(exporter)
 provider.add_span_processor(processor)
