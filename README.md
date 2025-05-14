@@ -118,12 +118,18 @@ The `@eval` decorator creates a 'test' span for `paris_test`. When `query_ai` (a
 
 ```python
 import asyncio, os
-from gentrace import TestCase, TestInput, experiment, eval_dataset, test_cases_async
+from gentrace import TestCase, TestInput, init, experiment, eval_dataset, test_cases_async
 from typing_extensions import TypedDict
 from pydantic import BaseModel
 
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 GENTRACE_DATASET_ID = os.environ["GENTRACE_DATASET_ID"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
+)
 
 # You can fetch test cases from Gentrace
 async def fetch_test_cases() -> list[TestCase]:
