@@ -1,6 +1,6 @@
 # Gentrace Python SDK
 
-[![PyPI version](https://img.shields.io/pypi/v/gentrace.svg)](https://pypi.org/project/gentrace/)
+[![PyPI version](https://img.shields.io/pypi/v/gentrace.svg)](https://pypi.org/project/gentrace-py/)
 
 This library provides tools to instrument and evaluate your AI applications using Gentrace.
 
@@ -70,6 +70,7 @@ async def query_ai(query: str) -> str | None:
         messages=[{"role": "user", "content": query}]
     )
     return response.choices[0].message.content
+```
 
 Each call to a function decorated with `@interaction` (like `query_ai` above) creates a span, capturing its execution details and any associated metadata, inputs, and outputs. This span is then sent to Gentrace.
 
