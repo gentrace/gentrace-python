@@ -68,15 +68,16 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         span.set_attributes(final_attributes)
 
                     try:
-                        serialized_args = _gentrace_json_dumps(args)
-                        serialized_kwargs = _gentrace_json_dumps(kwargs)
+                        sig = inspect.signature(original_fn)
+                        bound_arguments = sig.bind(*args, **kwargs).arguments
+
+                        # Transform the arguments dictionary into a list of single-key dictionaries
+                        transformed_arguments = [{k: v} for k, v in bound_arguments.items()]
+                        serialized_inputs = _gentrace_json_dumps(transformed_arguments)
 
                         span.add_event(
                             GENTRACE_FN_ARGS_EVENT_NAME,
-                            {
-                                "args": serialized_args,
-                                "kwargs": serialized_kwargs,
-                            },
+                            {"args": serialized_inputs},
                         )
                         # original_fn is F, which in this branch is Callable[P, Coroutine[Any, Any, R]]
                         # The result of awaiting it is R.
@@ -106,15 +107,16 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         span.set_attributes(final_attributes)
 
                     try:
-                        serialized_args = _gentrace_json_dumps(args)
-                        serialized_kwargs = _gentrace_json_dumps(kwargs)
+                        sig = inspect.signature(original_fn)
+                        bound_arguments = sig.bind(*args, **kwargs).arguments
+
+                        # Transform the arguments dictionary into a list of single-key dictionaries
+                        transformed_arguments = [{k: v} for k, v in bound_arguments.items()]
+                        serialized_inputs = _gentrace_json_dumps(transformed_arguments)
 
                         span.add_event(
                             GENTRACE_FN_ARGS_EVENT_NAME,
-                            {
-                                "args": serialized_args,
-                                "kwargs": serialized_kwargs,
-                            },
+                            {"args": serialized_inputs},
                         )
                         # original_fn is F, which in this branch is Callable[P, R]
                         # The result of calling it is R.
