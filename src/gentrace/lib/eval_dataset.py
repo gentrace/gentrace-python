@@ -3,7 +3,6 @@ import inspect
 import logging
 from typing import (
     Any,
-    Dict,
     List,
     Type,
     Union,
@@ -80,7 +79,6 @@ async def _run_single_test_case_for_dataset(
     This is similar to the logic in the @eval decorator but adapted for dataset items.
     """
     span_name = test_case_name
-    span_event_attributes: Dict[str, str] = {}
     result_value: Any = None  # type: ignore
 
     with _tracer.start_as_current_span(span_name) as span:
@@ -110,8 +108,6 @@ async def _run_single_test_case_for_dataset(
                         input_dict_for_log = validated.dict()  # type: ignore
                     else:
                         input_dict_for_log = validated
-
-                    span_event_attributes["inputs_validated"] = _gentrace_json_dumps(input_dict_for_log)
                 except ValidationError as ve:
                     logger.error(
                         f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
@@ -125,7 +121,6 @@ async def _run_single_test_case_for_dataset(
             elif raw_inputs is not None:
                 # No schema → just log the raw dict
                 input_dict_for_log = raw_inputs
-                span_event_attributes["inputs_raw"] = _gentrace_json_dumps(input_dict_for_log)
             else:
                 # both schema is None and raw_inputs is None
                 input_dict_for_log = None
