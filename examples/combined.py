@@ -29,11 +29,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace.lib.eval import eval
-from gentrace.lib.init import init
-from gentrace.lib.experiment import experiment
-from gentrace.lib.interaction import interaction
-from gentrace.lib.eval_dataset import TestInput, eval_dataset
+from gentrace import TestInput, eval, init, experiment, interaction, eval_dataset
 
 gentrace_api_key = os.getenv("GENTRACE_API_KEY", "")
 gentrace_base_url = os.getenv("GENTRACE_BASE_URL", "")

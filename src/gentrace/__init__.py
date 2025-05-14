@@ -92,9 +92,11 @@ experiments_async = cast(AsyncExperimentsResource, _ResourceWrapper(_get_async_c
 datasets_async = cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_instance, "datasets"))
 test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
 
+from .types import Dataset, Pipeline, TestCase, Experiment
 from .lib.eval import eval
 from .lib.init import init
 from .lib.traced import traced
+from .lib.sampler import GentraceSampler
 from .lib.constants import (
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_PIPELINE_ID,
@@ -165,7 +167,12 @@ __all__ = [
     "ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME",
     "ATTR_GENTRACE_TEST_CASE_NAME",
     "ATTR_GENTRACE_SAMPLE_KEY",
+    "GentraceSampler",
     "GentraceSpanProcessor",
+    "TestCase",
+    "Experiment",
+    "Dataset",
+    "Pipeline",
     # End custom Gentrace exports
 ]
 

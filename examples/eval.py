@@ -17,17 +17,7 @@ import asyncio
 import logging
 from typing import Any, Dict, List
 
-try:
-    from gentrace.lib.eval import eval
-    from gentrace.lib.init import init
-    from gentrace.lib.experiment import ExperimentOptions, experiment
-except ImportError:
-    import sys
-
-    sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
-    from gentrace.lib.eval import eval
-    from gentrace.lib.init import init
-    from gentrace.lib.experiment import ExperimentOptions, experiment
+from gentrace import eval, init, experiment
 
 gentrace_api_key = os.getenv("GENTRACE_API_KEY")
 gentrace_base_url = os.getenv("GENTRACE_BASE_URL")
@@ -65,15 +55,15 @@ def compose_email(subject: str, body: str, to: str, from_: str) -> str:
     return f"To: {to}\\nFrom: {from_}\\nSubject: {subject}\\n\\n{body}"
 
 
-experiment_options: ExperimentOptions = {
-    "name": "Dynamic Eval Experiment",
-    "metadata": {"environment": "example", "version": "2.0"},
-}
-
-
-@experiment(pipeline_id=PIPELINE_ID, options=experiment_options)
+@experiment(
+    pipeline_id=PIPELINE_ID,
+    options={
+        "name": "Dynamic Eval Experiment",
+        "metadata": {"environment": "example", "version": "2.0"},
+    },
+)
 async def run_evals_experiment() -> None:
-    logger.info(f"Running experiment with options: {experiment_options}")
+    logger.info(f"Running experiment with options")
 
     @eval(name="Email Content Test 1", metadata={"variant": "A"})
     async def check_email_variant_A(subject: str, body: str, expected_keywords: List[str]) -> Dict[str, Any]:

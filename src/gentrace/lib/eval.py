@@ -12,8 +12,8 @@ from .utils import _gentrace_json_dumps
 from .constants import (
     ANONYMOUS_SPAN_NAME,
     ATTR_GENTRACE_EXPERIMENT_ID,
-    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
     ATTR_GENTRACE_TEST_CASE_NAME,
+    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .experiment import ExperimentContext, get_current_experiment_context

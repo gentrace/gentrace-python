@@ -25,12 +25,10 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace.lib.traced import traced
-from gentrace.lib.interaction import interaction
-from gentrace.lib.span_processor import GentraceSpanProcessor
+from gentrace import GentraceSampler, GentraceSpanProcessor, traced, interaction
 
 resource = Resource(attributes={"service.name": "my-otel-interaction-example-app"})
-tracer_provider = TracerProvider(resource=resource)
+tracer_provider = TracerProvider(resource=resource, sampler=GentraceSampler())
 
 api_key = os.getenv("GENTRACE_API_KEY", "")
 openai_api_key = os.getenv("OPENAI_API_KEY", "")

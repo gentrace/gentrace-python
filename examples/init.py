@@ -1,7 +1,7 @@
 import os
 import logging
 
-from gentrace.lib.init import init
+from gentrace import init
 
 logger = logging.getLogger(__name__)
 
