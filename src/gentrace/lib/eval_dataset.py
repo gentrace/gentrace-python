@@ -278,7 +278,7 @@ async def eval_dataset(
         )
         evaluation_tasks.append(task)
 
-    results = await asyncio.gather(*evaluation_tasks, return_exceptions=False)
+    results = await asyncio.gather(*evaluation_tasks)
     return results
 
 

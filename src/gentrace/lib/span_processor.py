@@ -30,11 +30,10 @@ class GentraceSpanProcessor(SpanProcessor):
         Called when a Span is started, if the span.is_recording()
         returns true.
         """
-        if parent_context:
-            baggage_value_obj = baggage.get_baggage(ATTR_GENTRACE_SAMPLE_KEY, context=parent_context)
-            if baggage_value_obj is not None:
-                if isinstance(baggage_value_obj, str):
-                    span.set_attribute(ATTR_GENTRACE_SAMPLE_KEY, baggage_value_obj)
+        sample_value = baggage.get_baggage(ATTR_GENTRACE_SAMPLE_KEY, context=parent_context)
+        if sample_value is not None:
+            if isinstance(sample_value, str):
+                span.set_attribute(ATTR_GENTRACE_SAMPLE_KEY, sample_value)
 
     @override
     def on_end(self, span: ReadableSpan) -> None:

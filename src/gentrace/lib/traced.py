@@ -63,10 +63,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
             @functools.wraps(original_fn)
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
-                with tracer.start_as_current_span(actual_span_name) as span:
-                    if final_attributes:
-                        span.set_attributes(final_attributes)
-
+                with tracer.start_as_current_span(actual_span_name, attributes=final_attributes) as span:
                     try:
                         sig = inspect.signature(original_fn)
                         bound_arguments = sig.bind(*args, **kwargs).arguments
