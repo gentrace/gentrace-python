@@ -9,6 +9,8 @@ GENTRACE_EXPERIMENT_ID_ATTR = "gentrace.experiment_id"
 GENTRACE_TEST_CASE_NAME_ATTR = "gentrace.test_case_name"
 GENTRACE_TEST_CASE_ID_ATTR = "gentrace.test_case_id"
 
+GENTRACE_SAMPLE_KEY_ATTR = "gentrace.sample"
+
 __all__ = [
     "ANONYMOUS_SPAN_NAME",
     "GENTRACE_FN_ARGS_EVENT_NAME",
@@ -17,4 +19,5 @@ __all__ = [
     "GENTRACE_TEST_CASE_NAME_ATTR",
     "GENTRACE_TEST_CASE_ID_ATTR",
     "GENTRACE_PIPELINE_ID_ATTR",
+    "GENTRACE_SAMPLE_KEY_ATTR",
 ]

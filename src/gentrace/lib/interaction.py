@@ -1,8 +1,12 @@
 import uuid
+import inspect
+import functools
 from typing import Any, Dict, TypeVar, Callable, Optional, cast
 
+from opentelemetry import baggage as otel_baggage, context as otel_context
+
 from .traced import traced
-from .constants import GENTRACE_PIPELINE_ID_ATTR
+from .constants import GENTRACE_SAMPLE_KEY_ATTR, GENTRACE_PIPELINE_ID_ATTR
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -19,7 +23,9 @@ def interaction(
 
     This decorator leverages the @traced decorator for core tracing logic and
     adds specific attributes related to the Gentrace interaction, such as
-    the pipeline_id. It preserves the signature of the decorated function
+    the pipeline_id. It also sets 'gentrace.sample'="true" in the OpenTelemetry
+    baggage for the duration of the traced function's execution.
+    It preserves the signature of the decorated function
     and supports both synchronous and asynchronous functions.
 
     Args:
@@ -34,7 +40,7 @@ def interaction(
 
     Returns:
         A decorator that, when applied to a function, returns a new function
-        with the interaction tracing logic.
+        with the interaction tracing and baggage modification logic.
 
     Usage:
         @interaction(pipeline_id="example-pipeline")
@@ -57,20 +63,51 @@ def interaction(
     def decorator(func: F) -> F:
         """
         The actual decorator that takes the function to be wrapped.
+        It applies baggage modification and then the @traced decorator.
         """
-        user_provided_attributes = attributes or {}
-        # Ensure the SDK-provided pipeline_id attribute takes precedence
-        final_attributes = {
-            **user_provided_attributes,
+        user_provided_span_attributes = attributes or {}
+        # Attributes for the span created by @traced
+        final_span_attributes_for_traced = {
+            **user_provided_span_attributes,
             GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
         }
 
-        # The `traced` decorator factory returns a decorator which, when applied to `func` (type F),
-        # is known to return a function of type F due to `traced`'s own typing and overloads.
-        # However, the factory part of `traced` is typed as returning `Any` for its own overload
-        # consistency. We use `cast` here to bridge that inference gap for the type checker.
-        actual_traced_decorator = traced(name=name, attributes=final_attributes)
-        return cast(F, actual_traced_decorator(func))
+        configured_traced_decorator = traced(name=name, attributes=final_span_attributes_for_traced)
+
+        func_instrumented_by_traced = configured_traced_decorator(func)
+
+        if inspect.iscoroutinefunction(func):
+
+            @functools.wraps(func)
+            async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
+                current_context = otel_context.get_current()
+                context_with_modified_baggage = otel_baggage.set_baggage(
+                    GENTRACE_SAMPLE_KEY_ATTR, "true", context=current_context
+                )
+
+                token = otel_context.attach(context_with_modified_baggage)
+                try:
+                    return await func_instrumented_by_traced(*args, **kwargs)
+                finally:
+                    otel_context.detach(token)
+
+            return cast(F, baggage_context_wrapper_async)
+        else:
+
+            @functools.wraps(func)
+            def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
+                current_context = otel_context.get_current()
+                context_with_modified_baggage = otel_baggage.set_baggage(
+                    GENTRACE_SAMPLE_KEY_ATTR, "true", context=current_context
+                )
+
+                token = otel_context.attach(context_with_modified_baggage)
+                try:
+                    return func_instrumented_by_traced(*args, **kwargs)
+                finally:
+                    otel_context.detach(token)
+
+            return cast(F, baggage_context_wrapper_sync)
 
     return decorator
 
