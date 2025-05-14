@@ -30,6 +30,7 @@ from .constants import (
     GENTRACE_EXPERIMENT_ID_ATTR,
     GENTRACE_FN_ARGS_EVENT_NAME,
     GENTRACE_TEST_CASE_NAME_ATTR,
+    GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .experiment import ExperimentContext, get_current_experiment_context
 
@@ -143,7 +144,7 @@ async def _run_single_test_case_for_dataset(
                 result_value = interaction_function(parsed_input_for_interaction)
 
             # Log the output
-            span.add_event("gentrace.fn.output", {"output": _gentrace_json_dumps(result_value)})
+            span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
             return cast(Optional[TResult], result_value)
 
         except Exception as e:

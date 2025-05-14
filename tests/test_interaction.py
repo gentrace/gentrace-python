@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.utils import _gentrace_json_dumps
+from gentrace.lib.constants import GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
 from gentrace.lib.interaction import interaction
 
 
@@ -45,8 +46,8 @@ class TestInteraction(unittest.TestCase):
         mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
 
         expected_serialized_args = _gentrace_json_dumps([{"data": input_data}])
-        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": expected_serialized_args})
-        mock_span.add_event.assert_any_call("gentrace.fn.output", {"output": _gentrace_json_dumps(result)})
+        mock_span.add_event.assert_any_call(GENTRACE_FN_ARGS_EVENT_NAME, {"args": expected_serialized_args})
+        mock_span.add_event.assert_any_call(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)})
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()
 
