@@ -107,6 +107,7 @@ from .lib.constants import (
 from .lib.experiment import experiment
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
+from .lib.span_processor import GentraceSpanProcessor
 
 ### End custom Gentrace imports
 
@@ -164,6 +165,7 @@ __all__ = [
     "ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME",
     "ATTR_GENTRACE_TEST_CASE_NAME",
     "ATTR_GENTRACE_SAMPLE_KEY",
+    "GentraceSpanProcessor",
     # End custom Gentrace exports
 ]
 
