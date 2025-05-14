@@ -8,8 +8,14 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps  # For safe serialization of output
-from .constants import ANONYMOUS_SPAN_NAME
+from .utils import _gentrace_json_dumps
+from .constants import (
+    ANONYMOUS_SPAN_NAME,
+    GENTRACE_EXPERIMENT_ID_ATTR,
+    GENTRACE_FN_ARGS_EVENT_NAME,
+    GENTRACE_TEST_CASE_NAME_ATTR,
+    GENTRACE_FN_OUTPUT_EVENT_NAME,
+)
 from .experiment import ExperimentContext, get_current_experiment_context
 
 P = ParamSpec("P")
@@ -19,10 +25,10 @@ _tracer = trace.get_tracer("gentrace.sdk")
 logger = logging.getLogger("gentrace")
 
 RESERVED_METADATA_KEYS = {
-    "gentrace.experiment_id",
-    "gentrace.test_case_name",
-    "gentrace.fn.args",
-    "gentrace.fn.output",
+    GENTRACE_EXPERIMENT_ID_ATTR,
+    GENTRACE_TEST_CASE_NAME_ATTR,
+    GENTRACE_FN_ARGS_EVENT_NAME,
+    GENTRACE_FN_OUTPUT_EVENT_NAME,
 }
 
 
@@ -78,8 +84,8 @@ def eval(
             span_name = name
 
             with _tracer.start_as_current_span(span_name) as span:
-                span.set_attribute("gentrace.experiment_id", experiment_context["experiment_id"])
-                span.set_attribute("gentrace.test_case_name", span_name)  # Use eval name for test case name
+                span.set_attribute(GENTRACE_EXPERIMENT_ID_ATTR, experiment_context["experiment_id"])
+                span.set_attribute(GENTRACE_TEST_CASE_NAME_ATTR, span_name)  # Use eval name for test case name
 
                 if metadata:
                     for key, value in metadata.items():
@@ -118,7 +124,7 @@ def eval(
 
                 if input_payload:
                     # Log combined args/kwargs if any exist
-                    span.add_event("gentrace.fn.args", {"args": _gentrace_json_dumps(input_payload)})
+                    span.add_event(GENTRACE_FN_ARGS_EVENT_NAME, {"args": _gentrace_json_dumps(input_payload)})
 
                 try:
                     if inspect.iscoroutinefunction(func):
@@ -129,7 +135,7 @@ def eval(
                         # func is already Callable[P, Any], no cast needed for sync_func
                         result = func(*args, **kwargs)  # Directly use func
 
-                    span.add_event("gentrace.fn.output", {"output": _gentrace_json_dumps(result)})
+                    span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)})
                     return result  # Runtime result is correct type, static type is Any
                 except Exception as e:
                     span.record_exception(e)

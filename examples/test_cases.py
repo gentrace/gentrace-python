@@ -4,7 +4,7 @@ to interact with test cases. It covers listing test cases from a dataset.
 
 To run this example, ensure the following environment variables are set:
     GENTRACE_API_KEY: Your Gentrace API token for authentication.
-    GENTRACE_BASE_URL: The base URL for your Gentrace instance (e.g., htts://gentrace.ai/api).
+    GENTRACE_BASE_URL: The base URL for your Gentrace instance (e.g., https://gentrace.ai/api).
     GENTRACE_DATASET_ID: The ID of the dataset to list test cases from.
 """
 

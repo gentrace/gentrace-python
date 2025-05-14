@@ -25,6 +25,12 @@ from opentelemetry.trace.status import Status, StatusCode
 from gentrace.types.test_case import TestCase
 
 from .utils import is_pydantic_v1, _gentrace_json_dumps
+from .constants import (
+    GENTRACE_TEST_CASE_ID_ATTR,
+    GENTRACE_EXPERIMENT_ID_ATTR,
+    GENTRACE_FN_ARGS_EVENT_NAME,
+    GENTRACE_TEST_CASE_NAME_ATTR,
+)
 from .experiment import ExperimentContext, get_current_experiment_context
 
 logger = logging.getLogger("gentrace")
@@ -77,10 +83,10 @@ async def _run_single_test_case_for_dataset(
     result_value: Any = None  # type: ignore
 
     with _tracer.start_as_current_span(span_name) as span:
-        span.set_attribute("gentrace.experiment_id", experiment_context["experiment_id"])
-        span.set_attribute("gentrace.test_case.name", test_case_name)
+        span.set_attribute(GENTRACE_EXPERIMENT_ID_ATTR, experiment_context["experiment_id"])
+        span.set_attribute(GENTRACE_TEST_CASE_NAME_ATTR, test_case_name)
         if test_case_id:
-            span.set_attribute("gentrace.test_case.id", test_case_id)
+            span.set_attribute(GENTRACE_TEST_CASE_ID_ATTR, test_case_id)
 
         try:
             # Always pass the raw dict (or None) into the interaction fn
@@ -126,7 +132,7 @@ async def _run_single_test_case_for_dataset(
             # Attach the inputs as a span event
             if input_dict_for_log is not None:
                 span.add_event(
-                    "gentrace.fn.args",
+                    GENTRACE_FN_ARGS_EVENT_NAME,
                     {"args": _gentrace_json_dumps([input_dict_for_log])},
                 )
 

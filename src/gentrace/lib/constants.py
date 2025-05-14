@@ -1,3 +1,10 @@
 ANONYMOUS_SPAN_NAME = "anonymous_function"
 
-__all__ = ["ANONYMOUS_SPAN_NAME"] 
+GENTRACE_FN_ARGS_EVENT_NAME = "gentrace.fn.args"
+GENTRACE_FN_OUTPUT_EVENT_NAME = "gentrace.fn.output"
+
+GENTRACE_EXPERIMENT_ID_ATTR = "gentrace.experiment_id"
+GENTRACE_TEST_CASE_NAME_ATTR = "gentrace.test_case_name"
+GENTRACE_TEST_CASE_ID_ATTR = "gentrace.test_case_id"
+
+__all__ = ["ANONYMOUS_SPAN_NAME", "GENTRACE_FN_ARGS_EVENT_NAME", "GENTRACE_FN_OUTPUT_EVENT_NAME"]
