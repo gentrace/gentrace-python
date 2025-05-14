@@ -131,13 +131,15 @@ init(
     # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
-# You can fetch test cases from Gentrace
+# Option 1️⃣: Fetch test cases from Gentrace
 async def fetch_test_cases() -> list[TestCase]:
-    # Each test case has the structure: { input: str  }
     cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
+
+    # Each test case within cases.data has an attribute "inputs" with the structure: { query: str }
     return cases.data
 
-# You can also provide locally defined test cases
+# Option 2️⃣: Provide locally defined test cases by using TestInput and a typed dict 
+# (in this case QueryInputs)
 class QueryInputs(TypedDict):
     query: str
 
@@ -153,14 +155,14 @@ class QueryInputsSchema(BaseModel):
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def dataset_evals() -> None:
-    # Use test cases from Gentrace
+    # Option 1️⃣: Use test cases from Gentrace
     await eval_dataset(
         data=fetch_test_cases,
         interaction=query_ai,
         schema=QueryInputsSchema, # Extra validation with Pydantic of the test case structure
     )
-    
-    # Using locally defined test cases
+
+    # Option 2️⃣: Use locally defined test cases
     await eval_dataset(
         data=custom_test_cases,
         interaction=query_ai,
