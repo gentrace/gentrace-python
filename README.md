@@ -30,10 +30,12 @@ All of these utilities rely on OpenTelemetry to capture and export spans, which 
 
 ```python
 import os
-from gentrace.lib import init
+from gentrace import init
+
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 
 init(
-    bearer_token=os.environ["GENTRACE_API_KEY"],  # recommended: use environment variables
+    bearer_token=GENTRACE_API_KEY,
     # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
 )
 
@@ -47,10 +49,17 @@ Wrap the function that contains your AI logic so each call is traced.
 ```python
 import openai
 
-from gentrace.lib import interaction
+from gentrace import interaction, init
 
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
+)
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
@@ -72,9 +81,21 @@ Use `experiment` to create a testing context and `eval` for individual test case
 
 ```python
 import asyncio
-from gentrace.lib import experiment, eval
+from gentrace import experiment, eval
+import os
 
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
+)
+
+@interaction(pipeline_id=GENTRACE_PIPELINE_ID)
+async def query_ai(query: str) -> str | None:
+    # Implementation from previous example
+    pass
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def simple_evals() -> None:
@@ -96,9 +117,7 @@ The `@eval` decorator creates a 'test' span for `paris_test`. When `query_ai` (a
 
 ```python
 import asyncio, os
-from gentrace import experiment, eval_dataset, test_cases_async
-from gentrace.types import TestCase
-from gentrace.lib.eval_dataset import TestInput
+from gentrace import TestCase, TestInput, experiment, eval_dataset, test_cases_async
 from typing_extensions import TypedDict
 from pydantic import BaseModel
 
@@ -127,14 +146,14 @@ class QueryInputsSchema(BaseModel):
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def dataset_evals() -> None:
-    # Using dataset from Gentrace, extra validation of test case input structure with Pydantic
+    # Use test cases from Gentrace
     await eval_dataset(
         data=fetch_test_cases,
         interaction=query_ai,
-        schema=QueryInputsSchema,
+        schema=QueryInputsSchema, # Extra validation with Pydantic of the test case structure
     )
     
-    # Using custom test cases
+    # Using locally defined test cases
     await eval_dataset(
         data=custom_test_cases,
         interaction=query_ai,
@@ -149,13 +168,7 @@ This interaction span is nested within its corresponding 'test' span. All these 
 
 ## OpenTelemetry Integration
 
-OpenTelemetry **must** be running for spans created by `interaction`, `experiment`, `eval`, and `eval_dataset` to be exported.
-
-Install the required packages:
-
-```sh
-pip install opentelemetry-sdk opentelemetry-exporter-otlp-proto-http opentelemetry-instrumentation
-```
+OpenTelemetry **must** be running for spans created by `interaction`, `experiment`, `eval`, and `eval_dataset` to be exported. The OpenTelemetry SDK is included as a dependency of this package.
 
 Example setup:
 
@@ -167,6 +180,7 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 from opentelemetry import trace
 import os
 
+# In virtually all cases, you should use https://gentrace.ai/api as the base URL
 GENTRACE_BASE_URL = os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
 GENTRACE_API_KEY = os.environ['GENTRACE_API_KEY']
 
@@ -218,3 +232,4 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
+
