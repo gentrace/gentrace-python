@@ -9,10 +9,10 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.utils import _gentrace_json_dumps
 from gentrace.lib.constants import (
-    GENTRACE_SAMPLE_KEY_ATTR,
-    GENTRACE_PIPELINE_ID_ATTR,
-    GENTRACE_FN_ARGS_EVENT_NAME,
-    GENTRACE_FN_OUTPUT_EVENT_NAME,
+    ATTR_GENTRACE_SAMPLE_KEY,
+    ATTR_GENTRACE_PIPELINE_ID,
+    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
+    ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from gentrace.lib.interaction import interaction
 
@@ -49,11 +49,13 @@ class TestInteraction(unittest.TestCase):
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_process")
 
-        mock_span.set_attributes.assert_called_once_with({GENTRACE_PIPELINE_ID_ATTR: pipeline_id})
+        mock_span.set_attributes.assert_called_once_with({ATTR_GENTRACE_PIPELINE_ID: pipeline_id})
 
         expected_serialized_args = _gentrace_json_dumps([{"data": input_data}])
-        mock_span.add_event.assert_any_call(GENTRACE_FN_ARGS_EVENT_NAME, {"args": expected_serialized_args})
-        mock_span.add_event.assert_any_call(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)})
+        mock_span.add_event.assert_any_call(ATTR_GENTRACE_FN_ARGS_EVENT_NAME, {"args": expected_serialized_args})
+        mock_span.add_event.assert_any_call(
+            ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)}
+        )
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()
 
@@ -73,7 +75,7 @@ class TestInteraction(unittest.TestCase):
 
         self.assertTrue("Sync Interaction Error" in str(context.exception))
         mock_tracer.start_as_current_span.assert_called_once_with("sync_error_interaction")
-        mock_span.set_attributes.assert_called_once_with({GENTRACE_PIPELINE_ID_ATTR: pipeline_id})
+        mock_span.set_attributes.assert_called_once_with({ATTR_GENTRACE_PIPELINE_ID: pipeline_id})
         mock_span.record_exception.assert_called_once_with(error)
 
         mock_span.set_status.assert_called_once()
@@ -99,7 +101,7 @@ class TestInteraction(unittest.TestCase):
 
         expected_attributes = {
             **user_attrs,
-            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
+            ATTR_GENTRACE_PIPELINE_ID: pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
 
@@ -108,7 +110,7 @@ class TestInteraction(unittest.TestCase):
         mock_span, mock_tracer = self.common_test_setup()
         mock_get_tracer.return_value = mock_tracer
         pipeline_id = str(uuid.uuid4())
-        user_attrs_with_conflict = {GENTRACE_PIPELINE_ID_ATTR: "user-pipeline-id", "user_key": "value"}
+        user_attrs_with_conflict = {ATTR_GENTRACE_PIPELINE_ID: "user-pipeline-id", "user_key": "value"}
 
         @interaction(pipeline_id=pipeline_id, attributes=user_attrs_with_conflict)
         def func_with_conflict() -> str:
@@ -118,7 +120,7 @@ class TestInteraction(unittest.TestCase):
 
         expected_attributes = {
             "user_key": "value",
-            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
+            ATTR_GENTRACE_PIPELINE_ID: pipeline_id,
         }
         mock_span.set_attributes.assert_called_once_with(expected_attributes)
 
@@ -155,7 +157,7 @@ class TestInteraction(unittest.TestCase):
         def sync_check_baggage() -> None:
             nonlocal baggage_value_inside_func
             current_context = otel_context.get_current()
-            baggage_value_inside_func = otel_baggage.get_baggage(GENTRACE_SAMPLE_KEY_ATTR, context=current_context)
+            baggage_value_inside_func = otel_baggage.get_baggage(ATTR_GENTRACE_SAMPLE_KEY, context=current_context)
 
         sync_check_baggage()
 

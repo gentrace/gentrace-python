@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.lib.traced import traced
-from gentrace.lib.constants import GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
+from gentrace.lib.constants import ATTR_GENTRACE_FN_ARGS_EVENT_NAME, ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME
 
 
 class TestTraced(unittest.TestCase):
@@ -38,8 +38,8 @@ class TestTraced(unittest.TestCase):
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_add")
 
-        mock_span.add_event.assert_any_call(GENTRACE_FN_ARGS_EVENT_NAME, {"args": '[{"a": 2}, {"b": 3}]'})
-        mock_span.add_event.assert_any_call(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": "5"})
+        mock_span.add_event.assert_any_call(ATTR_GENTRACE_FN_ARGS_EVENT_NAME, {"args": '[{"a": 2}, {"b": 3}]'})
+        mock_span.add_event.assert_any_call(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": "5"})
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()
 
@@ -60,7 +60,7 @@ class TestTraced(unittest.TestCase):
         self.assertTrue("Sync Error" in str(context.exception))
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_error_func")
-        mock_span.add_event.assert_any_call(GENTRACE_FN_ARGS_EVENT_NAME, {"args": "[]"})
+        mock_span.add_event.assert_any_call(ATTR_GENTRACE_FN_ARGS_EVENT_NAME, {"args": "[]"})
         mock_span.record_exception.assert_called_once_with(error)
 
         mock_span.set_status.assert_called_once()

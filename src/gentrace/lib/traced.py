@@ -7,7 +7,7 @@ from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
 from .utils import _gentrace_json_dumps, gentrace_format_otel_attributes
-from .constants import ANONYMOUS_SPAN_NAME, GENTRACE_FN_ARGS_EVENT_NAME, GENTRACE_FN_OUTPUT_EVENT_NAME
+from .constants import ANONYMOUS_SPAN_NAME, ATTR_GENTRACE_FN_ARGS_EVENT_NAME, ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME
 
 P = ParamSpec("P")
 R = TypeVar("R")  # Represents the return type of a sync function, or the awaitable result of an async function
@@ -76,7 +76,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         serialized_inputs = _gentrace_json_dumps(transformed_arguments)
 
                         span.add_event(
-                            GENTRACE_FN_ARGS_EVENT_NAME,
+                            ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
                             {"args": serialized_inputs},
                         )
                         # original_fn is F, which in this branch is Callable[P, Coroutine[Any, Any, R]]
@@ -85,7 +85,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
                         serialized_result = _gentrace_json_dumps(result)
 
-                        span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
+                        span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
                         return result
                     except Exception as e:
                         span.record_exception(e)
@@ -115,7 +115,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
                         serialized_inputs = _gentrace_json_dumps(transformed_arguments)
 
                         span.add_event(
-                            GENTRACE_FN_ARGS_EVENT_NAME,
+                            ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
                             {"args": serialized_inputs},
                         )
                         # original_fn is F, which in this branch is Callable[P, R]
@@ -124,7 +124,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
                         serialized_result = _gentrace_json_dumps(result)
 
-                        span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
+                        span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
                         return result
                     except Exception as e:
                         span.record_exception(e)

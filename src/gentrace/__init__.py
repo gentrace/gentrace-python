@@ -95,6 +95,15 @@ test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_clie
 from .lib.eval import eval
 from .lib.init import init
 from .lib.traced import traced
+from .lib.constants import (
+    ATTR_GENTRACE_SAMPLE_KEY,
+    ATTR_GENTRACE_PIPELINE_ID,
+    ATTR_GENTRACE_TEST_CASE_ID,
+    ATTR_GENTRACE_EXPERIMENT_ID,
+    ATTR_GENTRACE_TEST_CASE_NAME,
+    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
+    ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
+)
 from .lib.experiment import experiment
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
@@ -148,6 +157,13 @@ __all__ = [
     "eval",
     "eval_dataset",
     "TestInput",
+    "ATTR_GENTRACE_PIPELINE_ID",
+    "ATTR_GENTRACE_TEST_CASE_ID",
+    "ATTR_GENTRACE_EXPERIMENT_ID",
+    "ATTR_GENTRACE_FN_ARGS_EVENT_NAME",
+    "ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME",
+    "ATTR_GENTRACE_TEST_CASE_NAME",
+    "ATTR_GENTRACE_SAMPLE_KEY",
     # End custom Gentrace exports
 ]
 

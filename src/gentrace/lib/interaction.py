@@ -6,7 +6,7 @@ from typing import Any, Dict, TypeVar, Callable, Optional, cast
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
 from .traced import traced
-from .constants import GENTRACE_SAMPLE_KEY_ATTR, GENTRACE_PIPELINE_ID_ATTR
+from .constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -69,7 +69,7 @@ def interaction(
         # Attributes for the span created by @traced
         final_span_attributes_for_traced = {
             **user_provided_span_attributes,
-            GENTRACE_PIPELINE_ID_ATTR: pipeline_id,
+            ATTR_GENTRACE_PIPELINE_ID: pipeline_id,
         }
 
         configured_traced_decorator = traced(name=name, attributes=final_span_attributes_for_traced)
@@ -82,7 +82,7 @@ def interaction(
             async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
-                    GENTRACE_SAMPLE_KEY_ATTR, "true", context=current_context
+                    ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
                 )
 
                 token = otel_context.attach(context_with_modified_baggage)
@@ -98,7 +98,7 @@ def interaction(
             def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
-                    GENTRACE_SAMPLE_KEY_ATTR, "true", context=current_context
+                    ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
                 )
 
                 token = otel_context.attach(context_with_modified_baggage)

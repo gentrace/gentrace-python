@@ -25,11 +25,11 @@ from gentrace.types.test_case import TestCase
 
 from .utils import is_pydantic_v1, _gentrace_json_dumps
 from .constants import (
-    GENTRACE_TEST_CASE_ID_ATTR,
-    GENTRACE_EXPERIMENT_ID_ATTR,
-    GENTRACE_FN_ARGS_EVENT_NAME,
-    GENTRACE_TEST_CASE_NAME_ATTR,
-    GENTRACE_FN_OUTPUT_EVENT_NAME,
+    ATTR_GENTRACE_TEST_CASE_ID,
+    ATTR_GENTRACE_EXPERIMENT_ID,
+    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
+    ATTR_GENTRACE_TEST_CASE_NAME,
+    ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .experiment import ExperimentContext, get_current_experiment_context
 
@@ -82,10 +82,10 @@ async def _run_single_test_case_for_dataset(
     result_value: Any = None  # type: ignore
 
     with _tracer.start_as_current_span(span_name) as span:
-        span.set_attribute(GENTRACE_EXPERIMENT_ID_ATTR, experiment_context["experiment_id"])
-        span.set_attribute(GENTRACE_TEST_CASE_NAME_ATTR, test_case_name)
+        span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
+        span.set_attribute(ATTR_GENTRACE_TEST_CASE_NAME, test_case_name)
         if test_case_id:
-            span.set_attribute(GENTRACE_TEST_CASE_ID_ATTR, test_case_id)
+            span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
 
         try:
             # Always pass the raw dict (or None) into the interaction fn
@@ -128,7 +128,7 @@ async def _run_single_test_case_for_dataset(
             # Attach the inputs as a span event
             if input_dict_for_log is not None:
                 span.add_event(
-                    GENTRACE_FN_ARGS_EVENT_NAME,
+                    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
                     {"args": _gentrace_json_dumps([input_dict_for_log])},
                 )
 
@@ -139,7 +139,7 @@ async def _run_single_test_case_for_dataset(
                 result_value = interaction_function(parsed_input_for_interaction)
 
             # Log the output
-            span.add_event(GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
+            span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
             return cast(Optional[TResult], result_value)
 
         except Exception as e:
