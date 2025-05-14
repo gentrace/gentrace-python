@@ -44,9 +44,8 @@ class TestInteraction(unittest.TestCase):
 
         mock_span.set_attributes.assert_called_once_with({"gentrace.pipeline_id": pipeline_id})
 
-        mock_span.add_event.assert_any_call(
-            "gentrace.fn.args", {"args": _gentrace_json_dumps([input_data]), "kwargs": _gentrace_json_dumps({})}
-        )
+        expected_serialized_args = _gentrace_json_dumps([{"data": input_data}])
+        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": expected_serialized_args})
         mock_span.add_event.assert_any_call("gentrace.fn.output", {"output": _gentrace_json_dumps(result)})
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()

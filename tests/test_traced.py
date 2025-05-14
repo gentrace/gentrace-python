@@ -37,7 +37,7 @@ class TestTraced(unittest.TestCase):
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_add")
 
-        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": "[2, 3]", "kwargs": "{}"})
+        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": '[{"a": 2}, {"b": 3}]'})
         mock_span.add_event.assert_any_call("gentrace.fn.output", {"output": "5"})
         mock_span.record_exception.assert_not_called()
         mock_span.set_status.assert_not_called()
@@ -59,7 +59,7 @@ class TestTraced(unittest.TestCase):
         self.assertTrue("Sync Error" in str(context.exception))
         mock_get_tracer.assert_called_once_with("gentrace")
         mock_tracer.start_as_current_span.assert_called_once_with("sync_error_func")
-        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": "[]", "kwargs": "{}"})
+        mock_span.add_event.assert_any_call("gentrace.fn.args", {"args": "[]"})
         mock_span.record_exception.assert_called_once_with(error)
 
         mock_span.set_status.assert_called_once()
