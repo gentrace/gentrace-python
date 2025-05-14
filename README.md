@@ -36,7 +36,7 @@ GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 
 init(
     bearer_token=GENTRACE_API_KEY,
-    # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
 print("Gentrace initialised!")
@@ -58,7 +58,7 @@ GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 
 init(
     bearer_token=GENTRACE_API_KEY,
-    # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -90,7 +90,7 @@ GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
 
 init(
     bearer_token=GENTRACE_API_KEY,
-    # Optional: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api") # for self-hosted deployments
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
 @interaction(pipeline_id=GENTRACE_PIPELINE_ID)
