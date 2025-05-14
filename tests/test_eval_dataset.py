@@ -24,8 +24,8 @@ def _stub_experiment_api(monkeypatch: Any) -> None:  # type: ignore
 import asyncio
 from typing import Any, Dict, Union, Sequence
 
+from pytest import LogCaptureFixture
 from pydantic import BaseModel
-from _pytest.logging import LogCaptureFixture
 
 from gentrace import TestInput as GentraceTestInput, experiment
 from gentrace.types import TestCase as GentraceTestCase
