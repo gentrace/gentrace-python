@@ -27,6 +27,7 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 
 from gentrace.lib.traced import traced
 from gentrace.lib.interaction import interaction
+from gentrace.lib.span_processor import GentraceSpanProcessor
 
 resource = Resource(attributes={"service.name": "my-otel-interaction-example-app"})
 tracer_provider = TracerProvider(resource=resource)
@@ -55,8 +56,12 @@ span_exporter = OTLPSpanExporter(
 client = OpenAI(api_key=openai_api_key)
 async_client = AsyncOpenAI(api_key=openai_api_key)
 
-span_processor = SimpleSpanProcessor(span_exporter)
-tracer_provider.add_span_processor(span_processor)
+# Instantiate and add GentraceSpanProcessor to enrich spans with `gentrace.sample`
+gentrace_baggage_processor = GentraceSpanProcessor()
+tracer_provider.add_span_processor(gentrace_baggage_processor)
+
+simple_export_processor = SimpleSpanProcessor(span_exporter)
+tracer_provider.add_span_processor(simple_export_processor)
 trace.set_tracer_provider(tracer_provider)
 
 
