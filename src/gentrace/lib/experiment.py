@@ -6,6 +6,7 @@ import contextvars
 from typing import Any, Dict, Union, TypeVar, Callable, Optional, Awaitable, Coroutine
 from typing_extensions import ParamSpec, TypedDict
 
+from .utils import check_otel_config_and_warn
 from .experiment_control import start_experiment_api, finish_experiment_api
 
 P = ParamSpec("P")
@@ -154,6 +155,7 @@ def experiment(
     def inner_decorator(func: Callable[P, Union[None, Awaitable[None]]]) -> Callable[P, Coroutine[Any, Any, None]]:
         @functools.wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+            check_otel_config_and_warn()
             exp_name_option = options.get("name") if options else None
             user_metadata = options.get("metadata") if options else None
 

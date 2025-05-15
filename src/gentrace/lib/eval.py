@@ -8,7 +8,7 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps
+from .utils import _gentrace_json_dumps, check_otel_config_and_warn
 from .constants import (
     ANONYMOUS_SPAN_NAME,
     ATTR_GENTRACE_EXPERIMENT_ID,
@@ -73,6 +73,7 @@ def eval(
         # Wrapper is async, return type Any matches inner_decorator
         @functools.wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+            check_otel_config_and_warn()
             experiment_context: Optional[ExperimentContext] = get_current_experiment_context()
 
             if not experiment_context:

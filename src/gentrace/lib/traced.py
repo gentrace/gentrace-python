@@ -6,7 +6,7 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps, gentrace_format_otel_attributes
+from .utils import _gentrace_json_dumps, check_otel_config_and_warn, gentrace_format_otel_attributes
 from .constants import ANONYMOUS_SPAN_NAME, ATTR_GENTRACE_FN_ARGS_EVENT_NAME, ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME
 
 P = ParamSpec("P")
@@ -63,6 +63,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
             @functools.wraps(original_fn)
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+                check_otel_config_and_warn()
                 with tracer.start_as_current_span(actual_span_name, attributes=final_attributes) as span:
                     try:
                         sig = inspect.signature(original_fn)
@@ -99,6 +100,7 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
 
             @functools.wraps(original_fn)
             def sync_wrapper(*args: Any, **kwargs: Any) -> Any:
+                check_otel_config_and_warn()
                 with tracer.start_as_current_span(actual_span_name) as span:
                     if final_attributes:
                         span.set_attributes(final_attributes)

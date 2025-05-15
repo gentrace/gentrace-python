@@ -4,14 +4,70 @@ import warnings
 from typing import Any, Set, Dict
 
 from pydantic import BaseModel
+from rich.text import Text
+from rich.console import Console
+from opentelemetry import trace as trace_api
 from opentelemetry.util import types as otel_types
+from opentelemetry.sdk.trace import TracerProvider as SDKTracerProvider
 
-logger = logging.getLogger("gentrace")  # Define logger at module level
+logger = logging.getLogger("gentrace")
 
 OTLP_MAX_INT_SIZE = (2**63) - 1  # Max 64-bit signed integer
 OTLP_MIN_INT_SIZE = -(2**63)  # Min 64-bit signed integer
 
 CIRCULAR_REFERENCE_PLACEHOLDER = "[CircularReference]"
+
+# Global flag to ensure the OpenTelemetry configuration warning is issued only once per session
+_otel_config_warning_issued = False
+
+
+def check_otel_config_and_warn() -> None:
+    """
+    Checks if a proper OpenTelemetry SDK TracerProvider is configured.
+    If not, issues a warning using `rich` for hyperlink formatting.
+    The warning is issued only once per Python session.
+    """
+    global _otel_config_warning_issued
+    if _otel_config_warning_issued:
+        return
+
+    provider = trace_api.get_tracer_provider()
+
+    if not isinstance(provider, SDKTracerProvider):
+        otel_setup_url = "https://github.com/gentrace/gentrace-python/blob/main/README.md#opentelemetry-integration"
+        link_text = "Gentrace OpenTelemetry Setup Guide"
+
+        try:
+            # Primary warning mechanism using rich for hyperlink support
+            message = Text()
+            message.append(
+                "Gentrace: OpenTelemetry SDK (TracerProvider) does not appear to be configured. ", style="yellow"
+            )
+            message.append("Gentrace tracing features (e.g., ")
+            message.append("@interaction", style="on grey30")
+            message.append(", ")
+            message.append("@eval", style="on grey30")
+            message.append(", ")
+            message.append("@traced", style="on grey30")
+            message.append(", and ")
+            message.append("eval_dataset()", style="on grey30")
+            message.append(") may not record data. ")
+            message.append("Please ensure OpenTelemetry is set up as per the ")
+            message.append(link_text, style=f"underline #90EE90 link {otel_setup_url}")
+            message.append(".")
+
+            console = Console(stderr=True, highlight=False)
+            console.print(message)
+
+        except Exception:  # Fallback if rich formatting/printing fails
+            fallback_message = (
+                f"Gentrace: OpenTelemetry SDK (TracerProvider) does not appear to be configured. "
+                f"Gentrace tracing features (e.g., @interaction, @eval, @traced, and eval_dataset()) may not record data. "
+                f"Please ensure OpenTelemetry is set up as per the {otel_setup_url}."
+            )
+            warnings.warn(fallback_message, UserWarning, stacklevel=2)
+
+        _otel_config_warning_issued = True
 
 
 def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
@@ -132,4 +188,10 @@ def is_pydantic_v1() -> bool:
         return False
 
 
-__all__ = ["gentrace_format_otel_attributes", "gentrace_format_otel_value", "_gentrace_json_dumps", "is_pydantic_v1"]
+__all__ = [
+    "gentrace_format_otel_attributes",
+    "gentrace_format_otel_value",
+    "_gentrace_json_dumps",
+    "is_pydantic_v1",
+    "check_otel_config_and_warn",
+]
