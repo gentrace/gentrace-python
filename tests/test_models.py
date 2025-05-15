@@ -7,9 +7,9 @@ import pytest
 import pydantic
 from pydantic import Field
 
-from gentrace._utils import PropertyInfo
-from gentrace._compat import PYDANTIC_V2, parse_obj, model_dump, model_json
-from gentrace._models import BaseModel, construct_type
+from gentrace_py._utils import PropertyInfo
+from gentrace_py._compat import PYDANTIC_V2, parse_obj, model_dump, model_json
+from gentrace_py._models import BaseModel, construct_type
 
 
 class BasicModel(BaseModel):

@@ -21,12 +21,12 @@ import pytest
 from respx import MockRouter
 from pydantic import ValidationError
 
-from gentrace import Gentrace, AsyncGentrace, APIResponseValidationError
-from gentrace._types import Omit
-from gentrace._models import BaseModel, FinalRequestOptions
-from gentrace._constants import RAW_RESPONSE_HEADER
-from gentrace._exceptions import GentraceError, APIStatusError, APITimeoutError, APIResponseValidationError
-from gentrace._base_client import (
+from gentrace_py import Gentrace, AsyncGentrace, APIResponseValidationError
+from gentrace_py._types import Omit
+from gentrace_py._models import BaseModel, FinalRequestOptions
+from gentrace_py._constants import RAW_RESPONSE_HEADER
+from gentrace_py._exceptions import GentraceError, APIStatusError, APITimeoutError, APIResponseValidationError
+from gentrace_py._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
     BaseClient,
@@ -230,10 +230,10 @@ class TestGentrace:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "gentrace/_legacy_response.py",
-                        "gentrace/_response.py",
+                        "gentrace_py/_legacy_response.py",
+                        "gentrace_py/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "gentrace/_compat.py",
+                        "gentrace_py/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -709,7 +709,7 @@ class TestGentrace:
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(side_effect=httpx.TimeoutException("Test timeout error"))
@@ -721,7 +721,7 @@ class TestGentrace:
 
         assert _get_open_connections(self.client) == 0
 
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(return_value=httpx.Response(500))
@@ -734,7 +734,7 @@ class TestGentrace:
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
     def test_retries_taken(
@@ -765,7 +765,7 @@ class TestGentrace:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_omit_retry_count_header(
         self, client: Gentrace, failures_before_success: int, respx_mock: MockRouter
@@ -788,7 +788,7 @@ class TestGentrace:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     def test_overwrite_retry_count_header(
         self, client: Gentrace, failures_before_success: int, respx_mock: MockRouter
@@ -986,10 +986,10 @@ class TestAsyncGentrace:
                         # to_raw_response_wrapper leaks through the @functools.wraps() decorator.
                         #
                         # removing the decorator fixes the leak for reasons we don't understand.
-                        "gentrace/_legacy_response.py",
-                        "gentrace/_response.py",
+                        "gentrace_py/_legacy_response.py",
+                        "gentrace_py/_response.py",
                         # pydantic.BaseModel.model_dump || pydantic.BaseModel.dict leak memory for some reason.
-                        "gentrace/_compat.py",
+                        "gentrace_py/_compat.py",
                         # Standard library leaks we don't care about.
                         "/logging/__init__.py",
                     ]
@@ -1479,7 +1479,7 @@ class TestAsyncGentrace:
         calculated = client._calculate_retry_timeout(remaining_retries, options, headers)
         assert calculated == pytest.approx(timeout, 0.5 * 0.875)  # pyright: ignore[reportUnknownMemberType]
 
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(side_effect=httpx.TimeoutException("Test timeout error"))
@@ -1491,7 +1491,7 @@ class TestAsyncGentrace:
 
         assert _get_open_connections(self.client) == 0
 
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(return_value=httpx.Response(500))
@@ -1504,7 +1504,7 @@ class TestAsyncGentrace:
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     @pytest.mark.parametrize("failure_mode", ["status", "exception"])
@@ -1536,7 +1536,7 @@ class TestAsyncGentrace:
         assert int(response.http_request.headers.get("x-stainless-retry-count")) == failures_before_success
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     async def test_omit_retry_count_header(
@@ -1560,7 +1560,7 @@ class TestAsyncGentrace:
         assert len(response.http_request.headers.get_list("x-stainless-retry-count")) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
-    @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
+    @mock.patch("gentrace_py._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
     @pytest.mark.asyncio
     async def test_overwrite_retry_count_header(
@@ -1594,8 +1594,8 @@ class TestAsyncGentrace:
         import nest_asyncio
         import threading
 
-        from gentrace._utils import asyncify
-        from gentrace._base_client import get_platform
+        from gentrace_py._utils import asyncify
+        from gentrace_py._base_client import get_platform
 
         async def test_main() -> None:
             result = await asyncify(get_platform)()
