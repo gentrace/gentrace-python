@@ -184,12 +184,12 @@ _setup_logging()
 # Update the __module__ attribute for exported symbols so that
 # error messages point to this module instead of the module
 # it was originally defined in, e.g.
-# gentrace._exceptions.NotFoundError -> gentrace.NotFoundError
+# gentrace_py._exceptions.NotFoundError -> gentrace_py.NotFoundError
 __locals = locals()
 for __name in __all__:
     if not __name.startswith("__"):
         try:
-            __locals[__name].__module__ = "gentrace"
+            __locals[__name].__module__ = "gentrace_py"
         except (TypeError, AttributeError):
             # Some of our exported symbols are builtins which we can't set attributes for.
             pass

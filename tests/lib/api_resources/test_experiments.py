@@ -7,9 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from gentrace import Gentrace, AsyncGentrace
+from gentrace_py import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
-from gentrace.types import (
+from gentrace_py.types import (
     Experiment,
     ExperimentList,
 )
