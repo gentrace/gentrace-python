@@ -189,7 +189,6 @@ def experiment(
                 if experiment_id_val:
                     await finish_experiment_api(id=experiment_id_val)
 
-            # Return the result of the decorated function
             return None
 
         return wrapper
