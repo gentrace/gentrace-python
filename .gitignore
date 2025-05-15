@@ -14,3 +14,8 @@ dist
 .envrc
 codegen.log
 Brewfile.lock.json
+
+design-docs
+context-artifacts
+gentrace-python.code-workspace
+.DS_Store

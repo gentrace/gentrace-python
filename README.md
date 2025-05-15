@@ -1,334 +1,249 @@
-# Gentrace Python API library
+# Gentrace Python SDK
 
-[![PyPI version](https://img.shields.io/pypi/v/gentrace.svg)](https://pypi.org/project/gentrace/)
+[![PyPI version](https://img.shields.io/pypi/v/gentrace.svg)](https://pypi.org/project/gentrace-py/)
 
-The Gentrace Python library provides convenient access to the Gentrace REST API from any Python 3.8+
-application. The library includes type definitions for all request params and response fields,
-and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
+This library provides tools to instrument and evaluate your AI applications using Gentrace.
 
-It is generated with [Stainless](https://www.stainless.com/).
-
-## Documentation
-
-The REST API documentation can be found on [gentrace.ai](https://gentrace.ai). The full API of this library can be found in [api.md](api.md).
+The full API documentation can be found in [api.md](api.md).
 
 ## Installation
 
 ```sh
-# install from the production repo
-pip install git+ssh://git@github.com/gentrace/gentrace-python.git
+pip install gentrace-py
 ```
 
-> [!NOTE]
-> Once this package is [published to PyPI](https://app.stainless.com/docs/guides/publish), this will become: `pip install --pre gentrace`
+## Core Concepts
 
-## Usage
+The Gentrace SDK exposes several key functions to help you instrument and evaluate your AI pipelines:
 
-The full API of this library can be found in [api.md](api.md).
+- **`init`** – Initialise the SDK with your API key and optional base URL.
+- **`interaction`** – Decorator to trace a single function that performs your core AI logic.
+- **`experiment`** – Context decorator that groups related evaluation runs.
+- **`eval`** – Decorator that defines a single evaluation (test case) to run inside an experiment.
+- **`eval_dataset`** – Helper that runs an interaction against every test-case in a dataset.
+
+All of these utilities rely on OpenTelemetry to capture and export spans, which represent units of work or operations within your application. These spans are then sent to Gentrace for visualization and analysis. Make sure you have an OTel SDK running (see [OpenTelemetry Integration](#opentelemetry-integration)).
+
+## Basic Usage
+
+### 1. Initialisation
 
 ```python
 import os
-from gentrace import Gentrace
+from gentrace import init
 
-client = Gentrace(
-    bearer_token=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
-pipeline_list = client.pipelines.list()
-print(pipeline_list.data)
+print("Gentrace initialised!")
 ```
 
-While you can provide a `bearer_token` keyword argument,
-we recommend using [python-dotenv](https://pypi.org/project/python-dotenv/)
-to add `GENTRACE_API_KEY="My Bearer Token"` to your `.env` file
-so that your Bearer Token is not stored in source control.
+### 2. Instrumenting Your Code (`interaction`)
 
-## Async usage
-
-Simply import `AsyncGentrace` instead of `Gentrace` and use `await` with each API call:
+Wrap the function that contains your AI logic so each call is traced.
 
 ```python
-import os
+import openai
+
+from gentrace import interaction, init
+
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
+GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
+)
+
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+@interaction(pipeline_id=GENTRACE_PIPELINE_ID)
+async def query_ai(query: str) -> str | None:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": query}]
+    )
+    return response.choices[0].message.content
+```
+
+Each call to a function decorated with `@interaction` (like `query_ai` above) creates a span, capturing its execution details and any associated metadata, inputs, and outputs. This span is then sent to Gentrace.
+
+### 3. Testing and Evaluation
+
+#### Running Single Evaluations (`eval`)
+
+Use `experiment` to create a testing context and `eval` for individual test cases.
+
+```python
 import asyncio
-from gentrace import AsyncGentrace
+from gentrace import experiment, eval
+import os
 
-client = AsyncGentrace(
-    bearer_token=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
+GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
+
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
+@interaction(pipeline_id=GENTRACE_PIPELINE_ID)
+async def query_ai(query: str) -> str | None:
+    # Implementation from previous example
+    pass
 
-async def main() -> None:
-    pipeline_list = await client.pipelines.list()
-    print(pipeline_list.data)
+@experiment(pipeline_id=GENTRACE_PIPELINE_ID)
+async def simple_evals() -> None:
 
+    @eval(name="capital-of-france")
+    async def paris_test() -> None:
+        result = await query_ai("What is the capital of France?")
+        assert result and "Paris" in result
 
-asyncio.run(main())
+    # Immediately invoke the eval
+    await paris_test()
+
+asyncio.run(simple_evals())
 ```
 
-Functionality between the synchronous and asynchronous clients is otherwise identical.
+The `@eval` decorator creates a 'test' span for `paris_test`. When `query_ai` (an `@interaction`-decorated function) is called within `paris_test`, its own interaction span is also created. This interaction span is nested under the 'test' span, creating a trace of the evaluation. Both spans are sent to Gentrace.
 
-## Using types
-
-Nested request parameters are [TypedDicts](https://docs.python.org/3/library/typing.html#typing.TypedDict). Responses are [Pydantic models](https://docs.pydantic.dev) which also provide helper methods for things like:
-
-- Serializing back into JSON, `model.to_json()`
-- Converting to a dictionary, `model.to_dict()`
-
-Typed requests and responses provide autocomplete and documentation within your editor. If you would like to see type errors in VS Code to help catch bugs earlier, set `python.analysis.typeCheckingMode` to `basic`.
-
-## Handling errors
-
-When the library is unable to connect to the API (for example, due to network connection problems or a timeout), a subclass of `gentrace.APIConnectionError` is raised.
-
-When the API returns a non-success status code (that is, 4xx or 5xx
-response), a subclass of `gentrace.APIStatusError` is raised, containing `status_code` and `response` properties.
-
-All errors inherit from `gentrace.APIError`.
+#### Running Dataset Evaluations (`eval_dataset`)
 
 ```python
-import gentrace
-from gentrace import Gentrace
+import asyncio, os
+from gentrace import TestCase, TestInput, init, experiment, eval_dataset, test_cases_async
+from typing_extensions import TypedDict
+from pydantic import BaseModel
 
-client = Gentrace()
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
+GENTRACE_PIPELINE_ID = os.environ["GENTRACE_PIPELINE_ID"]
+GENTRACE_DATASET_ID = os.environ["GENTRACE_DATASET_ID"]
 
-try:
-    client.pipelines.list()
-except gentrace.APIConnectionError as e:
-    print("The server could not be reached")
-    print(e.__cause__)  # an underlying Exception, likely raised within httpx.
-except gentrace.RateLimitError as e:
-    print("A 429 status code was received; we should back off a bit.")
-except gentrace.APIStatusError as e:
-    print("Another non-200-range status code was received")
-    print(e.status_code)
-    print(e.response)
-```
-
-Error codes are as follows:
-
-| Status Code | Error Type                 |
-| ----------- | -------------------------- |
-| 400         | `BadRequestError`          |
-| 401         | `AuthenticationError`      |
-| 403         | `PermissionDeniedError`    |
-| 404         | `NotFoundError`            |
-| 422         | `UnprocessableEntityError` |
-| 429         | `RateLimitError`           |
-| >=500       | `InternalServerError`      |
-| N/A         | `APIConnectionError`       |
-
-### Retries
-
-Certain errors are automatically retried 2 times by default, with a short exponential backoff.
-Connection errors (for example, due to a network connectivity problem), 408 Request Timeout, 409 Conflict,
-429 Rate Limit, and >=500 Internal errors are all retried by default.
-
-You can use the `max_retries` option to configure or disable retry settings:
-
-```python
-from gentrace import Gentrace
-
-# Configure the default for all requests:
-client = Gentrace(
-    # default is 2
-    max_retries=0,
+init(
+    bearer_token=GENTRACE_API_KEY,
+    # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
-# Or, configure per-request:
-client.with_options(max_retries=5).pipelines.list()
+# Option 1️⃣: Fetch test cases from Gentrace
+async def fetch_test_cases() -> list[TestCase]:
+    cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
+
+    # Each test case within cases.data has an attribute "inputs" with the structure: { query: str }
+    return cases.data
+
+# Option 2️⃣: Provide locally defined test cases by using TestInput and a typed dict 
+# (in this case QueryInputs)
+class QueryInputs(TypedDict):
+    query: str
+
+def custom_test_cases() -> list[TestInput[QueryInputs]]:
+    return [
+        TestInput[QueryInputs](name="Test Case 1", inputs={"query": "Hello, World!"}),
+        TestInput[QueryInputs](name="Test Case 2", inputs={"query": "How does this work?"}),
+    ]
+
+# Optionally, validate the structure of your inputs with Pydantic
+class QueryInputsSchema(BaseModel):
+    query: str
+
+@experiment(pipeline_id=GENTRACE_PIPELINE_ID)
+async def dataset_evals() -> None:
+    # Option 1️⃣: Use test cases from Gentrace
+    await eval_dataset(
+        data=fetch_test_cases,
+        interaction=query_ai,
+        schema=QueryInputsSchema, # Extra validation with Pydantic of the test case structure
+    )
+
+    # Option 2️⃣: Use locally defined test cases
+    await eval_dataset(
+        data=custom_test_cases,
+        interaction=query_ai,
+    )
+
+asyncio.run(dataset_evals())
 ```
 
-### Timeouts
+The `eval_dataset` utility creates a 'test' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created. 
 
-By default requests time out after 1 minute. You can configure this with a `timeout` option,
-which accepts a float or an [`httpx.Timeout`](https://www.python-httpx.org/advanced/#fine-tuning-the-configuration) object:
+This interaction span is nested within its corresponding 'test' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
+
+## OpenTelemetry Integration
+
+OpenTelemetry **must** be running for spans created by `interaction`, `experiment`, `eval`, and `eval_dataset` to be exported. The OpenTelemetry SDK is included as a dependency of this package.
+
+Example setup:
 
 ```python
-from gentrace import Gentrace
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry import trace
+import os
 
-# Configure the default for all requests:
-client = Gentrace(
-    # 20 seconds (default is 1 minute)
-    timeout=20.0,
+# In virtually all cases, you should use https://gentrace.ai/api as the base URL
+GENTRACE_BASE_URL = os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
+GENTRACE_API_KEY = os.environ['GENTRACE_API_KEY']
+
+resource = Resource.create({
+    "service.name": "my-gentrace-app"
+})
+
+provider = TracerProvider(resource=resource)
+trace.set_tracer_provider(provider)
+
+exporter = OTLPSpanExporter(
+    endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
+    headers={
+        "Authorization": f"Bearer {GENTRACE_API_KEY}"
+    },
 )
+processor = SimpleSpanProcessor(exporter)
+provider.add_span_processor(processor)
 
-# More granular control:
-client = Gentrace(
-    timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
-)
-
-# Override per-request:
-client.with_options(timeout=5.0).pipelines.list()
+print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 ```
 
-On timeout, an `APITimeoutError` is thrown.
+## Examples
 
-Note that requests that time out are [retried twice by default](#retries).
+## Setup
+Create a virtual environment with [`uv`](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) and install dependencies:
 
-## Advanced
-
-### Logging
-
-We use the standard library [`logging`](https://docs.python.org/3/library/logging.html) module.
-
-You can enable logging by setting the environment variable `GENTRACE_LOG` to `info`.
-
-```shell
-$ export GENTRACE_LOG=info
+```bash
+uv venv
+source venv/bin/activate # May differ for your shell (e.g. fish → venv/bin/activate.fish)
+uv pip install .[openai]
 ```
 
-Or to `debug` for more verbose logging.
+Check the [`examples/`](examples) directory for runnable scripts that demonstrate the patterns above.
 
-### How to tell whether `None` means `null` or missing
+Each example script requires specific environment variables to be set. Check the documentation at the top of each script for details on the required variables.
 
-In an API response, a field may be explicitly `null`, or missing entirely; in either case, its value is `None` in this library. You can differentiate the two cases with `.model_fields_set`:
-
-```py
-if response.my_field is None:
-  if 'my_field' not in response.model_fields_set:
-    print('Got json like {}, without a "my_field" key present at all.')
-  else:
-    print('Got json like {"my_field": null}.')
-```
-
-### Accessing raw response data (e.g. headers)
-
-The "raw" Response object can be accessed by prefixing `.with_raw_response.` to any HTTP method call, e.g.,
-
-```py
-from gentrace import Gentrace
-
-client = Gentrace()
-response = client.pipelines.with_raw_response.list()
-print(response.headers.get('X-My-Header'))
-
-pipeline = response.parse()  # get the object that `pipelines.list()` would have returned
-print(pipeline.data)
-```
-
-These methods return an [`APIResponse`](https://github.com/gentrace/gentrace-python/tree/main/src/gentrace/_response.py) object.
-
-The async client returns an [`AsyncAPIResponse`](https://github.com/gentrace/gentrace-python/tree/main/src/gentrace/_response.py) with the same structure, the only difference being `await`able methods for reading the response content.
-
-#### `.with_streaming_response`
-
-The above interface eagerly reads the full response body when you make the request, which may not always be what you want.
-
-To stream the response body, use `.with_streaming_response` instead, which requires a context manager and only reads the response body once you call `.read()`, `.text()`, `.json()`, `.iter_bytes()`, `.iter_text()`, `.iter_lines()` or `.parse()`. In the async client, these are async methods.
-
-```python
-with client.pipelines.with_streaming_response.list() as response:
-    print(response.headers.get("X-My-Header"))
-
-    for line in response.iter_lines():
-        print(line)
-```
-
-The context manager is required so that the response will reliably be closed.
-
-### Making custom/undocumented requests
-
-This library is typed for convenient access to the documented API.
-
-If you need to access undocumented endpoints, params, or response properties, the library can still be used.
-
-#### Undocumented endpoints
-
-To make requests to undocumented endpoints, you can make requests using `client.get`, `client.post`, and other
-http verbs. Options on the client will be respected (such as retries) when making this request.
-
-```py
-import httpx
-
-response = client.post(
-    "/foo",
-    cast_to=httpx.Response,
-    body={"my_param": True},
-)
-
-print(response.headers.get("x-foo"))
-```
-
-#### Undocumented request params
-
-If you want to explicitly send an extra param, you can do so with the `extra_query`, `extra_body`, and `extra_headers` request
-options.
-
-#### Undocumented response properties
-
-To access undocumented response properties, you can access the extra fields like `response.unknown_prop`. You
-can also get all the extra fields on the Pydantic model as a dict with
-[`response.model_extra`](https://docs.pydantic.dev/latest/api/base_model/#pydantic.BaseModel.model_extra).
-
-### Configuring the HTTP client
-
-You can directly override the [httpx client](https://www.python-httpx.org/api/#client) to customize it for your use case, including:
-
-- Support for [proxies](https://www.python-httpx.org/advanced/proxies/)
-- Custom [transports](https://www.python-httpx.org/advanced/transports/)
-- Additional [advanced](https://www.python-httpx.org/advanced/clients/) functionality
-
-```python
-import httpx
-from gentrace import Gentrace, DefaultHttpxClient
-
-client = Gentrace(
-    # Or use the `GENTRACE_BASE_URL` env var
-    base_url="http://my.test.server.example.com:8083",
-    http_client=DefaultHttpxClient(
-        proxy="http://my.test.proxy.example.com",
-        transport=httpx.HTTPTransport(local_address="0.0.0.0"),
-    ),
-)
-```
-
-You can also customize the client on a per-request basis by using `with_options()`:
-
-```python
-client.with_options(http_client=DefaultHttpxClient(...))
-```
-
-### Managing HTTP resources
-
-By default the library closes underlying HTTP connections whenever the client is [garbage collected](https://docs.python.org/3/reference/datamodel.html#object.__del__). You can manually close the client using the `.close()` method if desired, or with a context manager that closes when exiting.
-
-```py
-from gentrace import Gentrace
-
-with Gentrace() as client:
-  # make requests here
-  ...
-
-# HTTP client is now closed
-```
-
-## Versioning
-
-This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) conventions, though certain backwards-incompatible changes may be released as minor versions:
-
-1. Changes that only affect static types, without breaking runtime behavior.
-2. Changes to library internals which are technically public but not intended or documented for external use. _(Please open a GitHub issue to let us know if you are relying on such internals.)_
-3. Changes that we do not expect to impact the vast majority of users in practice.
-
-We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
-
-We are keen for your feedback; please open an [issue](https://www.github.com/gentrace/gentrace-python/issues) with questions, bugs, or suggestions.
-
-### Determining the installed version
-
-If you've upgraded to the latest version but aren't seeing any new features you were expecting then your python environment is likely still using an older version.
-
-You can determine the version that is being used at runtime with:
-
-```py
-import gentrace
-print(gentrace.__version__)
+```bash
+GENTRACE_API_KEY=api-key \
+OPENAI_API_KEY=openai-api-key \
+GENTRACE_BASE_URL=https://gentrace.ai/api \
+GENTRACE_PIPELINE_ID=pipeline-id \
+python examples/interaction.py
 ```
 
 ## Requirements
 
-Python 3.8 or higher.
+Python 3.8 or newer.
 
 ## Contributing
 
-See [the contributing documentation](./CONTRIBUTING.md).
+See the [contributing guide](./CONTRIBUTING.md).
+
+## Support
+
+Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
+
