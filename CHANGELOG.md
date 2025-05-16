@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.0.0-alpha.1 (2025-05-16)
+
+Full Changelog: [v0.1.7...v1.0.0-alpha.1](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v1.0.0-alpha.1)
+
+### Features
+
+* **api:** Change to API key from Bearer Token ([0002317](https://github.com/gentrace/gentrace-python/commit/00023175ec93452e4e188b3f0ea0b0c1e384aa0a))
+* **api:** manual updates ([fd29846](https://github.com/gentrace/gentrace-python/commit/fd29846153cfb564ea64f7920de84214833ad5c5))
+
+
+### Bug Fixes
+
+* **api:** change the PyPI package name ([590bf1a](https://github.com/gentrace/gentrace-python/commit/590bf1a072693e868dc605cc030c3fccc1d7a7da))
+* **package:** support direct resource imports ([d4cbf5e](https://github.com/gentrace/gentrace-python/commit/d4cbf5e345b436c3a9edadcae8215e1fc882cba2))
+
+
+### Chores
+
+* **ci:** upload sdks to package manager ([de63329](https://github.com/gentrace/gentrace-python/commit/de633299f30b4fc55888db8da9fd4346afa2a9ab))
+* **internal:** avoid errors for isinstance checks on proxies ([02c9e3d](https://github.com/gentrace/gentrace-python/commit/02c9e3dceee7d4bde615c9528694447f3adf24eb))
+* **internal:** version bump ([86c6815](https://github.com/gentrace/gentrace-python/commit/86c68153521fa5cb19c697bc1758325e5384a1a2))
+
 ## 0.1.7 (2025-05-07)
 
 Full Changelog: [v0.0.1-alpha.0...v0.1.7](https://github.com/gentrace/gentrace-python/compare/v0.0.1-alpha.0...v0.1.7)

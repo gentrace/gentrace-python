@@ -9,7 +9,8 @@ The full API documentation can be found in [api.md](api.md).
 ## Installation
 
 ```sh
-pip install gentrace-py
+# install from PyPI
+pip install --pre gentrace-py
 ```
 
 ## Core Concepts
