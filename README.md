@@ -16,7 +16,7 @@ The REST API documentation can be found on [gentrace.ai](https://gentrace.ai). T
 
 ```sh
 # install from PyPI
-pip install gentrace-py
+pip install --pre gentrace-py
 ```
 
 ## Usage
