@@ -7,17 +7,17 @@ from ._proxy import LazyProxy
 
 
 class ResourcesProxy(LazyProxy[Any]):
-    """A proxy for the `gentrace_py.resources` module.
+    """A proxy for the `gentrace.resources` module.
 
-    This is used so that we can lazily import `gentrace_py.resources` only when
-    needed *and* so that users can just import `gentrace_py` and reference `gentrace_py.resources`
+    This is used so that we can lazily import `gentrace.resources` only when
+    needed *and* so that users can just import `gentrace` and reference `gentrace.resources`
     """
 
     @override
     def __load__(self) -> Any:
         import importlib
 
-        mod = importlib.import_module("gentrace_py.resources")
+        mod = importlib.import_module("gentrace.resources")
         return mod
 
 
