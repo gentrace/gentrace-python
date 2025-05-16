@@ -1,6 +1,6 @@
 # File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
-from typing import Any, Union, Callable, cast
+import typing as _t
 
 from . import types
 from ._types import NOT_GIVEN, Omit, NoneType, NotGiven, Transport, ProxiesTypes
@@ -63,12 +63,12 @@ class _ResourceWrapper:
         resource_name: The name of the resource to wrap (e.g. "pipelines", "experiments")
     """
 
-    def __init__(self, client_accessor_func: Callable[[], Union[Gentrace, AsyncGentrace]], resource_name: str):
+    def __init__(self, client_accessor_func: _t.Callable[[], _t.Union[Gentrace, AsyncGentrace]], resource_name: str):
         """Initializes the resource wrapper."""
         self._client_accessor_func = client_accessor_func
         self._resource_name = resource_name
 
-    def __getattr__(self, name: str) -> Any:
+    def __getattr__(self, name: str) -> _t.Any:
         """Gets an attribute from the underlying resource.
 
         Args:
@@ -82,15 +82,15 @@ class _ResourceWrapper:
         return getattr(resource_obj, name)
 
 
-pipelines = cast(PipelinesResource, _ResourceWrapper(_get_sync_client_instance, "pipelines"))
-experiments = cast(ExperimentsResource, _ResourceWrapper(_get_sync_client_instance, "experiments"))
-datasets = cast(DatasetsResource, _ResourceWrapper(_get_sync_client_instance, "datasets"))
-test_cases = cast(TestCasesResource, _ResourceWrapper(_get_sync_client_instance, "test_cases"))
+pipelines = _t.cast(PipelinesResource, _ResourceWrapper(_get_sync_client_instance, "pipelines"))
+experiments = _t.cast(ExperimentsResource, _ResourceWrapper(_get_sync_client_instance, "experiments"))
+datasets = _t.cast(DatasetsResource, _ResourceWrapper(_get_sync_client_instance, "datasets"))
+test_cases = _t.cast(TestCasesResource, _ResourceWrapper(_get_sync_client_instance, "test_cases"))
 
-pipelines_async = cast(AsyncPipelinesResource, _ResourceWrapper(_get_async_client_instance, "pipelines"))
-experiments_async = cast(AsyncExperimentsResource, _ResourceWrapper(_get_async_client_instance, "experiments"))
-datasets_async = cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_instance, "datasets"))
-test_cases_async = cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
+pipelines_async = _t.cast(AsyncPipelinesResource, _ResourceWrapper(_get_async_client_instance, "pipelines"))
+experiments_async = _t.cast(AsyncExperimentsResource, _ResourceWrapper(_get_async_client_instance, "experiments"))
+datasets_async = _t.cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_instance, "datasets"))
+test_cases_async = _t.cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
 
 from .types import Dataset, Pipeline, TestCase, Experiment
 from .lib.eval import eval
@@ -175,6 +175,9 @@ __all__ = [
     "Pipeline",
     # End custom Gentrace exports
 ]
+
+if not _t.TYPE_CHECKING:
+    from ._utils._resources_proxy import resources as resources
 
 _setup_logging()
 

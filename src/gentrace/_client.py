@@ -51,12 +51,12 @@ class Gentrace(SyncAPIClient):
     with_streaming_response: GentraceWithStreamedResponse
 
     # client options
-    bearer_token: str
+    api_key: str
 
     def __init__(
         self,
         *,
-        bearer_token: str | None = None,
+        api_key: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: Union[float, Timeout, None, NotGiven] = NOT_GIVEN,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -78,15 +78,15 @@ class Gentrace(SyncAPIClient):
     ) -> None:
         """Construct a new synchronous Gentrace client instance.
 
-        This automatically infers the `bearer_token` argument from the `GENTRACE_API_KEY` environment variable if it is not provided.
+        This automatically infers the `api_key` argument from the `GENTRACE_API_KEY` environment variable if it is not provided.
         """
-        if bearer_token is None:
-            bearer_token = os.environ.get("GENTRACE_API_KEY")
-        if bearer_token is None:
+        if api_key is None:
+            api_key = os.environ.get("GENTRACE_API_KEY")
+        if api_key is None:
             raise GentraceError(
-                "The bearer_token client option must be set either by passing bearer_token to the client or by setting the GENTRACE_API_KEY environment variable"
+                "The api_key client option must be set either by passing api_key to the client or by setting the GENTRACE_API_KEY environment variable"
             )
-        self.bearer_token = bearer_token
+        self.api_key = api_key
 
         if base_url is None:
             base_url = os.environ.get("GENTRACE_BASE_URL")
@@ -119,8 +119,8 @@ class Gentrace(SyncAPIClient):
     @property
     @override
     def auth_headers(self) -> dict[str, str]:
-        bearer_token = self.bearer_token
-        return {"Authorization": f"Bearer {bearer_token}"}
+        api_key = self.api_key
+        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -134,7 +134,7 @@ class Gentrace(SyncAPIClient):
     def copy(
         self,
         *,
-        bearer_token: str | None = None,
+        api_key: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = NOT_GIVEN,
         http_client: httpx.Client | None = None,
@@ -168,7 +168,7 @@ class Gentrace(SyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
-            bearer_token=bearer_token or self.bearer_token,
+            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,
@@ -225,12 +225,12 @@ class AsyncGentrace(AsyncAPIClient):
     with_streaming_response: AsyncGentraceWithStreamedResponse
 
     # client options
-    bearer_token: str
+    api_key: str
 
     def __init__(
         self,
         *,
-        bearer_token: str | None = None,
+        api_key: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: Union[float, Timeout, None, NotGiven] = NOT_GIVEN,
         max_retries: int = DEFAULT_MAX_RETRIES,
@@ -252,15 +252,15 @@ class AsyncGentrace(AsyncAPIClient):
     ) -> None:
         """Construct a new async AsyncGentrace client instance.
 
-        This automatically infers the `bearer_token` argument from the `GENTRACE_API_KEY` environment variable if it is not provided.
+        This automatically infers the `api_key` argument from the `GENTRACE_API_KEY` environment variable if it is not provided.
         """
-        if bearer_token is None:
-            bearer_token = os.environ.get("GENTRACE_API_KEY")
-        if bearer_token is None:
+        if api_key is None:
+            api_key = os.environ.get("GENTRACE_API_KEY")
+        if api_key is None:
             raise GentraceError(
-                "The bearer_token client option must be set either by passing bearer_token to the client or by setting the GENTRACE_API_KEY environment variable"
+                "The api_key client option must be set either by passing api_key to the client or by setting the GENTRACE_API_KEY environment variable"
             )
-        self.bearer_token = bearer_token
+        self.api_key = api_key
 
         if base_url is None:
             base_url = os.environ.get("GENTRACE_BASE_URL")
@@ -293,8 +293,8 @@ class AsyncGentrace(AsyncAPIClient):
     @property
     @override
     def auth_headers(self) -> dict[str, str]:
-        bearer_token = self.bearer_token
-        return {"Authorization": f"Bearer {bearer_token}"}
+        api_key = self.api_key
+        return {"Authorization": f"Bearer {api_key}"}
 
     @property
     @override
@@ -308,7 +308,7 @@ class AsyncGentrace(AsyncAPIClient):
     def copy(
         self,
         *,
-        bearer_token: str | None = None,
+        api_key: str | None = None,
         base_url: str | httpx.URL | None = None,
         timeout: float | Timeout | None | NotGiven = NOT_GIVEN,
         http_client: httpx.AsyncClient | None = None,
@@ -342,7 +342,7 @@ class AsyncGentrace(AsyncAPIClient):
 
         http_client = http_client or self._client
         return self.__class__(
-            bearer_token=bearer_token or self.bearer_token,
+            api_key=api_key or self.api_key,
             base_url=base_url or self.base_url,
             timeout=self.timeout if isinstance(timeout, NotGiven) else timeout,
             http_client=http_client,

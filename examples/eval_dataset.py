@@ -46,7 +46,7 @@ if not dataset_id:
 if not pipeline_id:
     raise ValueError("GENTRACE_PIPELINE_ID environment variable not set.")
 
-init(bearer_token=gentrace_api_key, base_url=gentrace_base_url)
+init(api_key=gentrace_api_key, base_url=gentrace_base_url)
 
 
 class QueryInputsSchema(BaseModel):

@@ -15,7 +15,7 @@ import os
 from gentrace import init
 
 init(
-    bearer_token=os.getenv("GENTRACE_API_KEY"),
+    api_key=os.getenv("GENTRACE_API_KEY"),
     # Optional for self-hosted deployments: base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
 )
 

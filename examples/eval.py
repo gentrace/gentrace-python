@@ -29,7 +29,7 @@ if not gentrace_base_url:
 
 init(
     base_url=gentrace_base_url,
-    bearer_token=gentrace_api_key,
+    api_key=gentrace_api_key,
 )
 
 logging.basicConfig(level=logging.INFO)

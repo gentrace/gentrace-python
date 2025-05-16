@@ -29,7 +29,7 @@ async def main() -> None:
         raise ValueError("GENTRACE_DATASET_ID environment variable not set.")
 
     init(
-        bearer_token=api_key,
+        api_key=api_key,
         base_url=base_url,
     )
 

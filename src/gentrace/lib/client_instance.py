@@ -14,7 +14,7 @@ def _get_default_options() -> Dict[str, str]:
     Fetches default Gentrace options from environment variables.
 
     Returns:
-        A dictionary containing "bearer_token" and "base_url" if the
+        A dictionary containing "api_key" and "base_url" if the
         corresponding GENTRACE_API_KEY and GENTRACE_BASE_URL environment
         variables are set. Returns an empty dictionary otherwise.
     """
@@ -23,7 +23,7 @@ def _get_default_options() -> Dict[str, str]:
     base_url = os.environ.get("GENTRACE_BASE_URL")
 
     if api_key:
-        options["bearer_token"] = api_key
+        options["api_key"] = api_key
     if base_url:
         options["base_url"] = base_url
     return options
@@ -37,9 +37,9 @@ def _get_default_sync_client() -> Optional[Gentrace]:
         A Gentrace client instance if GENTRACE_API_KEY is set, None otherwise.
     """
     options = _get_default_options()
-    if "bearer_token" in options:
+    if "api_key" in options:
         return Gentrace(
-            bearer_token=options["bearer_token"],
+            api_key=options["api_key"],
             base_url=options.get("base_url"),  # Can be None
             timeout=NOT_GIVEN,
             default_headers=None,
@@ -56,9 +56,9 @@ def _get_default_async_client() -> Optional[AsyncGentrace]:
         An AsyncGentrace client instance if GENTRACE_API_KEY is set, None otherwise.
     """
     options = _get_default_options()
-    if "bearer_token" in options:
+    if "api_key" in options:
         return AsyncGentrace(
-            bearer_token=options["bearer_token"],
+            api_key=options["api_key"],
             base_url=options.get("base_url"),  # Can be None
             timeout=NOT_GIVEN,
             default_headers=None,
