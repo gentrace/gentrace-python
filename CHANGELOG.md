@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.2 (2025-05-16)
+
+Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.2)
+
+### Chores
+
+* **ci:** fix installation instructions ([19c9ef4](https://github.com/gentrace/gentrace-python/commit/19c9ef46263edbf250411cca73545af0727363c5))
+
 ## 1.0.0-alpha.1 (2025-05-16)
 
 Full Changelog: [v0.1.7...v1.0.0-alpha.1](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v1.0.0-alpha.1)
