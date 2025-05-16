@@ -5,19 +5,19 @@ from gentrace import Gentrace, AsyncGentrace
 from .client_instance import _set_client_instances
 
 
-def init(*, bearer_token: Optional[str] = None, base_url: Optional[str] = None, **kwargs: Any) -> None:
+def init(*, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwargs: Any) -> None:
     """
     Initializes the Gentrace SDK, configuring global client instances.
 
     This function sets up both synchronous and asynchronous Gentrace clients.
-    If `bearer_token` is not provided, the underlying clients will attempt to use the
+    If `api_key` is not provided, the underlying clients will attempt to use the
     GENTRACE_API_KEY environment variable. If `base_url` is not provided, they will
     attempt to use the GENTRACE_BASE_URL environment variable or a default URL.
 
     All arguments must be passed as keyword arguments.
 
     Args:
-        bearer_token (Optional[str]): The Gentrace API key (bearer token).
+        api_key (Optional[str]): The Gentrace API key
             If None, GENTRACE_API_KEY environment variable is used by clients.
         base_url (Optional[str]): The base URL for the Gentrace API. If not provided,
             it's determined by the client (env variable or default).
@@ -37,8 +37,8 @@ def init(*, bearer_token: Optional[str] = None, base_url: Optional[str] = None, 
         available for subsequent API calls through the gentrace library.
     """
     constructor_args: Dict[str, Any] = {}
-    if bearer_token is not None:
-        constructor_args["bearer_token"] = bearer_token
+    if api_key is not None:
+        constructor_args["api_key"] = api_key
 
     if base_url is not None:
         constructor_args["base_url"] = base_url

@@ -66,7 +66,7 @@ trace.set_tracer_provider(tracer_provider)
 
 tracer = trace.get_tracer(__name__)
 
-init(bearer_token=gentrace_api_key, base_url=gentrace_base_url)
+init(api_key=gentrace_api_key, base_url=gentrace_base_url)
 
 
 class InteractionInput(TypedDict):

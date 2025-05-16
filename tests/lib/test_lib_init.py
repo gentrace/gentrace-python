@@ -19,18 +19,16 @@ def test_init_with_all_args_and_kwargs() -> None:
         mock_gentrace_cls.return_value = mock_sync_client_instance
         mock_async_gentrace_cls.return_value = mock_async_client_instance
 
-        function_under_test(bearer_token="test_token_val", base_url="http://testserver", timeout=60)
+        function_under_test(api_key="test_token_val", base_url="http://testserver", timeout=60)
 
-        mock_gentrace_cls.assert_called_once_with(
-            bearer_token="test_token_val", base_url="http://testserver", timeout=60
-        )
+        mock_gentrace_cls.assert_called_once_with(api_key="test_token_val", base_url="http://testserver", timeout=60)
         mock_async_gentrace_cls.assert_called_once_with(
-            bearer_token="test_token_val", base_url="http://testserver", timeout=60
+            api_key="test_token_val", base_url="http://testserver", timeout=60
         )
         mock_set_instances.assert_called_once_with(mock_sync_client_instance, mock_async_client_instance)
 
 
-def test_init_with_bearer_token_only() -> None:
+def test_init_with_api_key_only() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
     ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances:
@@ -39,10 +37,10 @@ def test_init_with_bearer_token_only() -> None:
         mock_gentrace_cls.return_value = mock_sync_client_instance
         mock_async_gentrace_cls.return_value = mock_async_client_instance
 
-        function_under_test(bearer_token="test_token_val")
+        function_under_test(api_key="test_token_val")
 
-        mock_gentrace_cls.assert_called_once_with(bearer_token="test_token_val")
-        mock_async_gentrace_cls.assert_called_once_with(bearer_token="test_token_val")
+        mock_gentrace_cls.assert_called_once_with(api_key="test_token_val")
+        mock_async_gentrace_cls.assert_called_once_with(api_key="test_token_val")
         mock_set_instances.assert_called_once_with(mock_sync_client_instance, mock_async_client_instance)
 
 
