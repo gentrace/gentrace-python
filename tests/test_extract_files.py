@@ -4,8 +4,8 @@ from typing import Sequence
 
 import pytest
 
-from gentrace_py._types import FileTypes
-from gentrace_py._utils import extract_files
+from gentrace._types import FileTypes
+from gentrace._utils import extract_files
 
 
 def test_removes_files_from_input() -> None:

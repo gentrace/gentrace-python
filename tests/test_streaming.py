@@ -5,8 +5,8 @@ from typing import Iterator, AsyncIterator
 import httpx
 import pytest
 
-from gentrace_py import Gentrace, AsyncGentrace
-from gentrace_py._streaming import Stream, AsyncStream, ServerSentEvent
+from gentrace import Gentrace, AsyncGentrace
+from gentrace._streaming import Stream, AsyncStream, ServerSentEvent
 
 
 @pytest.mark.asyncio

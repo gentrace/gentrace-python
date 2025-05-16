@@ -7,12 +7,9 @@ from typing import Any, cast
 
 import pytest
 
-from gentrace_py import Gentrace, AsyncGentrace
+from gentrace import Gentrace, AsyncGentrace
 from tests.utils import assert_matches_type
-from gentrace_py.types import (
-    Pipeline,
-    PipelineList,
-)
+from gentrace.types import Pipeline, PipelineList
 
 base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 

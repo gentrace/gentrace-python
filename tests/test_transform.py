@@ -8,15 +8,15 @@ from typing_extensions import Required, Annotated, TypedDict
 
 import pytest
 
-from gentrace_py._types import NOT_GIVEN, Base64FileInput
-from gentrace_py._utils import (
+from gentrace._types import NOT_GIVEN, Base64FileInput
+from gentrace._utils import (
     PropertyInfo,
     transform as _transform,
     parse_datetime,
     async_transform as _async_transform,
 )
-from gentrace_py._compat import PYDANTIC_V2
-from gentrace_py._models import BaseModel
+from gentrace._compat import PYDANTIC_V2
+from gentrace._models import BaseModel
 
 _T = TypeVar("_T")
 
