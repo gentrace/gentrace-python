@@ -75,7 +75,45 @@ async def query_ai(query: str) -> str | None:
 
 Each call to a function decorated with `@interaction` (like `query_ai` above) creates a span, capturing its execution details and any associated metadata, inputs, and outputs. This span is then sent to Gentrace.
 
-### 3. Testing and Evaluation
+### 3. Lower-Level Tracing (`traced`)
+
+Use the `traced` decorator to wrap any function with OpenTelemetry tracing, creating a span for its execution. This is useful for instrumenting helper functions or specific blocks of code within a larger system.
+
+```python
+import asyncio
+
+from gentrace import traced, interaction
+from openai import OpenAI
+
+client = OpenAI()
+
+USER_ID = "<user_id>"
+PIPELINE_ID = "<pipeline_id>"
+
+@traced(name="OpenAI Call")
+async def summarize_user(user_info: str) -> str:
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[{"role": "user", "content": f"Summarize the following user info: {user_info}"}]
+    )
+    return response.choices[0].message.content
+
+@traced(name="Get User Info DB Call")
+async def get_user_info(user_id: str) -> str:
+    # This would be a database call in a real application
+    return f"User {user_id}: Sample information"
+
+@interaction(pipeline_id=GENTRACE_PIPELINE_ID)
+async def main_task(input: str) -> str:
+    user_info = await get_user_info(input)
+    return await summarize_user(user_info)
+
+asyncio.run(main_task(USER_ID))
+```
+
+You can also provide additional `attributes` to the `@traced` decorator to add to the span. Like `interaction`, this also requires OpenTelemetry to be set up properly.
+
+### 4. Testing and Evaluation
 
 #### Running Single Evaluations (`eval`)
 
@@ -139,7 +177,7 @@ async def fetch_test_cases() -> list[TestCase]:
     # Each test case within cases.data has an attribute "inputs" with the structure: { query: str }
     return cases.data
 
-# Option 2️⃣: Provide locally defined test cases by using TestInput and a typed dict 
+# Option 2️⃣: Provide locally defined test cases by using TestInput and a typed dict
 # (in this case QueryInputs)
 class QueryInputs(TypedDict):
     query: str
@@ -172,7 +210,7 @@ async def dataset_evals() -> None:
 asyncio.run(dataset_evals())
 ```
 
-The `eval_dataset` utility creates a 'test' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created. 
+The `eval_dataset` utility creates a 'test' span for each test case processed from the dataset. If the `interaction` argument (e.g., `query_ai`) is an `@interaction`-decorated function, then for each test case, an additional interaction span is created.
 
 This interaction span is nested within its corresponding 'test' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
 
@@ -216,6 +254,7 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
 ## Examples
 
 ## Setup
+
 Create a virtual environment with [`uv`](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer) and install dependencies:
 
 ```bash
@@ -247,4 +286,3 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
-
