@@ -176,6 +176,24 @@ The `eval_dataset` utility creates a 'test' span for each test case processed fr
 
 This interaction span is nested within its corresponding 'test' span. All these spans are sent to Gentrace, allowing detailed analysis of how the interaction performs across the entire dataset.
 
+### Span Hierarchy Visualization
+
+```
+[SPAN] Test Case 1
+├─── [SPAN] @interaction Function
+│    ├─── [SPAN] traced() (LLM call)
+│    │    ├─── Model: gpt-4
+│    │    ├─── Input: "What is the capital of France?"
+│    │    └─── Output: "The capital of France is Paris."
+│    │
+│    └─── [SPAN] traced() (Tool call)
+│         ├─── Tool: search_wikipedia
+│         ├─── Input: "Paris"
+│         └─── Output: "Paris is the capital and most populous city of France..."
+```
+
+This hierarchical structure allows Gentrace to provide detailed analysis of performance and behavior at different levels of granularity.
+
 ## OpenTelemetry Integration
 
 OpenTelemetry **must** be running for spans created by `interaction`, `experiment`, `eval`, and `eval_dataset` to be exported. The OpenTelemetry SDK is included as a dependency of this package.
@@ -247,4 +265,3 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
-
