@@ -179,25 +179,17 @@ This interaction span is nested within its corresponding 'test' span. All these 
 ### Span Hierarchy Visualization
 
 ```
-┌─────────────── eval_dataset() Span ────────────────┐
-│                                                    │
-│  ┌─────────── Test Case Span ───────────────┐      │
-│  │                                          │      │
-│  │  ┌────── @interaction Span ──────────┐   │      │
-│  │  │                                   │   │      │
-│  │  │  ┌─── traced() Span (LLM) ─────┐  │   │      │
-│  │  │  │                            │  │   │      │
-│  │  │  └────────────────────────────┘  │   │      │
-│  │  │                                   │   │      │
-│  │  │  ┌─── traced() Span (Tool) ────┐  │   │      │
-│  │  │  │                            │  │   │      │
-│  │  │  └────────────────────────────┘  │   │      │
-│  │  │                                   │   │      │
-│  │  └───────────────────────────────────┘   │      │
-│  │                                          │      │
-│  └──────────────────────────────────────────┘      │
-│                                                    │
-└────────────────────────────────────────────────────┘
+[SPAN] Test Case 1
+├─── [SPAN] @interaction Function
+│    ├─── [SPAN] traced() (LLM call)
+│    │    ├─── Model: gpt-4
+│    │    ├─── Input: "What is the capital of France?"
+│    │    └─── Output: "The capital of France is Paris."
+│    │
+│    └─── [SPAN] traced() (Tool call)
+│         ├─── Tool: search_wikipedia
+│         ├─── Input: "Paris"
+│         └─── Output: "Paris is the capital and most populous city of France..."
 ```
 
 This hierarchical structure allows Gentrace to provide detailed analysis of performance and behavior at different levels of granularity.
