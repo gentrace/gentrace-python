@@ -205,17 +205,17 @@ provider = TracerProvider(
 )
 trace.set_tracer_provider(provider)
 
-
-# Add GentraceSpanProcessor to propagate gentrace.sample attribute
-provider.add_span_processor(GentraceSpanProcessor())
-provider.add_span_processor(SimpleSpanProcessor(exporter))
-
 exporter = OTLPSpanExporter(
     endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
     headers={
         "Authorization": f"Bearer {GENTRACE_API_KEY}"
     },
 )
+
+# Add GentraceSpanProcessor to propagate gentrace.sample attribute
+provider.add_span_processor(GentraceSpanProcessor())
+provider.add_span_processor(SimpleSpanProcessor(exporter))
+
 processor = SimpleSpanProcessor(exporter)
 provider.add_span_processor(processor)
 
