@@ -188,6 +188,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry import trace
+from gentrace import GentraceSampler, GentraceSpanProcessor
 import os
 
 # In virtually all cases, you should use https://gentrace.ai/api as the base URL
@@ -198,8 +199,14 @@ resource = Resource.create({
     "service.name": "my-gentrace-app"
 })
 
-provider = TracerProvider(resource=resource)
+provider = TracerProvider(
+    resource=resource,
+    sampler=GentraceSampler()  # Use GentraceSampler for selective tracing
+)
 trace.set_tracer_provider(provider)
+
+# Add GentraceSpanProcessor to propagate gentrace.sample attribute
+provider.add_span_processor(GentraceSpanProcessor())
 
 exporter = OTLPSpanExporter(
     endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
@@ -211,6 +218,65 @@ processor = SimpleSpanProcessor(exporter)
 provider.add_span_processor(processor)
 
 print("OpenTelemetry SDK started – spans will be sent to Gentrace.")
+```
+
+### GentraceSampler and GentraceSpanProcessor
+
+Gentrace provides two specialized OpenTelemetry components to help control which spans are sent to Gentrace:
+
+#### GentraceSampler
+
+The `GentraceSampler` is a custom OpenTelemetry sampler that selectively samples spans based on the presence of a `gentrace.sample` attribute. This helps reduce the volume of telemetry data by only sending relevant spans to Gentrace.
+
+```python
+from gentrace import GentraceSampler
+from opentelemetry.sdk.trace import TracerProvider
+
+# Create a tracer provider with the GentraceSampler
+provider = TracerProvider(
+    resource=resource,
+    sampler=GentraceSampler()
+)
+```
+
+How it works:
+- The sampler checks for the `gentrace.sample` key in the OpenTelemetry Baggage or as a span attribute
+- If `gentrace.sample` is set to `"true"`, the span will be sampled and exported to Gentrace
+- Otherwise, the span will be dropped and not exported
+
+This is particularly useful for filtering out spans that are not relevant to Gentrace tracing, reducing noise and data volume.
+
+#### GentraceSpanProcessor
+
+The `GentraceSpanProcessor` is a specialized span processor that ensures the `gentrace.sample` attribute is properly propagated from the OpenTelemetry Baggage to span attributes.
+
+```python
+from gentrace import GentraceSpanProcessor
+
+# Add the GentraceSpanProcessor to your tracer provider
+provider.add_span_processor(GentraceSpanProcessor())
+```
+
+How it works:
+- When a span starts, the processor checks for the `gentrace.sample` key in the current OpenTelemetry Baggage
+- If found, it extracts this value and adds it as an attribute to the span
+- This ensures that the sampling attribute is propagated correctly to all spans that need to be tracked by Gentrace
+
+Using both components together provides optimal control over which spans are sent to Gentrace:
+
+```python
+# Complete example
+provider = TracerProvider(
+    resource=resource,
+    sampler=GentraceSampler()
+)
+trace.set_tracer_provider(provider)
+
+# Add GentraceSpanProcessor first to ensure proper attribute propagation
+provider.add_span_processor(GentraceSpanProcessor())
+
+# Then add your exporter processor
+provider.add_span_processor(SimpleSpanProcessor(exporter))
 ```
 
 ## Examples
@@ -247,4 +313,3 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
-
