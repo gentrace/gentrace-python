@@ -1,0 +1,24 @@
+name: Validate PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  pull-requests: read   # Access to pull request data
+
+jobs:
+  main:
+    name: Validate PR title
+    runs-on: warp-ubuntu-2204-x64-2x
+    steps:
+      - uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            chore
+          requireScope: false  # Optional: enforce scopes like feat(ui)
+
