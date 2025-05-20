@@ -27,7 +27,10 @@ All of these utilities rely on OpenTelemetry to capture and export spans, which 
 
 ## Basic Usage
 
-### 1. Initialisation
+### 1. Initialisation (`init`)
+
+> **TIP**
+> You can get your Gentrace API key at [https://gentrace.ai/s/api-keys](https://gentrace.ai/s/api-keys)
 
 ```python
 import os
@@ -372,4 +375,3 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
-
