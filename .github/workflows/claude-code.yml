@@ -1,58 +1,25 @@
-name: Claude Code
+name: Claude Assistant
 
 on:
   issue_comment:
-    types: [created, edited]
+    types: [created]
   pull_request_review_comment:
-    types: [created, edited]
+    types: [created]
   issues:
-    types: [opened, edited]
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
-  claude-code:
+  claude-response:
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
-      (github.event_name == 'issues' && contains(github.event.issue.body, '@claude')) ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.body, '@claude'))
-    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Run Claude Code
-        uses: anthropics/claude-code-action@v1
+      - uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          allowed_tools: |
-            [
-              "git add *",
-              "git commit -m *",
-              "git push",
-              "python *",
-              "pip *",
-              "pytest *",
-              "ls *",
-              "cat *",
-              "find *",
-              "grep *",
-              "mkdir *",
-              "mv *",
-              "cp *",
-              "rm *",
-              "echo *",
-              "cd *"
-            ]
-          max_turns: 15
-          timeout_minutes: 30
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # Optional: add custom trigger phrase (default: @claude)
+          # trigger_phrase: "/claude"
+          # Optional: add assignee trigger for issues
+          # assignee_trigger: "claude"
 
