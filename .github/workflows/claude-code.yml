@@ -31,7 +31,7 @@ jobs:
           fetch-depth: 0
       
       - name: Run Claude Code
-        uses: anthropics/claude-code-action@v1
+        uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           allowed_tools: |
@@ -55,4 +55,3 @@ jobs:
             ]
           max_turns: 15
           timeout_minutes: 30
-
