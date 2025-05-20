@@ -222,12 +222,12 @@ This interaction span is nested within its corresponding 'test' span. All these 
 ```
 [SPAN] Test Case 1
 ├─── [SPAN] @interaction Function
-│    ├─── [SPAN] traced() (LLM call)
+│    ├─── [SPAN] @traced (LLM call)
 │    │    ├─── Model: gpt-4
 │    │    ├─── Input: "What is the capital of France?"
 │    │    └─── Output: "The capital of France is Paris."
 │    │
-│    └─── [SPAN] traced() (Tool call)
+│    └─── [SPAN] @traced (Tool call)
 │         ├─── Tool: search_wikipedia
 │         ├─── Input: "Paris"
 │         └─── Output: "Paris is the capital and most populous city of France..."
