@@ -18,10 +18,10 @@ pip install --pre gentrace-py
 The Gentrace SDK exposes several key functions to help you instrument and evaluate your AI pipelines:
 
 - **`init`** – Initialise the SDK with your API key and optional base URL.
-- **`interaction`** – Decorator to trace a single function that performs your core AI logic.
-- **`experiment`** – Context decorator that groups related evaluation runs.
-- **`eval`** – Decorator that defines a single evaluation (test case) to run inside an experiment.
-- **`eval_dataset`** – Helper that runs an interaction against every test-case in a dataset.
+- **`interaction`** – Decorator to trace a single function that performs your core AI logic. ([Requires OpenTelemetry](#opentelemetry-integration))
+- **`experiment`** – Context decorator that groups related evaluation runs. ([Requires OpenTelemetry](#opentelemetry-integration))
+- **`eval`** – Decorator that defines a single evaluation (test case) to run inside an experiment. ([Requires OpenTelemetry](#opentelemetry-integration))
+- **`eval_dataset`** – Helper that runs an interaction against every test-case in a dataset. ([Requires OpenTelemetry](#opentelemetry-integration))
 
 All of these utilities rely on OpenTelemetry to capture and export spans, which represent units of work or operations within your application. These spans are then sent to Gentrace for visualization and analysis. Make sure you have an OTel SDK running (see [OpenTelemetry Integration](#opentelemetry-integration)).
 
@@ -77,7 +77,7 @@ Each call to a function decorated with `@interaction` (like `query_ai` above) cr
 
 ### 3. Lower-Level Tracing (`traced`)
 
-Use the `traced` decorator to wrap any function with OpenTelemetry tracing, creating a span for its execution. This is useful for instrumenting helper functions or specific blocks of code within a larger system.
+Use the `traced` decorator to wrap any function with OpenTelemetry tracing, creating a span for its execution. This is useful for instrumenting helper functions or specific blocks of code within a larger system. ([Requires OpenTelemetry](#opentelemetry-integration))
 
 ```python
 import asyncio
@@ -372,3 +372,4 @@ See the [contributing guide](./CONTRIBUTING.md).
 ## Support
 
 Questions or feedback? [support@gentrace.ai](mailto:support@gentrace.ai)
+
