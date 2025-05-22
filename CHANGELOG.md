@@ -1,5 +1,28 @@
 # Changelog
 
+## 1.0.0-alpha.2 (2025-05-22)
+
+Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.2)
+
+### Features
+
+* Add Claude Assistant GitHub Action workflow ([#296](https://github.com/gentrace/gentrace-python/issues/296)) ([3ff4c9a](https://github.com/gentrace/gentrace-python/commit/3ff4c9acb53bdbfb37c86102e1d49aa8c4e84978))
+* add PR title validation workflow ([#293](https://github.com/gentrace/gentrace-python/issues/293)) ([47c7730](https://github.com/gentrace/gentrace-python/commit/47c77301ea8470c5f0d23466396d478f77080092))
+
+
+### Bug Fixes
+
+* add span hierarchy visualization to README ([#294](https://github.com/gentrace/gentrace-python/issues/294)) ([14447cd](https://github.com/gentrace/gentrace-python/commit/14447cd8e7f14743da2efb00c008173393bdd2f6))
+
+
+### Chores
+
+* Add documentation note about `[@traced](https://github.com/traced)()` ([#291](https://github.com/gentrace/gentrace-python/issues/291)) ([b056034](https://github.com/gentrace/gentrace-python/commit/b0560340efb813f89469b81f93ffa212b422722e))
+* Add GentraceSampler and GentraceSpanProcessor documentation to README ([#292](https://github.com/gentrace/gentrace-python/issues/292)) ([4113a1a](https://github.com/gentrace/gentrace-python/commit/4113a1a86b641a3228a3142b5f3c376724277fe1))
+* **ci:** fix installation instructions ([8f6752f](https://github.com/gentrace/gentrace-python/commit/8f6752f86517efa8fcd80413ba9957f17dadc14b))
+* **docs:** grammar improvements ([5d804a2](https://github.com/gentrace/gentrace-python/commit/5d804a22fc6c58f8a69750fdeb5d1b8d83be451e))
+* **internal:** codegen related update ([8409306](https://github.com/gentrace/gentrace-python/commit/8409306f9909b6fae67fc6bec1d90f48222067cf))
+
 ## 1.0.0-alpha.1 (2025-05-16)
 
 Full Changelog: [v0.1.7...v1.0.0-alpha.1](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v1.0.0-alpha.1)
