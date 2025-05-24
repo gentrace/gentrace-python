@@ -5,8 +5,8 @@ from typing import Any, Set, Dict
 
 from pydantic import BaseModel
 from rich.text import Text
-from rich.console import Console
 from rich.syntax import Syntax
+from rich.console import Console
 from opentelemetry import trace as trace_api
 from opentelemetry.util import types as otel_types
 from opentelemetry.sdk.trace import TracerProvider as SDKTracerProvider
