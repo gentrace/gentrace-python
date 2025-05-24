@@ -104,7 +104,7 @@ class GentraceConsole:
         """Create a styled table."""
         return Table(title=title, show_header=True, header_style="bold magenta", **kwargs)
 
-    def create_progress_bar(self, description: str = "Processing...") -> Progress:
+    def create_progress_bar(self) -> Progress:
         """Create a styled progress bar."""
         return Progress(
             SpinnerColumn(),
