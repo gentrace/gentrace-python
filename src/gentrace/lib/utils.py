@@ -6,6 +6,7 @@ from typing import Any, Set, Dict
 from pydantic import BaseModel
 from rich.text import Text
 from rich.console import Console
+from rich.syntax import Syntax
 from opentelemetry import trace as trace_api
 from opentelemetry.util import types as otel_types
 from opentelemetry.sdk.trace import TracerProvider as SDKTracerProvider
@@ -24,7 +25,8 @@ _otel_config_warning_issued = False
 def check_otel_config_and_warn() -> None:
     """
     Checks if a proper OpenTelemetry SDK TracerProvider is configured.
-    If not, issues a warning using `rich` for hyperlink formatting.
+    If not, issues a warning using `rich` for hyperlink formatting and displays
+    formatted OTEL starter code that can be used directly.
     The warning is issued only once per Python session.
     """
     global _otel_config_warning_issued
@@ -37,8 +39,36 @@ def check_otel_config_and_warn() -> None:
         otel_setup_url = "https://github.com/gentrace/gentrace-python/blob/main/README.md#opentelemetry-integration"
         link_text = "Gentrace OpenTelemetry Setup Guide"
 
+        # OTEL starter code that users can copy and use directly
+        otel_starter_code = '''import os
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.resources import Resource
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+# Set up the resource with service name
+resource = Resource(attributes={"service.name": "your-service-name"})
+
+# Create and set the tracer provider
+trace.set_tracer_provider(TracerProvider(resource=resource))
+
+# Configure the OTLP exporter for Gentrace
+otlp_headers = {"Authorization": f"Bearer {os.getenv('GENTRACE_API_KEY')}"}
+span_exporter = OTLPSpanExporter(
+    endpoint=f"{os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai')}/otel/v1/traces",
+    headers=otlp_headers
+)
+
+# Add the span processor
+trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
+
+print("OpenTelemetry SDK started – spans will be sent to Gentrace.")'''
+
         try:
-            # Primary warning mechanism using rich for hyperlink support
+            console = Console(stderr=True, highlight=False)
+            
+            # Primary warning message using rich for hyperlink support
             message = Text()
             message.append(
                 "Gentrace: OpenTelemetry SDK (TracerProvider) does not appear to be configured. ", style="yellow"
@@ -56,8 +86,25 @@ def check_otel_config_and_warn() -> None:
             message.append(link_text, style=f"underline #90EE90 link {otel_setup_url}")
             message.append(".")
 
-            console = Console(stderr=True, highlight=False)
             console.print(message)
+            console.print()  # Add spacing
+            
+            # Display the formatted OTEL starter code
+            console.print(Text("Here's the OTEL starter code you can use:", style="bold cyan"))
+            console.print()
+            
+            syntax = Syntax(
+                otel_starter_code,
+                "python",
+                theme="monokai",
+                line_numbers=True,
+                word_wrap=True,
+                background_color="default"
+            )
+            console.print(syntax)
+            console.print()
+            
+            console.print(Text("💡 Copy the code above and add it to your application startup.", style="bold green"))
 
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = (
