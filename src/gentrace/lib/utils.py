@@ -1,7 +1,7 @@
 import json
 import logging
 import warnings
-from typing import Any, Set, Dict, List, Union, Optional
+from typing import Any, Set, Dict, List, Union, Optional, Tuple, cast
 from datetime import datetime
 from collections.abc import Sequence
 
@@ -147,9 +147,12 @@ class GentraceConsole:
 
         for item in items:
             if isinstance(item, (list, tuple)) and columns:
-                table.add_row(*[str(elem) for elem in item])
+                # Cast item to sequence to help type checker
+                elem_list = cast(Union[List[Any], Tuple[Any, ...]], item)
+                table.add_row(*[str(elem) for elem in elem_list])
             else:
-                table.add_row(str(item))
+                # Cast to help type checker with the str() call
+                table.add_row(str(cast(Any, item)))
 
         self._console.print(table)
 
@@ -556,7 +559,8 @@ def print_evaluation_results(results: Dict[str, Any], title: str = "Evaluation R
     for key, value in results.items():
         if isinstance(value, dict):
             subtree = tree.add(f"[cyan]{key}[/cyan]")
-            for sub_k, sub_v in value.items():
+            value_dict = cast(Dict[str, Any], value)
+            for sub_k, sub_v in value_dict.items():
                 subtree.add(f"[green]{sub_k}[/green]: {sub_v}")
         else:
             tree.add(f"[green]{key}[/green]: {value}")
