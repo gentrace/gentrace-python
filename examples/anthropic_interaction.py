@@ -5,6 +5,7 @@ and monitor interactions within an application using Anthropic's Claude API. It 
 - Tracing synchronous and asynchronous calls to Anthropic's API.
 - Utilizing Gentrace's @traced and @interaction decorators for enhanced observability.
 - Handling both successful operations and simulated errors.
+- Following genAI semantic conventions for AI observability.
 
 To run this example, ensure the following environment variables are set:
     GENTRACE_API_KEY: Your Gentrace API token for authentication.
@@ -19,7 +20,8 @@ from typing import Dict
 
 from anthropic import Anthropic, AsyncAnthropic
 from opentelemetry import trace
-from anthropic.types import Message
+from anthropic.types import Message, MessageParam
+from opentelemetry.trace import Status, StatusCode
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
@@ -65,22 +67,132 @@ trace.set_tracer_provider(tracer_provider)
 
 @traced(name="sync_anthropic_llm_call", attributes={"llm_vendor": "Anthropic", "llm_model": "claude-3-5-sonnet-20241022"})
 def sync_anthropic_llm_call(prompt: str) -> Message:
-    response = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=1000,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response
+    current_span = trace.get_current_span()
+    
+    model = "claude-3-5-sonnet-20241022"
+    max_tokens = 1000
+    messages: list[MessageParam] = [{"role": "user", "content": prompt}]
+    
+    # Set genAI semantic convention attributes
+    current_span.set_attributes({
+        "gen_ai.system": "anthropic",
+        "gen_ai.request.model": model,
+        "gen_ai.request.max_tokens": max_tokens,
+        "server.address": "api.anthropic.com",
+        "server.port": 443,
+    })
+    
+    # Add events for request messages
+    for index, msg in enumerate(messages):
+        current_span.add_event(
+            f"gen_ai.{msg['role']}.message",
+            attributes={
+                "gen_ai.message.index": index,
+                "gen_ai.message.role": str(msg["role"]),
+                "gen_ai.message.content": str(msg["content"]),
+            }
+        )
+    
+    try:
+        response = client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            messages=messages
+        )
+        
+        # Set response attributes
+        current_span.set_attributes({
+            "gen_ai.response.id": response.id,
+            "gen_ai.response.model": response.model,
+            "gen_ai.response.finish_reason": response.stop_reason or "",
+            "gen_ai.usage.input_tokens": response.usage.input_tokens,
+            "gen_ai.usage.output_tokens": response.usage.output_tokens,
+        })
+        
+        # Add events for response content
+        for index, content in enumerate(response.content):
+            if content.type == "text":
+                current_span.add_event(
+                    "gen_ai.content",
+                    attributes={
+                        "gen_ai.content.index": index,
+                        "gen_ai.content.type": content.type,
+                        "gen_ai.content.text": content.text,
+                    }
+                )
+        
+        current_span.set_status(Status(StatusCode.OK))
+        return response
+    except Exception as e:
+        current_span.record_exception(e)
+        current_span.set_status(Status(StatusCode.ERROR, str(e)))
+        current_span.set_attribute("error.type", type(e).__name__)
+        raise
 
 
 @traced(name="async_anthropic_llm_call", attributes={"llm_vendor": "Anthropic", "llm_model": "claude-3-5-sonnet-20241022"})
 async def async_anthropic_llm_call(prompt: str) -> Message:
-    response = await async_client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=1000,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response
+    current_span = trace.get_current_span()
+    
+    model = "claude-3-5-sonnet-20241022"
+    max_tokens = 1000
+    messages: list[MessageParam] = [{"role": "user", "content": prompt}]
+    
+    # Set genAI semantic convention attributes
+    current_span.set_attributes({
+        "gen_ai.system": "anthropic",
+        "gen_ai.request.model": model,
+        "gen_ai.request.max_tokens": max_tokens,
+        "server.address": "api.anthropic.com",
+        "server.port": 443,
+    })
+    
+    # Add events for request messages
+    for index, msg in enumerate(messages):
+        current_span.add_event(
+            f"gen_ai.{msg['role']}.message",
+            attributes={
+                "gen_ai.message.index": index,
+                "gen_ai.message.role": str(msg["role"]),
+                "gen_ai.message.content": str(msg["content"]),
+            }
+        )
+    
+    try:
+        response = await async_client.messages.create(
+            model=model,
+            max_tokens=max_tokens,
+            messages=messages
+        )
+        
+        # Set response attributes
+        current_span.set_attributes({
+            "gen_ai.response.id": response.id,
+            "gen_ai.response.model": response.model,
+            "gen_ai.response.finish_reason": response.stop_reason or "",
+            "gen_ai.usage.input_tokens": response.usage.input_tokens,
+            "gen_ai.usage.output_tokens": response.usage.output_tokens,
+        })
+        
+        # Add events for response content
+        for index, content in enumerate(response.content):
+            if content.type == "text":
+                current_span.add_event(
+                    "gen_ai.content",
+                    attributes={
+                        "gen_ai.content.index": index,
+                        "gen_ai.content.type": content.type,
+                        "gen_ai.content.text": content.text,
+                    }
+                )
+        
+        current_span.set_status(Status(StatusCode.OK))
+        return response
+    except Exception as e:
+        current_span.record_exception(e)
+        current_span.set_status(Status(StatusCode.ERROR, str(e)))
+        current_span.set_attribute("error.type", type(e).__name__)
+        raise
 
 
 @interaction(pipeline_id=pipeline_id, name="my_sync_anthropic_interaction_example", attributes={"custom_attr": "sync_value"})
