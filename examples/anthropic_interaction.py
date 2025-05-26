@@ -21,11 +21,12 @@ from typing import Dict
 from anthropic import Anthropic, AsyncAnthropic
 from opentelemetry import trace
 from anthropic.types import Message, MessageParam
-from opentelemetry.trace import Status, StatusCode
+from opentelemetry.trace import Status, StatusCode, Span
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+from opentelemetry.util.types import AttributeValue
 
 from gentrace import GentraceSampler, GentraceSpanProcessor, traced, interaction
 
@@ -67,20 +68,24 @@ trace.set_tracer_provider(tracer_provider)
 
 @traced(name="sync_anthropic_llm_call", attributes={"llm_vendor": "Anthropic", "llm_model": "claude-3-5-sonnet-20241022"})
 def sync_anthropic_llm_call(prompt: str) -> Message:
-    current_span = trace.get_current_span()
+    current_span: Span = trace.get_current_span()
     
     model = "claude-3-5-sonnet-20241022"
     max_tokens = 1000
     messages: list[MessageParam] = [{"role": "user", "content": prompt}]
     
-    # Set genAI semantic convention attributes
-    current_span.set_attributes({
-        "gen_ai.system": "anthropic",
-        "gen_ai.request.model": model,
-        "gen_ai.request.max_tokens": max_tokens,
-        "server.address": "api.anthropic.com",
-        "server.port": 443,
-    })
+    # Set genAI semantic convention attributes for the request
+    request_attributes: Dict[str, AttributeValue] = {}
+    request_attributes["gen_ai.system"] = "anthropic"
+    request_attributes["gen_ai.request.model"] = model
+    request_attributes["gen_ai.request.max_tokens"] = max_tokens
+    request_attributes["server.address"] = "api.anthropic.com"
+    request_attributes["server.port"] = 443
+    
+    for index, msg_param in enumerate(messages):
+        request_attributes[f"gen_ai.prompt.{index}.role"] = str(msg_param["role"])
+        request_attributes[f"gen_ai.prompt.{index}.content"] = str(msg_param["content"])
+    current_span.set_attributes(request_attributes)
     
     # Add events for request messages
     for index, msg in enumerate(messages):
@@ -101,13 +106,20 @@ def sync_anthropic_llm_call(prompt: str) -> Message:
         )
         
         # Set response attributes
-        current_span.set_attributes({
-            "gen_ai.response.id": response.id,
-            "gen_ai.response.model": response.model,
-            "gen_ai.response.finish_reason": response.stop_reason or "",
-            "gen_ai.usage.input_tokens": response.usage.input_tokens,
-            "gen_ai.usage.output_tokens": response.usage.output_tokens,
-        })
+        response_attributes: Dict[str, AttributeValue] = {}
+        response_attributes["gen_ai.response.id"] = response.id
+        response_attributes["gen_ai.response.model"] = response.model
+        response_attributes["gen_ai.response.finish_reason"] = response.stop_reason or ""
+        response_attributes["gen_ai.usage.input_tokens"] = response.usage.input_tokens
+        response_attributes["gen_ai.usage.output_tokens"] = response.usage.output_tokens
+        
+        completion_idx = 0
+        for content_block in response.content:
+            if content_block.type == "text":
+                response_attributes[f"gen_ai.completion.{completion_idx}.role"] = response.role
+                response_attributes[f"gen_ai.completion.{completion_idx}.content"] = content_block.text
+                completion_idx += 1
+        current_span.set_attributes(response_attributes)
         
         # Add events for response content
         for index, content in enumerate(response.content):
@@ -132,20 +144,24 @@ def sync_anthropic_llm_call(prompt: str) -> Message:
 
 @traced(name="async_anthropic_llm_call", attributes={"llm_vendor": "Anthropic", "llm_model": "claude-3-5-sonnet-20241022"})
 async def async_anthropic_llm_call(prompt: str) -> Message:
-    current_span = trace.get_current_span()
+    current_span: Span = trace.get_current_span()
     
     model = "claude-3-5-sonnet-20241022"
     max_tokens = 1000
     messages: list[MessageParam] = [{"role": "user", "content": prompt}]
     
-    # Set genAI semantic convention attributes
-    current_span.set_attributes({
-        "gen_ai.system": "anthropic",
-        "gen_ai.request.model": model,
-        "gen_ai.request.max_tokens": max_tokens,
-        "server.address": "api.anthropic.com",
-        "server.port": 443,
-    })
+    # Set genAI semantic convention attributes for the request
+    request_attributes: Dict[str, AttributeValue] = {}
+    request_attributes["gen_ai.system"] = "anthropic"
+    request_attributes["gen_ai.request.model"] = model
+    request_attributes["gen_ai.request.max_tokens"] = max_tokens
+    request_attributes["server.address"] = "api.anthropic.com"
+    request_attributes["server.port"] = 443
+
+    for index, msg_param in enumerate(messages):
+        request_attributes[f"gen_ai.prompt.{index}.role"] = str(msg_param["role"])
+        request_attributes[f"gen_ai.prompt.{index}.content"] = str(msg_param["content"])
+    current_span.set_attributes(request_attributes)
     
     # Add events for request messages
     for index, msg in enumerate(messages):
@@ -166,13 +182,20 @@ async def async_anthropic_llm_call(prompt: str) -> Message:
         )
         
         # Set response attributes
-        current_span.set_attributes({
-            "gen_ai.response.id": response.id,
-            "gen_ai.response.model": response.model,
-            "gen_ai.response.finish_reason": response.stop_reason or "",
-            "gen_ai.usage.input_tokens": response.usage.input_tokens,
-            "gen_ai.usage.output_tokens": response.usage.output_tokens,
-        })
+        response_attributes: Dict[str, AttributeValue] = {}
+        response_attributes["gen_ai.response.id"] = response.id
+        response_attributes["gen_ai.response.model"] = response.model
+        response_attributes["gen_ai.response.finish_reason"] = response.stop_reason or ""
+        response_attributes["gen_ai.usage.input_tokens"] = response.usage.input_tokens
+        response_attributes["gen_ai.usage.output_tokens"] = response.usage.output_tokens
+
+        completion_idx = 0
+        for content_block in response.content:
+            if content_block.type == "text":
+                response_attributes[f"gen_ai.completion.{completion_idx}.role"] = response.role
+                response_attributes[f"gen_ai.completion.{completion_idx}.content"] = content_block.text
+                completion_idx += 1
+        current_span.set_attributes(response_attributes)
         
         # Add events for response content
         for index, content in enumerate(response.content):
