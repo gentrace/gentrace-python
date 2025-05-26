@@ -21,12 +21,12 @@ from typing import Dict
 from anthropic import Anthropic, AsyncAnthropic
 from opentelemetry import trace
 from anthropic.types import Message, MessageParam
-from opentelemetry.trace import Status, StatusCode, Span
+from opentelemetry.trace import Span, Status, StatusCode
 from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.util.types import AttributeValue
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-from opentelemetry.util.types import AttributeValue
 
 from gentrace import GentraceSampler, GentraceSpanProcessor, traced, interaction
 
