@@ -1,5 +1,32 @@
 # Changelog
 
+## 1.0.0-alpha.2 (2025-05-28)
+
+Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.2)
+
+### Features
+
+* Add Anthropic example and optional dependency ([#305](https://github.com/gentrace/gentrace-python/issues/305)) ([7fb0de6](https://github.com/gentrace/gentrace-python/commit/7fb0de60aebfaaac4b8bb248725bbf72648e6b8e))
+* Add Claude Assistant GitHub Action workflow ([#296](https://github.com/gentrace/gentrace-python/issues/296)) ([3ff4c9a](https://github.com/gentrace/gentrace-python/commit/3ff4c9acb53bdbfb37c86102e1d49aa8c4e84978))
+* add PR title validation workflow ([#293](https://github.com/gentrace/gentrace-python/issues/293)) ([47c7730](https://github.com/gentrace/gentrace-python/commit/47c77301ea8470c5f0d23466396d478f77080092))
+* add release type to PR title validation ([#308](https://github.com/gentrace/gentrace-python/issues/308)) ([758b70a](https://github.com/gentrace/gentrace-python/commit/758b70a1fee93587eab7abb1f58dfe6a7598efeb))
+* Improve NUX for copying code snippets ([#304](https://github.com/gentrace/gentrace-python/issues/304)) ([610228a](https://github.com/gentrace/gentrace-python/commit/610228a257bcf934db5a05f06a4a01ef50db7d06))
+
+
+### Bug Fixes
+
+* add span hierarchy visualization to README ([#294](https://github.com/gentrace/gentrace-python/issues/294)) ([14447cd](https://github.com/gentrace/gentrace-python/commit/14447cd8e7f14743da2efb00c008173393bdd2f6))
+* allow beta releases of the baggage span processor ([#307](https://github.com/gentrace/gentrace-python/issues/307)) ([cfa50c2](https://github.com/gentrace/gentrace-python/commit/cfa50c23f9e4f340955b2d9a78dc12450f8cefda))
+
+
+### Chores
+
+* Add documentation note about `[@traced](https://github.com/traced)()` ([#291](https://github.com/gentrace/gentrace-python/issues/291)) ([b056034](https://github.com/gentrace/gentrace-python/commit/b0560340efb813f89469b81f93ffa212b422722e))
+* Add GentraceSampler and GentraceSpanProcessor documentation to README ([#292](https://github.com/gentrace/gentrace-python/issues/292)) ([4113a1a](https://github.com/gentrace/gentrace-python/commit/4113a1a86b641a3228a3142b5f3c376724277fe1))
+* **ci:** fix installation instructions ([d0ecd8f](https://github.com/gentrace/gentrace-python/commit/d0ecd8fc0db3ddf65c6863e29060244c31e9e81c))
+* **docs:** grammar improvements ([31bc224](https://github.com/gentrace/gentrace-python/commit/31bc2248e5ec0c43ccde335f9896242087bfd02c))
+* **internal:** codegen related update ([9bb9038](https://github.com/gentrace/gentrace-python/commit/9bb9038a17a2daf9a71acd23b6ee6179777e44ff))
+
 ## 1.0.0-alpha.1 (2025-05-16)
 
 Full Changelog: [v0.1.7...v1.0.0-alpha.1](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v1.0.0-alpha.1)
