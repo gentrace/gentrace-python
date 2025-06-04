@@ -187,19 +187,29 @@ async def analyze_sentiment(text: str) -> Dict[str, str]:
     return {"text": text, "sentiment": result.output, "model": "gpt-4o"}
 
 
+@interaction(pipeline_id=pipeline_id, name="book_recommendation_with_tools")
+async def get_book_recommendation_with_tools(user: UserContext) -> str:
+    """Get book recommendations using tools."""
+    result = await agent.run(  # type: ignore
+        f"Find some {user.preferences} for {user.name}. Check their availability and recommend the best ones with highest ratings.",
+        deps=user
+    )
+    return result.output
+
+
+@interaction(pipeline_id=pipeline_id, name="direct_tool_test")
+async def test_direct_tool(user: UserContext) -> str:
+    """Test tools directly."""
+    result = await agent.run(   # type: ignore
+        "Check if 'Dune' is available right now",
+        deps=user
+    )
+    return result.output
+
+
 async def main() -> None:
     # Example 1: Get personalized recommendation with tools
     user = UserContext(name="Alice", preferences="science fiction books")
-    
-    # This will trigger tool calls to search books and check availability
-    @interaction(pipeline_id=pipeline_id, name="book_recommendation_with_tools")
-    async def get_book_recommendation_with_tools(user: UserContext) -> str:
-        """Get book recommendations using tools."""
-        result = await agent.run(  # type: ignore
-            f"Find some {user.preferences} for {user.name}. Check their availability and recommend the best ones with highest ratings.",
-            deps=user
-        )
-        return result.output
     
     recommendation = await get_book_recommendation_with_tools(user)
     print(f"Book recommendation for {user.name}:\n{recommendation}\n")
@@ -213,16 +223,7 @@ async def main() -> None:
     print(f"\nSentiment analysis: {sentiment_result}")
 
     # Example 4: Test specific tool directly
-    @interaction(pipeline_id=pipeline_id, name="direct_tool_test")
-    async def test_direct_tool() -> str:
-        """Test tools directly."""
-        result = await agent.run(   # type: ignore
-            "Check if 'Dune' is available right now",
-            deps=UserContext(name="Test User", preferences="any")
-        )
-        return result.output
-    
-    availability = await test_direct_tool()
+    availability = await test_direct_tool(UserContext(name="Test User", preferences="any"))
     print(f"\nAvailability check: {availability}")
 
     print("\n✨ Check your Gentrace dashboard to see the tool call traces!")
