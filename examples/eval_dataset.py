@@ -25,7 +25,7 @@ from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace import TestCase, TestInput, init, experiment, test_cases, eval_dataset, test_cases_async
+from gentrace import TestCase, TestInput, GentraceSampler, init, experiment, test_cases, eval_dataset, test_cases_async
 
 gentrace_api_key = os.getenv("GENTRACE_API_KEY", "")
 gentrace_base_url = os.getenv("GENTRACE_BASE_URL", "")
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     print("--- Example: eval_dataset Simple Usage ---")
 
     # OpenTelemetry Setup
-    tracer_provider = TracerProvider()
+    tracer_provider = TracerProvider(sampler=GentraceSampler())
     trace.set_tracer_provider(tracer_provider)
 
     otlp_headers: Dict[str, str] = {}

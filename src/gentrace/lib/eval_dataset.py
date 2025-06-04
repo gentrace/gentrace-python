@@ -18,13 +18,14 @@ from typing import (
 from typing_extensions import Protocol, TypeAlias, TypedDict, overload
 
 from pydantic import BaseModel, ValidationError
-from opentelemetry import trace
+from opentelemetry import trace, baggage as otel_baggage, context as otel_context
 from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.types.test_case import TestCase
 
 from .utils import is_pydantic_v1, _gentrace_json_dumps, check_otel_config_and_warn
 from .constants import (
+    ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_TEST_CASE_ID,
     ATTR_GENTRACE_EXPERIMENT_ID,
     ATTR_GENTRACE_TEST_CASE_NAME,
@@ -81,76 +82,86 @@ async def _run_single_test_case_for_dataset(
     span_name = test_case_name
     result_value: Any = None  # type: ignore
 
-    with _tracer.start_as_current_span(span_name) as span:
-        span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
-        span.set_attribute(ATTR_GENTRACE_TEST_CASE_NAME, test_case_name)
-        if test_case_id:
-            span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
+    # Set up baggage context similar to @interaction()
+    current_context = otel_context.get_current()
+    context_with_modified_baggage = otel_baggage.set_baggage(
+        ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
+    )
 
-        try:
-            # Always pass the raw dict (or None) into the interaction fn
-            parsed_input_for_interaction: Optional[TInput] = raw_inputs  # type: ignore
-            input_dict_for_log: Any = None
+    token = otel_context.attach(context_with_modified_baggage)
+    try:
+        with _tracer.start_as_current_span(span_name) as span:
+            span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
+            span.set_attribute(ATTR_GENTRACE_TEST_CASE_NAME, test_case_name)
+            if test_case_id:
+                span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
 
-            if input_schema:
-                # Validate against Pydantic but do *not* pass the model instance downstream
-                model_schema = input_schema
-                try:
-                    if is_pydantic_v1():
-                        validated = model_schema.parse_obj(raw_inputs)  # type: ignore
-                    else:
-                        validated = model_schema.model_validate(raw_inputs)
+            try:
+                # Always pass the raw dict (or None) into the interaction fn
+                parsed_input_for_interaction: Optional[TInput] = raw_inputs  # type: ignore
+                input_dict_for_log: Any = None
 
-                    # Log the dictified validated model
-                    if hasattr(validated, "model_dump"):
-                        input_dict_for_log = validated.model_dump()
-                    elif hasattr(validated, "dict"):
-                        input_dict_for_log = validated.dict()  # type: ignore
-                    else:
-                        input_dict_for_log = validated
-                except ValidationError as ve:
-                    logger.error(
-                        f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
-                        exc_info=True,
+                if input_schema:
+                    # Validate against Pydantic but do *not* pass the model instance downstream
+                    model_schema = input_schema
+                    try:
+                        if is_pydantic_v1():
+                            validated = model_schema.parse_obj(raw_inputs)  # type: ignore
+                        else:
+                            validated = model_schema.model_validate(raw_inputs)
+
+                        # Log the dictified validated model
+                        if hasattr(validated, "model_dump"):
+                            input_dict_for_log = validated.model_dump()
+                        elif hasattr(validated, "dict"):
+                            input_dict_for_log = validated.dict()  # type: ignore
+                        else:
+                            input_dict_for_log = validated
+                    except ValidationError as ve:
+                        logger.error(
+                            f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
+                            exc_info=True,
+                        )
+                        span.record_exception(ve)
+                        span.set_status(Status(StatusCode.ERROR, description="Input validation failed"))
+                        span.set_attribute("error.type", ve.__class__.__name__)
+                        return None
+
+                elif raw_inputs is not None:
+                    # No schema → just log the raw dict
+                    input_dict_for_log = raw_inputs
+                else:
+                    # both schema is None and raw_inputs is None
+                    input_dict_for_log = None
+
+                # Attach the inputs as a span event
+                if input_dict_for_log is not None:
+                    span.add_event(
+                        ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
+                        {"args": _gentrace_json_dumps([input_dict_for_log])},
                     )
-                    span.record_exception(ve)
-                    span.set_status(Status(StatusCode.ERROR, description="Input validation failed"))
-                    span.set_attribute("error.type", ve.__class__.__name__)
-                    return None
 
-            elif raw_inputs is not None:
-                # No schema → just log the raw dict
-                input_dict_for_log = raw_inputs
-            else:
-                # both schema is None and raw_inputs is None
-                input_dict_for_log = None
+                # Call the interaction function with the original dict (or None)
+                if inspect.iscoroutinefunction(interaction_function):
+                    result_value = await interaction_function(parsed_input_for_interaction)
+                else:
+                    result_value = interaction_function(parsed_input_for_interaction)
 
-            # Attach the inputs as a span event
-            if input_dict_for_log is not None:
-                span.add_event(
-                    ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
-                    {"args": _gentrace_json_dumps([input_dict_for_log])},
+                # Log the output
+                span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
+                return cast(Optional[TResult], result_value)
+
+            except Exception as e:
+                logger.error(
+                    f"Unknown error occurred while running test case {test_case_name}",
+                    exc_info=True,
                 )
-
-            # Call the interaction function with the original dict (or None)
-            if inspect.iscoroutinefunction(interaction_function):
-                result_value = await interaction_function(parsed_input_for_interaction)
-            else:
-                result_value = interaction_function(parsed_input_for_interaction)
-
-            # Log the output
-            span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
-            return cast(Optional[TResult], result_value)
-
-        except Exception as e:
-            logger.error(
-                f"Unknown error occurred while running test case {test_case_name}",
-                exc_info=True,
-            )
-            span.record_exception(e)
-            span.set_status(Status(StatusCode.ERROR, description=str(e)))
-            span.set_attribute("error.type", e.__class__.__name__)
-            return None
+                span.record_exception(e)
+                span.set_status(Status(StatusCode.ERROR, description=str(e)))
+                span.set_attribute("error.type", e.__class__.__name__)
+                return None
+    finally:
+        otel_context.detach(token)
 
 
 @overload

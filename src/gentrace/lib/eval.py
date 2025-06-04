@@ -5,12 +5,13 @@ import functools
 from typing import Any, Dict, TypeVar, Callable, Optional, Coroutine, cast
 from typing_extensions import ParamSpec
 
-from opentelemetry import trace
+from opentelemetry import trace, baggage as otel_baggage, context as otel_context
 from opentelemetry.trace.status import Status, StatusCode
 
 from .utils import _gentrace_json_dumps, check_otel_config_and_warn
 from .constants import (
     ANONYMOUS_SPAN_NAME,
+    ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_EXPERIMENT_ID,
     ATTR_GENTRACE_TEST_CASE_NAME,
     ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
@@ -84,65 +85,75 @@ def eval(
 
             span_name = name
 
-            with _tracer.start_as_current_span(span_name) as span:
-                span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
-                span.set_attribute(ATTR_GENTRACE_TEST_CASE_NAME, span_name)  # Use eval name for test case name
+            # Set up baggage context similar to @interaction()
+            current_context = otel_context.get_current()
+            context_with_modified_baggage = otel_baggage.set_baggage(
+                ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
+            )
 
-                if metadata:
-                    for key, value in metadata.items():
-                        if key in RESERVED_METADATA_KEYS:
-                            warnings.warn(
-                                f"Metadata key `{key}` is reserved and will be ignored for @eval test case `{name}`. Avoid using reserved keys for metadata.",
-                                UserWarning,
-                                stacklevel=2,
-                            )
-                            continue
-                        try:
-                            # Attempt to serialize complex types, fallback to string
-                            if isinstance(value, (dict, list, tuple)):
-                                span.set_attribute(key, _gentrace_json_dumps(value))
-                            elif value is not None:
-                                span.set_attribute(key, str(value))
-                            # None values are implicitly ignored by set_attribute
-                        except TypeError:  # Catch serialization errors specifically
-                            logger.warning(
-                                f"Metadata value for key `{key}` is not serializable for span attributes. Storing as string.",
-                                exc_info=True,
-                            )
-                            span.set_attribute(key, f"[Unserializable value for {key}]")
-                        except Exception as e:  # Catch any other unexpected errors during attribute setting
-                            logger.error(f"Unexpected error setting metadata attribute {key}: {e}", exc_info=True)
-                            span.set_attribute(key, f"[Error setting metadata: {key}]")
+            token = otel_context.attach(context_with_modified_baggage)
+            try:
+                with _tracer.start_as_current_span(span_name) as span:
+                    span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
+                    span.set_attribute(ATTR_GENTRACE_TEST_CASE_NAME, span_name)  # Use eval name for test case name
 
-                # Combine args and kwargs for logging
-                input_payload: Dict[str, Any] = {}
-                if args:
-                    # Use repr for args to handle non-serializable objects gracefully
-                    input_payload["args"] = [repr(a) for a in args]
-                if kwargs:
-                    # Use repr for kwargs values
-                    input_payload["kwargs"] = {k: repr(v) for k, v in kwargs.items()}
+                    if metadata:
+                        for key, value in metadata.items():
+                            if key in RESERVED_METADATA_KEYS:
+                                warnings.warn(
+                                    f"Metadata key `{key}` is reserved and will be ignored for @eval test case `{name}`. Avoid using reserved keys for metadata.",
+                                    UserWarning,
+                                    stacklevel=2,
+                                )
+                                continue
+                            try:
+                                # Attempt to serialize complex types, fallback to string
+                                if isinstance(value, (dict, list, tuple)):
+                                    span.set_attribute(key, _gentrace_json_dumps(value))
+                                elif value is not None:
+                                    span.set_attribute(key, str(value))
+                                # None values are implicitly ignored by set_attribute
+                            except TypeError:  # Catch serialization errors specifically
+                                logger.warning(
+                                    f"Metadata value for key `{key}` is not serializable for span attributes. Storing as string.",
+                                    exc_info=True,
+                                )
+                                span.set_attribute(key, f"[Unserializable value for {key}]")
+                            except Exception as e:  # Catch any other unexpected errors during attribute setting
+                                logger.error(f"Unexpected error setting metadata attribute {key}: {e}", exc_info=True)
+                                span.set_attribute(key, f"[Error setting metadata: {key}]")
 
-                if input_payload:
-                    # Log combined args/kwargs if any exist
-                    span.add_event(ATTR_GENTRACE_FN_ARGS_EVENT_NAME, {"args": _gentrace_json_dumps(input_payload)})
+                    # Combine args and kwargs for logging
+                    input_payload: Dict[str, Any] = {}
+                    if args:
+                        # Use repr for args to handle non-serializable objects gracefully
+                        input_payload["args"] = [repr(a) for a in args]
+                    if kwargs:
+                        # Use repr for kwargs values
+                        input_payload["kwargs"] = {k: repr(v) for k, v in kwargs.items()}
 
-                try:
-                    if inspect.iscoroutinefunction(func):
-                        # The cast isn't strictly needed runtime but clarifies intent for readers/linters
-                        async_func = cast(Callable[P, Coroutine[Any, Any, Any]], func)
-                        result = await async_func(*args, **kwargs)
-                    else:
-                        # func is already Callable[P, Any], no cast needed for sync_func
-                        result = func(*args, **kwargs)  # Directly use func
+                    if input_payload:
+                        # Log combined args/kwargs if any exist
+                        span.add_event(ATTR_GENTRACE_FN_ARGS_EVENT_NAME, {"args": _gentrace_json_dumps(input_payload)})
 
-                    span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)})
-                    return result  # Runtime result is correct type, static type is Any
-                except Exception as e:
-                    span.record_exception(e)
-                    span.set_status(Status(StatusCode.ERROR, description=str(e)))
-                    span.set_attribute("error.type", e.__class__.__name__)
-                    raise
+                    try:
+                        if inspect.iscoroutinefunction(func):
+                            # The cast isn't strictly needed runtime but clarifies intent for readers/linters
+                            async_func = cast(Callable[P, Coroutine[Any, Any, Any]], func)
+                            result = await async_func(*args, **kwargs)
+                        else:
+                            # func is already Callable[P, Any], no cast needed for sync_func
+                            result = func(*args, **kwargs)  # Directly use func
+
+                        span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result)})
+                        return result  # Runtime result is correct type, static type is Any
+                    except Exception as e:
+                        span.record_exception(e)
+                        span.set_status(Status(StatusCode.ERROR, description=str(e)))
+                        span.set_attribute("error.type", e.__class__.__name__)
+                        raise
+            finally:
+                otel_context.detach(token)
 
         return wrapper
 
