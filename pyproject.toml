@@ -45,6 +45,7 @@ Repository = "https://github.com/gentrace/gentrace-python"
 [project.optional-dependencies]
 openai = ["openai"]
 anthropic = ["anthropic"]
+pydantic-ai = ["pydantic-ai>=0.2.14"]
 
 [tool.rye]
 managed = true
