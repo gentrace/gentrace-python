@@ -1,5 +1,36 @@
 # Changelog
 
+## 1.0.0-alpha.2 (2025-06-04)
+
+Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.2)
+
+### Features
+
+* Add Anthropic example and optional dependency ([#305](https://github.com/gentrace/gentrace-python/issues/305)) ([6252d12](https://github.com/gentrace/gentrace-python/commit/6252d1236a5edf6c4755856ace597e4f61eec661))
+* add baggage support to eval methods ([#309](https://github.com/gentrace/gentrace-python/issues/309)) ([e8a5904](https://github.com/gentrace/gentrace-python/commit/e8a5904d9c1515f242e39cb35864256db380ad6f))
+* Add Claude Assistant GitHub Action workflow ([#296](https://github.com/gentrace/gentrace-python/issues/296)) ([3ff4c9a](https://github.com/gentrace/gentrace-python/commit/3ff4c9acb53bdbfb37c86102e1d49aa8c4e84978))
+* add PR title validation workflow ([#293](https://github.com/gentrace/gentrace-python/issues/293)) ([47c7730](https://github.com/gentrace/gentrace-python/commit/47c77301ea8470c5f0d23466396d478f77080092))
+* add release type to PR title validation ([#308](https://github.com/gentrace/gentrace-python/issues/308)) ([758b70a](https://github.com/gentrace/gentrace-python/commit/758b70a1fee93587eab7abb1f58dfe6a7598efeb))
+* **client:** add follow_redirects request option ([69d68d0](https://github.com/gentrace/gentrace-python/commit/69d68d0aa9fc06047186a4d22be30a49072c364c))
+* Improve NUX for copying code snippets ([#304](https://github.com/gentrace/gentrace-python/issues/304)) ([610228a](https://github.com/gentrace/gentrace-python/commit/610228a257bcf934db5a05f06a4a01ef50db7d06))
+
+
+### Bug Fixes
+
+* add span hierarchy visualization to README ([#294](https://github.com/gentrace/gentrace-python/issues/294)) ([14447cd](https://github.com/gentrace/gentrace-python/commit/14447cd8e7f14743da2efb00c008173393bdd2f6))
+* allow beta releases of the baggage span processor ([#307](https://github.com/gentrace/gentrace-python/issues/307)) ([ec1bb71](https://github.com/gentrace/gentrace-python/commit/ec1bb71e087cd693e9eb51e117e4b2cfed82b053))
+
+
+### Chores
+
+* Add documentation note about `[@traced](https://github.com/traced)()` ([#291](https://github.com/gentrace/gentrace-python/issues/291)) ([b056034](https://github.com/gentrace/gentrace-python/commit/b0560340efb813f89469b81f93ffa212b422722e))
+* Add GentraceSampler and GentraceSpanProcessor documentation to README ([#292](https://github.com/gentrace/gentrace-python/issues/292)) ([4113a1a](https://github.com/gentrace/gentrace-python/commit/4113a1a86b641a3228a3142b5f3c376724277fe1))
+* Add PydanticAI example ([#310](https://github.com/gentrace/gentrace-python/issues/310)) ([89101f2](https://github.com/gentrace/gentrace-python/commit/89101f2e010427c3365818045d6fb3bdd4b3a533))
+* **ci:** fix installation instructions ([68f1b5d](https://github.com/gentrace/gentrace-python/commit/68f1b5de16ac3033118ef1ac5ed02735fed5cb3a))
+* **docs:** grammar improvements ([75f3b34](https://github.com/gentrace/gentrace-python/commit/75f3b3491769b9ad0534041e94cb0f457d79f2b5))
+* **docs:** remove reference to rye shell ([bbd535e](https://github.com/gentrace/gentrace-python/commit/bbd535e7f8ce282534b448606e6d664e5649e12d))
+* **internal:** codegen related update ([3194966](https://github.com/gentrace/gentrace-python/commit/3194966d363ad468af91cae1b063672d25770e66))
+
 ## 1.0.0-alpha.1 (2025-05-16)
 
 Full Changelog: [v0.1.7...v1.0.0-alpha.1](https://github.com/gentrace/gentrace-python/compare/v0.1.7...v1.0.0-alpha.1)
