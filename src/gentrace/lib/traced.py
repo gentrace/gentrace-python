@@ -1,6 +1,6 @@
 import inspect
 import functools
-from typing import Any, Dict, TypeVar, Callable, Optional, Coroutine, AsyncGenerator, overload, List
+from typing import Any, Dict, List, TypeVar, Callable, Optional, Coroutine, AsyncGenerator, overload
 from typing_extensions import ParamSpec
 
 from opentelemetry import trace
