@@ -1,6 +1,6 @@
 import inspect
 import functools
-from typing import Any, Dict, TypeVar, Callable, Optional, Coroutine, overload
+from typing import Any, Dict, List, TypeVar, Callable, Optional, Coroutine, AsyncGenerator, overload
 from typing_extensions import ParamSpec
 
 from opentelemetry import trace
@@ -24,6 +24,12 @@ def traced(
 def traced(
     *, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
 ) -> Callable[[Callable[P, Coroutine[Any, Any, R]]], Callable[P, Coroutine[Any, Any, R]]]: ...
+
+
+@overload
+def traced(
+    *, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None
+) -> Callable[[Callable[P, AsyncGenerator[R, None]]], Callable[P, AsyncGenerator[R, None]]]: ...
 
 
 def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] = None) -> Any:
@@ -59,7 +65,41 @@ def traced(*, name: Optional[str] = None, attributes: Optional[Dict[str, Any]] =
         actual_span_name: str = resolved_name
         tracer = trace.get_tracer("gentrace")
 
-        if inspect.iscoroutinefunction(original_fn):
+        if inspect.isasyncgenfunction(original_fn):
+
+            @functools.wraps(original_fn)
+            async def async_gen_wrapper(*args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
+                check_otel_config_and_warn()
+                with tracer.start_as_current_span(actual_span_name, attributes=final_attributes) as span:
+                    try:
+                        sig = inspect.signature(original_fn)
+                        bound_arguments = sig.bind(*args, **kwargs).arguments
+                        transformed_arguments = [{k: v} for k, v in bound_arguments.items()]
+                        serialized_inputs = _gentrace_json_dumps(transformed_arguments)
+                        span.add_event(
+                            ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
+                            {"args": serialized_inputs},
+                        )
+
+                        result_list: List[Any] = []
+                        # original_fn is F, which in this branch is an async generator function.
+                        # The result of calling it is an async generator.
+                        async for item in original_fn(*args, **kwargs):
+                            result_list.append(item)
+                            yield item
+
+                        serialized_result = _gentrace_json_dumps(result_list)
+                        span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": serialized_result})
+
+                    except Exception as e:
+                        span.record_exception(e)
+                        span.set_status(Status(StatusCode.ERROR, description=str(e)))
+                        span.set_attribute("error.type", e.__class__.__name__)
+                        raise
+
+            return async_gen_wrapper  # type: ignore[return-value]
+
+        elif inspect.iscoroutinefunction(original_fn):
 
             @functools.wraps(original_fn)
             async def async_wrapper(*args: Any, **kwargs: Any) -> Any:

@@ -1,7 +1,7 @@
 import uuid
 import inspect
 import functools
-from typing import Any, Dict, TypeVar, Callable, Optional, cast
+from typing import Any, Dict, TypeVar, Callable, Optional, AsyncGenerator, cast
 
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
@@ -76,7 +76,25 @@ def interaction(
 
         func_instrumented_by_traced = configured_traced_decorator(func)
 
-        if inspect.iscoroutinefunction(func):
+        if inspect.isasyncgenfunction(func):
+
+            @functools.wraps(func)
+            async def baggage_context_wrapper_async_gen(*args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
+                current_context = otel_context.get_current()
+                context_with_modified_baggage = otel_baggage.set_baggage(
+                    ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
+                )
+
+                token = otel_context.attach(context_with_modified_baggage)
+                try:
+                    async for item in func_instrumented_by_traced(*args, **kwargs):
+                        yield item
+                finally:
+                    otel_context.detach(token)
+
+            return cast(F, baggage_context_wrapper_async_gen)
+
+        elif inspect.iscoroutinefunction(func):
 
             @functools.wraps(func)
             async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
