@@ -1,7 +1,7 @@
 import uuid
 import inspect
 import functools
-from typing import Any, Dict, TypeVar, Callable, Optional, cast, AsyncGenerator
+from typing import Any, Dict, TypeVar, Callable, Optional, AsyncGenerator, cast
 
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
