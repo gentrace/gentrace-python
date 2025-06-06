@@ -1,8 +1,8 @@
 # Changelog
 
-## 1.0.0-alpha.2 (2025-06-04)
+## 1.0.0-alpha.3 (2025-06-06)
 
-Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.2)
+Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.3](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.3)
 
 ### Features
 
@@ -19,6 +19,7 @@ Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.2](https://github.com/gentrace/ge
 
 * add span hierarchy visualization to README ([#294](https://github.com/gentrace/gentrace-python/issues/294)) ([14447cd](https://github.com/gentrace/gentrace-python/commit/14447cd8e7f14743da2efb00c008173393bdd2f6))
 * allow beta releases of the baggage span processor ([#307](https://github.com/gentrace/gentrace-python/issues/307)) ([ec1bb71](https://github.com/gentrace/gentrace-python/commit/ec1bb71e087cd693e9eb51e117e4b2cfed82b053))
+* Fix the processing of asynchronous generator functions ([#313](https://github.com/gentrace/gentrace-python/issues/313)) ([bec5004](https://github.com/gentrace/gentrace-python/commit/bec500447e65108f9bfa08757c141b457a401dc4))
 
 
 ### Chores
