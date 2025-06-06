@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.4 (2025-06-06)
+
+Full Changelog: [v1.0.0-alpha.3...v1.0.0-alpha.4](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.3...v1.0.0-alpha.4)
+
+### Bug Fixes
+
+* Fix incorrect ordering of type annotations ([#314](https://github.com/gentrace/gentrace-python/issues/314)) ([8594dd9](https://github.com/gentrace/gentrace-python/commit/8594dd9277b8f8191d27ef417a64ee1234c85c22))
+
 ## 1.0.0-alpha.3 (2025-06-06)
 
 Full Changelog: [v1.0.0-alpha.1...v1.0.0-alpha.3](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.1...v1.0.0-alpha.3)
