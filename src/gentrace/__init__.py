@@ -106,10 +106,12 @@ from .lib.constants import (
     ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
+from .lib.auto_trace import install_auto_tracing
 from .lib.experiment import experiment
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
 from .lib.span_processor import GentraceSpanProcessor
+from .lib.auto_trace.rewrite_ast import no_auto_trace
 
 ### End custom Gentrace imports
 
@@ -173,6 +175,8 @@ __all__ = [
     "Experiment",
     "Dataset",
     "Pipeline",
+    "install_auto_tracing",
+    "no_auto_trace",
     # End custom Gentrace exports
 ]
 
