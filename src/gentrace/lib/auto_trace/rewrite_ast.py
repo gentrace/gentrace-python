@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 import time
 import uuid
-from typing import TYPE_CHECKING, Any, Dict, List, Union, TypeVar, Callable, Optional, ContextManager
+from typing import TYPE_CHECKING, Any, Dict, List, Union, TypeVar, Callable, Optional, ContextManager, cast
 from collections import deque
 from dataclasses import dataclass
 from typing_extensions import override
@@ -37,7 +37,7 @@ def compile_source(
     # dont_inherit=True is necessary to prevent the module from inheriting the __future__ import from this module.
     code = compile(tree, filename, 'exec', dont_inherit=True)
     
-    def execute(globs: Dict[str, Any]):
+    def execute(globs: Dict[str, Any]) -> None:
         globs[gentrace_name] = context_factories
         exec(code, globs, globs)
         
@@ -57,7 +57,7 @@ def rewrite_ast(
     transformer = AutoTraceTransformer(
         gentrace_name, filename, module_name, context_factories, min_duration, tracer, pipeline_id
     )
-    return transformer.visit(tree)
+    return cast(ast.AST, transformer.visit(tree))
 
 
 @dataclass
@@ -86,14 +86,14 @@ class AutoTraceTransformer(BaseTransformer):
         )
         
     @override
-    def visit_ClassDef(self, node: ast.ClassDef):
+    def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         if self.check_no_auto_trace(node):
             return node
             
         return super().visit_ClassDef(node)
         
     @override
-    def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]):
+    def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> ast.AST:
         if self.check_no_auto_trace(node):
             return node
             
@@ -130,7 +130,7 @@ class AutoTraceTransformer(BaseTransformer):
 
             from ..constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
             
-            def create_span_with_pipeline_support():
+            def create_span_with_pipeline_support() -> ContextManager[Any]:
                 """Create span with pipeline_id support."""
                 current_context = otel_context.get_current()
                 
@@ -188,13 +188,14 @@ class AutoTraceTransformer(BaseTransformer):
             class MeasureTime:
                 __slots__ = 'start'
                 
-                def __enter__(_self):
+                def __enter__(_self) -> 'MeasureTime':
                     _self.start = time.perf_counter_ns()
+                    return _self
                     
-                def __exit__(_self, *_):
+                def __exit__(_self, *_: Any) -> None:
                     if time.perf_counter_ns() - _self.start >= self.min_duration:
                         self.context_factories[index] = span_factory
-                        
+            
             self.context_factories.append(MeasureTime)
         else:
             self.context_factories.append(span_factory)
@@ -233,7 +234,7 @@ def no_auto_trace(x: T) -> T:
     return x
 
 
-def has_yield(node: ast.AST):
+def has_yield(node: ast.AST) -> bool:
     queue = deque([node])
     while queue:
         node = queue.popleft()
@@ -242,3 +243,4 @@ def has_yield(node: ast.AST):
                 return True
             if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda)):
                 queue.append(child)
+    return False

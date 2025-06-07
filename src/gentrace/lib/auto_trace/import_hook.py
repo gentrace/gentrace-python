@@ -77,7 +77,9 @@ class GentraceFinder(MetaPathFinder):
                 
             loader = GentraceLoader(plain_spec, execute)
             return spec_from_loader(fullname, loader)
-            
+        
+        return None
+        
     def _find_plain_specs(
         self, fullname: str, path: Optional[Sequence[str]], target: Optional[ModuleType]
     ) -> Iterator[ModuleSpec]:
@@ -107,24 +109,24 @@ class GentraceLoader(Loader):
     """A function which accepts module globals and executes the compiled code."""
     
     @override
-    def exec_module(self, module: ModuleType):
+    def exec_module(self, module: ModuleType) -> None:
         """Execute a modified AST of the module's source code in the module's namespace."""
         self.execute(module.__dict__)
         
     # This is required when `exec_module` is defined.
     # It returns None to indicate that the usual module creation process should be used.
     @override
-    def create_module(self, spec: ModuleSpec):  # noqa: ARG002
+    def create_module(self, spec: ModuleSpec) -> Optional[ModuleType]:  # noqa: ARG002
         return None
         
-    def get_code(self, _name: str):
+    def get_code(self, _name: str) -> Any:
         # `python -m` uses the `runpy` module which calls this method instead of going through the normal protocol.
         # So return some code which can be executed with the module namespace.
         # Here `__loader__` will be this object, i.e. `self`.
         source = '__loader__.execute(globals())'
         return compile(source, '<string>', 'exec', dont_inherit=True)
         
-    def __getattr__(self, item: str):
+    def __getattr__(self, item: str) -> Any:
         """Forward some methods to the plain spec's loader (likely a `SourceFileLoader`) if they exist."""
         if item in {'get_filename', 'is_package'}:
             return getattr(self.plain_spec.loader, item)

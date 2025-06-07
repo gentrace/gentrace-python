@@ -16,13 +16,13 @@ class BaseTransformer(ast.NodeTransformer):
     filename: str
     module_name: str
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         # Names of functions and classes that we're currently inside,
         # so we can construct the qualified name of the current function.
         self.qualname_stack: List[str] = []
         
     @override
-    def visit_ClassDef(self, node: ast.ClassDef):
+    def visit_ClassDef(self, node: ast.ClassDef) -> ast.ClassDef:
         self.qualname_stack.append(node.name)
         # We need to call generic_visit here to modify any functions defined inside the class.
         node = cast(ast.ClassDef, self.generic_visit(node))
@@ -30,7 +30,7 @@ class BaseTransformer(ast.NodeTransformer):
         return node
         
     @override
-    def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]):
+    def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]) -> ast.AST:
         self.qualname_stack.append(node.name)
         qualname = '.'.join(self.qualname_stack)
         self.qualname_stack.append('<locals>')
@@ -42,7 +42,7 @@ class BaseTransformer(ast.NodeTransformer):
         return self.rewrite_function(node, qualname)
         
     @override
-    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
+    def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef) -> ast.AST:
         return self.visit_FunctionDef(node)
         
     def rewrite_function(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef], qualname: str) -> ast.AST:
