@@ -8,9 +8,8 @@ Before running the example, ensure you have the following environment variables 
 
 ```bash
 export GENTRACE_API_KEY="your-gentrace-api-key"
-export GENTRACE_BASE_URL="http://localhost:3000/api"  # or your Gentrace instance URL
 export GENTRACE_PIPELINE_ID="your-pipeline-uuid"
-export OPENAI_API_KEY="your-openai-api-key"  # Optional
+export OPENAI_API_KEY="your-openai-api-key"
 ```
 
 ## Overview
@@ -47,6 +46,7 @@ python auto_trace_pipeline_example.py
 ## Expected Output
 
 The example will:
+
 1. Initialize OpenTelemetry with Gentrace configuration
 2. Install auto-tracing for the `pipeline_example_app` module
 3. Execute a multi-step data processing pipeline
@@ -85,6 +85,7 @@ This must be called BEFORE importing the modules you want to trace.
 ### How Pipeline ID Works
 
 When a pipeline_id is provided:
+
 - The root span (first span in the trace) includes the `gentrace.pipeline_id` attribute
 - Child spans do NOT include the pipeline_id attribute
 - This allows the Gentrace backend to associate the entire trace tree with the pipeline
@@ -93,6 +94,7 @@ When a pipeline_id is provided:
 ### Mixing Auto-Tracing with Manual Tracing
 
 The example demonstrates that manual tracing decorators can be used within auto-traced code:
+
 - Functions marked with `@no_auto_trace` are excluded from automatic tracing
 - The `@traced` decorator can be used within auto-traced code for fine-grained control
 - Manual traces can add custom attributes and names
@@ -102,6 +104,7 @@ The example demonstrates that manual tracing decorators can be used within auto-
 ### OpenTelemetry Configuration
 
 The example shows proper OpenTelemetry setup with:
+
 - Resource configuration with service name
 - Gentrace sampler for sampling decisions
 - Gentrace span processor for baggage propagation
@@ -114,6 +117,7 @@ The `min_duration` parameter (in seconds) can be used to only trace functions th
 ## Troubleshooting
 
 If spans don't appear in the Gentrace UI:
+
 1. Check that all environment variables are set correctly
 2. Verify the Gentrace backend is running and accessible
 3. Ensure the ClickHouse replication task is running
