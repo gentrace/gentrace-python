@@ -1,0 +1,1 @@
+"""Example application demonstrating pipeline-aware auto-tracing."""
