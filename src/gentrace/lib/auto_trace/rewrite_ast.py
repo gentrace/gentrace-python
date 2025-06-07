@@ -8,6 +8,7 @@ import uuid
 from typing import TYPE_CHECKING, Any, Dict, List, Union, TypeVar, Callable, Optional, ContextManager
 from collections import deque
 from dataclasses import dataclass
+from typing_extensions import override
 
 from opentelemetry import trace
 
@@ -84,29 +85,34 @@ class AutoTraceTransformer(BaseTransformer):
             for node in node.decorator_list
         )
         
+    @override
     def visit_ClassDef(self, node: ast.ClassDef):
         if self.check_no_auto_trace(node):
             return node
             
         return super().visit_ClassDef(node)
         
+    @override
     def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]):
         if self.check_no_auto_trace(node):
             return node
             
         return super().visit_FunctionDef(node)
         
+    @override
     def rewrite_function(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef], qualname: str) -> ast.AST:
         if has_yield(node):
             return node
             
         return super().rewrite_function(node, qualname)
         
+    @override
     def get_span_attributes(self, qualname: str, lineno: int) -> Dict[str, Any]:
         """Get the attributes to set on the span."""
         # Note: pipeline_id will be added dynamically only to root spans
         return super().get_span_attributes(qualname, lineno)
     
+    @override
     def create_span_call_node(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef], qualname: str) -> ast.Call:
         # See the compile_source docstring
         index = len(self.context_factories)
@@ -130,7 +136,7 @@ class AutoTraceTransformer(BaseTransformer):
                 
                 # Check if this is a root span (no active span in context)
                 current_span = otel_trace.get_current_span(current_context)
-                is_root_span = current_span is None or not current_span.is_recording()
+                is_root_span = not current_span.is_recording()
                 
                 # Prepare attributes - only add pipeline_id to root spans
                 span_attributes = attributes.copy()
@@ -153,14 +159,14 @@ class AutoTraceTransformer(BaseTransformer):
                         
                         # Wrap to ensure we detach the baggage context
                         class SpanWithBaggageCleanup:
-                            def __init__(self, span, token):
+                            def __init__(self, span: Any, token: Any) -> None:
                                 self.span = span
                                 self.token = token
                                 
-                            def __enter__(self):
+                            def __enter__(self) -> Any:
                                 return self.span.__enter__()
                                 
-                            def __exit__(self, exc_type, exc_val, exc_tb):
+                            def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> Any:
                                 try:
                                     return self.span.__exit__(exc_type, exc_val, exc_tb)
                                 finally:

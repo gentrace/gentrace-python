@@ -5,6 +5,7 @@ from __future__ import annotations
 import ast
 from typing import Any, Dict, List, Union, cast
 from dataclasses import dataclass
+from typing_extensions import override
 
 
 @dataclass
@@ -20,6 +21,7 @@ class BaseTransformer(ast.NodeTransformer):
         # so we can construct the qualified name of the current function.
         self.qualname_stack: List[str] = []
         
+    @override
     def visit_ClassDef(self, node: ast.ClassDef):
         self.qualname_stack.append(node.name)
         # We need to call generic_visit here to modify any functions defined inside the class.
@@ -27,6 +29,7 @@ class BaseTransformer(ast.NodeTransformer):
         self.qualname_stack.pop()
         return node
         
+    @override
     def visit_FunctionDef(self, node: Union[ast.FunctionDef, ast.AsyncFunctionDef]):
         self.qualname_stack.append(node.name)
         qualname = '.'.join(self.qualname_stack)
@@ -38,6 +41,7 @@ class BaseTransformer(ast.NodeTransformer):
         
         return self.rewrite_function(node, qualname)
         
+    @override
     def visit_AsyncFunctionDef(self, node: ast.AsyncFunctionDef):
         return self.visit_FunctionDef(node)
         

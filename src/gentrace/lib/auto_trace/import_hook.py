@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Dict, Callable, Iterator, Optional, Seque
 from dataclasses import dataclass
 from importlib.abc import Loader, MetaPathFinder
 from importlib.util import spec_from_loader
+from typing_extensions import override
 from importlib.machinery import ModuleSpec
 
 from .types import AutoTraceModule
@@ -27,6 +28,7 @@ class GentraceFinder(MetaPathFinder):
     tracer: Optional['Tracer']
     pipeline_id: Optional[str] = None
     
+    @override
     def find_spec(
         self, fullname: str, path: Optional[Sequence[str]], target: Optional[ModuleType] = None
     ) -> Optional[ModuleSpec]:
@@ -104,12 +106,14 @@ class GentraceLoader(Loader):
     execute: Callable[[Dict[str, Any]], None]
     """A function which accepts module globals and executes the compiled code."""
     
+    @override
     def exec_module(self, module: ModuleType):
         """Execute a modified AST of the module's source code in the module's namespace."""
         self.execute(module.__dict__)
         
     # This is required when `exec_module` is defined.
     # It returns None to indicate that the usual module creation process should be used.
+    @override
     def create_module(self, spec: ModuleSpec):  # noqa: ARG002
         return None
         

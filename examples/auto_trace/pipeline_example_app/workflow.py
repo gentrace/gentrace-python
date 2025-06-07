@@ -33,7 +33,7 @@ def extract_data() -> List[Dict[str, Any]]:
     time.sleep(0.05)  # Simulate work
     
     # Simulate extracting data
-    data = []
+    data: List[Dict[str, Any]] = []
     for i in range(5):  # Reduced for faster example
         record = process_record(i)
         data.append(record)
@@ -53,7 +53,7 @@ def process_record(record_id: int) -> Dict[str, Any]:
 
 def transform_data(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Transform the extracted data."""
-    transformed = []
+    transformed: List[Dict[str, Any]] = []
     for record in data:
         # Apply transformation
         result = apply_transformation(record)

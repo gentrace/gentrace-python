@@ -80,7 +80,7 @@ def install_auto_tracing(
 
 
 def modules_func_from_sequence(modules: Sequence[str]) -> Callable[[AutoTraceModule], bool]:
-    return lambda module: module.parts_start_with(modules)
+    return lambda module: module.parts_start_with(list(modules))
 
 
 class AutoTraceModuleAlreadyImportedException(Exception):
