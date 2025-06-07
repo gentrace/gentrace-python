@@ -2,16 +2,19 @@
 
 import ast
 import sys
+from typing import Any
 from unittest.mock import Mock
 
 import pytest
+
+# pyright: reportUnknownMemberType=false, reportUnknownParameterType=false, reportUnknownArgumentType=false
 
 
 class TestAutoTrace:
     """Test the auto-trace AST transformation functionality."""
     
     @pytest.fixture
-    def mock_tracer(self):
+    def mock_tracer(self) -> Mock:
         """Create a mock tracer for testing."""
         tracer = Mock()
         span = Mock()
@@ -20,7 +23,7 @@ class TestAutoTrace:
         tracer.start_as_current_span.return_value = span
         return tracer
     
-    def test_compile_source_basic(self, mock_tracer):
+    def test_compile_source_basic(self, mock_tracer: Mock) -> None:
         """Test basic AST compilation with auto-tracing."""
         from gentrace.lib.auto_trace.rewrite_ast import compile_source
         
@@ -37,7 +40,7 @@ result = add(1, 2)
         execute = compile_source(tree, '<test>', 'test_module', min_duration=0, tracer=mock_tracer)
         
         # Execute
-        globs = {}
+        globs: dict[str, Any] = {}
         execute(globs)
         
         # Check that the function was defined and works
@@ -47,7 +50,7 @@ result = add(1, 2)
         # Check that tracer was called
         mock_tracer.start_as_current_span.assert_called()
     
-    def test_no_auto_trace_decorator(self, mock_tracer):
+    def test_no_auto_trace_decorator(self, mock_tracer: Mock) -> None:
         """Test that @no_auto_trace decorator prevents tracing."""
         from gentrace.lib.auto_trace.rewrite_ast import no_auto_trace, compile_source
         
@@ -81,7 +84,7 @@ r2 = traced()
         # Check that only one function was traced
         assert mock_tracer.start_as_current_span.call_count == 1
     
-    def test_class_methods_traced(self, mock_tracer):
+    def test_class_methods_traced(self, mock_tracer: Mock) -> None:
         """Test that class methods are traced."""
         from gentrace.lib.auto_trace.rewrite_ast import compile_source
         
@@ -104,7 +107,7 @@ r2 = Calculator.multiply(4, 5)
         execute = compile_source(tree, '<test>', 'test_module', min_duration=0, tracer=mock_tracer)
         
         # Execute
-        globs = {}
+        globs: dict[str, Any] = {}
         execute(globs)
         
         # Check results
@@ -114,7 +117,7 @@ r2 = Calculator.multiply(4, 5)
         # Check that methods were traced
         assert mock_tracer.start_as_current_span.call_count >= 2
     
-    def test_generator_functions_not_traced(self, mock_tracer):
+    def test_generator_functions_not_traced(self, mock_tracer: Mock) -> None:
         """Test that generator functions are not traced (they have yield)."""
         from gentrace.lib.auto_trace.rewrite_ast import compile_source
         
@@ -134,7 +137,7 @@ result = regular()
         execute = compile_source(tree, '<test>', 'test_module', min_duration=0, tracer=mock_tracer)
         
         # Execute
-        globs = {}
+        globs: dict[str, Any] = {}
         execute(globs)
         
         # Check results
@@ -143,7 +146,7 @@ result = regular()
         # Only regular() should be traced, not generator()
         assert mock_tracer.start_as_current_span.call_count == 1
     
-    def test_install_auto_tracing(self):
+    def test_install_auto_tracing(self) -> None:
         """Test the install_auto_tracing function."""
         from gentrace.lib.auto_trace import GentraceFinder, install_auto_tracing
         
@@ -162,7 +165,7 @@ result = regular()
         # Clean up
         sys.meta_path.remove(finder)
     
-    def test_install_auto_tracing_with_pipeline_id(self):
+    def test_install_auto_tracing_with_pipeline_id(self) -> None:
         """Test install_auto_tracing with pipeline_id."""
         import uuid
 
@@ -190,7 +193,7 @@ result = regular()
         # Clean up
         sys.meta_path.remove(finder)
     
-    def test_install_auto_tracing_invalid_pipeline_id(self):
+    def test_install_auto_tracing_invalid_pipeline_id(self) -> None:
         """Test that invalid pipeline_id raises ValueError."""
         from gentrace.lib.auto_trace import install_auto_tracing
         
@@ -201,7 +204,7 @@ result = regular()
                 pipeline_id="not-a-uuid"
             )
     
-    def test_compile_source_with_pipeline_id(self, mock_tracer):
+    def test_compile_source_with_pipeline_id(self, mock_tracer: Mock) -> None:
         """Test that pipeline_id is handled correctly for auto-traced functions."""
         import uuid
 
@@ -227,7 +230,7 @@ result = test_func()
         )
         
         # Execute
-        globs = {}
+        globs: dict[str, Any] = {}
         execute(globs)
         
         # The function should have been called to create a span
@@ -237,7 +240,7 @@ result = test_func()
         # based on whether it's a root span or not, so we can't test it directly
         # without mocking the OpenTelemetry context
     
-    def test_ast_transformation_preserves_docstrings(self, mock_tracer):
+    def test_ast_transformation_preserves_docstrings(self, mock_tracer: Mock) -> None:
         """Test that docstrings are preserved during AST transformation."""
         from gentrace.lib.auto_trace.rewrite_ast import compile_source
         
@@ -252,7 +255,7 @@ def documented():
         execute = compile_source(tree, '<test>', 'test_module', min_duration=0, tracer=mock_tracer)
         
         # Execute
-        globs = {}
+        globs: dict[str, Any] = {}
         execute(globs)
         
         # Check that docstring is preserved
