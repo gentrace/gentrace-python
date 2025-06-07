@@ -90,8 +90,10 @@ if __name__ == "__main__":
         print("\n" + "=" * 60)
         print(f"Pipeline completed successfully!")
         print(f"Result: {result}")
-        print(f"\nAll spans in this trace include 'gentrace.pipeline_id': '{pipeline_id}'")
-        print("Check the Gentrace dashboard to see all traces associated with this pipeline!")
+        print(f"\nMost spans include 'gentrace.pipeline_id': '{pipeline_id}'")
+        print("Note: The 'enrich_summary_manually' function uses @traced decorator")
+        print("to demonstrate manual tracing within auto-traced code.")
+        print("\nCheck the Gentrace dashboard to see the mixed trace!")
     except Exception as e:
         print(f"\nError running pipeline: {e}")
         raise

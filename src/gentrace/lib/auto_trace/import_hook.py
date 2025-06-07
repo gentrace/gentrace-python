@@ -110,7 +110,7 @@ class GentraceLoader(Loader):
         
     # This is required when `exec_module` is defined.
     # It returns None to indicate that the usual module creation process should be used.
-    def create_module(self, spec: ModuleSpec):
+    def create_module(self, spec: ModuleSpec):  # noqa: ARG002
         return None
         
     def get_code(self, _name: str):

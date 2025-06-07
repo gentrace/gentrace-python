@@ -35,6 +35,7 @@ auto_trace/
 3. **Deep Span Trees**: The pipeline creates a multi-level hierarchy of spans showing the call flow
 4. **OpenTelemetry Integration**: Proper span context propagation with parent-child relationships
 5. **Root Span Attribution**: Only the root span includes the `gentrace.pipeline_id` attribute
+6. **Decorator Compatibility**: The `@interaction` decorator can be used alongside auto-tracing, with decorator settings taking precedence
 
 ## Running the Example
 
@@ -56,14 +57,15 @@ The example will:
 The automatic tracing creates a span tree like this:
 
 ```
-run_data_processing_pipeline [root - has pipeline_id]
+run_data_processing_pipeline [root - has pipeline_id from auto-tracing]
 ├── extract_data
 │   └── process_record (multiple calls)
 ├── transform_data
 │   ├── apply_transformation (multiple calls)
 │   └── validate_transformation (multiple calls)
 └── load_results
-    └── generate_summary
+    ├── generate_summary [auto-traced]
+    └── Manual Summary Enrichment [@traced decorator - custom attributes]
 ```
 
 ## Key Concepts
@@ -87,6 +89,15 @@ When a pipeline_id is provided:
 - Child spans do NOT include the pipeline_id attribute
 - This allows the Gentrace backend to associate the entire trace tree with the pipeline
 - All spans in the trace are connected via the same `traceId`
+
+### Mixing Auto-Tracing with Manual Tracing
+
+The example demonstrates that manual tracing decorators can be used within auto-traced code:
+- Functions marked with `@no_auto_trace` are excluded from automatic tracing
+- The `@traced` decorator can be used within auto-traced code for fine-grained control
+- Manual traces can add custom attributes and names
+- Both auto-traced and manually traced spans maintain proper parent-child relationships
+- This allows selective manual instrumentation while maintaining automatic tracing for the rest of the code
 
 ### OpenTelemetry Configuration
 

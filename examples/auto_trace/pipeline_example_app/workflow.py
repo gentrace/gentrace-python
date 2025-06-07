@@ -3,6 +3,8 @@
 import time
 from typing import Any, Dict, List
 
+import gentrace
+
 
 def run_data_processing_pipeline() -> Dict[str, Any]:
     """Main pipeline entry point - this and all called functions will have pipeline_id."""
@@ -82,24 +84,53 @@ def load_results(data: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Load the results to destination."""
     time.sleep(0.05)  # Simulate work
     
+    # Generate summary with auto-tracing
     summary = generate_summary(data)
+    
+    # Also demonstrate manual tracing within auto-traced code
+    enriched_summary = enrich_summary_manually(summary)
     
     return {
         'status': 'success',
         'records_processed': len(data),
-        'summary': summary,
+        'summary': enriched_summary,
         'pipeline_complete': True
     }
 
 
+@gentrace.no_auto_trace  # Exclude from auto-tracing
+def enrich_summary_manually(summary: Dict[str, Any]) -> Dict[str, Any]:
+    """Function that uses @traced decorator for manual tracing."""
+    # Use the traced decorator directly
+    @gentrace.traced(
+        name="Manual Summary Enrichment", 
+        attributes={"custom_attribute": "manual_trace", "enrichment_type": "statistics"}
+    )
+    def _enrich() -> Dict[str, Any]:
+        time.sleep(0.01)  # Simulate work
+        return {
+            **summary,
+            'enriched': True,
+            'percentile_95': summary.get('average', 0) * 1.5 if summary else 0,
+            'traced_manually': True
+        }
+
+    return _enrich()
+
+
 def generate_summary(data: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """Generate summary statistics."""
+    """Generate summary statistics (auto-traced)."""
     if not data:
         return {'total': 0, 'average': 0}
     
     values = [r.get('value', 0) for r in data]
+    
+    # Add a small simulated calculation
+    time.sleep(0.02)  # Simulate computation time
+    
     return {
         'total': sum(values),
         'average': sum(values) / len(values),
-        'count': len(data)
+        'count': len(data),
+        'interaction_wrapped': True  # Marker to show this was wrapped
     }
