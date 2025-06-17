@@ -110,6 +110,7 @@ from .lib.experiment import experiment
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
 from .lib.span_processor import GentraceSpanProcessor
+from .lib.otel_setup import setup
 
 ### End custom Gentrace imports
 
@@ -154,6 +155,7 @@ __all__ = [
     "DefaultAsyncHttpxClient",
     # Start custom Gentrace exports
     "init",
+    "setup",
     "traced",
     "interaction",
     "experiment",
