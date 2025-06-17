@@ -5,6 +5,10 @@ import atexit
 from typing import Any, Dict, List, Optional
 from pathlib import Path
 
+from rich.text import Text
+from rich.panel import Panel
+from rich.syntax import Syntax
+from rich.console import Group
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
@@ -12,36 +16,17 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 from opentelemetry.sdk.trace.sampling import Sampler
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
+from .utils import get_console
 from .span_processor import GentraceSpanProcessor
 from .client_instance import _get_sync_client_instance
 
 
-def _format_error_message() -> str:
-    """Format error message with colors if terminal supports it."""
-    # Check if we're in a terminal that supports colors
-    supports_color = hasattr(sys.stdout, 'isatty') and sys.stdout.isatty()
+def _display_init_error() -> None:
+    """Display initialization error using rich formatting."""
+    console = get_console()
     
-    if supports_color:
-        # ANSI color codes
-        red = '\033[91m'
-        cyan = '\033[96m'
-        gray = '\033[90m'
-        reset = '\033[0m'
-        bold = '\033[1m'
-    else:
-        red = cyan = gray = reset = bold = ''
-    
-    title = f"{red}{bold}⚠ Gentrace Initialization Error{reset}"
-    
-    message = f"""
-{title}
-
-The setup() function was called before init(). Gentrace must be initialized
-with your API key before setting up OpenTelemetry.
-
-To fix this, call init() before setup():
-
-{cyan}from gentrace import init, setup
+    # Code example for fixing the error
+    code_example = """from gentrace import init, setup
 
 # First, initialize Gentrace with your API key
 init(
@@ -50,11 +35,47 @@ init(
 )
 
 # Then setup OpenTelemetry
-setup(){reset}
-
-{gray}Make sure to call init() before setup() in your application.{reset}
-"""
-    return message
+setup()"""
+    
+    # Create error content with rich formatting
+    error_content = Group(
+        Text("The setup() function was called before init().", style="red"),
+        Text("Gentrace must be initialized with your API key before setting up OpenTelemetry.", style="red"),
+        Text(),
+        Text("To fix this, call init() before setup():", style="yellow"),
+    )
+    
+    # Create error panel
+    error_panel = Panel(
+        error_content,
+        title="[red]⚠ Gentrace Initialization Error[/red]",
+        border_style="red",
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    # Display the error panel
+    console.console.print(error_panel)
+    console.console.print()  # Add spacing
+    
+    # Display the code example
+    console.console.print(Text("Here's how to fix it:", style="bold cyan"))
+    console.console.print()
+    
+    syntax = Syntax(
+        code_example,
+        "python",
+        theme="monokai",
+        line_numbers=True,
+        word_wrap=True,
+        background_color="default",
+    )
+    console.console.print(syntax)
+    console.console.print()
+    
+    console.console.print(
+        Text("💡 Make sure to call init() before setup() in your application.", style="bold green")
+    )
 
 
 def _get_service_name() -> str:
@@ -128,7 +149,8 @@ def setup(
                        Defaults to Gentrace's OTLP endpoint.
         service_name: Optional service name for the application.
                      Defaults to the package name from pyproject.toml or 'unknown-service'.
-        instrumentations: Optional instrumentations to include (e.g., OpenAI, Anthropic).
+        instrumentations: Optional list of OpenTelemetry instrumentations to configure.
+                         Each instrumentation should be an instance with an 'instrument' method.
         resource_attributes: Optional additional resource attributes.
         sampler: Optional custom sampler. If not provided, uses OpenTelemetry's default
                  sampling behavior. Use GentraceSampler() to filter spans based on
@@ -151,8 +173,14 @@ def setup(
         # With custom trace endpoint
         setup(trace_endpoint='http://localhost:4318/v1/traces')
         
-        # With instrumentations
-        setup(instrumentations=[OpenAIInstrumentation()])
+        # With instrumentations (Python style)
+        from opentelemetry.instrumentation.requests import RequestsInstrumentation
+        from opentelemetry.instrumentation.urllib3 import URLLib3Instrumentation
+        
+        setup(instrumentations=[
+            RequestsInstrumentation(),
+            URLLib3Instrumentation(),
+        ])
         
         # With GentraceSampler to filter spans
         from gentrace import GentraceSampler
@@ -176,8 +204,8 @@ def setup(
             raise ValueError("Gentrace not initialized")
             
     except Exception as e:
-        # Display error and exit
-        sys.stderr.write(_format_error_message() + '\n')
+        # Display error using rich formatting
+        _display_init_error()
         raise RuntimeError("Gentrace must be initialized before calling setup().") from e
     
     # Get configuration values with smart defaults
@@ -256,21 +284,36 @@ def setup(
         try:
             tracer_provider.shutdown()
         except Exception as e:
-            sys.stderr.write(f"Error during OpenTelemetry shutdown: {e}\n")
+            console = get_console()
+            console.error(f"Error during OpenTelemetry shutdown: {e}")
     
     # Register for different exit scenarios
     atexit.register(shutdown_handler)
     
-    # Note: instrumentations are not directly supported by Python's TracerProvider
-    # Users should configure instrumentations separately if needed
+    # Configure instrumentations if provided
+    # Standard pattern is to pass instances: RequestsInstrumentor().instrument()
     if instrumentations:
-        import warnings
-        warnings.warn(
-            "The 'instrumentations' parameter is not directly supported in Python. "
-            "Please configure instrumentations separately.",
-            UserWarning,
-            stacklevel=2
-        )
+        for instrumentation in instrumentations:
+            try:
+                # All standard OpenTelemetry instrumentations inherit from BaseInstrumentor
+                # which provides the instrument() method
+                if hasattr(instrumentation, 'instrument') and callable(instrumentation.instrument):
+                    instrumentation.instrument()
+                else:
+                    import warnings
+                    warnings.warn(
+                        f"Instrumentation {type(instrumentation).__name__} does not have an 'instrument' method. "
+                        f"Ensure you're passing an instance, not a class.",
+                        UserWarning,
+                        stacklevel=2
+                    )
+            except Exception as e:
+                import warnings
+                warnings.warn(
+                    f"Failed to configure instrumentation {type(instrumentation).__name__}: {e}",
+                    UserWarning,
+                    stacklevel=2
+                )
     
     return tracer_provider
 
