@@ -4,10 +4,11 @@ Comprehensive test to verify all aspects of span ingestion.
 
 import os
 import time
+
 from opentelemetry import trace
 
 import gentrace
-from gentrace import setup, interaction, traced
+from gentrace import setup, traced, interaction
 
 # Pipeline ID from environment
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")

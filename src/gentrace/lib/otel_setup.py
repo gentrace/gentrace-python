@@ -12,7 +12,6 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 from opentelemetry.sdk.trace.sampling import Sampler
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from .sampler import GentraceSampler
 from .span_processor import GentraceSpanProcessor
 from .client_instance import _get_sync_client_instance
 
