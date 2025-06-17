@@ -49,6 +49,10 @@ def init(*, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwa
     async_g_client = AsyncGentrace(**constructor_args)
 
     _set_client_instances(sync_g_client, async_g_client)
+    
+    # Set a global flag to indicate that init() has been called
+    import sys
+    setattr(sys.modules['gentrace'], '__gentrace_initialized', True)
 
 
 __all__ = ["init"]
