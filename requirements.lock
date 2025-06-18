@@ -126,6 +126,7 @@ opentelemetry-api==1.32.1
     # via fasta2a
     # via opentelemetry-exporter-otlp-proto-http
     # via opentelemetry-instrumentation
+    # via opentelemetry-instrumentation-openai-v2
     # via opentelemetry-processor-baggage
     # via opentelemetry-sdk
     # via opentelemetry-semantic-conventions
@@ -135,6 +136,9 @@ opentelemetry-exporter-otlp-proto-common==1.32.1
 opentelemetry-exporter-otlp-proto-http==1.32.1
     # via gentrace-py
 opentelemetry-instrumentation==0.53b1
+    # via gentrace-py
+    # via opentelemetry-instrumentation-openai-v2
+opentelemetry-instrumentation-openai-v2==2.1b0
     # via gentrace-py
 opentelemetry-processor-baggage==0.54b0
     # via gentrace-py
@@ -147,6 +151,7 @@ opentelemetry-sdk==1.32.1
     # via opentelemetry-processor-baggage
 opentelemetry-semantic-conventions==0.53b1
     # via opentelemetry-instrumentation
+    # via opentelemetry-instrumentation-openai-v2
     # via opentelemetry-sdk
 packaging==25.0
     # via huggingface-hub

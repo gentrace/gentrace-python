@@ -44,7 +44,10 @@ Homepage = "https://github.com/gentrace/gentrace-python"
 Repository = "https://github.com/gentrace/gentrace-python"
 
 [project.optional-dependencies]
-openai = ["openai"]
+openai = [
+    "openai",
+    "opentelemetry-instrumentation-openai-v2>=2.1b0",
+]
 anthropic = ["anthropic"]
 pydantic-ai = ["pydantic-ai>=0.2.14"]
 
