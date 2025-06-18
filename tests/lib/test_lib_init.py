@@ -1,7 +1,9 @@
 import sys
+from typing import cast
 from unittest.mock import MagicMock, patch
 
 from gentrace.lib.init import init as function_under_test
+from gentrace.lib.types import OtelConfigOptions
 
 # Get a direct reference to the module where init() is defined and its dependencies are looked up
 init_module_object = sys.modules["gentrace.lib.init"]
@@ -137,7 +139,7 @@ def test_init_with_otel_setup_dict() -> None:
         mock_gentrace_cls.return_value = mock_sync_client_instance
         mock_async_gentrace_cls.return_value = mock_async_client_instance
 
-        otel_config = {"service_name": "test-service", "debug": True}
+        otel_config = cast(OtelConfigOptions, {"service_name": "test-service", "debug": True})
         function_under_test(api_key="test_token_val", otel_setup=otel_config)
 
         mock_gentrace_cls.assert_called_once_with(api_key="test_token_val")
