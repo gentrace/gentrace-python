@@ -313,7 +313,15 @@ def setup(
                 # All standard OpenTelemetry instrumentations inherit from BaseInstrumentor
                 # which provides the instrument() method
                 if hasattr(instrumentation, 'instrument') and callable(instrumentation.instrument):
-                    instrumentation.instrument()
+                    # Check if this is an OpenInference instrumentor which needs tracer_provider
+                    # OpenInference instrumentors are in the openinference.instrumentation namespace
+                    module_name = type(instrumentation).__module__
+                    if module_name and 'openinference.instrumentation' in module_name:
+                        # OpenInference instrumentors need the tracer_provider
+                        instrumentation.instrument(tracer_provider=tracer_provider)
+                    else:
+                        # Standard OpenTelemetry instrumentors
+                        instrumentation.instrument()
                 else:
                     import warnings
                     warnings.warn(
