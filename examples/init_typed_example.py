@@ -26,7 +26,7 @@ def main() -> None:
     init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        auto_configure_otel=otel_config
+        otel_setup=otel_config
     )
     
     print("✓ Gentrace initialized with typed OpenTelemetry configuration")
@@ -38,7 +38,7 @@ def main() -> None:
     # Your IDE should provide autocomplete for the dictionary keys
     # init(
     #     api_key="...",
-    #     auto_configure_otel={
+    #     otel_setup={
     #         "service_name": "inline-service",  # IDE autocomplete works here!
     #         "debug": False,
     #         "trace_endpoint": "http://custom-endpoint:4318/v1/traces"

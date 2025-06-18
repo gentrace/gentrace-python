@@ -1,7 +1,7 @@
 """
 Example showing different ways to configure OpenTelemetry through Gentrace init().
 
-This demonstrates the flexibility of the auto_configure_otel parameter.
+This demonstrates the flexibility of the otel_setup parameter.
 """
 
 import os
@@ -29,8 +29,8 @@ def example_default_config() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        # auto_configure_otel=True is the default, shown for clarity
-        auto_configure_otel=True
+        # otel_setup=True is the default, shown for clarity
+        otel_setup=True
     )
     
     print("OpenTelemetry configured with defaults:")
@@ -57,7 +57,7 @@ def example_custom_config() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        auto_configure_otel=config
+        otel_setup=config
     )
     
     print("OpenTelemetry configured with custom options:")
@@ -84,7 +84,7 @@ def example_with_instrumentations() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        auto_configure_otel={
+        otel_setup={
             "service_name": "instrumented-service",
             "instrumentations": instrumentations
         }
@@ -114,7 +114,7 @@ def example_disabled_config() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        auto_configure_otel=False
+        otel_setup=False
     )
     
     print("Gentrace initialized without OpenTelemetry")

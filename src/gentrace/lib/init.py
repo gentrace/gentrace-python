@@ -11,7 +11,7 @@ def init(
     *,
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
-    auto_configure_otel: Union[bool, OtelConfigOptions] = True,
+    otel_setup: Union[bool, OtelConfigOptions] = True,
     **kwargs: Any
 ) -> None:
     """
@@ -31,7 +31,7 @@ def init(
             If None, GENTRACE_API_KEY environment variable is used by clients.
         base_url (Optional[str]): The base URL for the Gentrace API. If not provided,
             it's determined by the client (env variable or default).
-        auto_configure_otel (Union[bool, OtelConfigOptions]): Controls OpenTelemetry configuration.
+        otel_setup (Union[bool, OtelConfigOptions]): Controls OpenTelemetry configuration.
             - True (default): Automatically configures OpenTelemetry with default settings
             - False: Skips OpenTelemetry configuration
             - OtelConfigOptions: TypedDict with the following optional fields:
@@ -49,7 +49,7 @@ def init(
 
     Side Effects:
         - Sets the internal singleton client instances used by the SDK
-        - Configures OpenTelemetry TracerProvider (unless auto_configure_otel=False)
+        - Configures OpenTelemetry TracerProvider (unless otel_setup=False)
         - Registers shutdown handlers for proper span flushing
         
     Example:
@@ -58,12 +58,12 @@ def init(
         gentrace.init(api_key="your-api-key")
         
         # Initialize without OpenTelemetry configuration
-        gentrace.init(api_key="your-api-key", auto_configure_otel=False)
+        gentrace.init(api_key="your-api-key", otel_setup=False)
         
         # Initialize with custom OpenTelemetry settings
         gentrace.init(
             api_key="your-api-key",
-            auto_configure_otel={
+            otel_setup={
                 "service_name": "my-service",
                 "debug": True
             }
@@ -89,11 +89,11 @@ def init(
     setattr(sys.modules['gentrace'], '__gentrace_initialized', True)
     
     # Configure OpenTelemetry if requested
-    if auto_configure_otel is not False:
+    if otel_setup is not False:
         # Extract OpenTelemetry configuration options
-        if isinstance(auto_configure_otel, dict):
+        if isinstance(otel_setup, dict):
             # Use the dict directly - it could be OtelConfigOptions or a plain dict
-            otel_config = cast(Dict[str, Any], auto_configure_otel)
+            otel_config = cast(Dict[str, Any], otel_setup)
         else:
             # Default configuration
             otel_config = {}

@@ -37,7 +37,7 @@ if not gentrace_base_url:
 gentrace.init(
     api_key=api_key,
     base_url=gentrace_base_url,
-    auto_configure_otel={
+    otel_setup={
         "service_name": "my-otel-interaction-example-app",
         "sampler": GentraceSampler()
     }

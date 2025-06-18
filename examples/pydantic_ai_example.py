@@ -43,7 +43,7 @@ if not pipeline_id:
 gentrace.init(
     api_key=api_key,
     base_url=gentrace_base_url,
-    auto_configure_otel={
+    otel_setup={
         "service_name": "pydantic-ai-gentrace-example",
         "sampler": GentraceSampler()
     }

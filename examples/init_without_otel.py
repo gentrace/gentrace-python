@@ -24,7 +24,7 @@ def main() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        auto_configure_otel=False  # Disable automatic OpenTelemetry setup
+        otel_setup=False  # Disable automatic OpenTelemetry setup
     )
     
     print("Gentrace initialized without OpenTelemetry")

@@ -46,7 +46,7 @@ if not pipeline_id:
 init(
     api_key=gentrace_api_key, 
     base_url=gentrace_base_url,
-    auto_configure_otel={
+    otel_setup={
         "sampler": GentraceSampler()
     }
 )

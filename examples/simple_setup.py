@@ -20,8 +20,8 @@ async def main() -> None:
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-        # auto_configure_otel=True is the default, shown here for clarity
-        auto_configure_otel=True
+        # otel_setup=True is the default, shown here for clarity
+        otel_setup=True
     )
     
     # That's it! OpenTelemetry is now automatically configured with:
@@ -49,7 +49,7 @@ async def main() -> None:
     # Note: In a real app, you would only call init() once
     print("\n--- Debug Mode Example (would be in a separate run) ---")
     print("To enable debug mode, you would use:")
-    print('gentrace.init(api_key="...", auto_configure_otel={"debug": True})')
+    print('gentrace.init(api_key="...", otel_setup={"debug": True})')
     
     print("\nSetup complete! Traces are being sent to Gentrace.")
     
