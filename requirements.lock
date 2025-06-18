@@ -219,6 +219,8 @@ starlette==0.47.0
     # via fasta2a
 tokenizers==0.21.1
     # via cohere
+tomli==2.2.1
+    # via gentrace-py
 tqdm==4.67.1
     # via huggingface-hub
     # via openai

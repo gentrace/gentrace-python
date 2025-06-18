@@ -256,6 +256,7 @@ time-machine==2.9.0
 tokenizers==0.21.1
     # via cohere
 tomli==2.0.2
+    # via gentrace-py
     # via mypy
     # via pytest
 tqdm==4.67.1

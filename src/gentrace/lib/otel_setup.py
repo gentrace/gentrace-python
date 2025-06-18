@@ -84,16 +84,28 @@ def _get_service_name() -> str:
     try:
         pyproject_path = Path.cwd() / "pyproject.toml"
         if pyproject_path.exists():
-            # Simple TOML parsing for the name field
-            content = pyproject_path.read_text()
-            for line in content.split('\n'):
-                if line.strip().startswith('name'):
-                    # Extract value between quotes
-                    parts = line.split('=', 1)
-                    if len(parts) == 2:
-                        name = parts[1].strip().strip('"').strip("'")
-                        if name:
-                            return name
+            # Use proper TOML parser
+            try:
+                # Python 3.11+ has tomllib built-in
+                import tomllib  # type: ignore[import]
+            except ImportError:
+                # For older Python versions, use tomli
+                import tomli as tomllib  # type: ignore[import, no-redef]
+            
+            with open(pyproject_path, 'rb') as f:
+                data: Dict[str, Any] = tomllib.load(f)  # type: ignore[attr-defined]
+                
+            # Check for project.name (PEP 621)
+            if 'project' in data and 'name' in data['project']:
+                name = data['project']['name']  # type: ignore[assignment]
+                if isinstance(name, str):
+                    return name
+            
+            # Check for tool.poetry.name (Poetry)
+            if 'tool' in data and 'poetry' in data['tool'] and 'name' in data['tool']['poetry']:
+                name = data['tool']['poetry']['name']  # type: ignore[assignment]
+                if isinstance(name, str):
+                    return name
     except Exception:
         pass
     
@@ -200,7 +212,8 @@ def setup(
         )
         
         # Also check for the global flag set by init()
-        if not is_initialized or not getattr(sys.modules.get('gentrace', {}), '__gentrace_initialized', False):
+        gentrace_module = sys.modules.get('gentrace')
+        if not is_initialized or not (gentrace_module and getattr(gentrace_module, '__gentrace_initialized', False)):
             raise ValueError("Gentrace not initialized")
             
     except Exception as e:
