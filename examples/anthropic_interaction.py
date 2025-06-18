@@ -14,7 +14,6 @@ To run this example, ensure the following environment variables are set:
 """
 
 import os
-import atexit
 import asyncio
 from typing import Dict
 
@@ -22,16 +21,10 @@ from anthropic import Anthropic, AsyncAnthropic
 from opentelemetry import trace
 from anthropic.types import Message, MessageParam
 from opentelemetry.trace import Span, Status, StatusCode
-from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.util.types import AttributeValue
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace import GentraceSampler, GentraceSpanProcessor, traced, interaction
-
-resource = Resource(attributes={"service.name": "my-otel-anthropic-interaction-example-app"})
-tracer_provider = TracerProvider(resource=resource, sampler=GentraceSampler())
+import gentrace
+from gentrace import GentraceSampler, traced, interaction
 
 api_key = os.getenv("GENTRACE_API_KEY", "")
 anthropic_api_key = os.getenv("ANTHROPIC_API_KEY", "")
@@ -45,25 +38,18 @@ if not anthropic_api_key:
 if not gentrace_base_url:
     raise ValueError("GENTRACE_BASE_URL environment variable not set.")
 
-otlp_headers: Dict[str, str] = {}
-if api_key:
-    otlp_headers["Authorization"] = f"Bearer {api_key}"
-
-span_exporter = OTLPSpanExporter(
-    endpoint=f"{gentrace_base_url}/otel/v1/traces",
-    headers=otlp_headers,
+# Initialize Gentrace with automatic OpenTelemetry configuration
+gentrace.init(
+    api_key=api_key,
+    base_url=gentrace_base_url,
+    auto_configure_otel={
+        "service_name": "my-otel-anthropic-interaction-example-app",
+        "sampler": GentraceSampler()
+    }
 )
 
 client = Anthropic(api_key=anthropic_api_key)
 async_client = AsyncAnthropic(api_key=anthropic_api_key)
-
-# Instantiate and add GentraceSpanProcessor to enrich spans with `gentrace.sample`
-gentrace_baggage_processor = GentraceSpanProcessor()
-tracer_provider.add_span_processor(gentrace_baggage_processor)
-
-simple_export_processor = SimpleSpanProcessor(span_exporter)
-tracer_provider.add_span_processor(simple_export_processor)
-trace.set_tracer_provider(tracer_provider)
 
 
 @traced(name="sync_anthropic_llm_call", attributes={"llm_vendor": "Anthropic", "llm_model": "claude-3-5-sonnet-20241022"})
@@ -255,6 +241,5 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    atexit.register(tracer_provider.shutdown)
     asyncio.run(main())
 

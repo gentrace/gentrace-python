@@ -220,7 +220,9 @@ def setup(
         base_url = os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
     
     # Build the trace endpoint URL
-    final_trace_endpoint = trace_endpoint or f"{base_url}/otel/v1/traces"
+    # Ensure base_url doesn't end with a slash to avoid double slashes
+    base_url_clean = base_url.rstrip('/')
+    final_trace_endpoint = trace_endpoint or f"{base_url_clean}/otel/v1/traces"
     
     # Get service name with auto-detection
     final_service_name = service_name or _get_service_name()

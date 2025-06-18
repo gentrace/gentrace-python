@@ -95,6 +95,7 @@ test_cases_async = _t.cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_c
 from .types import Dataset, Pipeline, TestCase, Experiment
 from .lib.eval import eval
 from .lib.init import init
+from .lib.types import OtelConfigOptions
 from .lib.traced import traced
 from .lib.sampler import GentraceSampler
 from .lib.constants import (
@@ -107,7 +108,6 @@ from .lib.constants import (
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .lib.experiment import experiment
-from .lib.otel_setup import setup
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
 from .lib.span_processor import GentraceSpanProcessor
@@ -155,7 +155,6 @@ __all__ = [
     "DefaultAsyncHttpxClient",
     # Start custom Gentrace exports
     "init",
-    "setup",
     "traced",
     "interaction",
     "experiment",
@@ -175,6 +174,7 @@ __all__ = [
     "Experiment",
     "Dataset",
     "Pipeline",
+    "OtelConfigOptions",
     # End custom Gentrace exports
 ]
 

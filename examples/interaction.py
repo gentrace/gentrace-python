@@ -13,22 +13,13 @@ To run this example, ensure the following environment variables are set:
 """
 
 import os
-import atexit
 import asyncio
-from typing import Dict
 
 from openai import OpenAI, AsyncOpenAI
-from opentelemetry import trace
 from openai.types.chat import ChatCompletion
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace import GentraceSampler, GentraceSpanProcessor, traced, interaction
-
-resource = Resource(attributes={"service.name": "my-otel-interaction-example-app"})
-tracer_provider = TracerProvider(resource=resource, sampler=GentraceSampler())
+import gentrace
+from gentrace import GentraceSampler, traced, interaction
 
 api_key = os.getenv("GENTRACE_API_KEY", "")
 openai_api_key = os.getenv("OPENAI_API_KEY", "")
@@ -42,25 +33,18 @@ if not openai_api_key:
 if not gentrace_base_url:
     raise ValueError("GENTRACE_BASE_URL environment variable not set.")
 
-otlp_headers: Dict[str, str] = {}
-if api_key:
-    otlp_headers["Authorization"] = f"Bearer {api_key}"
-
-span_exporter = OTLPSpanExporter(
-    endpoint=f"{gentrace_base_url}/otel/v1/traces",
-    headers=otlp_headers,
+# Initialize Gentrace with automatic OpenTelemetry configuration
+gentrace.init(
+    api_key=api_key,
+    base_url=gentrace_base_url,
+    auto_configure_otel={
+        "service_name": "my-otel-interaction-example-app",
+        "sampler": GentraceSampler()
+    }
 )
 
 client = OpenAI(api_key=openai_api_key)
 async_client = AsyncOpenAI(api_key=openai_api_key)
-
-# Instantiate and add GentraceSpanProcessor to enrich spans with `gentrace.sample`
-gentrace_baggage_processor = GentraceSpanProcessor()
-tracer_provider.add_span_processor(gentrace_baggage_processor)
-
-simple_export_processor = SimpleSpanProcessor(span_exporter)
-tracer_provider.add_span_processor(simple_export_processor)
-trace.set_tracer_provider(tracer_provider)
 
 
 @traced(name="sync_openai_llm_call", attributes={"llm_vendor": "OpenAI", "llm_model": "gpt-4o"})
@@ -114,5 +98,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    atexit.register(tracer_provider.shutdown)
     asyncio.run(main())

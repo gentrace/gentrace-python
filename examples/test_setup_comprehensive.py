@@ -8,21 +8,18 @@ import time
 from opentelemetry import trace
 
 import gentrace
-from gentrace import setup, traced, interaction
+from gentrace import traced, interaction
 
 # Pipeline ID from environment
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")
 
 
 def main() -> None:
-    # Initialize Gentrace
+    # Initialize Gentrace with automatic OpenTelemetry configuration
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
     )
-    
-    # Setup OpenTelemetry
-    setup()
     
     print("Running comprehensive span test...")
     

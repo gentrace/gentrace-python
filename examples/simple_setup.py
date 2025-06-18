@@ -9,25 +9,23 @@ import os
 from opentelemetry import trace
 
 import gentrace
-from gentrace import setup, interaction
+from gentrace import interaction
 
 # Pipeline ID for this example
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")
 
 
 async def main() -> None:
-    # Step 1: Initialize Gentrace first
+    # Initialize Gentrace with automatic OpenTelemetry configuration
     gentrace.init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
+        # auto_configure_otel=True is the default, shown here for clarity
+        auto_configure_otel=True
     )
     
-    # Step 2: Setup OpenTelemetry - no parameters needed!
-    setup()
-    
-    # That's it! OpenTelemetry is now configured with:
+    # That's it! OpenTelemetry is now automatically configured with:
     # - Service name auto-detected from pyproject.toml
-    # - Gentrace samplers enabled by default
     # - Traces sent to Gentrace endpoint
     # - Automatic span flushing on exit
     
@@ -48,10 +46,10 @@ async def main() -> None:
     print(f"Result: {result}")
     
     # Example 3: Show what happens with debug mode
-    # Note: In a real app, you would only call setup() once
+    # Note: In a real app, you would only call init() once
     print("\n--- Debug Mode Example (would be in a separate run) ---")
     print("To enable debug mode, you would use:")
-    print('setup(debug=True)')
+    print('gentrace.init(api_key="...", auto_configure_otel={"debug": True})')
     
     print("\nSetup complete! Traces are being sent to Gentrace.")
     

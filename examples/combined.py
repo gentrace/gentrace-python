@@ -17,17 +17,11 @@ To run this example, ensure the following environment variables are set:
 """
 
 import os
-import atexit
 import asyncio
 from typing import Any, Dict
 from typing_extensions import TypedDict
 
-# OpenTelemetry API and SDK components
 from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
 from gentrace import TestInput, eval, init, experiment, interaction, eval_dataset
 
@@ -47,26 +41,16 @@ if not gentrace_base_url:
 if not pipeline_id:
     raise ValueError("GENTRACE_PIPELINE_ID environment variable not set.")
 
-resource = Resource(attributes={"service.name": "example-combined-eval"})
-
-tracer_provider = TracerProvider(resource=resource)
-
-otlp_headers: Dict[str, str] = {}
-if gentrace_api_key:
-    otlp_headers["Authorization"] = f"Bearer {gentrace_api_key}"
-else:
-    print("Warning: GENTRACE_API_KEY environment variable not set.")
-
-span_exporter = OTLPSpanExporter(endpoint=f"{gentrace_base_url}/otel/v1/traces", headers=otlp_headers)
-
-span_processor = SimpleSpanProcessor(span_exporter)
-tracer_provider.add_span_processor(span_processor)
-
-trace.set_tracer_provider(tracer_provider)
+# Initialize Gentrace with automatic OpenTelemetry configuration
+init(
+    api_key=gentrace_api_key,
+    base_url=gentrace_base_url,
+    auto_configure_otel={
+        "service_name": "example-combined-eval"
+    }
+)
 
 tracer = trace.get_tracer(__name__)
-
-init(api_key=gentrace_api_key, base_url=gentrace_base_url)
 
 
 class InteractionInput(TypedDict):
@@ -143,10 +127,6 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    # Ensure OTel SDK is shutdown gracefully to flush traces
-    atexit.register(tracer_provider.shutdown)
-    print("Registered OTel SDK shutdown handler with atexit.")
-
     print("Running combined @eval and eval_dataset example...")
 
     try:

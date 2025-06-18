@@ -14,16 +14,11 @@ To run this example, ensure the following environment variables are set:
 """
 
 import os
-import atexit
 import asyncio
-from typing import Dict, Sequence
+from typing import Sequence
 from typing_extensions import TypedDict
 
 from pydantic import BaseModel
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
 from gentrace import TestCase, TestInput, GentraceSampler, init, experiment, test_cases, eval_dataset, test_cases_async
 
@@ -46,7 +41,15 @@ if not dataset_id:
 if not pipeline_id:
     raise ValueError("GENTRACE_PIPELINE_ID environment variable not set.")
 
-init(api_key=gentrace_api_key, base_url=gentrace_base_url)
+# Initialize Gentrace with automatic OpenTelemetry configuration
+# Including GentraceSampler for filtering spans
+init(
+    api_key=gentrace_api_key, 
+    base_url=gentrace_base_url,
+    auto_configure_otel={
+        "sampler": GentraceSampler()
+    }
+)
 
 
 class QueryInputsSchema(BaseModel):
@@ -101,25 +104,7 @@ async def main_async_runner() -> None:
 
 if __name__ == "__main__":
     print("--- Example: eval_dataset Simple Usage ---")
-
-    # OpenTelemetry Setup
-    tracer_provider = TracerProvider(sampler=GentraceSampler())
-    trace.set_tracer_provider(tracer_provider)
-
-    otlp_headers: Dict[str, str] = {}
-
-    if gentrace_api_key:
-        otlp_headers["Authorization"] = f"Bearer {gentrace_api_key}"
-
-    span_exporter = OTLPSpanExporter(endpoint=f"{gentrace_base_url}/otel/v1/traces", headers=otlp_headers)
-
-    span_processor = SimpleSpanProcessor(span_exporter)
-    tracer_provider.add_span_processor(span_processor)
-
-    # Ensure OTel SDK is shutdown gracefully to flush traces
-    atexit.register(tracer_provider.shutdown)
-    print("OpenTelemetry OTLPSpanExporter initialized and SDK shutdown handler registered.")
-
+    print("OpenTelemetry automatically configured by Gentrace init()")
     print("Running example...")
 
     try:

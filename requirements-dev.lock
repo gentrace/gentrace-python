@@ -13,6 +13,7 @@
 annotated-types==0.6.0
     # via pydantic
 anthropic==0.52.2
+    # via gentrace-py
     # via pydantic-ai-slim
 anyio==4.9.0
     # via anthropic

@@ -30,6 +30,10 @@ if not gentrace_base_url:
 init(
     base_url=gentrace_base_url,
     api_key=gentrace_api_key,
+    auto_configure_otel={
+        "service_name": "eval-example",
+        "debug": True  # Enable console output for debugging
+    }
 )
 
 logging.basicConfig(level=logging.INFO)
@@ -126,34 +130,6 @@ async def run_example() -> None:
 
 
 if __name__ == "__main__":
-    import atexit
-
-    from opentelemetry import trace
-    from opentelemetry.sdk.trace import TracerProvider
-    from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProcessor
-    from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
-
-    trace_provider = TracerProvider()
-    trace.set_tracer_provider(trace_provider)
-
-    console_exporter = ConsoleSpanExporter()
-    span_processor = SimpleSpanProcessor(console_exporter)
-    trace_provider.add_span_processor(span_processor)
-
-    otlp_headers = {"Authorization": f"Bearer {gentrace_api_key}"}
-
-    span_exporter = OTLPSpanExporter(
-        endpoint=f"{gentrace_base_url}/otel/v1/traces",
-        headers=otlp_headers,
-    )
-
-    span_processor = SimpleSpanProcessor(span_exporter)
-    trace_provider.add_span_processor(span_processor)
-
-    atexit.register(trace_provider.shutdown)
-
-    print("OpenTelemetry ConsoleSpanExporter initialized for basic span output.")
-
     print("Running example...")
 
     asyncio.run(run_example())

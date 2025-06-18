@@ -1,15 +1,25 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Union, Optional, cast
 
 from gentrace import Gentrace, AsyncGentrace
 
+from .types import OtelConfigOptions
+from .otel_setup import setup as _setup_otel
 from .client_instance import _set_client_instances
 
 
-def init(*, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwargs: Any) -> None:
+def init(
+    *,
+    api_key: Optional[str] = None,
+    base_url: Optional[str] = None,
+    auto_configure_otel: Union[bool, OtelConfigOptions] = True,
+    **kwargs: Any
+) -> None:
     """
-    Initializes the Gentrace SDK, configuring global client instances.
+    Initializes the Gentrace SDK and optionally configures OpenTelemetry.
 
-    This function sets up both synchronous and asynchronous Gentrace clients.
+    This function sets up both synchronous and asynchronous Gentrace clients,
+    and by default also configures OpenTelemetry for tracing.
+    
     If `api_key` is not provided, the underlying clients will attempt to use the
     GENTRACE_API_KEY environment variable. If `base_url` is not provided, they will
     attempt to use the GENTRACE_BASE_URL environment variable or a default URL.
@@ -17,24 +27,48 @@ def init(*, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwa
     All arguments must be passed as keyword arguments.
 
     Args:
-        api_key (Optional[str]): The Gentrace API key
+        api_key (Optional[str]): The Gentrace API key.
             If None, GENTRACE_API_KEY environment variable is used by clients.
         base_url (Optional[str]): The base URL for the Gentrace API. If not provided,
             it's determined by the client (env variable or default).
+        auto_configure_otel (Union[bool, OtelConfigOptions]): Controls OpenTelemetry configuration.
+            - True (default): Automatically configures OpenTelemetry with default settings
+            - False: Skips OpenTelemetry configuration
+            - OtelConfigOptions: TypedDict with the following optional fields:
+                - trace_endpoint: Custom OTLP endpoint URL
+                - service_name: Service name (auto-detected if not provided)
+                - instrumentations: List of OpenTelemetry instrumentation instances
+                - resource_attributes: Additional resource attributes
+                - sampler: Custom sampler (defaults to standard behavior)
+                - debug: Enable console exporter for debugging (default: False)
         **kwargs (Any): Additional keyword arguments passed to the underlying
             `Gentrace` (synchronous) and `AsyncGentrace` (asynchronous)
             client constructors. This allows for advanced configuration.
             Common options include `timeout`, `max_retries`, `default_headers`,
             `default_query`, and `http_client`.
-            If `http_client` is provided, it will be passed to both the synchronous
-            and asynchronous client constructors. Ensure its type is compatible.
-
-            Refer to the constructor signatures of `gentrace.Gentrace` and
-            `gentrace.AsyncGentrace` for a full list of available options.
 
     Side Effects:
-        Sets the internal singleton client instances used by the SDK, making them
-        available for subsequent API calls through the gentrace library.
+        - Sets the internal singleton client instances used by the SDK
+        - Configures OpenTelemetry TracerProvider (unless auto_configure_otel=False)
+        - Registers shutdown handlers for proper span flushing
+        
+    Example:
+        ```python
+        # Simple initialization with automatic OpenTelemetry setup
+        gentrace.init(api_key="your-api-key")
+        
+        # Initialize without OpenTelemetry configuration
+        gentrace.init(api_key="your-api-key", auto_configure_otel=False)
+        
+        # Initialize with custom OpenTelemetry settings
+        gentrace.init(
+            api_key="your-api-key",
+            auto_configure_otel={
+                "service_name": "my-service",
+                "debug": True
+            }
+        )
+        ```
     """
     constructor_args: Dict[str, Any] = {}
     if api_key is not None:
@@ -53,6 +87,19 @@ def init(*, api_key: Optional[str] = None, base_url: Optional[str] = None, **kwa
     # Set a global flag to indicate that init() has been called
     import sys
     setattr(sys.modules['gentrace'], '__gentrace_initialized', True)
+    
+    # Configure OpenTelemetry if requested
+    if auto_configure_otel is not False:
+        # Extract OpenTelemetry configuration options
+        if isinstance(auto_configure_otel, dict):
+            # Use the dict directly - it could be OtelConfigOptions or a plain dict
+            otel_config = cast(Dict[str, Any], auto_configure_otel)
+        else:
+            # Default configuration
+            otel_config = {}
+        
+        # Call the setup function with the configuration
+        _setup_otel(**otel_config)
 
 
 __all__ = ["init"]
