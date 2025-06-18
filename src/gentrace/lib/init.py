@@ -15,10 +15,10 @@ def init(
     **kwargs: Any
 ) -> None:
     """
-    Initializes the Gentrace SDK and optionally configures OpenTelemetry.
+    Initializes the Gentrace SDK and configures OpenTelemetry by default.
 
     This function sets up both synchronous and asynchronous Gentrace clients,
-    and by default also configures OpenTelemetry for tracing.
+    and automatically configures OpenTelemetry for tracing (unless disabled).
     
     If `api_key` is not provided, the underlying clients will attempt to use the
     GENTRACE_API_KEY environment variable. If `base_url` is not provided, they will
