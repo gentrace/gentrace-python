@@ -19,14 +19,10 @@ from dataclasses import dataclass
 
 from pydantic import Field, BaseModel
 from pydantic_ai import Agent, RunContext
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
 from pydantic_ai.models.openai import OpenAIModel
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace import GentraceSampler, GentraceSpanProcessor, interaction
+import gentrace
+from gentrace import GentraceSampler, interaction
 
 # Environment setup
 api_key = os.getenv("GENTRACE_API_KEY", "")
@@ -43,25 +39,15 @@ if not gentrace_base_url:
 if not pipeline_id:
     raise ValueError("GENTRACE_PIPELINE_ID environment variable not set.")
 
-# Configure OpenTelemetry with Gentrace
-resource = Resource(attributes={"service.name": "pydantic-ai-gentrace-example"})
-tracer_provider = TracerProvider(resource=resource, sampler=GentraceSampler())
-
-# Configure OTLP exporter with Gentrace endpoint
-otlp_headers: Dict[str, str] = {"Authorization": f"Bearer {api_key}"}
-span_exporter = OTLPSpanExporter(
-    endpoint=f"{gentrace_base_url}/otel/v1/traces",
-    headers=otlp_headers,
+# Initialize Gentrace with automatic OpenTelemetry configuration
+gentrace.init(
+    api_key=api_key,
+    base_url=gentrace_base_url,
+    otel_setup={
+        "service_name": "pydantic-ai-gentrace-example",
+        "sampler": GentraceSampler()
+    }
 )
-
-# Add Gentrace span processor for baggage enrichment
-gentrace_baggage_processor = GentraceSpanProcessor()
-tracer_provider.add_span_processor(gentrace_baggage_processor)
-
-# Add export processor
-simple_export_processor = SimpleSpanProcessor(span_exporter)
-tracer_provider.add_span_processor(simple_export_processor)
-trace.set_tracer_provider(tracer_provider)
 
 # Initialize Pydantic AI model
 model = OpenAIModel("gpt-4o")
@@ -231,5 +217,3 @@ async def main() -> None:
 
 if __name__ == "__main__":
     asyncio.run(main())
-    # Ensure spans are exported before exit
-    tracer_provider.shutdown()
