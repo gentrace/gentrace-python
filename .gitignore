@@ -19,3 +19,4 @@ design-docs
 context-artifacts
 gentrace-python.code-workspace
 .DS_Store
+.mcp.json
