@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.5 (2025-06-19)
+
+Full Changelog: [v1.0.0-alpha.4...v1.0.0-alpha.5](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.4...v1.0.0-alpha.5)
+
+### Features
+
+* Add OTEL setup in `init()` ([#317](https://github.com/gentrace/gentrace-python/issues/317)) ([f6ed028](https://github.com/gentrace/gentrace-python/commit/f6ed028ec23bdd2ac83f054b454b40b1c50f256b))
+
 ## 1.0.0-alpha.4 (2025-06-06)
 
 Full Changelog: [v1.0.0-alpha.3...v1.0.0-alpha.4](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.3...v1.0.0-alpha.4)
