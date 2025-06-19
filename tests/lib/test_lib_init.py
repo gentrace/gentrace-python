@@ -15,9 +15,9 @@ init_module_object = sys.modules["gentrace.lib.init"]
 def test_init_with_all_args_and_kwargs() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -36,9 +36,9 @@ def test_init_with_all_args_and_kwargs() -> None:
 def test_init_with_api_key_only() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -55,9 +55,9 @@ def test_init_with_api_key_only() -> None:
 def test_init_with_base_url_only() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -74,9 +74,9 @@ def test_init_with_base_url_only() -> None:
 def test_init_with_no_explicit_args() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -93,9 +93,9 @@ def test_init_with_no_explicit_args() -> None:
 def test_init_with_additional_kwargs() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -112,9 +112,9 @@ def test_init_with_additional_kwargs() -> None:
 def test_init_with_otel_setup_false() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
@@ -131,9 +131,9 @@ def test_init_with_otel_setup_false() -> None:
 def test_init_with_otel_setup_dict() -> None:
     with patch.object(init_module_object, "Gentrace") as mock_gentrace_cls, patch.object(
         init_module_object, "AsyncGentrace"
-    ) as mock_async_gentrace_cls, patch.object(init_module_object, "_set_client_instances") as mock_set_instances, patch.object(
-        init_module_object, "_setup_otel"
-    ) as mock_setup_otel:
+    ) as mock_async_gentrace_cls, patch.object(
+        init_module_object, "_set_client_instances"
+    ) as mock_set_instances, patch.object(init_module_object, "_setup_otel") as mock_setup_otel:
         mock_sync_client_instance = MagicMock()
         mock_async_client_instance = MagicMock()
         mock_gentrace_cls.return_value = mock_sync_client_instance
