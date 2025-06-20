@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.6 (2025-06-20)
+
+Full Changelog: [v1.0.0-alpha.5...v1.0.0-alpha.6](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.5...v1.0.0-alpha.6)
+
+### Bug Fixes
+
+* Deeply simplify the examples ([#319](https://github.com/gentrace/gentrace-python/issues/319)) ([eea245f](https://github.com/gentrace/gentrace-python/commit/eea245ff12e006c9aff0bb964088e9671de72487))
+
 ## 1.0.0-alpha.5 (2025-06-19)
 
 Full Changelog: [v1.0.0-alpha.4...v1.0.0-alpha.5](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.4...v1.0.0-alpha.5)
