@@ -11,6 +11,7 @@ This module provides the core experiment control functionality for the Gentrace 
 It includes types and functions for starting and finishing experiments via the Gentrace API.
 """
 
+
 async def start_experiment_api(
     *,
     pipelineId: str,
@@ -19,12 +20,12 @@ async def start_experiment_api(
 ) -> str:
     """
     Starts a new experiment run by creating an experiment record via the Gentrace API.
-    
+
     Args:
         pipelineId: The ID of the pipeline to create the experiment for.
         metadata: Optional metadata for the experiment.
         name: Friendly experiment name.
-               
+
     Returns:
         str: The unique ID of the created experiment run.
     """
@@ -34,19 +35,20 @@ async def start_experiment_api(
         metadata=metadata if metadata is not None else NOT_GIVEN,
         name=name if name is not None else NOT_GIVEN,
     )
-    
+
     return experiment.id
+
 
 async def finish_experiment_api(*, id: str, error: Optional[Union[Exception, str]] = None) -> None:
     """
     Finishes an experiment run by updating its status via the Gentrace API.
-    
+
     Args:
         id: The ID of the experiment to finish.
         error: Optional error information. If provided, it will be logged.
     """
     logger.debug(f"Attempting to finish Gentrace experiment via API for experiment ID `{id}`.")
-    
+
     status_to_set: Literal["EVALUATING"] = "EVALUATING"
     # In the future, if the API supports errorMessage, it would be set here.
     # For now, we will log the error if present.
@@ -69,6 +71,7 @@ async def finish_experiment_api(*, id: str, error: Optional[Union[Exception, str
         logger.error(f"Failed to update Gentrace experiment `{id}` status via API. Details: {e}")
         # Optionally re-raise or handle as appropriate for the SDK's error handling strategy
         raise
+
 
 __all__ = [
     "start_experiment_api",
