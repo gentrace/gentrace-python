@@ -67,11 +67,11 @@ init(
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 
+
 @interaction(pipeline_id=GENTRACE_PIPELINE_ID)
 async def query_ai(query: str) -> str | None:
     response = client.chat.completions.create(
-        model="gpt-4o",
-        messages=[{"role": "user", "content": query}]
+        model="gpt-4o", messages=[{"role": "user", "content": query}]
     )
     return response.choices[0].message.content
 ```
@@ -93,23 +93,27 @@ client = OpenAI()
 USER_ID = "<user_id>"
 PIPELINE_ID = "<pipeline_id>"
 
+
 @traced(name="OpenAI Call")
 async def summarize_user(user_info: str) -> str:
     response = client.chat.completions.create(
         model="gpt-4o",
-        messages=[{"role": "user", "content": f"Summarize the following user info: {user_info}"}]
+        messages=[{"role": "user", "content": f"Summarize the following user info: {user_info}"}],
     )
     return response.choices[0].message.content
+
 
 @traced(name="Get User Info DB Call")
 async def get_user_info(user_id: str) -> str:
     # This would be a database call in a real application
     return f"User {user_id}: Sample information"
 
+
 @interaction(pipeline_id=GENTRACE_PIPELINE_ID)
 async def main_task(input: str) -> str:
     user_info = await get_user_info(input)
     return await summarize_user(user_info)
+
 
 asyncio.run(main_task(USER_ID))
 ```
@@ -135,14 +139,15 @@ init(
     # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
+
 @interaction(pipeline_id=GENTRACE_PIPELINE_ID)
 async def query_ai(query: str) -> str | None:
     # Implementation from previous example
     pass
 
+
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def simple_evals() -> None:
-
     @eval(name="capital-of-france")
     async def paris_test() -> None:
         result = await query_ai("What is the capital of France?")
@@ -150,6 +155,7 @@ async def simple_evals() -> None:
 
     # Immediately invoke the eval
     await paris_test()
+
 
 asyncio.run(simple_evals())
 ```
@@ -173,6 +179,7 @@ init(
     # Optional for self-hosted deployments: base_url=os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
 )
 
+
 # Option 1️⃣: Fetch test cases from Gentrace
 async def fetch_test_cases() -> list[TestCase]:
     cases = await test_cases_async.list(dataset_id=GENTRACE_DATASET_ID)
@@ -180,10 +187,12 @@ async def fetch_test_cases() -> list[TestCase]:
     # Each test case within cases.data has an attribute "inputs" with the structure: { query: str }
     return cases.data
 
+
 # Option 2️⃣: Provide locally defined test cases by using TestInput and a typed dict
 # (in this case QueryInputs)
 class QueryInputs(TypedDict):
     query: str
+
 
 def custom_test_cases() -> list[TestInput[QueryInputs]]:
     return [
@@ -191,9 +200,11 @@ def custom_test_cases() -> list[TestInput[QueryInputs]]:
         TestInput[QueryInputs](name="Test Case 2", inputs={"query": "How does this work?"}),
     ]
 
+
 # Optionally, validate the structure of your inputs with Pydantic
 class QueryInputsSchema(BaseModel):
     query: str
+
 
 @experiment(pipeline_id=GENTRACE_PIPELINE_ID)
 async def dataset_evals() -> None:
@@ -201,7 +212,7 @@ async def dataset_evals() -> None:
     await eval_dataset(
         data=fetch_test_cases,
         interaction=query_ai,
-        schema=QueryInputsSchema, # Extra validation with Pydantic of the test case structure
+        schema=QueryInputsSchema,  # Extra validation with Pydantic of the test case structure
     )
 
     # Option 2️⃣: Use locally defined test cases
@@ -209,6 +220,7 @@ async def dataset_evals() -> None:
         data=custom_test_cases,
         interaction=query_ai,
     )
+
 
 asyncio.run(dataset_evals())
 ```
@@ -251,24 +263,20 @@ from gentrace import GentraceSampler, GentraceSpanProcessor
 import os
 
 # In virtually all cases, you should use https://gentrace.ai/api as the base URL
-GENTRACE_BASE_URL = os.environ.get('GENTRACE_BASE_URL', 'https://gentrace.ai/api')
-GENTRACE_API_KEY = os.environ['GENTRACE_API_KEY']
+GENTRACE_BASE_URL = os.environ.get("GENTRACE_BASE_URL", "https://gentrace.ai/api")
+GENTRACE_API_KEY = os.environ["GENTRACE_API_KEY"]
 
-resource = Resource.create({
-    "service.name": "my-gentrace-app"
-})
+resource = Resource.create({"service.name": "my-gentrace-app"})
 
 provider = TracerProvider(
     resource=resource,
-    sampler=GentraceSampler()  # Use GentraceSampler for selective tracing
+    sampler=GentraceSampler(),  # Use GentraceSampler for selective tracing
 )
 trace.set_tracer_provider(provider)
 
 exporter = OTLPSpanExporter(
     endpoint=f"{GENTRACE_BASE_URL}/otel/v1/traces",
-    headers={
-        "Authorization": f"Bearer {GENTRACE_API_KEY}"
-    },
+    headers={"Authorization": f"Bearer {GENTRACE_API_KEY}"},
 )
 
 # Add GentraceSpanProcessor to propagate gentrace.sample attribute
@@ -294,10 +302,7 @@ from gentrace import GentraceSampler
 from opentelemetry.sdk.trace import TracerProvider
 
 # Create a tracer provider with the GentraceSampler
-provider = TracerProvider(
-    resource=resource,
-    sampler=GentraceSampler()
-)
+provider = TracerProvider(resource=resource, sampler=GentraceSampler())
 ```
 
 How it works:
@@ -327,10 +332,7 @@ Using both components together provides optimal control over which spans are sen
 
 ```python
 # Complete example
-provider = TracerProvider(
-    resource=resource,
-    sampler=GentraceSampler()
-)
+provider = TracerProvider(resource=resource, sampler=GentraceSampler())
 trace.set_tracer_provider(provider)
 
 # Add GentraceSpanProcessor first to ensure proper attribute propagation
