@@ -85,8 +85,10 @@ def init(
     _set_client_instances(sync_g_client, async_g_client)
     
     # Set a global flag to indicate that init() has been called
+    # Also store the otel_setup configuration
     import sys
     setattr(sys.modules['gentrace'], '__gentrace_initialized', True)
+    setattr(sys.modules['gentrace'], '__gentrace_otel_setup_config', otel_setup)
     
     # Configure OpenTelemetry if requested
     if otel_setup is not False:
