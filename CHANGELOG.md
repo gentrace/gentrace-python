@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.7 (2025-06-25)
+
+Full Changelog: [v1.0.0-alpha.6...v1.0.0-alpha.7](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.6...v1.0.0-alpha.7)
+
+### Features
+
+* Add OpenAI Agents instrumentation example ([#322](https://github.com/gentrace/gentrace-python/issues/322)) ([96f3f23](https://github.com/gentrace/gentrace-python/commit/96f3f23bcdc06603bc788557277490a6a8c07506))
+
 ## 1.0.0-alpha.6 (2025-06-20)
 
 Full Changelog: [v1.0.0-alpha.5...v1.0.0-alpha.6](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.5...v1.0.0-alpha.6)
