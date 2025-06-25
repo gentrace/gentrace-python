@@ -52,7 +52,7 @@ travel_agent = Agent(
 )
 
 
-@interaction(name="travel_planning", pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b"))
+@interaction(name="travel_planning", pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
 def plan_trip(request: str) -> str:
     """Handle a travel planning request - automatically traced."""
     result = Runner.run_sync(
