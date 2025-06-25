@@ -13,6 +13,8 @@ from pydantic_ai.models.openai import OpenAIModel
 import gentrace
 from gentrace import interaction
 
+Agent.instrument_all()
+
 # Initialize Gentrace (will capture Pydantic AI's OTEL traces)
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
