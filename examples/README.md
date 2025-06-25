@@ -12,6 +12,7 @@ This directory contains simplified examples demonstrating key features of the Ge
 ### LLM Integrations
 - `openai_simple.py` - Simple OpenAI integration with Gentrace tracing
 - `openai_instrumentation.py` - OpenAI with automatic OpenInference instrumentation
+- `openai_agents_instrumentation.py` - OpenAI Agents (Swarm) with OpenInference instrumentation
 - `anthropic_simple.py` - Anthropic Claude integration example
 - `pydantic_ai_simple.py` - Simple Pydantic AI framework integration
 
@@ -23,7 +24,8 @@ This directory contains simplified examples demonstrating key features of the Ge
 1. Install dependencies:
 ```bash
 pip install -e ..
-pip install openai anthropic pydantic-ai  # For LLM examples
+pip install openai anthropic pydantic-ai openai-agents  # For LLM examples
+pip install openinference-instrumentation-openai-agents  # For OpenAI Agents instrumentation
 ```
 
 2. Set environment variables:
