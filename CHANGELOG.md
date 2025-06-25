@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.8 (2025-06-25)
+
+Full Changelog: [v1.0.0-alpha.7...v1.0.0-alpha.8](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.7...v1.0.0-alpha.8)
+
+### Chores
+
+* Add Agent.instrument_all() call for tracing ([#325](https://github.com/gentrace/gentrace-python/issues/325)) ([91c3473](https://github.com/gentrace/gentrace-python/commit/91c347332ac02fa64da0307d8672064bfc000dcf))
+
 ## 1.0.0-alpha.7 (2025-06-25)
 
 Full Changelog: [v1.0.0-alpha.6...v1.0.0-alpha.7](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.6...v1.0.0-alpha.7)
