@@ -48,6 +48,10 @@ openai = [
     "openai",
     "openinference-instrumentation-openai",
 ]
+openai-agents = [
+    "openai-agents>=0.0.19",
+    "openinference-instrumentation-openai-agents",
+]
 anthropic = ["anthropic"]
 pydantic-ai = ["pydantic-ai>=0.2.14"]
 
