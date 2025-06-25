@@ -1,6 +1,6 @@
 [project]
 name = "gentrace-py"
-version = "1.0.0-alpha.6"
+version = "1.0.0-alpha.7"
 description = "The official Python library for the gentrace API"
 dynamic = ["readme"]
 license = "MIT"
@@ -47,6 +47,10 @@ Repository = "https://github.com/gentrace/gentrace-python"
 openai = [
     "openai",
     "openinference-instrumentation-openai",
+]
+openai-agents = [
+    "openai-agents>=0.0.19",
+    "openinference-instrumentation-openai-agents",
 ]
 anthropic = ["anthropic"]
 pydantic-ai = ["pydantic-ai>=0.2.14"]
