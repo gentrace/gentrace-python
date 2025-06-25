@@ -12,14 +12,14 @@ def init(
     api_key: Optional[str] = None,
     base_url: Optional[str] = None,
     otel_setup: Union[bool, OtelConfigOptions] = True,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> None:
     """
     Initializes the Gentrace SDK and configures OpenTelemetry by default.
 
     This function sets up both synchronous and asynchronous Gentrace clients,
     and automatically configures OpenTelemetry for tracing (unless disabled).
-    
+
     If `api_key` is not provided, the underlying clients will attempt to use the
     GENTRACE_API_KEY environment variable. If `base_url` is not provided, they will
     attempt to use the GENTRACE_BASE_URL environment variable or a default URL.
@@ -51,23 +51,17 @@ def init(
         - Sets the internal singleton client instances used by the SDK
         - Configures OpenTelemetry TracerProvider (unless otel_setup=False)
         - Registers shutdown handlers for proper span flushing
-        
+
     Example:
         ```python
         # Simple initialization with automatic OpenTelemetry setup
         gentrace.init(api_key="your-api-key")
-        
+
         # Initialize without OpenTelemetry configuration
         gentrace.init(api_key="your-api-key", otel_setup=False)
-        
+
         # Initialize with custom OpenTelemetry settings
-        gentrace.init(
-            api_key="your-api-key",
-            otel_setup={
-                "service_name": "my-service",
-                "debug": True
-            }
-        )
+        gentrace.init(api_key="your-api-key", otel_setup={"service_name": "my-service", "debug": True})
         ```
     """
     constructor_args: Dict[str, Any] = {}
@@ -83,11 +77,12 @@ def init(
     async_g_client = AsyncGentrace(**constructor_args)
 
     _set_client_instances(sync_g_client, async_g_client)
-    
+
     # Set a global flag to indicate that init() has been called
     import sys
-    setattr(sys.modules['gentrace'], '__gentrace_initialized', True)
-    
+
+    setattr(sys.modules["gentrace"], "__gentrace_initialized", True)
+
     # Configure OpenTelemetry if requested
     if otel_setup is not False:
         # Extract OpenTelemetry configuration options
@@ -97,7 +92,7 @@ def init(
         else:
             # Default configuration
             otel_config = {}
-        
+
         # Call the setup function with the configuration
         _setup_otel(**otel_config)
 
