@@ -318,19 +318,64 @@ def check_otel_config_and_warn() -> None:
     if _otel_config_warning_issued:
         return
 
+    # Check if otel_setup was configured in init()
+    import sys
+    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
+    
+    # Only show warning if otel_setup was explicitly set to False
+    # If undefined, the user hasn't called init() yet
+    # If True or a dict, OpenTelemetry setup was requested
+    if otel_setup_config is not False:
+        return
+
     provider = trace_api.get_tracer_provider()
 
     if not isinstance(provider, SDKTracerProvider):
-        otel_setup_url = "https://github.com/gentrace/gentrace-python/blob/main/README.md#opentelemetry-integration"
-        link_text = "Gentrace OpenTelemetry Setup Guide"
+        console = get_console()
 
-        # OTEL starter code that users can copy and use directly
-        otel_starter_code = """import os
+        # Create a warning panel with rich formatting
+        warning_content = Group(
+            Text("⚠ Gentrace Configuration Warning", style="bold yellow"),
+            Text(),
+            Text("OpenTelemetry SDK does not appear to be configured. This means that Gentrace features"),
+            Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
+            Text("Gentrace UI."),
+            Text(),
+            Text("You have two options to fix this:"),
+        )
+
+        warning_panel = Panel(
+            warning_content,
+            title="[yellow]⚠ Gentrace Configuration Warning[/yellow]",
+            border_style="yellow",
+            title_align="left",
+            padding=(1, 2),
+        )
+
+        # Init example code (recommended)
+        init_example_code = """import gentrace
+
+gentrace.init(
+    api_key="your-api-key",
+    # otel_setup=True is the default, can be omitted
+)"""
+
+        # Manual setup code
+        manual_setup_code = """import os
+import atexit
+import gentrace
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+
+# Initialize Gentrace without OpenTelemetry setup
+gentrace.init(
+    api_key="your-api-key",
+    base_url="https://gentrace.ai/api",  # or your custom endpoint
+    otel_setup=False
+)
 
 # Set up the resource with service name
 resource = Resource(attributes={"service.name": "your-service-name"})
@@ -348,61 +393,74 @@ span_exporter = OTLPSpanExporter(
 # Add the span processor
 trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
 
+# Ensure graceful shutdown
+def shutdown_handler():
+    provider = trace.get_tracer_provider()
+    if hasattr(provider, 'shutdown'):
+        provider.shutdown()
+        print("OpenTelemetry SDK shut down successfully")
+
+# Register shutdown handler
+atexit.register(shutdown_handler)
+
 print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
-
-        console = get_console()
-
-        # Create a warning panel with rich formatting
-        warning_content = Group(
-            Text("OpenTelemetry SDK (TracerProvider) does not appear to be configured.", style="yellow"),
-            Text(),
-            Text("Gentrace tracing features may not record data:"),
-            Text("  • @interaction", style="on grey30"),
-            Text("  • @eval", style="on grey30"),
-            Text("  • @traced", style="on grey30"),
-            Text("  • eval_dataset()", style="on grey30"),
-            Text(),
-            Text("Please ensure OpenTelemetry is set up as per the:"),
-            Text(link_text, style=f"underline #90EE90 link {otel_setup_url}"),
-        )
-
-        warning_panel = Panel(
-            warning_content,
-            title="[yellow]⚠ Gentrace Configuration Warning[/yellow]",
-            border_style="yellow",
-            title_align="left",
-            padding=(1, 2),
-        )
 
         try:
             console.console.print(warning_panel)
             console.console.print()  # Add spacing
 
-            # Display the formatted OTEL starter code
-            console.console.print(Text("Here's the OTEL starter code you can use:", style="bold cyan"))
+            # Display the recommended init() approach with star emoji
+            console.console.print(Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green"))
             console.console.print()
 
-            syntax = Syntax(
-                otel_starter_code,
+            syntax_init = Syntax(
+                init_example_code,
                 "python",
                 theme="monokai",
                 line_numbers=True,
                 word_wrap=True,
                 background_color="default",
             )
-            console.console.print(syntax)
+            console.console.print(syntax_init)
+            console.console.print()
+
+            # Display the manual setup option
+            console.console.print(Text("Option 2: If you have otel_setup=False, manually configure OpenTelemetry:", style="gray"))
+            console.console.print()
+
+            syntax_manual = Syntax(
+                manual_setup_code,
+                "python",
+                theme="monokai",
+                line_numbers=True,
+                word_wrap=True,
+                background_color="default",
+            )
+            console.console.print(syntax_manual)
             console.console.print()
 
             console.console.print(
-                Text("💡 Copy the code above and add it to your application startup.", style="bold green")
+                Text("Tip: Copy the code above and add it to your application setup.", style="gray")
             )
 
         except Exception:  # Fallback if rich formatting/printing fails
-            fallback_message = (
-                f"Gentrace: OpenTelemetry SDK (TracerProvider) does not appear to be configured. "
-                f"Gentrace tracing features (e.g., @interaction, @eval, @traced, and eval_dataset()) may not record data. "
-                f"Please ensure OpenTelemetry is set up as per the {otel_setup_url}."
-            )
+            fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
+
+You have two options:
+
+⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):
+
+    import gentrace
+    
+    gentrace.init(
+        api_key="your-api-key",
+        # otel_setup=True is the default, can be omitted
+    )
+
+Option 2: If you have otel_setup=False, manually configure OpenTelemetry with the Gentrace endpoint.
+
+See the documentation for the complete setup code.
+"""
             warnings.warn(fallback_message, UserWarning, stacklevel=2)
 
         _otel_config_warning_issued = True
