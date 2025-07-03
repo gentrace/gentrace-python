@@ -307,25 +307,65 @@ def format_timestamp(timestamp: Union[int, float, datetime], relative: bool = Fa
         return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def check_otel_config_and_warn() -> None:
+def _is_gentrace_initialized() -> bool:
+    """Check if Gentrace has been initialized via init()."""
+    import sys
+    gentrace_module = sys.modules.get("gentrace")
+    return bool(gentrace_module and getattr(gentrace_module, "__gentrace_initialized", False))
+
+
+def _is_otel_configured() -> bool:
+    """Check if OpenTelemetry SDK TracerProvider is configured."""
+    provider = trace_api.get_tracer_provider()
+    return isinstance(provider, SDKTracerProvider)
+
+
+def ensure_initialized() -> None:
     """
-    Checks if a proper OpenTelemetry SDK TracerProvider is configured.
-    If not, issues a warning using `rich` for hyperlink formatting and displays
-    formatted OTEL starter code that can be used directly.
-    The warning is issued only once per Python session.
+    Ensures Gentrace is properly initialized with OpenTelemetry configured.
+    
+    This function:
+    1. First attempts auto-initialization if environment variables are set
+    2. Then checks if OpenTelemetry is configured
+    3. Shows a warning if otel_setup was explicitly set to False but OTEL is not configured
+    
+    This replaces the separate check_otel_config_and_warn() calls throughout the codebase.
+    """
+    import os
+    import sys
+    
+    # First, try auto-initialization if needed
+    if not _is_otel_configured() and not _is_gentrace_initialized():
+        api_key = os.environ.get("GENTRACE_API_KEY")
+        if api_key:
+            from .init import init
+            init_kwargs: Dict[str, Any] = {"api_key": api_key}
+            base_url = os.environ.get("GENTRACE_BASE_URL")
+            if base_url:
+                init_kwargs["base_url"] = base_url
+            init(**init_kwargs)
+            # After auto-init, OTEL should be configured, so we can return
+            return
+    
+    # If we reach here, either:
+    # 1. OTEL is already configured (good)
+    # 2. Gentrace was initialized but with otel_setup=False
+    # 3. No environment variables for auto-init
+    
+    # Only warn if otel_setup was explicitly set to False
+    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
+    if otel_setup_config is False and not _is_otel_configured():
+        # Show the warning (using the existing warning logic)
+        _show_otel_warning()
+
+
+def _show_otel_warning() -> None:
+    """
+    Internal function to show the OpenTelemetry configuration warning.
+    This is called by ensure_initialized() when needed.
     """
     global _otel_config_warning_issued
     if _otel_config_warning_issued:
-        return
-
-    # Check if otel_setup was configured in init()
-    import sys
-    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
-    
-    # Only show warning if otel_setup was explicitly set to False
-    # If undefined, the user hasn't called init() yet
-    # If True or a dict, OpenTelemetry setup was requested
-    if otel_setup_config is not False:
         return
 
     provider = trace_api.get_tracer_provider()
@@ -666,7 +706,7 @@ __all__ = [
     "gentrace_format_otel_value",
     "_gentrace_json_dumps",
     "is_pydantic_v1",
-    "check_otel_config_and_warn",
+    "ensure_initialized",
     "GentraceConsole",
     "get_console",
     "pretty_print_json",
