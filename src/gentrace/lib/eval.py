@@ -8,7 +8,7 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace, baggage as otel_baggage, context as otel_context
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps, ensure_initialized
+from .utils import ensure_initialized, _gentrace_json_dumps
 from .constants import (
     ANONYMOUS_SPAN_NAME,
     ATTR_GENTRACE_SAMPLE_KEY,

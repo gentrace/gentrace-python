@@ -23,7 +23,7 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.types.test_case import TestCase
 
-from .utils import is_pydantic_v1, _gentrace_json_dumps, ensure_initialized
+from .utils import is_pydantic_v1, ensure_initialized, _gentrace_json_dumps
 from .constants import (
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_TEST_CASE_ID,
