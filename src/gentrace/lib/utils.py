@@ -391,57 +391,59 @@ def _show_otel_warning() -> None:
         )
 
         # Init example code (recommended)
-        init_example_code = """import gentrace
+        # Add indentation to each line for visual padding
+        init_example_code = """  import gentrace
 
-gentrace.init(
-    api_key="your-api-key",
-    # otel_setup=True is the default, can be omitted
-)"""
+  gentrace.init(
+      api_key="your-api-key",
+      # otel_setup=True is the default, can be omitted
+  )"""
 
         # Manual setup code
-        manual_setup_code = """import os
-import atexit
-import gentrace
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        # Add indentation to each line for visual padding
+        manual_setup_code = """  import os
+  import atexit
+  import gentrace
+  from opentelemetry import trace
+  from opentelemetry.sdk.trace import TracerProvider
+  from opentelemetry.sdk.resources import Resource
+  from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+  from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-# Initialize Gentrace without OpenTelemetry setup
-gentrace.init(
-    api_key="your-api-key",
-    base_url="https://gentrace.ai/api",  # or your custom endpoint
-    otel_setup=False
-)
+  # Initialize Gentrace without OpenTelemetry setup
+  gentrace.init(
+      api_key="your-api-key",
+      base_url="https://gentrace.ai/api",  # or your custom endpoint
+      otel_setup=False
+  )
 
-# Set up the resource with service name
-resource = Resource(attributes={"service.name": "your-service-name"})
+  # Set up the resource with service name
+  resource = Resource(attributes={"service.name": "your-service-name"})
 
-# Create and set the tracer provider
-trace.set_tracer_provider(TracerProvider(resource=resource))
+  # Create and set the tracer provider
+  trace.set_tracer_provider(TracerProvider(resource=resource))
 
-# Configure the OTLP exporter for Gentrace
-otlp_headers = {"Authorization": f"Bearer {os.getenv('GENTRACE_API_KEY')}"}
-span_exporter = OTLPSpanExporter(
-    endpoint=f"{os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai')}/otel/v1/traces",
-    headers=otlp_headers
-)
+  # Configure the OTLP exporter for Gentrace
+  otlp_headers = {"Authorization": f"Bearer {os.getenv('GENTRACE_API_KEY')}"}
+  span_exporter = OTLPSpanExporter(
+      endpoint=f"{os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai/api')}/otel/v1/traces",
+      headers=otlp_headers
+  )
 
-# Add the span processor
-trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
+  # Add the span processor
+  trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
 
-# Ensure graceful shutdown
-def shutdown_handler():
-    provider = trace.get_tracer_provider()
-    if hasattr(provider, 'shutdown'):
-        provider.shutdown()
-        print("OpenTelemetry SDK shut down successfully")
+  # Ensure graceful shutdown
+  def shutdown_handler():
+      provider = trace.get_tracer_provider()
+      if hasattr(provider, 'shutdown'):
+          provider.shutdown()
+          print("OpenTelemetry SDK shut down successfully")
 
-# Register shutdown handler
-atexit.register(shutdown_handler)
+  # Register shutdown handler
+  atexit.register(shutdown_handler)
 
-print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
+  print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
 
         try:
             console.console.print(warning_panel)
@@ -455,9 +457,11 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
                 init_example_code,
                 "python",
                 theme="monokai",
-                line_numbers=True,
+                line_numbers=False,
                 word_wrap=True,
                 background_color="default",
+                indent_guides=True,
+                code_width=100,
             )
             console.console.print(syntax_init)
             console.console.print()
@@ -470,9 +474,11 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
                 manual_setup_code,
                 "python",
                 theme="monokai",
-                line_numbers=True,
+                line_numbers=False,
                 word_wrap=True,
                 background_color="default",
+                indent_guides=True,
+                code_width=100,
             )
             console.console.print(syntax_manual)
             console.console.print()
@@ -480,6 +486,7 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
             console.console.print(
                 Text("Tip: Copy the code above and add it to your application setup.", style="gray")
             )
+            console.console.print()  # Extra line break after Tip
 
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
