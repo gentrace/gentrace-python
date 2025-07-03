@@ -7,6 +7,7 @@ from opentelemetry import baggage as otel_baggage, context as otel_context
 
 from .traced import traced
 from .constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
+from .utils import ensure_initialized
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -80,6 +81,9 @@ def interaction(
 
             @functools.wraps(func)
             async def baggage_context_wrapper_async_gen(*args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized()
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -98,6 +102,9 @@ def interaction(
 
             @functools.wraps(func)
             async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized()
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -114,6 +121,9 @@ def interaction(
 
             @functools.wraps(func)
             def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized()
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
