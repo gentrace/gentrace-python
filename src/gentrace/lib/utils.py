@@ -1,5 +1,6 @@
 import json
 import logging
+import sys
 import warnings
 from typing import Any, Set, Dict, List, Tuple, Union, Optional, cast
 from datetime import datetime
@@ -309,7 +310,6 @@ def format_timestamp(timestamp: Union[int, float, datetime], relative: bool = Fa
 
 def _is_gentrace_initialized() -> bool:
     """Check if Gentrace has been initialized via init()."""
-    import sys
     gentrace_module = sys.modules.get("gentrace")
     return bool(gentrace_module and getattr(gentrace_module, "__gentrace_initialized", False))
 
@@ -332,7 +332,6 @@ def ensure_initialized() -> None:
     This replaces the separate check_otel_config_and_warn() calls throughout the codebase.
     """
     import os
-    import sys
     
     # First, try auto-initialization if needed
     if not _is_otel_configured() and not _is_gentrace_initialized():
