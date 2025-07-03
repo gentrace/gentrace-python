@@ -22,6 +22,7 @@ load_dotenv()
 gentrace.init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
+    otel_setup=False
 )
 
 # Create a simple Pydantic AI agent

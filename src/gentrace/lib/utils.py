@@ -375,8 +375,6 @@ def _show_otel_warning() -> None:
 
         # Create a warning panel with rich formatting
         warning_content = Group(
-            Text("⚠ Gentrace Configuration Warning", style="bold yellow"),
-            Text(),
             Text("OpenTelemetry SDK does not appear to be configured. This means that Gentrace features"),
             Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
             Text("Gentrace UI."),
