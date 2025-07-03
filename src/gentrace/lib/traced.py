@@ -6,7 +6,7 @@ from typing_extensions import ParamSpec
 from opentelemetry import trace
 from opentelemetry.trace.status import Status, StatusCode
 
-from .utils import _gentrace_json_dumps, ensure_initialized, gentrace_format_otel_attributes
+from .utils import ensure_initialized, _gentrace_json_dumps, gentrace_format_otel_attributes
 from .constants import ANONYMOUS_SPAN_NAME, ATTR_GENTRACE_FN_ARGS_EVENT_NAME, ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME
 
 P = ParamSpec("P")

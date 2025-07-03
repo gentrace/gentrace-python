@@ -5,9 +5,9 @@ from typing import Any, Dict, TypeVar, Callable, Optional, AsyncGenerator, cast
 
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
+from .utils import ensure_initialized
 from .traced import traced
 from .constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
-from .utils import ensure_initialized
 
 F = TypeVar("F", bound=Callable[..., Any])
 
