@@ -43,6 +43,13 @@ _otel_config_warning_issued = False
 # Default spinner style for Gentrace operations
 DEFAULT_SPINNER = "dots"
 
+# Cache for validated pipeline IDs
+_validated_pipelines: Set[str] = set()
+# Cache for pipelines that failed validation
+_invalid_pipelines: Set[str] = set()
+# Flag to track if pipeline validation warning has been issued for a pipeline
+_pipeline_warning_issued: Set[str] = set()
+
 
 class GentraceConsole:
     """Centralized console management for Gentrace with rich formatting capabilities."""
@@ -615,6 +622,184 @@ See the documentation for the complete setup code.
             warnings.warn(fallback_message, UserWarning, stacklevel=2)
 
         _otel_config_warning_issued = True
+
+
+def display_pipeline_error(
+    pipeline_id: str,
+    error_type: str,
+    error: Optional[Exception] = None
+) -> None:
+    """
+    Displays a beautifully formatted pipeline error message.
+    
+    Args:
+        pipeline_id: The pipeline ID that caused the error
+        error_type: One of 'invalid-format', 'not-found', 'unauthorized', 'unknown'
+        error: Optional exception object for additional context
+    """
+    # Check if warnings would be suppressed for our message
+    warning_messages = {
+        'invalid-format': f"Pipeline ID '{pipeline_id}' is not a valid UUID",
+        'not-found': f"Pipeline '{pipeline_id}' does not exist",
+        'unauthorized': f"Access denied to pipeline '{pipeline_id}'",
+        'unknown': f"Failed to validate pipeline '{pipeline_id}'"
+    }
+    
+    warning_message = warning_messages.get(error_type, warning_messages['unknown'])
+    
+    # Emit the warning
+    warnings.warn(
+        warning_message,
+        UserWarning,
+        stacklevel=3
+    )
+    
+    # Check if the warning would be shown to decide about rich display
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        warnings.simplefilter("always")
+        warnings.warn(
+            warning_message,
+            UserWarning,
+            stacklevel=2
+        )
+        
+    # If no warning was caught due to filters, don't show rich display
+    if not caught_warnings:
+        return
+    
+    console = get_console()
+    
+    if error_type == 'invalid-format':
+        error_title = "⚠ Gentrace Invalid Pipeline ID"
+        error_content = Group(
+            Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+        )
+        border_style = "red"
+    
+    elif error_type == 'not-found':
+        error_title = "⚠ Gentrace Pipeline Not Found"
+        error_content = Group(
+            Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+        )
+        border_style = "red"
+    
+    elif error_type == 'unauthorized':
+        error_title = "⚠ Gentrace Pipeline Unauthorized"
+        error_content = Group(
+            Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
+        )
+        border_style = "red"
+    
+    else:  # unknown
+        error_title = "⚠ Gentrace Pipeline Error"
+        error_message = error.args[0] if error and error.args else "Unknown error"
+        error_content = Group(
+            Text(f"Failed to validate pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text(f"Error: {error_message}", style="gray"),
+        )
+        border_style = "red"
+    
+    error_panel = Panel(
+        error_content,
+        title=f"[bold red]{error_title}[/bold red]",
+        border_style=border_style,
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    try:
+        console.console.print(error_panel)
+        console.console.print()
+    except Exception:
+        # Fallback to simple logging if rich formatting fails
+        logger.error(f"Gentrace Pipeline Error: {error_type} for pipeline '{pipeline_id}'")
+
+
+def validate_pipeline_access_sync(pipeline_id: str) -> None:
+    """
+    Synchronously validates that a pipeline ID is accessible with the current API key.
+    Only checks once per pipeline ID to avoid redundant API calls.
+    
+    Args:
+        pipeline_id: The pipeline ID to validate
+    """
+    # Skip if already validated or invalid
+    if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
+        return
+    
+    try:
+        from .client_instance import _get_sync_client_instance
+        client = _get_sync_client_instance()
+        
+        # Attempt to retrieve the pipeline to verify access
+        client.pipelines.retrieve(pipeline_id)
+        _validated_pipelines.add(pipeline_id)
+    except Exception as error:
+        _invalid_pipelines.add(pipeline_id)
+        
+        # Only show warning once per pipeline
+        if pipeline_id not in _pipeline_warning_issued:
+            _pipeline_warning_issued.add(pipeline_id)
+            
+            # Check error status code if available
+            status_code = getattr(error, 'status_code', None)
+            # Also check for status attribute (different client libraries)
+            if status_code is None:
+                status_code = getattr(error, 'status', None)
+            
+            if status_code == 404:
+                display_pipeline_error(pipeline_id, 'not-found')
+            elif status_code in (401, 403):
+                display_pipeline_error(pipeline_id, 'unauthorized')
+            else:
+                display_pipeline_error(pipeline_id, 'unknown', error)
+
+
+async def validate_pipeline_access(pipeline_id: str) -> None:
+    """
+    Validates that a pipeline ID is accessible with the current API key.
+    Only checks once per pipeline ID to avoid redundant API calls.
+    
+    Args:
+        pipeline_id: The pipeline ID to validate
+    """
+    # Skip if already validated or invalid
+    if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
+        return
+    
+    try:
+        from .client_instance import _get_async_client_instance
+        client = _get_async_client_instance()
+        
+        # Attempt to retrieve the pipeline to verify access
+        await client.pipelines.retrieve(pipeline_id)
+        _validated_pipelines.add(pipeline_id)
+    except Exception as error:
+        _invalid_pipelines.add(pipeline_id)
+        
+        # Only show warning once per pipeline
+        if pipeline_id not in _pipeline_warning_issued:
+            _pipeline_warning_issued.add(pipeline_id)
+            
+            # Check error status code if available
+            status_code = getattr(error, 'status_code', None)
+            # Also check for status attribute (different client libraries)
+            if status_code is None:
+                status_code = getattr(error, 'status', None)
+            
+            if status_code == 404:
+                display_pipeline_error(pipeline_id, 'not-found')
+            elif status_code in (401, 403):
+                display_pipeline_error(pipeline_id, 'unauthorized')
+            else:
+                display_pipeline_error(pipeline_id, 'unknown', error)
 
 
 def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
