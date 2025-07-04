@@ -329,8 +329,6 @@ def ensure_initialized(suppress_warnings: bool = False) -> None:
     2. Then checks if OpenTelemetry is configured
     3. Shows a warning if otel_setup was explicitly set to False but OTEL is not configured
     
-    This replaces the separate check_otel_config_and_warn() calls throughout the codebase.
-    
     Args:
         suppress_warnings: If True, suppresses auto-initialization warnings.
     """
@@ -362,7 +360,8 @@ def ensure_initialized(suppress_warnings: bool = False) -> None:
     otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
     if otel_setup_config is False and not _is_otel_configured():
         # Show the warning (using the existing warning logic)
-        _show_otel_warning()
+        if not suppress_warnings:
+            _show_otel_warning()
 
 
 def _show_auto_init_warning() -> None:
@@ -453,6 +452,20 @@ def _show_otel_warning() -> None:
     provider = trace_api.get_tracer_provider()
 
     if not isinstance(provider, SDKTracerProvider):
+        # Check if warnings would be suppressed for our message
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            # Don't override existing filters - just record what would happen
+            warnings.warn(
+                "OpenTelemetry SDK does not appear to be configured",
+                UserWarning,
+                stacklevel=2
+            )
+            
+        # If no warning was caught, it means it's being filtered - don't show rich display
+        if not caught_warnings:
+            _otel_config_warning_issued = True
+            return
+        
         console = get_console()
 
         # Create a warning panel with rich formatting
@@ -568,7 +581,18 @@ def _show_otel_warning() -> None:
             console.console.print(
                 Text("Tip: Copy the code above and add it to your application setup.", style="gray")
             )
-            console.console.print()  # Extra line break after Tip
+            console.console.print()
+            
+            console.console.print(
+                Text("To suppress this warning:", style="dim")
+            )
+            console.console.print(
+                Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim")
+            )
+            console.console.print(
+                Text("• Or: warnings.filterwarnings('ignore', message='OpenTelemetry SDK does not appear')", style="dim")
+            )
+            console.console.print()  # Extra line break after suppression info
 
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
