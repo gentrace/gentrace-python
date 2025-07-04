@@ -394,7 +394,7 @@ def _show_auto_init_warning() -> None:
         Text(),
         Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
         Text(),
-        Text("Note: Each process/service must call init() before using @interaction decorators.", style="cyan"),
+        Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
         Text(),
         Text("To suppress this warning:", style="dim"),
         Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
