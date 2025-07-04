@@ -337,6 +337,9 @@ def ensure_initialized() -> None:
     if not _is_otel_configured() and not _is_gentrace_initialized():
         api_key = os.environ.get("GENTRACE_API_KEY")
         if api_key:
+            # Show warning about auto-initialization
+            _show_auto_init_warning()
+            
             from .init import init
             init_kwargs: Dict[str, Any] = {"api_key": api_key}
             base_url = os.environ.get("GENTRACE_BASE_URL")
@@ -356,6 +359,66 @@ def ensure_initialized() -> None:
     if otel_setup_config is False and not _is_otel_configured():
         # Show the warning (using the existing warning logic)
         _show_otel_warning()
+
+
+def _show_auto_init_warning() -> None:
+    """
+    Shows a warning when Gentrace is automatically initialized from environment variables.
+    """
+    console = get_console()
+    
+    # Create a red warning box similar to npm boxen style
+    warning_content = Group(
+        Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
+        Text(),
+        Text("This likely means your gentrace.init() call is not being executed, which can cause issues:", style="yellow"),
+        Text("• Custom options passed to init() won't be applied (instrumentations, debug, etc.)", style="white"),
+        Text("• Instrumentations may not work correctly", style="white"),
+        Text("• OpenTelemetry configuration may be incomplete", style="white"),
+        Text(),
+        Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
+        Text(),
+        Text("Note: Each process/service must call init() before using @interaction decorators.", style="cyan"),
+    )
+    
+    # Create red bordered panel
+    warning_panel = Panel(
+        warning_content,
+        title="[bold red]⚠ Warning: Auto-Initialization[/bold red]",
+        border_style="red",
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    # Code example for proper initialization
+    init_code = """  import gentrace
+
+  # Call this at the very beginning of your application
+  gentrace.init(api_key="your-api-key")
+
+  # Then import and use decorators
+  from gentrace import interaction
+
+  @interaction(pipeline_id="my-pipeline-id")
+  def my_function():
+      return "Hello, world!"""
+    
+    console.console.print(warning_panel)
+    console.console.print()
+    
+    console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
+    console.console.print()
+    
+    syntax = Syntax(
+        init_code,
+        "python",
+        theme="monokai",
+        line_numbers=False,
+        word_wrap=True,
+        background_color="default",
+    )
+    console.console.print(syntax)
+    console.console.print()
 
 
 def _show_otel_warning() -> None:

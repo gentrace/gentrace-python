@@ -19,10 +19,10 @@ Agent.instrument_all()
 load_dotenv()
 
 # Initialize Gentrace (will capture Pydantic AI's OTEL traces)
-gentrace.init(
-    api_key=os.getenv("GENTRACE_API_KEY"),
-    base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
-)
+# gentrace.init(
+#     api_key=os.getenv("GENTRACE_API_KEY"),
+#     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
+# )
 
 # Create a simple Pydantic AI agent
 agent = Agent(
