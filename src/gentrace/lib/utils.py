@@ -320,7 +320,7 @@ def _is_otel_configured() -> bool:
     return isinstance(provider, SDKTracerProvider)
 
 
-def ensure_initialized() -> None:
+def ensure_initialized(suppress_warnings: bool = False) -> None:
     """
     Ensures Gentrace is properly initialized with OpenTelemetry configured.
     
@@ -330,6 +330,9 @@ def ensure_initialized() -> None:
     3. Shows a warning if otel_setup was explicitly set to False but OTEL is not configured
     
     This replaces the separate check_otel_config_and_warn() calls throughout the codebase.
+    
+    Args:
+        suppress_warnings: If True, suppresses auto-initialization warnings.
     """
     import os
     
@@ -337,8 +340,9 @@ def ensure_initialized() -> None:
     if not _is_otel_configured() and not _is_gentrace_initialized():
         api_key = os.environ.get("GENTRACE_API_KEY")
         if api_key:
-            # Show warning about auto-initialization
-            _show_auto_init_warning()
+            # Show warning about auto-initialization unless suppressed
+            if not suppress_warnings:
+                _show_auto_init_warning()
             
             from .init import init
             init_kwargs: Dict[str, Any] = {"api_key": api_key}
@@ -379,6 +383,8 @@ def _show_auto_init_warning() -> None:
         Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
         Text(),
         Text("Note: Each process/service must call init() before using @interaction decorators.", style="cyan"),
+        Text(),
+        Text("To suppress this warning, use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
     )
     
     # Create red bordered panel
