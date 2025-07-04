@@ -17,6 +17,7 @@ def interaction(
     pipeline_id: str,
     name: Optional[str] = None,
     attributes: Optional[Dict[str, Any]] = None,
+    suppress_warnings: bool = False,
 ) -> Callable[[F], F]:
     """
     A decorator factory that wraps a function with OpenTelemetry tracing to track
@@ -38,6 +39,8 @@ def interaction(
               ANONYMOUS_SPAN_NAME (as handled by the underlying @traced decorator).
         attributes: Optional. A dictionary of additional attributes to set on the span.
                     These will be merged with the 'gentrace.pipeline_id' attribute.
+        suppress_warnings: Optional. If True, suppresses auto-initialization warnings.
+                          Defaults to False.
 
     Returns:
         A decorator that, when applied to a function, returns a new function
@@ -82,7 +85,7 @@ def interaction(
             @functools.wraps(func)
             async def baggage_context_wrapper_async_gen(*args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
                 # Ensure Gentrace is initialized (auto-init if possible)
-                ensure_initialized()
+                ensure_initialized(suppress_warnings=suppress_warnings)
                 
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
@@ -103,7 +106,7 @@ def interaction(
             @functools.wraps(func)
             async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
                 # Ensure Gentrace is initialized (auto-init if possible)
-                ensure_initialized()
+                ensure_initialized(suppress_warnings=suppress_warnings)
                 
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
@@ -122,7 +125,7 @@ def interaction(
             @functools.wraps(func)
             def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
                 # Ensure Gentrace is initialized (auto-init if possible)
-                ensure_initialized()
+                ensure_initialized(suppress_warnings=suppress_warnings)
                 
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
