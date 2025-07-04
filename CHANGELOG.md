@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-alpha.9 (2025-07-04)
+
+Full Changelog: [v1.0.0-alpha.8...v1.0.0-alpha.9](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.8...v1.0.0-alpha.9)
+
+### Chores
+
+* Add otel_setup configuration in init() and check diff ([#324](https://github.com/gentrace/gentrace-python/issues/324)) ([241fdef](https://github.com/gentrace/gentrace-python/commit/241fdef2757b1b0800de5d68271f2faba2d69fc6))
+* improve devx ([#329](https://github.com/gentrace/gentrace-python/issues/329)) ([7c76bf2](https://github.com/gentrace/gentrace-python/commit/7c76bf286f75cf796ecdd33f3572a0ce9991d1b2))
+
 ## 1.0.0-alpha.8 (2025-06-25)
 
 Full Changelog: [v1.0.0-alpha.7...v1.0.0-alpha.8](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.7...v1.0.0-alpha.8)
