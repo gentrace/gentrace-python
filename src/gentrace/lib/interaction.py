@@ -5,7 +5,7 @@ from typing import Any, Dict, TypeVar, Callable, Optional, AsyncGenerator, cast
 
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
-from .utils import ensure_initialized
+from .utils import ensure_initialized, display_pipeline_error, validate_pipeline_access, validate_pipeline_access_sync
 from .traced import traced
 from .constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
 
@@ -57,12 +57,20 @@ def interaction(
             return await fetch(url)
     """
 
+    # Validate UUID format
+    is_valid_uuid = True
     try:
         uuid.UUID(pipeline_id)
-    except ValueError as e:
-        raise ValueError(
-            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{pipeline_id}'"
-        ) from e
+    except ValueError:
+        is_valid_uuid = False
+        display_pipeline_error(pipeline_id, 'invalid-format')
+    
+    # Validate pipeline access if UUID is valid
+    if is_valid_uuid:
+        # Note: We're not doing the validation here anymore because it requires
+        # async operations and we don't want to block the decorator setup.
+        # The validation will happen when the function is actually called.
+        pass
 
     def decorator(func: F) -> F:
         """
@@ -87,6 +95,14 @@ def interaction(
                 # Ensure Gentrace is initialized (auto-init if possible)
                 ensure_initialized(suppress_warnings=suppress_warnings)
                 
+                # Validate pipeline access asynchronously
+                if is_valid_uuid:
+                    try:
+                        await validate_pipeline_access(pipeline_id)
+                    except Exception:
+                        # Error is already logged in validate_pipeline_access
+                        pass
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -108,6 +124,14 @@ def interaction(
                 # Ensure Gentrace is initialized (auto-init if possible)
                 ensure_initialized(suppress_warnings=suppress_warnings)
                 
+                # Validate pipeline access asynchronously
+                if is_valid_uuid:
+                    try:
+                        await validate_pipeline_access(pipeline_id)
+                    except Exception:
+                        # Error is already logged in validate_pipeline_access
+                        pass
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -126,6 +150,14 @@ def interaction(
             def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
                 # Ensure Gentrace is initialized (auto-init if possible)
                 ensure_initialized(suppress_warnings=suppress_warnings)
+                
+                # Validate pipeline access synchronously
+                if is_valid_uuid:
+                    try:
+                        validate_pipeline_access_sync(pipeline_id)
+                    except Exception:
+                        # Error is already logged in validate_pipeline_access_sync
+                        pass
                 
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(

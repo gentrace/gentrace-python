@@ -137,13 +137,13 @@ class TestInteraction(unittest.TestCase):
 
     def test_interaction_sync_invalid_pipeline_id(self) -> None:
         invalid_id = "not-a-valid-uuid"
-        with self.assertRaisesRegex(
-            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
-        ):
-
+        # Test that invalid UUID shows a warning instead of raising
+        with self.assertWarns(UserWarning) as cm:
             @interaction(pipeline_id=invalid_id)
             def sync_invalid_id_func() -> None:  # type: ignore
                 pass
+        
+        self.assertIn("not a valid UUID", str(cm.warning))
 
     @patch("gentrace.lib.traced.trace.get_tracer")
     def test_interaction_baggage_propagation(self, mock_get_tracer: MagicMock) -> None:
@@ -170,14 +170,13 @@ class TestInteraction(unittest.TestCase):
 
     def test_interaction_async_invalid_pipeline_id(self) -> None:
         invalid_id = "another-invalid-uuid"
-        with self.assertRaisesRegex(
-            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
-        ):
-
+        # Test that invalid UUID shows a warning instead of raising
+        with self.assertWarns(UserWarning) as cm:
             @interaction(pipeline_id=invalid_id)
             async def async_invalid_id_func() -> None:  # type: ignore
                 await asyncio.sleep(0)
-                pass
+        
+        self.assertIn("not a valid UUID", str(cm.warning))
 
 
 if __name__ == "__main__":
