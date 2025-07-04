@@ -369,6 +369,20 @@ def _show_auto_init_warning() -> None:
     """
     Shows a warning when Gentrace is automatically initialized from environment variables.
     """
+    # Check if warnings would be suppressed for our message
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Don't override existing filters - just record what would happen
+        warnings.warn(
+            "Gentrace was automatically initialized from environment variables",
+            UserWarning,
+            stacklevel=2
+        )
+        
+    # If no warning was caught, it means it's being filtered - don't show rich display
+    if not caught_warnings:
+        return
+    
+    # Show the rich formatted warning only if the warning wasn't filtered
     console = get_console()
     
     # Create a red warning box similar to npm boxen style
@@ -384,7 +398,9 @@ def _show_auto_init_warning() -> None:
         Text(),
         Text("Note: Each process/service must call init() before using @interaction decorators.", style="cyan"),
         Text(),
-        Text("To suppress this warning, use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
+        Text("To suppress this warning:", style="dim"),
+        Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
+        Text("• Or: warnings.filterwarnings('ignore', message='Gentrace was automatically initialized')", style="dim"),
     )
     
     # Create red bordered panel
