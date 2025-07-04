@@ -5,8 +5,12 @@ Simple evaluation example using Gentrace @eval decorator.
 import os
 from typing import Any, Dict
 
+from dotenv import load_dotenv
+
 import gentrace
 from gentrace import eval, experiment
+
+load_dotenv()
 
 # Initialize Gentrace
 gentrace.init(

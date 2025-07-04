@@ -16,11 +16,14 @@ Shows how OpenInference OpenAI instrumentation works with Gentrace's @interactio
 import os
 import asyncio
 
+from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from openinference.instrumentation.openai import OpenAIInstrumentor
 
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 # Pipeline ID for tracking
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")

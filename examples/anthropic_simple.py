@@ -5,9 +5,12 @@ Simple Anthropic Claude example with Gentrace tracing.
 import os
 
 import anthropic
+from dotenv import load_dotenv
 
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 # Initialize Gentrace
 gentrace.init(

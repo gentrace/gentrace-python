@@ -7,6 +7,7 @@ captures its traces when initialized.
 
 import os
 
+from dotenv import load_dotenv
 from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIModel
 
@@ -14,6 +15,8 @@ import gentrace
 from gentrace import interaction
 
 Agent.instrument_all()
+
+load_dotenv()
 
 # Initialize Gentrace (will capture Pydantic AI's OTEL traces)
 gentrace.init(

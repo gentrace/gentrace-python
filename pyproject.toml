@@ -49,7 +49,7 @@ openai = [
     "openinference-instrumentation-openai",
 ]
 openai-agents = [
-    "openai-agents>=0.0.19",
+    "openai-agents>=0.1.0",
     "openinference-instrumentation-openai-agents",
 ]
 anthropic = ["anthropic"]
@@ -71,6 +71,7 @@ dev-dependencies = [
     "importlib-metadata>=6.7.0",
     "rich>=13.7.1",
     "nest_asyncio==1.6.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.rye.scripts]

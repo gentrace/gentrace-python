@@ -9,8 +9,12 @@ import os
 # Optional: Install these with pip install opentelemetry-instrumentation-requests
 from typing import Any, Dict, List
 
+from dotenv import load_dotenv
+
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 try:
     from opentelemetry.instrumentation.requests import RequestsInstrumentor  # type: ignore

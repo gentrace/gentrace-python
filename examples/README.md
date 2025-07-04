@@ -21,14 +21,26 @@ This directory contains simplified examples demonstrating key features of the Ge
 
 ## Running Examples
 
-1. Install dependencies:
+### 1. Install dependencies:
 ```bash
-pip install -e ..
-pip install openai anthropic pydantic-ai openai-agents  # For LLM examples
-pip install openinference-instrumentation-openai-agents  # For OpenAI Agents instrumentation
+# using rye (recommended)
+rye sync --all-features
+
+# using uv
+cd ..
+uv venv
+source .venv/bin/activate
+uv pip install ".[openai,openai-agents,anthropic,pydantic-ai]" -r requirements-dev.lock
+cd examples
 ```
 
-2. Set environment variables:
+### 2. Set environment variables:
+
+**Option A: Use the provided .env file (recommended)**
+- Copy `.env.example` to `.env`
+- Update the values with your API keys and configuration
+
+**Option B: Set environment variables manually**
 ```bash
 export GENTRACE_API_KEY="your-api-key"
 export GENTRACE_BASE_URL="https://gentrace.ai/api"  # or http://localhost:3000/api
@@ -37,7 +49,7 @@ export OPENAI_API_KEY="your-openai-key"  # For OpenAI examples
 export ANTHROPIC_API_KEY="your-anthropic-key"  # For Anthropic examples
 ```
 
-3. Run an example:
+### 3. Run an example:
 ```bash
 python init_simple.py
 ```

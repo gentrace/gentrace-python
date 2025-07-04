@@ -4,10 +4,13 @@ Simple OpenAI example with Gentrace tracing.
 
 import os
 
+from dotenv import load_dotenv
 from openai import OpenAI
 
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 # Initialize Gentrace
 gentrace.init(

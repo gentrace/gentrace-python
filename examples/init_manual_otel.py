@@ -9,6 +9,7 @@ This is useful when:
 
 import os
 
+from dotenv import load_dotenv
 from opentelemetry import trace
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.resources import Resource
@@ -17,6 +18,8 @@ from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExport
 
 import gentrace
 from gentrace import GentraceSpanProcessor
+
+load_dotenv()
 
 
 def main() -> None:

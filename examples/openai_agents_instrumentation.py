@@ -10,10 +10,13 @@ Shows how to instrument OpenAI Agents SDK with automatic tracing of:
 import os
 
 from agents import Agent, Runner, function_tool
+from dotenv import load_dotenv
 from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
 
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 # Initialize Gentrace with OpenAI Agents instrumentation
 gentrace.init(
@@ -41,7 +44,9 @@ def check_weather(city: str) -> str:
 @function_tool
 def book_flight(from_city: str, to_city: str, date: str) -> str:
     """Book a flight (simulated)."""
-    return f"✈️ Flight booked from {from_city} to {to_city} on {date}. Confirmation: FL-{hash(from_city + to_city) % 10000}"
+    return (
+        f"✈️ Flight booked from {from_city} to {to_city} on {date}. Confirmation: FL-{hash(from_city + to_city) % 10000}"
+    )
 
 
 # Create travel agent with tools
@@ -65,13 +70,13 @@ def plan_trip(request: str) -> str:
 def main() -> None:
     """Run example with automatic tracing."""
     print("=== OpenAI Agents + OpenInference Example ===\n")
-    
+
     # Single request that uses multiple tools
     response = plan_trip(
         "I want to fly from San Francisco to New York next Monday. What's the weather like in both cities?"
     )
     print(f"Response: {response}")
-    
+
     print("\n✓ Agent conversation and tool calls have been traced!")
     print("Check your Gentrace dashboard to see the full trace.")
 

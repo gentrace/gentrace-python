@@ -5,8 +5,12 @@ Simple Gentrace initialization with OpenTelemetry enabled (default).
 import os
 from typing import Dict
 
+from dotenv import load_dotenv
+
 import gentrace
 from gentrace import interaction
+
+load_dotenv()
 
 # Initialize with OpenTelemetry enabled (default behavior)
 gentrace.init(
