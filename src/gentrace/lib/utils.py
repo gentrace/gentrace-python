@@ -43,12 +43,6 @@ _otel_config_warning_issued = False
 # Default spinner style for Gentrace operations
 DEFAULT_SPINNER = "dots"
 
-# Cache for validated pipeline IDs
-_validated_pipelines: Set[str] = set()
-# Cache for pipelines that failed validation
-_invalid_pipelines: Set[str] = set()
-# Flag to track if pipeline validation warning has been issued for a pipeline
-_pipeline_warning_issued: Set[str] = set()
 
 
 class GentraceConsole:
@@ -377,7 +371,7 @@ def _show_auto_init_warning() -> None:
     """
     # Check if warnings would be suppressed for our message
     with warnings.catch_warnings(record=True) as caught_warnings:
-        # Don't override existing filters - just record what would happen
+        # Don't override filters - use whatever the user has set
         warnings.warn(
             "Gentrace was automatically initialized from environment variables",
             UserWarning,
@@ -461,7 +455,7 @@ def _show_otel_warning() -> None:
     if not isinstance(provider, SDKTracerProvider):
         # Check if warnings would be suppressed for our message
         with warnings.catch_warnings(record=True) as caught_warnings:
-            # Don't override existing filters - just record what would happen
+            warnings.simplefilter("always")
             warnings.warn(
                 "OpenTelemetry SDK does not appear to be configured",
                 UserWarning,
@@ -647,25 +641,20 @@ def display_pipeline_error(
     
     warning_message = warning_messages.get(error_type, warning_messages['unknown'])
     
-    # Emit the warning
-    warnings.warn(
-        warning_message,
-        UserWarning,
-        stacklevel=3
-    )
-    
-    # Check if the warning would be shown to decide about rich display
+    # Check if the warning would be suppressed
     with warnings.catch_warnings(record=True) as caught_warnings:
-        warnings.simplefilter("always")
+        # Use current warning filters
         warnings.warn(
             warning_message,
             UserWarning,
-            stacklevel=2
+            stacklevel=3
         )
         
-    # If no warning was caught due to filters, don't show rich display
+    # If no warning was caught, it's being filtered - don't show anything
     if not caught_warnings:
         return
+    
+    # Warning would be shown, so show rich display instead
     
     console = get_console()
     
@@ -722,84 +711,6 @@ def display_pipeline_error(
         logger.error(f"Gentrace Pipeline Error: {error_type} for pipeline '{pipeline_id}'")
 
 
-def validate_pipeline_access_sync(pipeline_id: str) -> None:
-    """
-    Synchronously validates that a pipeline ID is accessible with the current API key.
-    Only checks once per pipeline ID to avoid redundant API calls.
-    
-    Args:
-        pipeline_id: The pipeline ID to validate
-    """
-    # Skip if already validated or invalid
-    if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
-        return
-    
-    try:
-        from .client_instance import _get_sync_client_instance
-        client = _get_sync_client_instance()
-        
-        # Attempt to retrieve the pipeline to verify access
-        client.pipelines.retrieve(pipeline_id)
-        _validated_pipelines.add(pipeline_id)
-    except Exception as error:
-        _invalid_pipelines.add(pipeline_id)
-        
-        # Only show warning once per pipeline
-        if pipeline_id not in _pipeline_warning_issued:
-            _pipeline_warning_issued.add(pipeline_id)
-            
-            # Check error status code if available
-            status_code = getattr(error, 'status_code', None)
-            # Also check for status attribute (different client libraries)
-            if status_code is None:
-                status_code = getattr(error, 'status', None)
-            
-            if status_code == 404:
-                display_pipeline_error(pipeline_id, 'not-found')
-            elif status_code in (401, 403):
-                display_pipeline_error(pipeline_id, 'unauthorized')
-            else:
-                display_pipeline_error(pipeline_id, 'unknown', error)
-
-
-async def validate_pipeline_access(pipeline_id: str) -> None:
-    """
-    Validates that a pipeline ID is accessible with the current API key.
-    Only checks once per pipeline ID to avoid redundant API calls.
-    
-    Args:
-        pipeline_id: The pipeline ID to validate
-    """
-    # Skip if already validated or invalid
-    if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
-        return
-    
-    try:
-        from .client_instance import _get_async_client_instance
-        client = _get_async_client_instance()
-        
-        # Attempt to retrieve the pipeline to verify access
-        await client.pipelines.retrieve(pipeline_id)
-        _validated_pipelines.add(pipeline_id)
-    except Exception as error:
-        _invalid_pipelines.add(pipeline_id)
-        
-        # Only show warning once per pipeline
-        if pipeline_id not in _pipeline_warning_issued:
-            _pipeline_warning_issued.add(pipeline_id)
-            
-            # Check error status code if available
-            status_code = getattr(error, 'status_code', None)
-            # Also check for status attribute (different client libraries)
-            if status_code is None:
-                status_code = getattr(error, 'status', None)
-            
-            if status_code == 404:
-                display_pipeline_error(pipeline_id, 'not-found')
-            elif status_code in (401, 403):
-                display_pipeline_error(pipeline_id, 'unauthorized')
-            else:
-                display_pipeline_error(pipeline_id, 'unknown', error)
 
 
 def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
