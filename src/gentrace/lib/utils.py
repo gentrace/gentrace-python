@@ -382,10 +382,8 @@ def _show_auto_init_warning() -> None:
     if not caught_warnings:
         return
     
-    # Show the rich formatted warning only if the warning wasn't filtered
     console = get_console()
     
-    # Create a red warning box similar to npm boxen style
     warning_content = Group(
         Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
         Text(),
