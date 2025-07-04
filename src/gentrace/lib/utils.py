@@ -658,40 +658,54 @@ def display_pipeline_error(
     
     console = get_console()
     
+    # Common suppression note
+    suppression_note = Text(
+        "To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline')",
+        style="dim"
+    )
+    
     if error_type == 'invalid-format':
-        error_title = "⚠ Gentrace Invalid Pipeline ID"
+        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID"
         error_content = Group(
             Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            suppression_note,
         )
         border_style = "red"
     
     elif error_type == 'not-found':
-        error_title = "⚠ Gentrace Pipeline Not Found"
+        error_title = "⚠ Warning: Gentrace Pipeline Not Found"
         error_content = Group(
             Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            suppression_note,
         )
         border_style = "red"
     
     elif error_type == 'unauthorized':
-        error_title = "⚠ Gentrace Pipeline Unauthorized"
+        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized"
         error_content = Group(
             Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
             Text(),
             Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
+            Text(),
+            suppression_note,
         )
         border_style = "red"
     
     else:  # unknown
-        error_title = "⚠ Gentrace Pipeline Error"
+        error_title = "⚠ Warning: Gentrace Pipeline Error"
         error_message = error.args[0] if error and error.args else "Unknown error"
         error_content = Group(
             Text(f"Failed to validate pipeline '{pipeline_id}'.", style="yellow"),
             Text(),
             Text(f"Error: {error_message}", style="gray"),
+            Text(),
+            suppression_note,
         )
         border_style = "red"
     
