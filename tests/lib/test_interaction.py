@@ -136,14 +136,18 @@ class TestInteraction(unittest.TestCase):
         mock_tracer.start_as_current_span.assert_called_once_with("<lambda>")
 
     def test_interaction_sync_invalid_pipeline_id(self) -> None:
+        import warnings
         invalid_id = "not-a-valid-uuid"
-        with self.assertRaisesRegex(
-            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
-        ):
-
+        # Test that invalid UUID doesn't raise an exception
+        # (it shows a rich display warning instead)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
             @interaction(pipeline_id=invalid_id)
-            def sync_invalid_id_func() -> None:  # type: ignore
+            def sync_invalid_id_func() -> None:
                 pass
+        
+        # Function should be created successfully despite invalid UUID
+        self.assertIsNotNone(sync_invalid_id_func)
 
     @patch("gentrace.lib.traced.trace.get_tracer")
     def test_interaction_baggage_propagation(self, mock_get_tracer: MagicMock) -> None:
@@ -169,15 +173,18 @@ class TestInteraction(unittest.TestCase):
         mock_tracer.start_as_current_span.assert_called_once_with("sync_check_baggage")
 
     def test_interaction_async_invalid_pipeline_id(self) -> None:
+        import warnings
         invalid_id = "another-invalid-uuid"
-        with self.assertRaisesRegex(
-            ValueError, f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{invalid_id}'"
-        ):
-
+        # Test that invalid UUID doesn't raise an exception
+        # (it shows a rich display warning instead)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
             @interaction(pipeline_id=invalid_id)
-            async def async_invalid_id_func() -> None:  # type: ignore
+            async def async_invalid_id_func() -> None:
                 await asyncio.sleep(0)
-                pass
+        
+        # Function should be created successfully despite invalid UUID
+        self.assertIsNotNone(async_invalid_id_func)
 
 
 if __name__ == "__main__":

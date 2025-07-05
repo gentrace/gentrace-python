@@ -5,10 +5,15 @@ from typing import Any, Dict, TypeVar, Callable, Optional, AsyncGenerator, cast
 
 from opentelemetry import baggage as otel_baggage, context as otel_context
 
+from .utils import ensure_initialized, display_pipeline_error
 from .traced import traced
 from .constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_PIPELINE_ID
+from .validation import start_pipeline_validation
 
 F = TypeVar("F", bound=Callable[..., Any])
+
+
+
 
 
 def interaction(
@@ -16,6 +21,7 @@ def interaction(
     pipeline_id: str,
     name: Optional[str] = None,
     attributes: Optional[Dict[str, Any]] = None,
+    suppress_warnings: bool = False,
 ) -> Callable[[F], F]:
     """
     A decorator factory that wraps a function with OpenTelemetry tracing to track
@@ -37,6 +43,8 @@ def interaction(
               ANONYMOUS_SPAN_NAME (as handled by the underlying @traced decorator).
         attributes: Optional. A dictionary of additional attributes to set on the span.
                     These will be merged with the 'gentrace.pipeline_id' attribute.
+        suppress_warnings: Optional. If True, suppresses auto-initialization warnings.
+                          Defaults to False.
 
     Returns:
         A decorator that, when applied to a function, returns a new function
@@ -53,12 +61,21 @@ def interaction(
             return await fetch(url)
     """
 
+    # Validate UUID format
+    is_valid_uuid = True
     try:
         uuid.UUID(pipeline_id)
-    except ValueError as e:
-        raise ValueError(
-            f"Attribute 'gentrace.pipeline_id' must be a valid UUID string. Received: '{pipeline_id}'"
-        ) from e
+    except ValueError:
+        is_valid_uuid = False
+        display_pipeline_error(pipeline_id, 'invalid-format')
+    
+    # Start pipeline validation in background if UUID is valid
+    if is_valid_uuid:
+        # Ensure Gentrace is initialized before validation
+        ensure_initialized(suppress_warnings=suppress_warnings)
+        
+        # Start validation in the background
+        start_pipeline_validation(pipeline_id)
 
     def decorator(func: F) -> F:
         """
@@ -80,6 +97,9 @@ def interaction(
 
             @functools.wraps(func)
             async def baggage_context_wrapper_async_gen(*args: Any, **kwargs: Any) -> AsyncGenerator[Any, None]:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized(suppress_warnings=suppress_warnings)
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -98,6 +118,9 @@ def interaction(
 
             @functools.wraps(func)
             async def baggage_context_wrapper_async(*args: Any, **kwargs: Any) -> Any:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized(suppress_warnings=suppress_warnings)
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
@@ -114,6 +137,9 @@ def interaction(
 
             @functools.wraps(func)
             def baggage_context_wrapper_sync(*args: Any, **kwargs: Any) -> Any:
+                # Ensure Gentrace is initialized (auto-init if possible)
+                ensure_initialized(suppress_warnings=suppress_warnings)
+                
                 current_context = otel_context.get_current()
                 context_with_modified_baggage = otel_baggage.set_baggage(
                     ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context

@@ -75,6 +75,7 @@ google-genai==1.18.0
 googleapis-common-protos==1.70.0
     # via opentelemetry-exporter-otlp-proto-http
 griffe==1.7.3
+    # via openai-agents
     # via pydantic-ai-slim
 groq==0.26.0
     # via pydantic-ai-slim
@@ -119,20 +120,28 @@ mdurl==0.1.2
     # via markdown-it-py
 mistralai==1.8.1
     # via pydantic-ai-slim
-openai==1.78.1
+openai==1.93.0
     # via gentrace-py
+    # via openai-agents
     # via pydantic-ai-slim
+openai-agents==0.1.0
+    # via gentrace-py
 openinference-instrumentation==0.1.34
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
 openinference-instrumentation-openai==0.1.30
+    # via gentrace-py
+openinference-instrumentation-openai-agents==1.0.0
     # via gentrace-py
 openinference-semantic-conventions==0.1.21
     # via openinference-instrumentation
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
 opentelemetry-api==1.32.1
     # via fasta2a
     # via openinference-instrumentation
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
     # via opentelemetry-exporter-otlp-proto-http
     # via opentelemetry-instrumentation
     # via opentelemetry-processor-baggage
@@ -146,6 +155,7 @@ opentelemetry-exporter-otlp-proto-http==1.32.1
 opentelemetry-instrumentation==0.53b1
     # via gentrace-py
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
 opentelemetry-processor-baggage==0.54b0
     # via gentrace-py
 opentelemetry-proto==1.32.1
@@ -158,6 +168,7 @@ opentelemetry-sdk==1.32.1
     # via opentelemetry-processor-baggage
 opentelemetry-semantic-conventions==0.53b1
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
     # via opentelemetry-instrumentation
     # via opentelemetry-sdk
 packaging==25.0
@@ -182,6 +193,7 @@ pydantic==2.10.3
     # via groq
     # via mistralai
     # via openai
+    # via openai-agents
     # via pydantic-ai-slim
     # via pydantic-evals
     # via pydantic-graph
@@ -209,6 +221,7 @@ requests==2.32.3
     # via cohere
     # via google-genai
     # via huggingface-hub
+    # via openai-agents
     # via opentelemetry-exporter-otlp-proto-http
     # via pydantic-ai-slim
 rich==14.0.0
@@ -238,6 +251,7 @@ tqdm==4.67.1
     # via openai
 types-requests==2.31.0.6
     # via cohere
+    # via openai-agents
 types-urllib3==1.26.25.14
     # via types-requests
 typing-extensions==4.12.2
@@ -249,7 +263,9 @@ typing-extensions==4.12.2
     # via groq
     # via huggingface-hub
     # via openai
+    # via openai-agents
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
     # via opentelemetry-sdk
     # via pydantic
     # via pydantic-core
@@ -270,6 +286,7 @@ websockets==15.0.1
 wrapt==1.17.2
     # via deprecated
     # via openinference-instrumentation-openai
+    # via openinference-instrumentation-openai-agents
     # via opentelemetry-instrumentation
     # via opentelemetry-processor-baggage
 zipp==3.21.0
