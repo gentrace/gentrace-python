@@ -392,6 +392,8 @@ def _show_auto_init_warning() -> None:
         Text("• Instrumentations may not work correctly", style="white"),
         Text("• OpenTelemetry configuration may be incomplete", style="white"),
         Text(),
+        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_autoinitializationwarning", style="cyan"),
+        Text(),
         Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
         Text(),
         Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
@@ -404,7 +406,7 @@ def _show_auto_init_warning() -> None:
     # Create red bordered panel
     warning_panel = Panel(
         warning_content,
-        title="[bold red]⚠ Warning: Auto-Initialization[/bold red]",
+        title="[bold red]⚠ Warning: Auto-Initialization [GT_AutoInitializationWarning][/bold red]",
         border_style="red",
         title_align="left",
         padding=(1, 2),
@@ -475,12 +477,14 @@ def _show_otel_warning() -> None:
             Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
             Text("Gentrace UI."),
             Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_otelnotconfigurederror", style="cyan"),
+            Text(),
             Text("You have two options to fix this:"),
         )
 
         warning_panel = Panel(
             warning_content,
-            title="[yellow]⚠ Gentrace Configuration Warning[/yellow]",
+            title="[yellow]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/yellow]",
             border_style="yellow",
             title_align="left",
             padding=(1, 2),
@@ -598,6 +602,8 @@ def _show_otel_warning() -> None:
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
 
+Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_otelnotconfigurederror
+
 You have two options:
 
 ⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):
@@ -665,33 +671,39 @@ def display_pipeline_error(
     )
     
     if error_type == 'invalid-format':
-        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID"
+        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID [GT_PipelineInvalidError]"
         error_content = Group(
             Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelineinvaliderror", style="cyan"),
             Text(),
             suppression_note,
         )
         border_style = "red"
     
     elif error_type == 'not-found':
-        error_title = "⚠ Warning: Gentrace Pipeline Not Found"
+        error_title = "⚠ Warning: Gentrace Pipeline Not Found [GT_PipelineNotFoundError]"
         error_content = Group(
             Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelinenotfounderror", style="cyan"),
             Text(),
             suppression_note,
         )
         border_style = "red"
     
     elif error_type == 'unauthorized':
-        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized"
+        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized [GT_PipelineUnauthorizedError]"
         error_content = Group(
             Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
             Text(),
             Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelineunauthorizederror", style="cyan"),
             Text(),
             suppression_note,
         )
