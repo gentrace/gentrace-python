@@ -20,8 +20,7 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 from openinference.instrumentation.openai import OpenAIInstrumentor
 
-import gentrace
-from gentrace import interaction
+from gentrace import init, interaction
 
 load_dotenv()
 
@@ -29,7 +28,7 @@ load_dotenv()
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")
 
 # Initialize Gentrace with OpenAI instrumentation
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
     otel_setup={"service_name": "openai-instrumentation-demo", "instrumentations": [OpenAIInstrumentor()]},

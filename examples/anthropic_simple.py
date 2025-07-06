@@ -7,13 +7,12 @@ import os
 import anthropic
 from dotenv import load_dotenv
 
-import gentrace
-from gentrace import interaction
+from gentrace import init, interaction
 
 load_dotenv()
 
 # Initialize Gentrace
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
 )

@@ -11,8 +11,7 @@ from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 
-import gentrace
-from gentrace import interaction
+from gentrace import init, interaction
 
 load_dotenv()
 
@@ -25,7 +24,7 @@ except ImportError:
     print("Install opentelemetry-instrumentation-requests for automatic HTTP tracing")
 
 # Initialize with instrumentation
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
     otel_setup={"instrumentations": instrumentations} if instrumentations else True,

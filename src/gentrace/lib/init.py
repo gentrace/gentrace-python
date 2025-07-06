@@ -54,14 +54,16 @@ def init(
 
     Example:
         ```python
+        from gentrace import init
+        
         # Simple initialization with automatic OpenTelemetry setup
-        gentrace.init(api_key="your-api-key")
+        init(api_key="your-api-key")
 
         # Initialize without OpenTelemetry configuration
-        gentrace.init(api_key="your-api-key", otel_setup=False)
+        init(api_key="your-api-key", otel_setup=False)
 
         # Initialize with custom OpenTelemetry settings
-        gentrace.init(api_key="your-api-key", otel_setup={"service_name": "my-service", "debug": True})
+        init(api_key="your-api-key", otel_setup={"service_name": "my-service", "debug": True})
         ```
     """
     constructor_args: Dict[str, Any] = {}

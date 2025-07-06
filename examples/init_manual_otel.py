@@ -16,15 +16,14 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-import gentrace
-from gentrace import GentraceSpanProcessor
+from gentrace import init, GentraceSpanProcessor
 
 load_dotenv()
 
 
 def main() -> None:
     # Initialize Gentrace WITHOUT automatic OpenTelemetry configuration
-    gentrace.init(
+    init(
         api_key=os.getenv("GENTRACE_API_KEY"),
         base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
         otel_setup=False,  # Disable automatic OpenTelemetry setup

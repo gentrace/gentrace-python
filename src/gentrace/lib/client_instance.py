@@ -85,7 +85,7 @@ def _get_sync_client_instance() -> Gentrace:
     if _sync_client is None:
         _sync_client = _get_default_sync_client()
         if _sync_client is None:
-            raise GentraceError("Gentrace SDK not initialized. Please call gentrace.init() or set GENTRACE_API_KEY.")
+            raise GentraceError("Gentrace SDK not initialized. Please call init() or set GENTRACE_API_KEY.")
     return _sync_client
 
 
@@ -107,7 +107,7 @@ def _get_async_client_instance() -> AsyncGentrace:
     if _async_client is None:
         _async_client = _get_default_async_client()
         if _async_client is None:
-            raise GentraceError("Gentrace SDK not initialized. Please call gentrace.init() or set GENTRACE_API_KEY.")
+            raise GentraceError("Gentrace SDK not initialized. Please call init() or set GENTRACE_API_KEY.")
     return _async_client
 
 

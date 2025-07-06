@@ -387,14 +387,14 @@ def _show_auto_init_warning() -> None:
     warning_content = Group(
         Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
         Text(),
-        Text("This likely means your gentrace.init() call is not being executed, which can cause issues:", style="yellow"),
+        Text("This likely means your init() call is not being executed, which can cause issues:", style="yellow"),
         Text("• Custom options passed to init() won't be applied (instrumentations, debug, etc.)", style="white"),
         Text("• Instrumentations may not work correctly", style="white"),
         Text("• OpenTelemetry configuration may be incomplete", style="white"),
         Text(),
         Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning", style="cyan"),
         Text(),
-        Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
+        Text("To fix this, ensure init() is called before executing decorators.", style="yellow"),
         Text(),
         Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
         Text(),
@@ -413,14 +413,12 @@ def _show_auto_init_warning() -> None:
     )
     
     # Code example for proper initialization
-    init_code = """  import gentrace
+    init_code = """  from gentrace import init, interaction
 
   # Call this at the very beginning of your application
-  gentrace.init(api_key="your-api-key")
+  init(api_key="your-api-key")
 
-  # Then import and use decorators
-  from gentrace import interaction
-
+  # Then use decorators
   @interaction(pipeline_id="my-pipeline-id")
   def my_function():
       return "Hello, world!"""
@@ -492,9 +490,9 @@ def _show_otel_warning() -> None:
 
         # Init example code (recommended)
         # Add indentation to each line for visual padding
-        init_example_code = """  import gentrace
+        init_example_code = """  from gentrace import init
 
-  gentrace.init(
+  init(
       api_key="your-api-key",
       # otel_setup=True is the default, can be omitted
   )"""
@@ -503,7 +501,7 @@ def _show_otel_warning() -> None:
         # Add indentation to each line for visual padding
         manual_setup_code = """  import os
   import atexit
-  import gentrace
+  from gentrace import init
   from opentelemetry import trace
   from opentelemetry.sdk.trace import TracerProvider
   from opentelemetry.sdk.resources import Resource
@@ -511,7 +509,7 @@ def _show_otel_warning() -> None:
   from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
   # Initialize Gentrace without OpenTelemetry setup
-  gentrace.init(
+  init(
       api_key="your-api-key",
       base_url="https://gentrace.ai/api",  # or your custom endpoint
       otel_setup=False
@@ -608,9 +606,9 @@ You have two options:
 
 ⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):
 
-    import gentrace
+    from gentrace import init
     
-    gentrace.init(
+    init(
         api_key="your-api-key",
         # otel_setup=True is the default, can be omitted
     )
