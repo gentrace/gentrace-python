@@ -54,6 +54,10 @@ openai-agents = [
 ]
 anthropic = ["anthropic"]
 pydantic-ai = ["pydantic-ai>=0.2.14"]
+langchain = [
+    "langchain-core>=0.1.0",
+    "openinference-instrumentation-langchain>=0.1.0",
+]
 
 [tool.rye]
 managed = true
@@ -72,6 +76,10 @@ dev-dependencies = [
     "rich>=13.7.1",
     "nest_asyncio==1.6.0",
     "python-dotenv>=1.0.0",
+    "langchain-core>=0.3.68",
+    "langchain-openai>=0.3.27",
+    "langchain>=0.3.26",
+    "openinference-instrumentation-langchain>=0.1.46",
 ]
 
 [tool.rye.scripts]
