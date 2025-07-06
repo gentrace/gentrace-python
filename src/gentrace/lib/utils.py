@@ -392,7 +392,7 @@ def _show_auto_init_warning() -> None:
         Text("• Instrumentations may not work correctly", style="white"),
         Text("• OpenTelemetry configuration may be incomplete", style="white"),
         Text(),
-        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_autoinitializationwarning", style="cyan"),
+        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning", style="cyan"),
         Text(),
         Text("To fix this, ensure gentrace.init() is called before executing decorators.", style="yellow"),
         Text(),
@@ -477,15 +477,15 @@ def _show_otel_warning() -> None:
             Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
             Text("Gentrace UI."),
             Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_otelnotconfigurederror", style="cyan"),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror", style="cyan"),
             Text(),
             Text("You have two options to fix this:"),
         )
 
         warning_panel = Panel(
             warning_content,
-            title="[yellow]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/yellow]",
-            border_style="yellow",
+            title="[bold red]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/bold red]",
+            border_style="red",
             title_align="left",
             padding=(1, 2),
         )
@@ -602,7 +602,7 @@ def _show_otel_warning() -> None:
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
 
-Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_otelnotconfigurederror
+Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror
 
 You have two options:
 
@@ -677,7 +677,7 @@ def display_pipeline_error(
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
             Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelineinvaliderror", style="cyan"),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror", style="cyan"),
             Text(),
             suppression_note,
         )
@@ -690,7 +690,7 @@ def display_pipeline_error(
             Text(),
             Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
             Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelinenotfounderror", style="cyan"),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror", style="cyan"),
             Text(),
             suppression_note,
         )
@@ -703,7 +703,7 @@ def display_pipeline_error(
             Text(),
             Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
             Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt_pipelineunauthorizederror", style="cyan"),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror", style="cyan"),
             Text(),
             suppression_note,
         )

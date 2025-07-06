@@ -100,6 +100,10 @@ def start_pipeline_validation(pipeline_id: str) -> None:
     Args:
         pipeline_id: The pipeline ID to validate
     """
+    # Skip if already validated or invalid
+    if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
+        return
+    
     # Create validation coroutine
     async def validate_task() -> None:
         try:
