@@ -13,13 +13,12 @@ from agents import Agent, Runner, function_tool
 from dotenv import load_dotenv
 from openinference.instrumentation.openai_agents import OpenAIAgentsInstrumentor
 
-import gentrace
-from gentrace import interaction
+from gentrace import init, interaction
 
 load_dotenv()
 
 # Initialize Gentrace with OpenAI Agents instrumentation
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
     otel_setup={

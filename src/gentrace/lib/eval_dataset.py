@@ -23,7 +23,7 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.types.test_case import TestCase
 
-from .utils import is_pydantic_v1, _gentrace_json_dumps, check_otel_config_and_warn
+from .utils import is_pydantic_v1, ensure_initialized, _gentrace_json_dumps
 from .constants import (
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_TEST_CASE_ID,
@@ -233,7 +233,7 @@ async def eval_dataset(
         Any exception raised during a specific test case interaction (after validation)
         will propagate from that specific test case run.
     """
-    check_otel_config_and_warn()
+    ensure_initialized()
     experiment_context = get_current_experiment_context()
     if not experiment_context:
         raise RuntimeError("eval_dataset must be called within the context of an @experiment() decorated function.")
