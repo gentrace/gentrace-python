@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.0.0-alpha.11 (2025-07-07)
+
+Full Changelog: [v1.0.0-alpha.10...v1.0.0-alpha.11](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.10...v1.0.0-alpha.11)
+
+### Features
+
+* Add simple dataset evaluation example with Gentrace ([#334](https://github.com/gentrace/gentrace-python/issues/334)) ([8573a96](https://github.com/gentrace/gentrace-python/commit/8573a963524da26f447ff11a928ef5264d296d0f))
+
+
+### Chores
+
+* remove vscode dir ([#332](https://github.com/gentrace/gentrace-python/issues/332)) ([3d11612](https://github.com/gentrace/gentrace-python/commit/3d11612492e152d454bc781044459da72e4d1a77))
+
 ## 1.0.0-alpha.10 (2025-07-07)
 
 Full Changelog: [v1.0.0-alpha.9...v1.0.0-alpha.10](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.9...v1.0.0-alpha.10)
