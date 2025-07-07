@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.0-alpha.10 (2025-07-07)
+
+Full Changelog: [v1.0.0-alpha.9...v1.0.0-alpha.10](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.9...v1.0.0-alpha.10)
+
+### Features
+
+* Add Gentrace interaction tracking to manual config script ([7f23560](https://github.com/gentrace/gentrace-python/commit/7f23560f9e588cf0a9413bc92c9399a1892089e0))
+* Add LangChain example with Gentrace instrumentation ([#330](https://github.com/gentrace/gentrace-python/issues/330)) ([c157138](https://github.com/gentrace/gentrace-python/commit/c1571380de3bb7f06f6945424c088d387848e3d1))
+
+
+### Bug Fixes
+
+* Automatically `init()` in the `interaction()` if it's not already initialized ([#328](https://github.com/gentrace/gentrace-python/issues/328)) ([b218e94](https://github.com/gentrace/gentrace-python/commit/b218e946e4f3bc589a7df8df26f697d1f1a0e9cb))
+
 ## 1.0.0-alpha.9 (2025-07-04)
 
 Full Changelog: [v1.0.0-alpha.8...v1.0.0-alpha.9](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.8...v1.0.0-alpha.9)
