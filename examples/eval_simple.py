@@ -7,13 +7,12 @@ from typing import Any, Dict
 
 from dotenv import load_dotenv
 
-import gentrace
-from gentrace import eval, experiment
+from gentrace import eval, init, experiment
 
 load_dotenv()
 
 # Initialize Gentrace
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
 )

@@ -1,3 +1,4 @@
+import sys
 import json
 import logging
 import warnings
@@ -41,6 +42,7 @@ _otel_config_warning_issued = False
 
 # Default spinner style for Gentrace operations
 DEFAULT_SPINNER = "dots"
+
 
 
 class GentraceConsole:
@@ -307,103 +309,239 @@ def format_timestamp(timestamp: Union[int, float, datetime], relative: bool = Fa
         return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def check_otel_config_and_warn() -> None:
+def _is_gentrace_initialized() -> bool:
+    """Check if Gentrace has been initialized via init()."""
+    gentrace_module = sys.modules.get("gentrace")
+    return bool(gentrace_module and getattr(gentrace_module, "__gentrace_initialized", False))
+
+
+def _is_otel_configured() -> bool:
+    """Check if OpenTelemetry SDK TracerProvider is configured."""
+    provider = trace_api.get_tracer_provider()
+    return isinstance(provider, SDKTracerProvider)
+
+
+def ensure_initialized(suppress_warnings: bool = False) -> None:
     """
-    Checks if a proper OpenTelemetry SDK TracerProvider is configured.
-    If not, issues a warning using `rich` for hyperlink formatting and displays
-    formatted OTEL starter code that can be used directly.
-    The warning is issued only once per Python session.
+    Ensures Gentrace is properly initialized with OpenTelemetry configured.
+    
+    This function:
+    1. First attempts auto-initialization if environment variables are set
+    2. Then checks if OpenTelemetry is configured
+    3. Shows a warning if otel_setup was explicitly set to False but OTEL is not configured
+    
+    Args:
+        suppress_warnings: If True, suppresses auto-initialization warnings.
+    """
+    import os
+    
+    # First, try auto-initialization if needed
+    if not _is_otel_configured() and not _is_gentrace_initialized():
+        api_key = os.environ.get("GENTRACE_API_KEY")
+        if api_key:
+            # Show warning about auto-initialization unless suppressed
+            if not suppress_warnings:
+                _show_auto_init_warning()
+            
+            from .init import init
+            init_kwargs: Dict[str, Any] = {"api_key": api_key}
+            base_url = os.environ.get("GENTRACE_BASE_URL")
+            if base_url:
+                init_kwargs["base_url"] = base_url
+            init(**init_kwargs)
+            # After auto-init, OTEL should be configured, so we can return
+            return
+    
+    # If we reach here, either:
+    # 1. OTEL is already configured (good)
+    # 2. Gentrace was initialized but with otel_setup=False
+    # 3. No environment variables for auto-init
+    
+    # Only warn if otel_setup was explicitly set to False
+    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
+    if otel_setup_config is False and not _is_otel_configured():
+        # Show the warning (using the existing warning logic)
+        if not suppress_warnings:
+            _show_otel_warning()
+
+
+def _show_auto_init_warning() -> None:
+    """
+    Shows a warning when Gentrace is automatically initialized from environment variables.
+    """
+    # Check if warnings would be suppressed for our message
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Don't override filters - use whatever the user has set
+        warnings.warn(
+            "Gentrace was automatically initialized from environment variables",
+            UserWarning,
+            stacklevel=2
+        )
+        
+    # If no warning was caught, it means it's being filtered - don't show rich display
+    if not caught_warnings:
+        return
+    
+    console = get_console()
+    
+    warning_content = Group(
+        Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
+        Text(),
+        Text("This likely means your init() call is not being executed, which can cause issues:", style="yellow"),
+        Text("• Custom options passed to init() won't be applied (instrumentations, debug, etc.)", style="white"),
+        Text("• Instrumentations may not work correctly", style="white"),
+        Text("• OpenTelemetry configuration may be incomplete", style="white"),
+        Text(),
+        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning", style="cyan"),
+        Text(),
+        Text("To fix this, ensure init() is called before executing decorators.", style="yellow"),
+        Text(),
+        Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
+        Text(),
+        Text("To suppress this warning:", style="dim"),
+        Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
+        Text("• Or: warnings.filterwarnings('ignore', message='Gentrace was automatically initialized')", style="dim"),
+    )
+    
+    # Create red bordered panel
+    warning_panel = Panel(
+        warning_content,
+        title="[bold red]⚠ Warning: Auto-Initialization [GT_AutoInitializationWarning][/bold red]",
+        border_style="red",
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    # Code example for proper initialization
+    init_code = """  from gentrace import init, interaction
+
+  # Call this at the very beginning of your application
+  init(api_key="your-api-key")
+
+  # Then use decorators
+  @interaction(pipeline_id="my-pipeline-id")
+  def my_function():
+      return "Hello, world!"""
+    
+    console.console.print(warning_panel)
+    console.console.print()
+    
+    console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
+    console.console.print()
+    
+    syntax = Syntax(
+        init_code,
+        "python",
+        theme="monokai",
+        line_numbers=False,
+        word_wrap=True,
+        background_color="default",
+    )
+    console.console.print(syntax)
+    console.console.print()
+
+
+def _show_otel_warning() -> None:
+    """
+    Internal function to show the OpenTelemetry configuration warning.
+    This is called by ensure_initialized() when needed.
     """
     global _otel_config_warning_issued
     if _otel_config_warning_issued:
         return
 
-    # Check if otel_setup was configured in init()
-    import sys
-    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
-    
-    # Only show warning if otel_setup was explicitly set to False
-    # If undefined, the user hasn't called init() yet
-    # If True or a dict, OpenTelemetry setup was requested
-    if otel_setup_config is not False:
-        return
-
     provider = trace_api.get_tracer_provider()
 
     if not isinstance(provider, SDKTracerProvider):
+        # Check if warnings would be suppressed for our message
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.simplefilter("always")
+            warnings.warn(
+                "OpenTelemetry SDK does not appear to be configured",
+                UserWarning,
+                stacklevel=2
+            )
+            
+        # If no warning was caught, it means it's being filtered - don't show rich display
+        if not caught_warnings:
+            _otel_config_warning_issued = True
+            return
+        
         console = get_console()
 
         # Create a warning panel with rich formatting
         warning_content = Group(
-            Text("⚠ Gentrace Configuration Warning", style="bold yellow"),
-            Text(),
             Text("OpenTelemetry SDK does not appear to be configured. This means that Gentrace features"),
             Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
             Text("Gentrace UI."),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror", style="cyan"),
             Text(),
             Text("You have two options to fix this:"),
         )
 
         warning_panel = Panel(
             warning_content,
-            title="[yellow]⚠ Gentrace Configuration Warning[/yellow]",
-            border_style="yellow",
+            title="[bold red]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/bold red]",
+            border_style="red",
             title_align="left",
             padding=(1, 2),
         )
 
         # Init example code (recommended)
-        init_example_code = """import gentrace
+        # Add indentation to each line for visual padding
+        init_example_code = """  from gentrace import init
 
-gentrace.init(
-    api_key="your-api-key",
-    # otel_setup=True is the default, can be omitted
-)"""
+  init(
+      api_key="your-api-key",
+      # otel_setup=True is the default, can be omitted
+  )"""
 
         # Manual setup code
-        manual_setup_code = """import os
-import atexit
-import gentrace
-from opentelemetry import trace
-from opentelemetry.sdk.trace import TracerProvider
-from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace.export import SimpleSpanProcessor
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+        # Add indentation to each line for visual padding
+        manual_setup_code = """  import os
+  import atexit
+  from gentrace import init
+  from opentelemetry import trace
+  from opentelemetry.sdk.trace import TracerProvider
+  from opentelemetry.sdk.resources import Resource
+  from opentelemetry.sdk.trace.export import SimpleSpanProcessor
+  from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-# Initialize Gentrace without OpenTelemetry setup
-gentrace.init(
-    api_key="your-api-key",
-    base_url="https://gentrace.ai/api",  # or your custom endpoint
-    otel_setup=False
-)
+  # Initialize Gentrace without OpenTelemetry setup
+  init(
+      api_key="your-api-key",
+      base_url="https://gentrace.ai/api",  # or your custom endpoint
+      otel_setup=False
+  )
 
-# Set up the resource with service name
-resource = Resource(attributes={"service.name": "your-service-name"})
+  # Set up the resource with service name
+  resource = Resource(attributes={"service.name": "your-service-name"})
 
-# Create and set the tracer provider
-trace.set_tracer_provider(TracerProvider(resource=resource))
+  # Create and set the tracer provider
+  trace.set_tracer_provider(TracerProvider(resource=resource))
 
-# Configure the OTLP exporter for Gentrace
-otlp_headers = {"Authorization": f"Bearer {os.getenv('GENTRACE_API_KEY')}"}
-span_exporter = OTLPSpanExporter(
-    endpoint=f"{os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai')}/otel/v1/traces",
-    headers=otlp_headers
-)
+  # Configure the OTLP exporter for Gentrace
+  otlp_headers = {"Authorization": f"Bearer {os.getenv('GENTRACE_API_KEY')}"}
+  span_exporter = OTLPSpanExporter(
+      endpoint=f"{os.getenv('GENTRACE_BASE_URL', 'https://gentrace.ai/api')}/otel/v1/traces",
+      headers=otlp_headers
+  )
 
-# Add the span processor
-trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
+  # Add the span processor
+  trace.get_tracer_provider().add_span_processor(SimpleSpanProcessor(span_exporter))
 
-# Ensure graceful shutdown
-def shutdown_handler():
-    provider = trace.get_tracer_provider()
-    if hasattr(provider, 'shutdown'):
-        provider.shutdown()
-        print("OpenTelemetry SDK shut down successfully")
+  # Ensure graceful shutdown
+  def shutdown_handler():
+      provider = trace.get_tracer_provider()
+      if hasattr(provider, 'shutdown'):
+          provider.shutdown()
+          print("OpenTelemetry SDK shut down successfully")
 
-# Register shutdown handler
-atexit.register(shutdown_handler)
+  # Register shutdown handler
+  atexit.register(shutdown_handler)
 
-print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
+  print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
 
         try:
             console.console.print(warning_panel)
@@ -417,9 +555,11 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
                 init_example_code,
                 "python",
                 theme="monokai",
-                line_numbers=True,
+                line_numbers=False,
                 word_wrap=True,
                 background_color="default",
+                indent_guides=True,
+                code_width=100,
             )
             console.console.print(syntax_init)
             console.console.print()
@@ -432,9 +572,11 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
                 manual_setup_code,
                 "python",
                 theme="monokai",
-                line_numbers=True,
+                line_numbers=False,
                 word_wrap=True,
                 background_color="default",
+                indent_guides=True,
+                code_width=100,
             )
             console.console.print(syntax_manual)
             console.console.print()
@@ -442,17 +584,31 @@ print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
             console.console.print(
                 Text("Tip: Copy the code above and add it to your application setup.", style="gray")
             )
+            console.console.print()
+            
+            console.console.print(
+                Text("To suppress this warning:", style="dim")
+            )
+            console.console.print(
+                Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim")
+            )
+            console.console.print(
+                Text("• Or: warnings.filterwarnings('ignore', message='OpenTelemetry SDK does not appear')", style="dim")
+            )
+            console.console.print()  # Extra line break after suppression info
 
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
+
+Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror
 
 You have two options:
 
 ⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):
 
-    import gentrace
+    from gentrace import init
     
-    gentrace.init(
+    init(
         api_key="your-api-key",
         # otel_setup=True is the default, can be omitted
     )
@@ -464,6 +620,121 @@ See the documentation for the complete setup code.
             warnings.warn(fallback_message, UserWarning, stacklevel=2)
 
         _otel_config_warning_issued = True
+
+
+def display_pipeline_error(
+    pipeline_id: str,
+    error_type: str,
+    error: Optional[Exception] = None
+) -> None:
+    """
+    Displays a beautifully formatted pipeline error message.
+    
+    Args:
+        pipeline_id: The pipeline ID that caused the error
+        error_type: One of 'invalid-format', 'not-found', 'unauthorized', 'unknown'
+        error: Optional exception object for additional context
+    """
+    # Check if warnings would be suppressed for our message
+    warning_messages = {
+        'invalid-format': f"Pipeline ID '{pipeline_id}' is not a valid UUID",
+        'not-found': f"Pipeline '{pipeline_id}' does not exist",
+        'unauthorized': f"Access denied to pipeline '{pipeline_id}'",
+        'unknown': f"Failed to validate pipeline '{pipeline_id}'"
+    }
+    
+    warning_message = warning_messages.get(error_type, warning_messages['unknown'])
+    
+    # Check if the warning would be suppressed
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Use current warning filters
+        warnings.warn(
+            warning_message,
+            UserWarning,
+            stacklevel=3
+        )
+        
+    # If no warning was caught, it's being filtered - don't show anything
+    if not caught_warnings:
+        return
+    
+    # Warning would be shown, so show rich display instead
+    
+    console = get_console()
+    
+    # Common suppression note
+    suppression_note = Text(
+        "To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline')",
+        style="dim"
+    )
+    
+    if error_type == 'invalid-format':
+        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID [GT_PipelineInvalidError]"
+        error_content = Group(
+            Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    elif error_type == 'not-found':
+        error_title = "⚠ Warning: Gentrace Pipeline Not Found [GT_PipelineNotFoundError]"
+        error_content = Group(
+            Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    elif error_type == 'unauthorized':
+        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized [GT_PipelineUnauthorizedError]"
+        error_content = Group(
+            Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    else:  # unknown
+        error_title = "⚠ Warning: Gentrace Pipeline Error"
+        error_message = error.args[0] if error and error.args else "Unknown error"
+        error_content = Group(
+            Text(f"Failed to validate pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text(f"Error: {error_message}", style="gray"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    error_panel = Panel(
+        error_content,
+        title=f"[bold red]{error_title}[/bold red]",
+        border_style=border_style,
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    try:
+        console.console.print(error_panel)
+        console.console.print()
+    except Exception:
+        # Fallback to simple logging if rich formatting fails
+        logger.error(f"Gentrace Pipeline Error: {error_type} for pipeline '{pipeline_id}'")
+
+
 
 
 def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
@@ -666,7 +937,7 @@ __all__ = [
     "gentrace_format_otel_value",
     "_gentrace_json_dumps",
     "is_pydantic_v1",
-    "check_otel_config_and_warn",
+    "ensure_initialized",
     "GentraceConsole",
     "get_console",
     "pretty_print_json",
