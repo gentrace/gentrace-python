@@ -3,19 +3,18 @@ _dev
 
 __pycache__
 .mypy_cache
-
 dist
-
 .venv
-.idea
-
-.env
-.envrc
 codegen.log
 Brewfile.lock.json
-
 design-docs
 context-artifacts
 gentrace-python.code-workspace
 .DS_Store
+
+.idea
+.vscode
 .mcp.json
+
+.env
+.envrc
