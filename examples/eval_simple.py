@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 from dotenv import load_dotenv
 
-from gentrace import init, eval, experiment
+from gentrace import eval, init, experiment
 
 load_dotenv()
 

@@ -16,7 +16,7 @@ from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace.export import SimpleSpanProcessor
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from gentrace import init, GentraceSpanProcessor
+from gentrace import GentraceSpanProcessor, init
 
 load_dotenv()
 
