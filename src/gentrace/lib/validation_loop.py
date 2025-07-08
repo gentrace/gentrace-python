@@ -42,7 +42,10 @@ def schedule_background_task(coro: Coroutine[Any, Any, T]) -> None:
                     new_loop.close()
                     asyncio.set_event_loop(None)
             except Exception:
-                # If anything fails, ensure coroutine is closed
+                # Silently ignore exceptions in event loop setup/teardown
+                pass
+            finally:
+                # Always ensure coroutine is closed regardless of where an exception occurs
                 try:
                     coro.close()
                 except Exception:
