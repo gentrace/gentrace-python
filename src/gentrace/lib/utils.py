@@ -369,48 +369,27 @@ def _show_auto_init_warning() -> None:
     """
     Shows a warning when Gentrace is automatically initialized from environment variables.
     """
-    # Check if warnings would be suppressed for our message
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        # Don't override filters - use whatever the user has set
-        warnings.warn(
-            "Gentrace was automatically initialized from environment variables",
-            UserWarning,
-            stacklevel=2
-        )
-        
-    # If no warning was caught, it means it's being filtered - don't show rich display
-    if not caught_warnings:
-        return
+    warning = GentraceWarning(
+        warning_id="GT_AutoInitializationWarning",
+        title="Auto-Initialization",
+        message=[
+            "Gentrace was automatically initialized from environment variables.",
+            "",
+            "This likely means your init() call is not being executed, which can cause issues:",
+            "• Custom options passed to init() won't be applied (instrumentations, debug, etc.)",
+            "• Instrumentations may not work correctly",
+            "• OpenTelemetry configuration may be incomplete",
+            "",
+            "To fix this, ensure init() is called before executing decorators.",
+            "",
+            "Note: Each distinct process/service must call init() before using @interaction decorators.",
+        ],
+        learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning",
+        suppression_hint="To suppress this warning:\n• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)\n• Or: warnings.filterwarnings('ignore', message='Gentrace was automatically initialized')",
+    )
     
     console = get_console()
-    
-    warning_content = Group(
-        Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
-        Text(),
-        Text("This likely means your init() call is not being executed, which can cause issues:", style="yellow"),
-        Text("• Custom options passed to init() won't be applied (instrumentations, debug, etc.)", style="white"),
-        Text("• Instrumentations may not work correctly", style="white"),
-        Text("• OpenTelemetry configuration may be incomplete", style="white"),
-        Text(),
-        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning", style="cyan"),
-        Text(),
-        Text("To fix this, ensure init() is called before executing decorators.", style="yellow"),
-        Text(),
-        Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
-        Text(),
-        Text("To suppress this warning:", style="dim"),
-        Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
-        Text("• Or: warnings.filterwarnings('ignore', message='Gentrace was automatically initialized')", style="dim"),
-    )
-    
-    # Create red bordered panel
-    warning_panel = Panel(
-        warning_content,
-        title="[bold red]⚠ Warning: Auto-Initialization [GT_AutoInitializationWarning][/bold red]",
-        border_style="red",
-        title_align="left",
-        padding=(1, 2),
-    )
+    warning.display(console)
     
     # Code example for proper initialization
     init_code = """  from gentrace import init, interaction
@@ -422,9 +401,6 @@ def _show_auto_init_warning() -> None:
   @interaction(pipeline_id="my-pipeline-id")
   def my_function():
       return "Hello, world!"""
-    
-    console.console.print(warning_panel)
-    console.console.print()
     
     console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
     console.console.print()
@@ -453,40 +429,22 @@ def _show_otel_warning() -> None:
     provider = trace_api.get_tracer_provider()
 
     if not isinstance(provider, SDKTracerProvider):
-        # Check if warnings would be suppressed for our message
-        with warnings.catch_warnings(record=True) as caught_warnings:
-            warnings.simplefilter("always")
-            warnings.warn(
-                "OpenTelemetry SDK does not appear to be configured",
-                UserWarning,
-                stacklevel=2
-            )
-            
-        # If no warning was caught, it means it's being filtered - don't show rich display
-        if not caught_warnings:
-            _otel_config_warning_issued = True
-            return
+        warning = GentraceWarning(
+            warning_id="GT_OtelNotConfiguredError",
+            title="Gentrace Configuration Warning",
+            message=[
+                "OpenTelemetry SDK does not appear to be configured. This means that Gentrace features",
+                "like @interaction, @eval, @traced, and eval_dataset() will not record any data to the",
+                "Gentrace UI.",
+                "",
+                "You have two options to fix this:",
+            ],
+            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror",
+            suppression_hint="To suppress this warning:\n• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)\n• Or: warnings.filterwarnings('ignore', message='OpenTelemetry SDK does not appear')",
+        )
         
         console = get_console()
-
-        # Create a warning panel with rich formatting
-        warning_content = Group(
-            Text("OpenTelemetry SDK does not appear to be configured. This means that Gentrace features"),
-            Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
-            Text("Gentrace UI."),
-            Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror", style="cyan"),
-            Text(),
-            Text("You have two options to fix this:"),
-        )
-
-        warning_panel = Panel(
-            warning_content,
-            title="[bold red]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/bold red]",
-            border_style="red",
-            title_align="left",
-            padding=(1, 2),
-        )
+        warning.display(console)
 
         # Init example code (recommended)
         # Add indentation to each line for visual padding
@@ -544,8 +502,6 @@ def _show_otel_warning() -> None:
   print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
 
         try:
-            console.console.print(warning_panel)
-            console.console.print()  # Add spacing
 
             # Display the recommended init() approach with star emoji
             console.console.print(Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green"))
@@ -622,6 +578,86 @@ See the documentation for the complete setup code.
         _otel_config_warning_issued = True
 
 
+class GentraceWarning:
+    """Base class for Gentrace warning definitions."""
+    
+    def __init__(
+        self,
+        warning_id: str,
+        title: str,
+        message: Union[str, List[str]],
+        learn_more_url: Optional[str] = None,
+        suppression_hint: Optional[str] = None,
+        border_style: str = "red",
+    ):
+        self.warning_id = warning_id
+        self.title = title
+        self.message = message if isinstance(message, list) else [message]
+        self.learn_more_url = learn_more_url
+        self.suppression_hint = suppression_hint
+        self.border_style = border_style
+    
+    def get_simple_message(self) -> str:
+        """Get a simple string version of the warning message."""
+        return " ".join(self.message)
+    
+    def display(self, console: Optional[GentraceConsole] = None) -> None:
+        """Display the warning using rich formatting."""
+        if console is None:
+            console = get_console()
+        
+        # Check if the warning would be suppressed
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.warn(
+                self.get_simple_message(),
+                UserWarning,
+                stacklevel=3
+            )
+        
+        # If no warning was caught, it's being filtered - don't show anything
+        if not caught_warnings:
+            return
+        
+        # Build the content
+        content_parts: List[Text] = []
+        for msg in self.message:
+            content_parts.append(Text(msg, style="yellow" if "⚠" not in msg else "white"))
+        
+        if self.learn_more_url:
+            content_parts.append(Text())
+            content_parts.append(Text(f"Learn more: {self.learn_more_url}", style="cyan"))
+        
+        if self.suppression_hint:
+            content_parts.append(Text())
+            content_parts.append(Text(self.suppression_hint, style="dim"))
+        
+        # Create panel
+        warning_panel = Panel(
+            Group(*content_parts),
+            title=f"[bold {self.border_style}]⚠ Warning: {self.title} [{self.warning_id}][/bold {self.border_style}]",
+            border_style=self.border_style,
+            title_align="left",
+            padding=(1, 2),
+        )
+        
+        try:
+            console.console.print()  # Add line break before warning
+            console.console.print(warning_panel)
+            console.console.print()
+        except Exception:
+            # Fallback to simple logging if rich formatting fails
+            logger.warning(f"{self.title}: {self.get_simple_message()}")
+
+
+def display_gentrace_warning(warning: GentraceWarning) -> None:
+    """Display a Gentrace warning with consistent formatting.
+    
+    Args:
+        warning: The GentraceWarning instance to display
+    """
+    warning.display()
+
+
 def display_pipeline_error(
     pipeline_id: str,
     error_type: str,
@@ -635,104 +671,57 @@ def display_pipeline_error(
         error_type: One of 'invalid-format', 'not-found', 'unauthorized', 'unknown'
         error: Optional exception object for additional context
     """
-    # Check if warnings would be suppressed for our message
-    warning_messages = {
-        'invalid-format': f"Pipeline ID '{pipeline_id}' is not a valid UUID",
-        'not-found': f"Pipeline '{pipeline_id}' does not exist",
-        'unauthorized': f"Access denied to pipeline '{pipeline_id}'",
-        'unknown': f"Failed to validate pipeline '{pipeline_id}'"
-    }
-    
-    warning_message = warning_messages.get(error_type, warning_messages['unknown'])
-    
-    # Check if the warning would be suppressed
-    with warnings.catch_warnings(record=True) as caught_warnings:
-        # Use current warning filters
-        warnings.warn(
-            warning_message,
-            UserWarning,
-            stacklevel=3
-        )
-        
-    # If no warning was caught, it's being filtered - don't show anything
-    if not caught_warnings:
-        return
-    
-    # Warning would be shown, so show rich display instead
-    
-    console = get_console()
-    
-    # Common suppression note
-    suppression_note = Text(
-        "To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline')",
-        style="dim"
-    )
-    
     if error_type == 'invalid-format':
-        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID [GT_PipelineInvalidError]"
-        error_content = Group(
-            Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
-            Text(),
-            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
-            Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror", style="cyan"),
-            Text(),
-            suppression_note,
+        warning = GentraceWarning(
+            warning_id="GT_PipelineInvalidError",
+            title="Gentrace Invalid Pipeline ID",
+            message=[
+                f"Pipeline ID '{pipeline_id}' is not a valid UUID.",
+                "",
+                "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
+            ],
+            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror",
+            suppression_hint="To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline ID')",
         )
-        border_style = "red"
-    
     elif error_type == 'not-found':
-        error_title = "⚠ Warning: Gentrace Pipeline Not Found [GT_PipelineNotFoundError]"
-        error_content = Group(
-            Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
-            Text(),
-            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
-            Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror", style="cyan"),
-            Text(),
-            suppression_note,
+        warning = GentraceWarning(
+            warning_id="GT_PipelineNotFoundError",
+            title="Gentrace Pipeline Not Found",
+            message=[
+                f"Pipeline '{pipeline_id}' does not exist or is not accessible.",
+                "",
+                "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
+            ],
+            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror",
+            suppression_hint="To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline')",
         )
-        border_style = "red"
-    
     elif error_type == 'unauthorized':
-        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized [GT_PipelineUnauthorizedError]"
-        error_content = Group(
-            Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
-            Text(),
-            Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
-            Text(),
-            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror", style="cyan"),
-            Text(),
-            suppression_note,
+        warning = GentraceWarning(
+            warning_id="GT_PipelineUnauthorizedError",
+            title="Gentrace Pipeline Unauthorized",
+            message=[
+                f"Access denied to pipeline '{pipeline_id}'.",
+                "",
+                "Please check your GENTRACE_API_KEY has the correct permissions.",
+            ],
+            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror",
+            suppression_hint="To suppress this warning: warnings.filterwarnings('ignore', message='Access denied')",
         )
-        border_style = "red"
-    
     else:  # unknown
-        error_title = "⚠ Warning: Gentrace Pipeline Error"
         error_message = error.args[0] if error and error.args else "Unknown error"
-        error_content = Group(
-            Text(f"Failed to validate pipeline '{pipeline_id}'.", style="yellow"),
-            Text(),
-            Text(f"Error: {error_message}", style="gray"),
-            Text(),
-            suppression_note,
+        warning = GentraceWarning(
+            warning_id="GT_PipelineError",
+            title="Gentrace Pipeline Error",
+            message=[
+                f"Failed to validate pipeline '{pipeline_id}'.",
+                "",
+                f"Error: {error_message}",
+            ],
+            learn_more_url=None,
+            suppression_hint="To suppress this warning: warnings.filterwarnings('ignore', message='Failed to validate')",
         )
-        border_style = "red"
     
-    error_panel = Panel(
-        error_content,
-        title=f"[bold red]{error_title}[/bold red]",
-        border_style=border_style,
-        title_align="left",
-        padding=(1, 2),
-    )
-    
-    try:
-        console.console.print(error_panel)
-        console.console.print()
-    except Exception:
-        # Fallback to simple logging if rich formatting fails
-        logger.error(f"Gentrace Pipeline Error: {error_type} for pipeline '{pipeline_id}'")
+    display_gentrace_warning(warning)
 
 
 
@@ -949,4 +938,6 @@ __all__ = [
     "print_trace_info",
     "print_evaluation_results",
     "print_function_call_summary",
+    "GentraceWarning",
+    "display_gentrace_warning",
 ]
