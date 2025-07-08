@@ -68,6 +68,39 @@ DataProviderType: TypeAlias = Callable[
 ]
 
 
+async def _execute_interaction_function(
+    interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
+    parsed_input: Optional[TInput],
+    semaphore: Optional[asyncio.Semaphore],
+) -> TResult:
+    """
+    Execute the interaction function with proper concurrency control.
+    Handles both async and sync functions, and applies semaphore if provided.
+    """
+    async def run_function() -> TResult:
+        if inspect.iscoroutinefunction(interaction_function):
+            # Async function - just await it
+            result = await interaction_function(parsed_input)
+            return cast(TResult, result)
+        else:
+            # Sync function - run in thread pool to avoid blocking
+            event_loop = asyncio.get_running_loop()
+            ctx = copy_context()
+            
+            def run_sync() -> Any:
+                """Run the sync function with the captured context."""
+                return ctx.run(interaction_function, parsed_input)
+            
+            return await event_loop.run_in_executor(None, run_sync)
+    
+    # Apply semaphore if provided
+    if semaphore:
+        async with semaphore:
+            return await run_function()
+    else:
+        return await run_function()
+
+
 async def _run_single_test_case_for_dataset(
     test_case_name: str,
     test_case_id: Optional[str],
@@ -75,10 +108,20 @@ async def _run_single_test_case_for_dataset(
     interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
     input_schema: Optional[Type[BaseModel]],
     experiment_context: ExperimentContext,
+    semaphore: Optional[asyncio.Semaphore],
 ) -> Optional[TResult]:
     """
     Internal helper to run and trace a single test case from a dataset.
     This is similar to the logic in the @eval decorator but adapted for dataset items.
+    
+    Args:
+        test_case_name: Name of the test case for tracing
+        test_case_id: Optional ID of the test case
+        raw_inputs: The input data for the test case
+        interaction_function: The function to test
+        input_schema: Optional Pydantic schema for validation
+        experiment_context: The experiment context
+        semaphore: Optional semaphore for concurrency control
     """
     span_name = test_case_name
     result_value: Any = None  # type: ignore
@@ -140,19 +183,12 @@ async def _run_single_test_case_for_dataset(
                         {"args": _gentrace_json_dumps([input_dict_for_log])},
                     )
 
-                # Call the interaction function with the original dict (or None)
-                if inspect.iscoroutinefunction(interaction_function):
-                    result_value = await interaction_function(parsed_input_for_interaction)
-                else:
-                    # Run sync functions in thread pool to avoid blocking
-                    event_loop = asyncio.get_running_loop()
-                    ctx = copy_context()
-                    
-                    def run_sync() -> Any:
-                        """Run the sync function with the captured context."""
-                        return ctx.run(interaction_function, parsed_input_for_interaction)
-                    
-                    result_value = await event_loop.run_in_executor(None, run_sync)
+                # Call the interaction function with proper concurrency control
+                result_value = await _execute_interaction_function(
+                    interaction_function,
+                    parsed_input_for_interaction,
+                    semaphore,
+                )
 
                 # Log the output
                 span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
@@ -320,14 +356,12 @@ async def eval_dataset(
         else:
             final_case_name = f"Test Case {i + 1}"
 
-        # Create the task wrapped with semaphore if needed
+        # Create the task - semaphore will be handled inside _run_single_test_case_for_dataset
         async def run_test_case(
             case_name: str = final_case_name,
             case_id_val: Optional[str] = case_id,
             case_inputs_val: Optional[InputPayload] = case_inputs,
         ) -> Optional[TResult]:
-            # For sync functions, we need to wrap the entire test case execution
-            # For async functions, just the coroutine is enough
             return await _run_single_test_case_for_dataset(
                 test_case_name=case_name,
                 test_case_id=case_id_val,
@@ -335,16 +369,10 @@ async def eval_dataset(
                 interaction_function=interaction_fn,
                 input_schema=input_schema,
                 experiment_context=experiment_context,
+                semaphore=semaphore,
             )
         
-        # Wrap with semaphore at the task level
-        if semaphore:
-            async def run_with_semaphore() -> Optional[TResult]:
-                async with semaphore:
-                    return await run_test_case()
-            evaluation_tasks.append(run_with_semaphore())
-        else:
-            evaluation_tasks.append(run_test_case())
+        evaluation_tasks.append(run_test_case())
 
     results = await asyncio.gather(*evaluation_tasks)
     return results
