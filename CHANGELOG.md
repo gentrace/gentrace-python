@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-alpha.12 (2025-07-08)
+
+Full Changelog: [v1.0.0-alpha.11...v1.0.0-alpha.12](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.11...v1.0.0-alpha.12)
+
+### Features
+
+* Add max concurrency limit, create shared GentraceWarning abstraction ([#335](https://github.com/gentrace/gentrace-python/issues/335)) ([821e852](https://github.com/gentrace/gentrace-python/commit/821e8524f08a61168ca8411e580fb0cd9f7c9077))
+
 ## 1.0.0-alpha.11 (2025-07-07)
 
 Full Changelog: [v1.0.0-alpha.10...v1.0.0-alpha.11](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.10...v1.0.0-alpha.11)
