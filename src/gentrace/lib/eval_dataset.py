@@ -1,7 +1,6 @@
 import asyncio
 import inspect
 import logging
-from contextvars import copy_context
 from typing import (
     Any,
     List,
@@ -16,6 +15,7 @@ from typing import (
     Awaitable,
     cast,
 )
+from contextvars import copy_context
 from typing_extensions import Protocol, TypeAlias, TypedDict, overload
 
 from pydantic import BaseModel, ValidationError
@@ -34,7 +34,6 @@ from .constants import (
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .experiment import ExperimentContext, get_current_experiment_context
-from .concurrency import get_thread_pool
 
 logger = logging.getLogger("gentrace")
 
@@ -153,8 +152,7 @@ async def _run_single_test_case_for_dataset(
                         """Run the sync function with the captured context."""
                         return ctx.run(interaction_function, parsed_input_for_interaction)
                     
-                    thread_pool = get_thread_pool()
-                    result_value = await event_loop.run_in_executor(thread_pool, run_sync)
+                    result_value = await event_loop.run_in_executor(None, run_sync)
 
                 # Log the output
                 span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})

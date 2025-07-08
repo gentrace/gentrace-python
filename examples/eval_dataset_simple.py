@@ -68,7 +68,7 @@ async def dataset_evaluation() -> None:
     await eval_dataset(
         data=fetch_test_cases,
         interaction=traced_process_ai_request,
-        max_concurrency=5,
+        max_concurrency=30,
     )
 
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")

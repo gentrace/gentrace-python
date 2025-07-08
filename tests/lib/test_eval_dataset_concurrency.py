@@ -3,7 +3,6 @@
 import time
 import asyncio
 import threading
-import warnings
 from typing import Any, Dict, List
 
 import pytest
@@ -238,7 +237,7 @@ async def test_max_concurrency_one() -> None:
 async def test_max_concurrency_exceeds_limit() -> None:
     """Test that max_concurrency > 30 raises ValueError."""
     
-    async def async_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(_: Dict[str, Any]) -> Dict[str, Any]:
         """Simple async task."""
         return {"result": "ok"}
     
