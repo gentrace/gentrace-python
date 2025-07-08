@@ -641,6 +641,7 @@ class GentraceWarning:
         )
         
         try:
+            console.console.print()  # Add line break before warning
             console.console.print(warning_panel)
             console.console.print()
         except Exception:
