@@ -622,6 +622,85 @@ See the documentation for the complete setup code.
         _otel_config_warning_issued = True
 
 
+class GentraceWarning:
+    """Base class for Gentrace warning definitions."""
+    
+    def __init__(
+        self,
+        warning_id: str,
+        title: str,
+        message: Union[str, List[str]],
+        learn_more_url: Optional[str] = None,
+        suppression_hint: Optional[str] = None,
+        border_style: str = "red",
+    ):
+        self.warning_id = warning_id
+        self.title = title
+        self.message = message if isinstance(message, list) else [message]
+        self.learn_more_url = learn_more_url
+        self.suppression_hint = suppression_hint
+        self.border_style = border_style
+    
+    def get_simple_message(self) -> str:
+        """Get a simple string version of the warning message."""
+        return " ".join(self.message)
+    
+    def display(self, console: Optional[GentraceConsole] = None) -> None:
+        """Display the warning using rich formatting."""
+        if console is None:
+            console = get_console()
+        
+        # Check if the warning would be suppressed
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.warn(
+                self.get_simple_message(),
+                UserWarning,
+                stacklevel=3
+            )
+        
+        # If no warning was caught, it's being filtered - don't show anything
+        if not caught_warnings:
+            return
+        
+        # Build the content
+        content_parts: List[Text] = []
+        for msg in self.message:
+            content_parts.append(Text(msg, style="yellow" if "⚠" not in msg else "white"))
+        
+        if self.learn_more_url:
+            content_parts.append(Text())
+            content_parts.append(Text(f"Learn more: {self.learn_more_url}", style="cyan"))
+        
+        if self.suppression_hint:
+            content_parts.append(Text())
+            content_parts.append(Text(self.suppression_hint, style="dim"))
+        
+        # Create panel
+        warning_panel = Panel(
+            Group(*content_parts),
+            title=f"[bold {self.border_style}]⚠ Warning: {self.title} [{self.warning_id}][/bold {self.border_style}]",
+            border_style=self.border_style,
+            title_align="left",
+            padding=(1, 2),
+        )
+        
+        try:
+            console.console.print(warning_panel)
+            console.console.print()
+        except Exception:
+            # Fallback to simple logging if rich formatting fails
+            logger.warning(f"{self.title}: {self.get_simple_message()}")
+
+
+def display_gentrace_warning(warning: GentraceWarning) -> None:
+    """Display a Gentrace warning with consistent formatting.
+    
+    Args:
+        warning: The GentraceWarning instance to display
+    """
+    warning.display()
+
+
 def display_pipeline_error(
     pipeline_id: str,
     error_type: str,
@@ -949,4 +1028,6 @@ __all__ = [
     "print_trace_info",
     "print_evaluation_results",
     "print_function_call_summary",
+    "GentraceWarning",
+    "display_gentrace_warning",
 ]

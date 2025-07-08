@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+from contextvars import copy_context
 from typing import (
     Any,
     List,
@@ -23,7 +24,7 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.types.test_case import TestCase
 
-from .utils import is_pydantic_v1, ensure_initialized, _gentrace_json_dumps
+from .utils import GentraceWarning, is_pydantic_v1, ensure_initialized, _gentrace_json_dumps, display_gentrace_warning
 from .constants import (
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_TEST_CASE_ID,
@@ -33,6 +34,7 @@ from .constants import (
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .experiment import ExperimentContext, get_current_experiment_context
+from .concurrency import get_thread_pool
 
 logger = logging.getLogger("gentrace")
 
@@ -143,7 +145,16 @@ async def _run_single_test_case_for_dataset(
                 if inspect.iscoroutinefunction(interaction_function):
                     result_value = await interaction_function(parsed_input_for_interaction)
                 else:
-                    result_value = interaction_function(parsed_input_for_interaction)
+                    # Run sync functions in thread pool to avoid blocking
+                    event_loop = asyncio.get_running_loop()
+                    ctx = copy_context()
+                    
+                    def run_sync() -> Any:
+                        """Run the sync function with the captured context."""
+                        return ctx.run(interaction_function, parsed_input_for_interaction)
+                    
+                    thread_pool = get_thread_pool()
+                    result_value = await event_loop.run_in_executor(thread_pool, run_sync)
 
                 # Log the output
                 span.add_event(ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME, {"output": _gentrace_json_dumps(result_value)})
@@ -168,6 +179,7 @@ async def eval_dataset(
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[InputPayload], TResult],
+    max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
 
@@ -177,6 +189,7 @@ async def eval_dataset(
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[InputPayload], Awaitable[TResult]],
+    max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
 
@@ -185,6 +198,7 @@ async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     interaction: Callable[[InputPayload], TResult],
+    max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
 
@@ -193,6 +207,7 @@ async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     interaction: Callable[[InputPayload], Awaitable[TResult]],
+    max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
 
@@ -201,6 +216,7 @@ async def eval_dataset(
     data: DataProviderType[InputPayload],
     schema: Optional[Type[SchemaPydanticModel]] = None,
     interaction: Callable[[Any], Union[TResult, Awaitable[TResult]]],
+    max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]:
     """
     Runs a series of test cases from a dataset against a specified interaction function,
@@ -221,6 +237,10 @@ async def eval_dataset(
                                                    the exception is raised (halting that specific case).
         interaction (Callable): The function to test for each test case.
                                Receives (optionally validated) inputs.
+        max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
+                                       If None (default), all test cases run concurrently.
+                                       For async functions, uses asyncio.Semaphore.
+                                       For sync functions, uses ThreadPoolExecutor.
 
     Returns:
         A list containing the results of the `interaction` function for each successfully
@@ -241,6 +261,30 @@ async def eval_dataset(
     interaction_fn = interaction
     data_provider = data
     input_schema = schema
+
+    # Create a semaphore for concurrency control if max_concurrency is specified
+    semaphore: Optional[asyncio.Semaphore] = None
+    if max_concurrency is not None and max_concurrency > 0:
+        # Throw exception if max_concurrency is very high
+        if max_concurrency > 30:
+            warning = GentraceWarning(
+                warning_id="GT_HighConcurrencyError",
+                title="High Concurrency Error",
+                message=[
+                    f"max_concurrency of {max_concurrency} exceeds the maximum allowed value of 30.",
+                    "",
+                    "Please use a lower value:",
+                    "• 5-10: Conservative, suitable for rate-limited APIs",
+                    "• 10-20: Moderate, good balance for most use cases",
+                    "• 20-30: Aggressive, for high-throughput scenarios",
+                ],
+                learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-highconcurrencyerror",
+                suppression_hint=None,  # No suppression for errors
+            )
+            display_gentrace_warning(warning)
+            raise ValueError(f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of 30. Please use a value between 1 and 30.")
+        
+        semaphore = asyncio.Semaphore(max_concurrency)
 
     raw_test_cases: Sequence[Union[TestCase, TestInput[InputPayload]]]
     try:
@@ -278,15 +322,31 @@ async def eval_dataset(
         else:
             final_case_name = f"Test Case {i + 1}"
 
-        task = _run_single_test_case_for_dataset(
-            test_case_name=final_case_name,
-            test_case_id=case_id,
-            raw_inputs=case_inputs,
-            interaction_function=interaction_fn,
-            input_schema=input_schema,
-            experiment_context=experiment_context,
-        )
-        evaluation_tasks.append(task)
+        # Create the task wrapped with semaphore if needed
+        async def run_test_case(
+            case_name: str = final_case_name,
+            case_id_val: Optional[str] = case_id,
+            case_inputs_val: Optional[InputPayload] = case_inputs,
+        ) -> Optional[TResult]:
+            # For sync functions, we need to wrap the entire test case execution
+            # For async functions, just the coroutine is enough
+            return await _run_single_test_case_for_dataset(
+                test_case_name=case_name,
+                test_case_id=case_id_val,
+                raw_inputs=case_inputs_val,
+                interaction_function=interaction_fn,
+                input_schema=input_schema,
+                experiment_context=experiment_context,
+            )
+        
+        # Wrap with semaphore at the task level
+        if semaphore:
+            async def run_with_semaphore() -> Optional[TResult]:
+                async with semaphore:
+                    return await run_test_case()
+            evaluation_tasks.append(run_with_semaphore())
+        else:
+            evaluation_tasks.append(run_test_case())
 
     results = await asyncio.gather(*evaluation_tasks)
     return results
