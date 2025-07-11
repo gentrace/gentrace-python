@@ -279,3 +279,106 @@ async def test_eval_dataset_with_schema_failure(caplog: LogCaptureFixture) -> No
     assert "Pydantic validation failed for test case invalid_case_wrong_type" in caplog.text
     assert '{"result": "bad-0"}' not in caplog.text
     assert '{"result": "bad2-0"}' not in caplog.text
+
+
+# Plain array tests
+@experiment(pipeline_id=PIPELINE_ID)
+@pytest.mark.asyncio
+async def test_eval_dataset_with_plain_array_dict() -> None:
+    """Test eval_dataset with a plain array of dictionaries."""
+    plain_array = [
+        SimpleTestInputDict(name="plain1", inputs={"a": "plain_hello", "b": 1}),
+        SimpleTestInputDict(name="plain2", inputs={"a": "plain_world", "b": 2}),
+    ]
+    
+    results = await eval_dataset(
+        data=plain_array,
+        interaction=sync_interaction,
+    )
+    assert len(results) == 2
+    assert results[0] == {"result": "plain_hello-1"}
+    assert results[1] == {"result": "plain_world-2"}
+
+
+@experiment(pipeline_id=PIPELINE_ID)
+@pytest.mark.asyncio
+async def test_eval_dataset_with_plain_array_testcase() -> None:
+    """Test eval_dataset with a plain array of TestCase objects."""
+    input1_dict = model_to_dict(InputModel(a="array_hello", b=10))
+    input2_dict = model_to_dict(InputModel(a="array_world", b=20))
+    
+    plain_array = [
+        SimpleTestCase(
+            id="array1",
+            name="array_case1",
+            inputs=input1_dict,
+            pipelineId=DUMMY_PIPELINE_ID,
+            datasetId=DUMMY_DATASET_ID,
+            createdAt=DUMMY_CREATED_AT,
+            updatedAt=DUMMY_UPDATED_AT,
+        ),
+        SimpleTestCase(
+            id="array2",
+            name="array_case2",
+            inputs=input2_dict,
+            pipelineId=DUMMY_PIPELINE_ID,
+            datasetId=DUMMY_DATASET_ID,
+            createdAt=DUMMY_CREATED_AT,
+            updatedAt=DUMMY_UPDATED_AT,
+        ),
+    ]
+    
+    results = await eval_dataset(
+        data=plain_array,
+        interaction=async_interaction,
+    )
+    assert len(results) == 2
+    assert results[0] == {"result": "async-array_hello-10"}
+    assert results[1] == {"result": "async-array_world-20"}
+
+
+@experiment(pipeline_id=PIPELINE_ID)
+@pytest.mark.asyncio
+async def test_eval_dataset_with_plain_array_mixed() -> None:
+    """Test eval_dataset with a plain array of mixed TestCase objects and dicts."""
+    input1_dict = model_to_dict(InputModel(a="mixed_tc", b=5))
+    
+    plain_array = [
+        SimpleTestCase(
+            id="mixed1",
+            name="mixed_testcase",
+            inputs=input1_dict,
+            pipelineId=DUMMY_PIPELINE_ID,
+            datasetId=DUMMY_DATASET_ID,
+            createdAt=DUMMY_CREATED_AT,
+            updatedAt=DUMMY_UPDATED_AT,
+        ),
+        SimpleTestInputDict(name="mixed_dict", inputs={"a": "mixed_dict_data", "b": 15}),
+    ]
+    
+    results = await eval_dataset(
+        data=plain_array,
+        interaction=sync_interaction,
+    )
+    assert len(results) == 2
+    assert results[0] == {"result": "mixed_tc-5"}
+    assert results[1] == {"result": "mixed_dict_data-15"}
+
+
+@experiment(pipeline_id=PIPELINE_ID)
+@pytest.mark.asyncio
+async def test_eval_dataset_with_plain_array_and_schema() -> None:
+    """Test eval_dataset with a plain array and Pydantic schema validation."""
+    plain_array = [
+        SimpleTestInputDict(name="schema1", inputs={"a": "validated", "b": 42}),
+        SimpleTestInputDict(name="schema2", inputs={"a": "also_validated", "b": 84}),
+    ]
+    
+    results = await eval_dataset(
+        data=plain_array,
+        schema=InputModel,
+        interaction=sync_interaction,
+    )
+    assert len(results) == 2
+    assert results[0] == {"result": "validated-42"}
+    assert results[1] == {"result": "also_validated-84"}
