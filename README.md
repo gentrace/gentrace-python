@@ -1,6 +1,7 @@
 # Gentrace Python API library
 
-[![PyPI version](<https://img.shields.io/pypi/v/gentrace-py.svg?label=pypi%20(stable)>)](https://pypi.org/project/gentrace-py/)
+<!-- prettier-ignore -->
+[![PyPI version](https://img.shields.io/pypi/v/gentrace-py.svg?label=pypi%20(stable))](https://pypi.org/project/gentrace-py/)
 
 The Gentrace Python library provides convenient access to the Gentrace REST API from any Python 3.8+
 application. The library includes type definitions for all request params and response fields,
