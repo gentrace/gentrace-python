@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.0-alpha.13 (2025-07-15)
+
+Full Changelog: [v1.0.0-alpha.12...v1.0.0-alpha.13](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.12...v1.0.0-alpha.13)
+
+### Features
+
+* **eval_dataset:** support plain array as data input ([#340](https://github.com/gentrace/gentrace-python/issues/340)) ([588dfef](https://github.com/gentrace/gentrace-python/commit/588dfef084a8855a61e25eb030203ba1f0fb065d))
+
+
+### Bug Fixes
+
+* Simplify background task scheduling method ([#337](https://github.com/gentrace/gentrace-python/issues/337)) ([c44a348](https://github.com/gentrace/gentrace-python/commit/c44a348099009f3fc5b3d170311ceec27334c039))
+* update langchain_simple.py example ([#338](https://github.com/gentrace/gentrace-python/issues/338)) ([2b864d3](https://github.com/gentrace/gentrace-python/commit/2b864d3316d072492c55ce0ff49b8c3f3ce3c1e3))
+
 ## 1.0.0-alpha.12 (2025-07-08)
 
 Full Changelog: [v1.0.0-alpha.11...v1.0.0-alpha.12](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.11...v1.0.0-alpha.12)

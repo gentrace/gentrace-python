@@ -2,12 +2,12 @@
 
 import os
 import asyncio
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from gentrace import TestCase, init, experiment, interaction, eval_dataset, test_cases_async
+from gentrace import TestInput, init, experiment, interaction, eval_dataset
 
 load_dotenv()
 
@@ -53,13 +53,13 @@ async def traced_process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
 async def dataset_evaluation() -> None:
     """Run evaluation on a dataset."""
 
-    async def fetch_test_cases() -> List[TestCase]:
-        """Fetch test cases from the dataset."""
-        test_case_list = await test_cases_async.list(dataset_id=DATASET_ID)
-        return test_case_list.data
-
     await eval_dataset(
-        data=fetch_test_cases,
+        data=[
+            TestInput(name="greeting", inputs={"prompt": "Hello! How are you doing today?"}),
+            TestInput(name="factual_question", inputs={"prompt": "What is the capital of France?"}),
+            TestInput(name="math_problem", inputs={"prompt": "What is 25 * 4?"}),
+            TestInput(name="creative_writing", inputs={"prompt": "Write a haiku about artificial intelligence"}),
+        ],
         interaction=traced_process_ai_request,
         max_concurrency=30,
     )

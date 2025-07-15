@@ -59,12 +59,15 @@ class TestInput(TypedDict, Generic[InputPayload], total=False):
     inputs: InputPayload
 
 
-DataProviderType: TypeAlias = Callable[
-    [],
-    Union[
-        Awaitable[Sequence[Union[TestCase, TestInput[InputPayload]]]],
-        Sequence[Union[TestCase, TestInput[InputPayload]]],
+DataProviderType: TypeAlias = Union[
+    Callable[
+        [],
+        Union[
+            Awaitable[Sequence[Union[TestCase, TestInput[InputPayload]]]],
+            Sequence[Union[TestCase, TestInput[InputPayload]]],
+        ],
     ],
+    Sequence[Union[TestCase, TestInput[InputPayload]]],
 ]
 
 
@@ -261,7 +264,8 @@ async def eval_dataset(
     details from the experiment context and the test case itself.
 
     Args:
-        data (Callable): A function or coroutine function that returns a list of TestInputs.
+        data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list 
+                         of TestInputs, or a plain list of TestInputs directly.
                          Each TestInput should be a dictionary-like object with an `inputs`
                          key, and optional `id`, `name` keys. Can be either TestInputProtocol
                          or TestInput[InputPayload].
@@ -322,11 +326,15 @@ async def eval_dataset(
 
     raw_test_cases: Sequence[Union[TestCase, TestInput[InputPayload]]]
     try:
-        data_result = data_provider()
-        if inspect.isawaitable(data_result):
-            raw_test_cases = await data_result
+        if callable(data_provider):
+            data_result = data_provider()
+            if inspect.isawaitable(data_result):
+                raw_test_cases = await data_result
+            else:
+                raw_test_cases = data_result
         else:
-            raw_test_cases = data_result
+            # data_provider is already a sequence
+            raw_test_cases = data_provider
     except Exception as e:
         # Potentially log this with a Gentrace SDK logger if available
         raise RuntimeError(f"Failed to retrieve or process dataset from data provider: {e}") from e
