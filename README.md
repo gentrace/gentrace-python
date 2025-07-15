@@ -79,7 +79,6 @@ pip install --pre gentrace-py[aiohttp]
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
 
 ```python
-import os
 import asyncio
 from gentrace import DefaultAioHttpClient
 from gentrace import AsyncGentrace
@@ -87,7 +86,7 @@ from gentrace import AsyncGentrace
 
 async def main() -> None:
     async with AsyncGentrace(
-        api_key=os.environ.get("GENTRACE_API_KEY"),  # This is the default and can be omitted
+        api_key="My API Key",
         http_client=DefaultAioHttpClient(),
     ) as client:
         pipeline_list = await client.pipelines.list()
