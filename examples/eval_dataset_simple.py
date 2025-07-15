@@ -29,7 +29,7 @@ async def process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
     # test_case.name # throwing exception
 
     # Extract the prompt from inputs
-    prompt = inputs.get("prompt", "Hello, how are you?")
+    prompt = inputs.get("prompt", "Hey, how are you?")
     
     # Call OpenAI
     response = await openai.chat.completions.create(
