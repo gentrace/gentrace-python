@@ -3,6 +3,8 @@ import sys
 import json
 import atexit
 from typing import Any, Dict, List, Optional
+from .warnings import GentraceWarnings
+from .utils import display_gentrace_warning
 from pathlib import Path
 
 from rich.text import Text
@@ -265,6 +267,8 @@ def setup(
         exporter_headers["Authorization"] = f"Bearer {api_key}"
     elif not trace_endpoint:
         # Only throw error if using default Gentrace endpoint without API key
+        warning = GentraceWarnings.MissingApiKeyError()
+        display_gentrace_warning(warning)
         raise ValueError(
             "GENTRACE_API_KEY is required when using Gentrace endpoint. "
             "Please set the GENTRACE_API_KEY environment variable or call init() with an API key."

@@ -24,7 +24,8 @@ from opentelemetry.trace.status import Status, StatusCode
 
 from gentrace.types.test_case import TestCase
 
-from .utils import GentraceWarning, is_pydantic_v1, ensure_initialized, _gentrace_json_dumps, display_gentrace_warning
+from .utils import is_pydantic_v1, ensure_initialized, _gentrace_json_dumps, display_gentrace_warning
+from .warnings import GentraceWarnings
 from .constants import (
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_TEST_CASE_ID,
@@ -305,20 +306,7 @@ async def eval_dataset(
     if max_concurrency is not None and max_concurrency > 0:
         # Throw exception if max_concurrency is very high
         if max_concurrency > 30:
-            warning = GentraceWarning(
-                warning_id="GT_HighConcurrencyError",
-                title="High Concurrency Error",
-                message=[
-                    f"max_concurrency of {max_concurrency} exceeds the maximum allowed value of 30.",
-                    "",
-                    "Please use a lower value:",
-                    "• 5-10: Conservative, suitable for rate-limited APIs",
-                    "• 10-20: Moderate, good balance for most use cases",
-                    "• 20-30: Aggressive, for high-throughput scenarios",
-                ],
-                learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-highconcurrencyerror",
-                suppression_hint=None,  # No suppression for errors
-            )
+            warning = GentraceWarnings.HighConcurrencyError(max_concurrency)
             display_gentrace_warning(warning)
             raise ValueError(f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of 30. Please use a value between 1 and 30.")
         
