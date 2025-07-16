@@ -3,11 +3,11 @@ Centralized warning system for Gentrace Python SDK.
 Mirrors the pattern from the Node.js SDK with GT_ prefixed warning IDs.
 """
 
-from typing import List, Optional, Union
-from rich.console import Console
-from rich.panel import Panel
+from typing import List, Union, Optional
+
 from rich.text import Text
-from rich.group import Group
+from rich.panel import Panel
+from rich.console import Group, Console
 
 
 class GentraceWarningOptions:
@@ -49,7 +49,7 @@ class GentraceWarning:
         """Display the warning with rich formatting."""
         try:
             # Build content parts
-            content_parts = []
+            content_parts: List[Text] = []
             
             # Add main message
             for line in self.message:
@@ -76,7 +76,7 @@ class GentraceWarning:
             )
             
             # Print with padding
-            console = Console(stderr=True)
+            console: Console = Console(stderr=True)
             console.print("")
             console.print(warning_panel)
             console.print("")

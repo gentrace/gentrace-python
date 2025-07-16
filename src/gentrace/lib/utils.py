@@ -7,14 +7,13 @@ from datetime import datetime
 from collections.abc import Sequence
 
 from pydantic import BaseModel
-from .warnings import GentraceWarnings
 from rich.live import Live
 from rich.text import Text
 from rich.tree import Tree
 from rich.panel import Panel
 from rich.table import Table, Column
 from rich.syntax import Syntax
-from rich.console import Group, Console, RenderableType
+from rich.console import Console, RenderableType
 from rich.spinner import Spinner
 from opentelemetry import trace as trace_api
 from rich.markdown import Markdown
@@ -30,6 +29,8 @@ from rich.progress import (
 )
 from opentelemetry.util import types as otel_types
 from opentelemetry.sdk.trace import TracerProvider as SDKTracerProvider
+
+from .warnings import GentraceWarnings
 
 logger = logging.getLogger("gentrace")
 
@@ -384,6 +385,7 @@ def _show_auto_init_warning() -> None:
   def my_function():
       return "Hello, world!"""
     
+    console = get_console()
     console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
     console.console.print()
     
@@ -470,6 +472,7 @@ def _show_otel_warning() -> None:
   print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
 
         try:
+            console = get_console()
 
             # Display the recommended init() approach with star emoji
             console.console.print(Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green"))
@@ -482,7 +485,7 @@ def _show_otel_warning() -> None:
                 line_numbers=False,
                 word_wrap=True,
                 background_color="default",
-                indent_guides=True,
+                indent_guides=False,
                 code_width=100,
             )
             console.console.print(syntax_init)
@@ -499,7 +502,7 @@ def _show_otel_warning() -> None:
                 line_numbers=False,
                 word_wrap=True,
                 background_color="default",
-                indent_guides=True,
+                indent_guides=False,
                 code_width=100,
             )
             console.console.print(syntax_manual)
@@ -797,6 +800,5 @@ __all__ = [
     "print_trace_info",
     "print_evaluation_results",
     "print_function_call_summary",
-    "GentraceWarning",
     "display_gentrace_warning",
 ]
