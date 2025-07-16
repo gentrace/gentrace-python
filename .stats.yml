@@ -1,4 +1,4 @@
 configured_endpoints: 16
-openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/gentrace%2Fgentrace-76bde656b16e9265e73ae9d73fe5f8fbc259d33390fc6ce34b662662a05530c1.yml
-openapi_spec_hash: 233c31996643019ef821619ba9a6317b
+openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/gentrace%2Fgentrace-aa43b9e03c152a57b060af27137caa0f18278a5ac082425a6b8b1cecb9cffe7a.yml
+openapi_spec_hash: b41d6448f3f1bcae79b6384cb5fd55c9
 config_hash: 7d53c8b12d036513e72e3807cffa1398
