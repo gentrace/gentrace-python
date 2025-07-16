@@ -3,8 +3,6 @@ import sys
 import json
 import atexit
 from typing import Any, Dict, List, Optional
-from .warnings import GentraceWarnings
-from .utils import display_gentrace_warning
 from pathlib import Path
 
 from rich.text import Text
@@ -18,7 +16,8 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 from opentelemetry.sdk.trace.sampling import Sampler
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from .utils import get_console
+from .utils import get_console, display_gentrace_warning
+from .warnings import GentraceWarnings
 from .span_processor import GentraceSpanProcessor
 from .client_instance import _get_sync_client_instance
 
