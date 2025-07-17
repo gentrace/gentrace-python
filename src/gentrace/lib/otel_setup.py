@@ -16,7 +16,8 @@ from opentelemetry.sdk.trace.export import ConsoleSpanExporter, SimpleSpanProces
 from opentelemetry.sdk.trace.sampling import Sampler
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 
-from .utils import get_console
+from .utils import get_console, display_gentrace_warning
+from .warnings import GentraceWarnings
 from .span_processor import GentraceSpanProcessor
 from .client_instance import _get_sync_client_instance
 
@@ -265,6 +266,8 @@ def setup(
         exporter_headers["Authorization"] = f"Bearer {api_key}"
     elif not trace_endpoint:
         # Only throw error if using default Gentrace endpoint without API key
+        warning = GentraceWarnings.MissingApiKeyError()
+        display_gentrace_warning(warning)
         raise ValueError(
             "GENTRACE_API_KEY is required when using Gentrace endpoint. "
             "Please set the GENTRACE_API_KEY environment variable or call init() with an API key."
