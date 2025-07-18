@@ -14,7 +14,7 @@ from .._response import (
     async_to_streamed_response_wrapper,
 )
 from .._base_client import make_request_options
-from ..types.experiment import Experiment
+from ..types.organization import Organization
 
 __all__ = ["OrganizationsResource", "AsyncOrganizationsResource"]
 
@@ -49,12 +49,12 @@ class OrganizationsResource(SyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> Experiment:
+    ) -> Organization:
         """
-        Retrieve the details of a experiment by ID
+        Retrieve the details of a organization by ID
 
         Args:
-          id: Experiment UUID
+          id: Organization UUID
 
           extra_headers: Send extra headers
 
@@ -67,11 +67,11 @@ class OrganizationsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/v4/experiments/{id}",
+            f"/v4/organizations/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Experiment,
+            cast_to=Organization,
         )
 
 
@@ -105,12 +105,12 @@ class AsyncOrganizationsResource(AsyncAPIResource):
         extra_query: Query | None = None,
         extra_body: Body | None = None,
         timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
-    ) -> Experiment:
+    ) -> Organization:
         """
-        Retrieve the details of a experiment by ID
+        Retrieve the details of a organization by ID
 
         Args:
-          id: Experiment UUID
+          id: Organization UUID
 
           extra_headers: Send extra headers
 
@@ -123,11 +123,11 @@ class AsyncOrganizationsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/v4/experiments/{id}",
+            f"/v4/organizations/{id}",
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
-            cast_to=Experiment,
+            cast_to=Organization,
         )
 
 
