@@ -45,6 +45,7 @@ Homepage = "https://github.com/gentrace/gentrace-python"
 Repository = "https://github.com/gentrace/gentrace-python"
 
 [project.optional-dependencies]
+aiohttp = ["aiohttp", "httpx_aiohttp>=0.1.6"]
 openai = [
     "openai",
     "openinference-instrumentation-openai",
@@ -59,8 +60,6 @@ langchain = [
     "langchain-core>=0.1.0",
     "openinference-instrumentation-langchain>=0.1.0",
 ]
-[project.optional-dependencies]
-aiohttp = ["aiohttp", "httpx_aiohttp>=0.1.6"]
 
 [tool.rye]
 managed = true
