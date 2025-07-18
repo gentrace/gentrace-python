@@ -29,9 +29,9 @@ argcomplete==3.6.2
     # via pydantic-ai-slim
 async-timeout==4.0.3
     # via langchain
-boto3==1.38.29
+boto3==1.39.8
     # via pydantic-ai-slim
-botocore==1.38.29
+botocore==1.39.8
     # via boto3
     # via s3transfer
 cachetools==5.5.2
