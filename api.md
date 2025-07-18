@@ -38,7 +38,7 @@ from gentrace.types import Organization
 
 Methods:
 
-- <code title="get /v4/experiments/{id}">client.organizations.<a href="./src/gentrace/resources/organizations.py">retrieve</a>(id) -> <a href="./src/gentrace/types/experiment.py">Experiment</a></code>
+- <code title="get /v4/organizations/{id}">client.organizations.<a href="./src/gentrace/resources/organizations.py">retrieve</a>(id) -> <a href="./src/gentrace/types/organization.py">Organization</a></code>
 
 # Datasets
 
