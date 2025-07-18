@@ -21,7 +21,7 @@ from ._types import (
 )
 from ._utils import is_given, get_async_library
 from ._version import __version__
-from .resources import datasets, pipelines, test_cases, experiments
+from .resources import datasets, pipelines, test_cases, experiments, organizations
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import GentraceError, APIStatusError
 from ._base_client import (
@@ -45,6 +45,7 @@ __all__ = [
 class Gentrace(SyncAPIClient):
     pipelines: pipelines.PipelinesResource
     experiments: experiments.ExperimentsResource
+    organizations: organizations.OrganizationsResource
     datasets: datasets.DatasetsResource
     test_cases: test_cases.TestCasesResource
     with_raw_response: GentraceWithRawResponse
@@ -106,6 +107,7 @@ class Gentrace(SyncAPIClient):
 
         self.pipelines = pipelines.PipelinesResource(self)
         self.experiments = experiments.ExperimentsResource(self)
+        self.organizations = organizations.OrganizationsResource(self)
         self.datasets = datasets.DatasetsResource(self)
         self.test_cases = test_cases.TestCasesResource(self)
         self.with_raw_response = GentraceWithRawResponse(self)
@@ -219,6 +221,7 @@ class Gentrace(SyncAPIClient):
 class AsyncGentrace(AsyncAPIClient):
     pipelines: pipelines.AsyncPipelinesResource
     experiments: experiments.AsyncExperimentsResource
+    organizations: organizations.AsyncOrganizationsResource
     datasets: datasets.AsyncDatasetsResource
     test_cases: test_cases.AsyncTestCasesResource
     with_raw_response: AsyncGentraceWithRawResponse
@@ -280,6 +283,7 @@ class AsyncGentrace(AsyncAPIClient):
 
         self.pipelines = pipelines.AsyncPipelinesResource(self)
         self.experiments = experiments.AsyncExperimentsResource(self)
+        self.organizations = organizations.AsyncOrganizationsResource(self)
         self.datasets = datasets.AsyncDatasetsResource(self)
         self.test_cases = test_cases.AsyncTestCasesResource(self)
         self.with_raw_response = AsyncGentraceWithRawResponse(self)
@@ -394,6 +398,7 @@ class GentraceWithRawResponse:
     def __init__(self, client: Gentrace) -> None:
         self.pipelines = pipelines.PipelinesResourceWithRawResponse(client.pipelines)
         self.experiments = experiments.ExperimentsResourceWithRawResponse(client.experiments)
+        self.organizations = organizations.OrganizationsResourceWithRawResponse(client.organizations)
         self.datasets = datasets.DatasetsResourceWithRawResponse(client.datasets)
         self.test_cases = test_cases.TestCasesResourceWithRawResponse(client.test_cases)
 
@@ -402,6 +407,7 @@ class AsyncGentraceWithRawResponse:
     def __init__(self, client: AsyncGentrace) -> None:
         self.pipelines = pipelines.AsyncPipelinesResourceWithRawResponse(client.pipelines)
         self.experiments = experiments.AsyncExperimentsResourceWithRawResponse(client.experiments)
+        self.organizations = organizations.AsyncOrganizationsResourceWithRawResponse(client.organizations)
         self.datasets = datasets.AsyncDatasetsResourceWithRawResponse(client.datasets)
         self.test_cases = test_cases.AsyncTestCasesResourceWithRawResponse(client.test_cases)
 
@@ -410,6 +416,7 @@ class GentraceWithStreamedResponse:
     def __init__(self, client: Gentrace) -> None:
         self.pipelines = pipelines.PipelinesResourceWithStreamingResponse(client.pipelines)
         self.experiments = experiments.ExperimentsResourceWithStreamingResponse(client.experiments)
+        self.organizations = organizations.OrganizationsResourceWithStreamingResponse(client.organizations)
         self.datasets = datasets.DatasetsResourceWithStreamingResponse(client.datasets)
         self.test_cases = test_cases.TestCasesResourceWithStreamingResponse(client.test_cases)
 
@@ -418,6 +425,7 @@ class AsyncGentraceWithStreamedResponse:
     def __init__(self, client: AsyncGentrace) -> None:
         self.pipelines = pipelines.AsyncPipelinesResourceWithStreamingResponse(client.pipelines)
         self.experiments = experiments.AsyncExperimentsResourceWithStreamingResponse(client.experiments)
+        self.organizations = organizations.AsyncOrganizationsResourceWithStreamingResponse(client.organizations)
         self.datasets = datasets.AsyncDatasetsResourceWithStreamingResponse(client.datasets)
         self.test_cases = test_cases.AsyncTestCasesResourceWithStreamingResponse(client.test_cases)
 
