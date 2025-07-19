@@ -7,6 +7,7 @@ from .pipeline import Pipeline as Pipeline
 from .test_case import TestCase as TestCase
 from .experiment import Experiment as Experiment
 from .dataset_list import DatasetList as DatasetList
+from .organization import Organization as Organization
 from .pipeline_list import PipelineList as PipelineList
 from .test_case_list import TestCaseList as TestCaseList
 from .experiment_list import ExperimentList as ExperimentList

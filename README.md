@@ -1,6 +1,7 @@
 # Gentrace Python SDK
 
-[![PyPI version](https://img.shields.io/pypi/v/gentrace.svg)](https://pypi.org/project/gentrace-py/)
+<!-- prettier-ignore -->
+[![PyPI version](https://img.shields.io/pypi/v/gentrace-py.svg?label=pypi%20(stable))](https://pypi.org/project/gentrace-py/)
 
 This library provides tools to instrument and evaluate your AI applications using Gentrace.
 
