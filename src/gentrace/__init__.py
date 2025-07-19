@@ -25,9 +25,11 @@ from .resources import (
     TestCasesResource,
     ExperimentsResource,
     AsyncDatasetsResource,
+    OrganizationsResource,
     AsyncPipelinesResource,
     AsyncTestCasesResource,
     AsyncExperimentsResource,
+    AsyncOrganizationsResource,
 )
 from ._constants import DEFAULT_TIMEOUT, DEFAULT_MAX_RETRIES, DEFAULT_CONNECTION_LIMITS
 from ._exceptions import (
@@ -86,11 +88,13 @@ pipelines = _t.cast(PipelinesResource, _ResourceWrapper(_get_sync_client_instanc
 experiments = _t.cast(ExperimentsResource, _ResourceWrapper(_get_sync_client_instance, "experiments"))
 datasets = _t.cast(DatasetsResource, _ResourceWrapper(_get_sync_client_instance, "datasets"))
 test_cases = _t.cast(TestCasesResource, _ResourceWrapper(_get_sync_client_instance, "test_cases"))
+organizations = _t.cast(OrganizationsResource, _ResourceWrapper(_get_sync_client_instance, "organizations"))
 
 pipelines_async = _t.cast(AsyncPipelinesResource, _ResourceWrapper(_get_async_client_instance, "pipelines"))
 experiments_async = _t.cast(AsyncExperimentsResource, _ResourceWrapper(_get_async_client_instance, "experiments"))
 datasets_async = _t.cast(AsyncDatasetsResource, _ResourceWrapper(_get_async_client_instance, "datasets"))
 test_cases_async = _t.cast(AsyncTestCasesResource, _ResourceWrapper(_get_async_client_instance, "test_cases"))
+organizations_async = _t.cast(AsyncOrganizationsResource, _ResourceWrapper(_get_async_client_instance, "organizations"))
 
 from .types import Dataset, Pipeline, TestCase, Experiment
 from .lib.eval import eval
