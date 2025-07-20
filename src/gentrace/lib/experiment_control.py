@@ -3,6 +3,7 @@ from typing import Any, Dict, Union, Literal, Optional
 
 from .._types import NOT_GIVEN
 from .client_handles import experiments_async
+from ..types.experiment import Experiment
 
 logger = logging.getLogger("gentrace")
 
@@ -17,7 +18,7 @@ async def start_experiment_api(
     pipelineId: str,
     metadata: Optional[Dict[str, Any]] = None,
     name: Optional[str] = None,
-) -> str:
+) -> Experiment:
     """
     Starts a new experiment run by creating an experiment record via the Gentrace API.
 
@@ -27,7 +28,7 @@ async def start_experiment_api(
         name: Friendly experiment name.
 
     Returns:
-        str: The unique ID of the created experiment run.
+        Experiment: The created experiment object.
     """
     logger.debug(f"Attempting to start Gentrace experiment via API for pipeline ID `{pipelineId}` with name `{name}`.")
     experiment = await experiments_async.create(
@@ -36,7 +37,7 @@ async def start_experiment_api(
         name=name if name is not None else NOT_GIVEN,
     )
 
-    return experiment.id
+    return experiment
 
 
 async def finish_experiment_api(*, id: str, error: Optional[Union[Exception, str]] = None) -> None:

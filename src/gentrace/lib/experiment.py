@@ -7,6 +7,8 @@ from typing import Any, Dict, Union, TypeVar, Callable, Optional, Awaitable, Cor
 from typing_extensions import ParamSpec, TypedDict
 
 from .utils import ensure_initialized
+from .client_instance import _get_async_client_instance
+from ..types.experiment import Experiment
 from .experiment_control import start_experiment_api, finish_experiment_api
 
 P = ParamSpec("P")
@@ -51,18 +53,23 @@ class ExperimentOptions(TypedDict, total=False):
     """User-defined metadata for the experiment. This will be added as attributes to the root OpenTelemetry span."""
 
 
+class ExperimentResult(Experiment):
+    """The result of an experiment run, containing all experiment fields plus the URL."""
+    
+    url: str
+    """Full URL to view the experiment in the Gentrace UI"""
+
+
 def experiment(
     *,
     pipeline_id: str,
     options: Optional[ExperimentOptions] = None,
-) -> Callable[[Callable[P, Any]], Callable[P, Coroutine[Any, Any, None]]]:
+) -> Callable[[Callable[P, Any]], Callable[P, Coroutine[Any, Any, ExperimentResult]]]:
     """
     A decorator factory that wraps a function to manage a Gentrace Experiment lifecycle.
     This is the primary way to define a scope for running evaluations. The decorated
-    function itself should not have a meaningful return value (i.e., it should be
-    annotated as `-> None` or omit its return type if it implicitly returns None),
-    as its return value will be ignored by this decorator. The call to the
-    decorated function will always resolve to `None`.
+    function's return value is ignored. The call to the decorated function will
+    resolve to an ExperimentResult containing the experiment details and URL.
 
     When a function is decorated with `@experiment`:
     1.  A new Gentrace Experiment run is started by calling the Gentrace API. The optional
@@ -86,10 +93,8 @@ def experiment(
     5.  Upon completion or error of the decorated function, the Gentrace Experiment run is
         finalized via an API call to Gentrace.
     6.  Any value returned by the decorated function is ignored. The decorated function,
-        when called, will always result in `None`. Users should annotate their
-        experiment functions with `-> None` or omit the return type if it implicitly
-        returns `None`. Type checkers will likely warn if the decorated function
-        is annotated to return any other type.
+        when called, will return an ExperimentResult containing the experiment details
+        and a URL to view the experiment in the Gentrace UI.
 
     Args:
         pipeline_id: The ID of the pipeline to associate with this experiment.
@@ -101,7 +106,7 @@ def experiment(
 
     Returns:
         A decorator that wraps the user's function, transforming it into an awaitable
-        that executes the experiment lifecycle logic and always resolves to `None`.
+        that executes the experiment lifecycle logic and resolves to an ExperimentResult.
 
     Usage Example:
         ```python
@@ -152,27 +157,27 @@ def experiment(
     except ValueError as e:
         raise ValueError(f"Invalid pipeline_id: '{pipeline_id}'. Must be a valid UUID.") from e
 
-    def inner_decorator(func: Callable[P, Union[None, Awaitable[None]]]) -> Callable[P, Coroutine[Any, Any, None]]:
+    def inner_decorator(func: Callable[P, Union[None, Awaitable[None]]]) -> Callable[P, Coroutine[Any, Any, ExperimentResult]]:
         @functools.wraps(func)
-        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> ExperimentResult:
             ensure_initialized()
             exp_name_option = options.get("name") if options else None
             user_metadata = options.get("metadata") if options else None
 
-            experiment_id_val: Optional[str] = None
+            experiment_obj: Optional[Experiment] = None
             try:
-                experiment_id_val = await start_experiment_api(
+                experiment_obj = await start_experiment_api(
                     pipelineId=pipeline_id, name=exp_name_option, metadata=user_metadata
                 )
             except Exception as e:
                 logger.error(f"Failed to start Gentrace experiment via API. Details: {e}")
                 raise
 
-            if not experiment_id_val:
-                raise RuntimeError("Failed to obtain experiment_id from API.")
+            if not experiment_obj:
+                raise RuntimeError("Failed to obtain experiment from API.")
 
             context_data: ExperimentContext = {
-                "experiment_id": experiment_id_val,
+                "experiment_id": experiment_obj.id,
                 "pipeline_id": pipeline_id,
             }
 
@@ -186,14 +191,36 @@ def experiment(
 
             finally:
                 experiment_context_var.reset(token)
-                if experiment_id_val:
-                    await finish_experiment_api(id=experiment_id_val)
+                if experiment_obj:
+                    await finish_experiment_api(id=experiment_obj.id)
 
-            return None
+            # Get the client to access base_url
+            client = _get_async_client_instance()
+            base_url = str(client.base_url).rstrip('/')
+            
+            # Extract hostname from base URL (remove /api suffix if present)
+            if base_url.endswith('/api'):
+                hostname = base_url[:-4]
+            else:
+                hostname = base_url
+            
+            # Construct the URL using resource_path
+            url = f"{hostname}{experiment_obj.resource_path}"
+            
+            # Create ExperimentResult instance with all fields from experiment plus URL
+            # Use model_dump with by_alias=True to get camelCase field names
+            experiment_data = experiment_obj.model_dump(by_alias=True)
+            
+            result = ExperimentResult(
+                **experiment_data,
+                url=url
+            )
+            
+            return result
 
         return wrapper
 
     return inner_decorator
 
 
-__all__ = ["experiment", "get_current_experiment_context", "ExperimentContext", "ExperimentOptions"]
+__all__ = ["experiment", "get_current_experiment_context", "ExperimentContext", "ExperimentOptions", "ExperimentResult"]
