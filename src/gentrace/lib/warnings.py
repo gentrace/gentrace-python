@@ -3,7 +3,7 @@ Centralized warning system for Gentrace Python SDK.
 Mirrors the pattern from the Node.js SDK with GT_ prefixed warning IDs.
 """
 
-from typing import List, Union, Optional
+from typing import Any, Dict, List, Union, Optional
 
 from rich.text import Text
 from rich.panel import Panel
@@ -252,4 +252,47 @@ class GentraceWarnings:
             learn_more_url=None,
             suppression_hint=None,
             border_color="red"
+        ))
+    
+    @staticmethod
+    def MultipleInitWarning(call_number: int, diff_lines: List[str], init_history: List[Dict[str, Any]]) -> GentraceWarning:
+        from ..lib.utils import format_timestamp
+        
+        # Build history display
+        history_lines: List[str] = []
+        for init_call in init_history:
+            timestamp = init_call.get('timestamp')
+            if timestamp is not None:
+                if hasattr(timestamp, 'timestamp'):
+                    # It's a datetime object
+                    timestamp_str = format_timestamp(timestamp, relative=True)
+                elif isinstance(timestamp, (int, float)):
+                    timestamp_str = format_timestamp(timestamp, relative=True)
+                else:
+                    timestamp_str = str(timestamp)
+            else:
+                timestamp_str = ''
+            history_lines.append(f"  - Call #{init_call['callNumber']}: {timestamp_str}")
+        
+        # Build message
+        message_lines = [
+            f"Gentrace init() has been called {call_number} times.",
+            "",
+            "Previous initializations:",
+        ] + history_lines + [
+            "",
+            "Configuration changes detected:",
+        ] + diff_lines + [
+            "",
+            "Note: Multiple init() calls can lead to unexpected behavior.",
+            "The most recent configuration will be used.",
+        ]
+        
+        return GentraceWarning(GentraceWarningOptions(
+            warning_id="GT_MultipleInitWarning",
+            title="Multiple Initialization Detected",
+            message=message_lines,
+            learn_more_url=None,
+            suppression_hint="To suppress this warning, ensure init() is only called once",
+            border_color="yellow"
         ))
