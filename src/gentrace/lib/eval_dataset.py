@@ -56,6 +56,7 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
 
 
 class TestInput(TypedDict, Generic[InputPayload], total=False):
+    id: str
     name: str
     inputs: InputPayload
 
@@ -109,6 +110,7 @@ async def _run_single_test_case_for_dataset(
     test_case_name: str,
     test_case_id: Optional[str],
     raw_inputs: Optional[InputPayload],
+    full_test_case: Union[TestCase, TestInput[InputPayload]],
     interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
     input_schema: Optional[Type[BaseModel]],
     experiment_context: ExperimentContext,
@@ -143,12 +145,12 @@ async def _run_single_test_case_for_dataset(
                 span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
 
             try:
-                # Always pass the raw dict (or None) into the interaction fn
-                parsed_input_for_interaction: Optional[TInput] = raw_inputs  # type: ignore
+                # Prepare the test case to pass to interaction function
+                test_case_for_interaction: Optional[TInput] = full_test_case  # type: ignore
                 input_dict_for_log: Any = None
 
                 if input_schema:
-                    # Validate against Pydantic but do *not* pass the model instance downstream
+                    # Validate the inputs against Pydantic schema
                     model_schema = input_schema
                     try:
                         if is_pydantic_v1():
@@ -163,6 +165,21 @@ async def _run_single_test_case_for_dataset(
                             input_dict_for_log = validated.dict()  # type: ignore
                         else:
                             input_dict_for_log = validated
+                        
+                        # Create a new test case with validated inputs
+                        if isinstance(full_test_case, dict):
+                            test_case_for_interaction = {**full_test_case, "inputs": input_dict_for_log}  # type: ignore
+                        else:
+                            # For TestCase objects, create a new dict with validated inputs
+                            test_case_dict = {
+                                "inputs": input_dict_for_log,
+                                "id": full_test_case.id,
+                                "name": full_test_case.name,
+                            }
+                            if hasattr(full_test_case, "expected_outputs") and full_test_case.expected_outputs:
+                                test_case_dict["expected_outputs"] = full_test_case.expected_outputs
+                            test_case_for_interaction = test_case_dict  # type: ignore
+                            
                     except ValidationError as ve:
                         logger.error(
                             f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
@@ -190,7 +207,7 @@ async def _run_single_test_case_for_dataset(
                 # Call the interaction function with proper concurrency control
                 result_value = await _execute_interaction_function(
                     interaction_function,
-                    parsed_input_for_interaction,
+                    test_case_for_interaction,
                     semaphore,
                 )
 
@@ -216,7 +233,7 @@ async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
-    interaction: Callable[[InputPayload], TResult],
+    interaction: Callable[[TestInput[SchemaPydanticModel]], TResult],  # type: ignore
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -226,7 +243,7 @@ async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
-    interaction: Callable[[InputPayload], Awaitable[TResult]],
+    interaction: Callable[[TestInput[SchemaPydanticModel]], Awaitable[TResult]],  # type: ignore
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -235,7 +252,7 @@ async def eval_dataset(
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
-    interaction: Callable[[InputPayload], TResult],
+    interaction: Callable[[Union[TestCase, TestInput[InputPayload]]], TResult],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -244,7 +261,7 @@ async def eval_dataset(
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
-    interaction: Callable[[InputPayload], Awaitable[TResult]],
+    interaction: Callable[[Union[TestCase, TestInput[InputPayload]]], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -272,10 +289,11 @@ async def eval_dataset(
                          or TestInput[InputPayload].
         schema (Optional[Type[pydantic.BaseModel]]): A Pydantic model to validate the `inputs`
                                                    of each TestInput. If validation fails for a
-                                                   case, an error is logged to its span, and
-                                                   the exception is raised (halting that specific case).
+                                                   case, an error is logged to its span, and the
+                                                   test case is skipped (returning None).
         interaction (Callable): The function to test for each test case.
-                               Receives (optionally validated) inputs.
+                               Receives the full test case object (TestInput or TestCase) with 
+                               optionally validated inputs if schema is provided.
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
                                        For async functions, uses asyncio.Semaphore.
@@ -357,11 +375,13 @@ async def eval_dataset(
             case_name: str = final_case_name,
             case_id_val: Optional[str] = case_id,
             case_inputs_val: Optional[InputPayload] = case_inputs,
+            full_case: Union[TestCase, TestInput[InputPayload]] = test_case,
         ) -> Optional[TResult]:
             return await _run_single_test_case_for_dataset(
                 test_case_name=case_name,
                 test_case_id=case_id_val,
                 raw_inputs=case_inputs_val,
+                full_test_case=full_case,
                 interaction_function=interaction_fn,
                 input_schema=input_schema,
                 experiment_context=experiment_context,
