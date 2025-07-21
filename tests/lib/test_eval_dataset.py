@@ -1,24 +1,42 @@
 from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 
 import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
+from gentrace.types.experiment import Experiment
 
 
 # Automatically stub out experiment API calls to avoid real network interactions
 @pytest.fixture(autouse=True)
 def _stub_experiment_api(monkeypatch: Any) -> None:  # type: ignore
-    async def fake_start_experiment_api(*_: Any, **__: Any) -> str:
-        return "dummy-experiment-id"
+    async def fake_start_experiment_api(*_: Any, **__: Any) -> Experiment:
+        return Experiment(
+            id="dummy-experiment-id",
+            createdAt="2023-01-01T00:00:00Z",
+            metadata=None,
+            name=None,
+            pipelineId="dummy-pipeline-id",
+            resourcePath="/experiments/dummy-experiment-id",
+            updatedAt="2023-01-01T00:00:00Z",
+        )
 
     async def fake_finish_experiment_api(*_: Any, **__: Any) -> None:
         return None
+    
+    # Mock the client instance to return a proper base_url
+    mock_client = MagicMock()
+    mock_client.base_url = "https://gentrace.ai/api"
+    
+    def fake_get_async_client_instance():
+        return mock_client
 
     monkeypatch.setattr(exp_ctrl, "start_experiment_api", fake_start_experiment_api)
     monkeypatch.setattr(exp_mod, "start_experiment_api", fake_start_experiment_api)
     monkeypatch.setattr(exp_ctrl, "finish_experiment_api", fake_finish_experiment_api)
     monkeypatch.setattr(exp_mod, "finish_experiment_api", fake_finish_experiment_api)
+    monkeypatch.setattr(exp_mod, "_get_async_client_instance", fake_get_async_client_instance)
 
 
 import asyncio
