@@ -1,8 +1,11 @@
 import asyncio
 import inspect
 import logging
+import uuid
+from datetime import datetime
 from typing import (
     Any,
+    Dict,
     List,
     Type,
     Union,
@@ -55,21 +58,22 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
     def __getitem__(self, key: str) -> Any: ...
 
 
-class TestInput(TypedDict, Generic[InputPayload], total=False):
-    id: str
-    name: str
-    inputs: InputPayload
+class TestInput(BaseModel):
+    """Local test input as a Pydantic model for evaluation."""
+    inputs: Dict[str, Any]
+    name: Optional[str] = None
+    id: Optional[str] = None
 
 
 DataProviderType: TypeAlias = Union[
     Callable[
         [],
         Union[
-            Awaitable[Sequence[Union[TestCase, TestInput[InputPayload]]]],
-            Sequence[Union[TestCase, TestInput[InputPayload]]],
+            Awaitable[Sequence[Union[TestCase, TestInput]]],
+            Sequence[Union[TestCase, TestInput]],
         ],
     ],
-    Sequence[Union[TestCase, TestInput[InputPayload]]],
+    Sequence[Union[TestCase, TestInput]],
 ]
 
 
@@ -110,7 +114,7 @@ async def _run_single_test_case_for_dataset(
     test_case_name: str,
     test_case_id: Optional[str],
     raw_inputs: Optional[InputPayload],
-    full_test_case: Union[TestCase, TestInput[InputPayload]],
+    full_test_case: TestCase,
     interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
     input_schema: Optional[Type[BaseModel]],
     experiment_context: ExperimentContext,
@@ -228,14 +232,50 @@ async def _run_single_test_case_for_dataset(
         otel_context.detach(token)
 
 
-@overload
-async def eval_dataset(
-    *,
-    data: DataProviderType[InputPayload],
-    schema: Type[SchemaPydanticModel],
-    interaction: Callable[[TestInput[SchemaPydanticModel]], TResult],  # type: ignore
-    max_concurrency: Optional[int] = None,
-) -> Sequence[Optional[TResult]]: ...
+def _convert_to_test_case(
+    item: Union[TestCase, TestInput, Dict[str, Any]], 
+    pipeline_id: Optional[str] = None
+) -> TestCase:
+    """Convert various input types to TestCase internally."""
+    
+    # If already a TestCase, return as-is
+    if isinstance(item, TestCase):
+        return item
+    
+    # Generate values for required fields
+    now = datetime.utcnow().isoformat() + "Z"
+    
+    # Convert TestInput or dict to TestCase
+    if isinstance(item, TestInput):
+        return TestCase(
+            id=item.id or str(uuid.uuid4()),
+            name=item.name or "Unnamed Test",
+            inputs=item.inputs,
+            expected_outputs=None,
+            # Fill required fields with sensible defaults
+            dataset_id="local-eval",
+            pipeline_id=pipeline_id or "local-pipeline",
+            created_at=now,
+            updated_at=now,
+            archived_at=None,
+            deleted_at=None
+        )
+    elif isinstance(item, dict):
+        return TestCase(
+            id=item.get("id") or str(uuid.uuid4()),
+            name=item.get("name", "Unnamed Test"),
+            inputs=item.get("inputs", {}),
+            expected_outputs=item.get("expected_outputs"),
+            # Fill required fields
+            dataset_id="local-eval",
+            pipeline_id=pipeline_id or "local-pipeline",
+            created_at=now,
+            updated_at=now,
+            archived_at=None,
+            deleted_at=None
+        )
+    else:
+        raise ValueError(f"Unsupported test case type: {type(item)}")
 
 
 @overload
@@ -243,7 +283,7 @@ async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
     schema: Type[SchemaPydanticModel],
-    interaction: Callable[[TestInput[SchemaPydanticModel]], Awaitable[TResult]],  # type: ignore
+    interaction: Callable[[TestCase], TResult],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -252,7 +292,8 @@ async def eval_dataset(
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
-    interaction: Callable[[Union[TestCase, TestInput[InputPayload]]], TResult],
+    schema: Type[SchemaPydanticModel],
+    interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -261,7 +302,16 @@ async def eval_dataset(
 async def eval_dataset(
     *,
     data: DataProviderType[InputPayload],
-    interaction: Callable[[Union[TestCase, TestInput[InputPayload]]], Awaitable[TResult]],
+    interaction: Callable[[TestCase], TResult],
+    max_concurrency: Optional[int] = None,
+) -> Sequence[Optional[TResult]]: ...
+
+
+@overload
+async def eval_dataset(
+    *,
+    data: DataProviderType[InputPayload],
+    interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -292,8 +342,8 @@ async def eval_dataset(
                                                    case, an error is logged to its span, and the
                                                    test case is skipped (returning None).
         interaction (Callable): The function to test for each test case.
-                               Receives the full test case object (TestInput or TestCase) with 
-                               optionally validated inputs if schema is provided.
+                               Always receives a TestCase object (TestInput and dict are converted 
+                               internally to TestCase).
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
                                        For async functions, uses asyncio.Semaphore.
@@ -330,7 +380,7 @@ async def eval_dataset(
         
         semaphore = asyncio.Semaphore(max_concurrency)
 
-    raw_test_cases: Sequence[Union[TestCase, TestInput[InputPayload]]]
+    raw_test_cases: Sequence[Union[TestCase, TestInput, Dict[str, Any]]]
     try:
         if callable(data_provider):
             data_result = data_provider()
@@ -345,22 +395,19 @@ async def eval_dataset(
         # Potentially log this with a Gentrace SDK logger if available
         raise RuntimeError(f"Failed to retrieve or process dataset from data provider: {e}") from e
 
-    evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
-    for i, test_case in enumerate(raw_test_cases):
-        case_inputs: Optional[InputPayload]
-        case_id: Optional[str]
-        case_name_prop: Optional[str]
+    # Convert all test cases to TestCase objects
+    converted_test_cases: List[TestCase] = []
+    for raw_case in raw_test_cases:
+        # Try to get pipeline_id from experiment context if available
+        pipeline_id = getattr(experiment_context, 'pipeline_id', None) if experiment_context else None
+        converted_test_cases.append(_convert_to_test_case(raw_case, pipeline_id))
 
-        if isinstance(test_case, dict):
-            # TypedDict case
-            case_inputs = test_case.get("inputs")
-            case_id = None
-            case_name_prop = test_case.get("name")
-        else:
-            protocol_case = test_case
-            case_inputs = cast(InputPayload, protocol_case.inputs)
-            case_id = protocol_case.id
-            case_name_prop = protocol_case.name
+    evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
+    for i, test_case in enumerate(converted_test_cases):
+        # Now test_case is always a TestCase object
+        case_inputs = cast(InputPayload, test_case.inputs)
+        case_id = test_case.id
+        case_name_prop = test_case.name
 
         final_case_name: str
         if case_name_prop:
@@ -374,8 +421,8 @@ async def eval_dataset(
         async def run_test_case(
             case_name: str = final_case_name,
             case_id_val: Optional[str] = case_id,
-            case_inputs_val: Optional[InputPayload] = case_inputs,
-            full_case: Union[TestCase, TestInput[InputPayload]] = test_case,
+            case_inputs_val: InputPayload = case_inputs,
+            full_case: TestCase = test_case,
         ) -> Optional[TResult]:
             return await _run_single_test_case_for_dataset(
                 test_case_name=case_name,

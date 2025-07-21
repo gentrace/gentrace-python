@@ -1,20 +1,19 @@
 """Simple dataset evaluation example with Gentrace using local test cases.
 
-Key Changes:
-- The interaction function in eval_dataset now receives the full test case object
-  (TestInput with properties like name, inputs) instead of just the inputs
-- This allows you to access test case metadata within your evaluation logic
+This example demonstrates the clean new API where:
+- TestInput is a Pydantic model for creating local test cases
+- The interaction function always receives a TestCase object
+- No Union types or isinstance checks needed
 """
 
 import os
 import asyncio
-from typing import Any, Dict, Union
+from typing import Any, Dict
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from gentrace import TestInput, init, experiment, interaction, eval_dataset
-from gentrace.types import TestCase
+from gentrace import TestCase, TestInput, init, experiment, interaction, eval_dataset
 
 load_dotenv()
 
@@ -29,10 +28,17 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-async def process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    """Process AI request using OpenAI."""
-    # Extract the prompt from inputs
-    prompt = inputs.get("prompt", "Hey, how are you?")
+@interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
+async def process_ai_request(test_case: TestCase) -> Dict[str, Any]:
+    """Process AI request using OpenAI.
+    
+    Clean API - the interaction function always receives a TestCase object,
+    regardless of whether you pass TestInput, dict, or TestCase to eval_dataset.
+    """
+    # Direct access to test case properties - no isinstance checks!
+    prompt = test_case.inputs.get("prompt", "Hey, how are you?")
+    
+    print(f"Running test case: {test_case.name}")
 
     # Call OpenAI
     response = await openai.chat.completions.create(
@@ -44,47 +50,76 @@ async def process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
 
     return {
         "result": result,
+        "test_name": test_case.name,  # Can access test metadata
         "metadata": {"model": response.model, "usage": response.usage.model_dump() if response.usage else None},
     }
 
 
 @experiment(pipeline_id=PIPELINE_ID)
 async def dataset_evaluation() -> None:
-    """Run evaluation on a dataset."""
+    """Run evaluation on a dataset using local TestInput objects."""
 
-    # The interaction function now receives the full test case object
-    async def process_test_case(test_case: Union[TestCase, TestInput[Dict[str, Any]]]) -> Dict[str, Any]:
-        """Process a single test case with full access to test case metadata."""
-        # Access test case properties like name and inputs
-        name = test_case.get('name', 'unnamed') if isinstance(test_case, dict) else test_case.name
-        inputs = test_case.get('inputs', {}) if isinstance(test_case, dict) else test_case.inputs
-        
-        print(f"Running test case: {name}")
-        
-        # Use the traced version of process_ai_request
-        traced_fn = interaction(
-            pipeline_id=PIPELINE_ID,
-            name=f"Process AI Request - {name}"
-        )(process_ai_request)
-        
-        # Pass only the inputs to the actual function
-        return await traced_fn(inputs)
-
+    # Create test cases using the clean TestInput Pydantic model
+    test_cases = [
+        TestInput(
+            name="greeting", 
+            inputs={"prompt": "Hello! How are you doing today?"}
+        ),
+        TestInput(
+            name="factual_question", 
+            inputs={"prompt": "What is the capital of France?"}
+        ),
+        TestInput(
+            name="math_problem", 
+            inputs={"prompt": "What is 25 * 4?"}
+        ),
+        TestInput(
+            name="creative_writing", 
+            inputs={"prompt": "Write a haiku about artificial intelligence"}
+        ),
+        # Minimal example - only inputs is required
+        TestInput(inputs={"prompt": "Tell me a joke"})
+    ]
+    
     await eval_dataset(
-        data=[
-            TestInput(name="greeting", inputs={"prompt": "Hello! How are you doing today?"}),
-            TestInput(name="factual_question", inputs={"prompt": "What is the capital of France?"}),
-            TestInput(name="math_problem", inputs={"prompt": "What is 25 * 4?"}),
-            TestInput(name="creative_writing", inputs={"prompt": "Write a haiku about artificial intelligence"}),
-        ],
-        interaction=process_test_case,
+        data=test_cases,
+        interaction=process_ai_request,  # Clean function signature - always receives TestCase
         max_concurrency=30,
     )
 
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
 
 
+@experiment(pipeline_id=PIPELINE_ID)
+async def dataset_evaluation_with_dicts() -> None:
+    """Show that dicts still work for backwards compatibility."""
+    
+    # You can still use dicts if needed (for backwards compatibility)
+    dict_test_cases = [
+        {"name": "dict_test", "inputs": {"prompt": "This is a dict-based test"}},
+        {"inputs": {"prompt": "Dict without name"}}  # name is optional
+    ]
+    
+    await eval_dataset(
+        data=dict_test_cases,
+        interaction=process_ai_request,  # Still receives TestCase objects!
+        max_concurrency=2,
+    )
+    
+    print("Dict-based evaluation completed!")
+
+
 if __name__ == "__main__":
-    # Run the experiment
-    result = asyncio.run(dataset_evaluation())
-    print(f"Experiment URL: {result.url}")
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "dicts":
+        # Run with dict-based test cases
+        print("Running with dict-based test cases...")
+        result = asyncio.run(dataset_evaluation_with_dicts())
+    else:
+        # Run with TestInput objects
+        print("Running with TestInput objects...")
+        result = asyncio.run(dataset_evaluation())
+    
+    if result:
+        print(f"Experiment URL: {result.url}")

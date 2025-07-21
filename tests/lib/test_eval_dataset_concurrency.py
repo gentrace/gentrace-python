@@ -12,8 +12,8 @@ import pytest
 import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
 from gentrace import TestInput as GentraceTestInput, init, experiment, eval_dataset
-from gentrace.types.experiment import Experiment
 from gentrace.types import TestCase as GentraceTestCase
+from gentrace.types.experiment import Experiment
 
 # Use same pipeline ID as other tests
 PIPELINE_ID = "76ecc73d-3419-431f-aafc-93a9d1af1b83"
