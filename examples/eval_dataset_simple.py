@@ -2,7 +2,7 @@
 
 import os
 import asyncio
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -17,7 +17,7 @@ init(
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
 )
 
-PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "")
+PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")
 DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))

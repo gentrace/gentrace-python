@@ -248,31 +248,31 @@ def _convert_to_test_case(
     # Convert TestInput or dict to TestCase
     if isinstance(item, TestInput):
         return TestCase(
-            id=item.id or str(uuid.uuid4()),
+            id=item.id or "",  # Don't generate ID for local test cases
             name=item.name or "Unnamed Test",
             inputs=item.inputs,
-            expected_outputs=None,
+            expectedOutputs=None,
             # Fill required fields with sensible defaults
-            dataset_id="local-eval",
-            pipeline_id=pipeline_id or "local-pipeline",
-            created_at=now,
-            updated_at=now,
-            archived_at=None,
-            deleted_at=None
+            datasetId="local-eval",
+            pipelineId=pipeline_id or "local-pipeline",
+            createdAt=now,
+            updatedAt=now,
+            archivedAt=None,
+            deletedAt=None
         )
     elif isinstance(item, dict):
         return TestCase(
-            id=item.get("id") or str(uuid.uuid4()),
+            id=item.get("id", ""),  # Don't generate ID for local test cases
             name=item.get("name", "Unnamed Test"),
             inputs=item.get("inputs", {}),
-            expected_outputs=item.get("expected_outputs"),
+            expectedOutputs=item.get("expected_outputs"),
             # Fill required fields
-            dataset_id="local-eval",
-            pipeline_id=pipeline_id or "local-pipeline",
-            created_at=now,
-            updated_at=now,
-            archived_at=None,
-            deleted_at=None
+            datasetId="local-eval",
+            pipelineId=pipeline_id or "local-pipeline",
+            createdAt=now,
+            updatedAt=now,
+            archivedAt=None,
+            deletedAt=None
         )
     else:
         raise ValueError(f"Unsupported test case type: {type(item)}")
@@ -281,7 +281,7 @@ def _convert_to_test_case(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
+    data: DataProviderType,
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[TestCase], TResult],
     max_concurrency: Optional[int] = None,
@@ -291,7 +291,7 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
+    data: DataProviderType,
     schema: Type[SchemaPydanticModel],
     interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
@@ -301,7 +301,7 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
+    data: DataProviderType,
     interaction: Callable[[TestCase], TResult],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
@@ -310,7 +310,7 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
+    data: DataProviderType,
     interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
@@ -318,7 +318,7 @@ async def eval_dataset(
 
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
+    data: DataProviderType,
     schema: Optional[Type[SchemaPydanticModel]] = None,
     interaction: Callable[[Any], Union[TResult, Awaitable[TResult]]],
     max_concurrency: Optional[int] = None,
@@ -333,10 +333,9 @@ async def eval_dataset(
 
     Args:
         data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list 
-                         of TestInputs, or a plain list of TestInputs directly.
-                         Each TestInput should be a dictionary-like object with an `inputs`
-                         key, and optional `id`, `name` keys. Can be either TestInputProtocol
-                         or TestInput[InputPayload].
+                         of test cases, or a plain list of test cases directly.
+                         Test cases can be TestCase objects, TestInput objects, or dicts with
+                         an 'inputs' key and optional 'id', 'name' keys.
         schema (Optional[Type[pydantic.BaseModel]]): A Pydantic model to validate the `inputs`
                                                    of each TestInput. If validation fails for a
                                                    case, an error is logged to its span, and the
