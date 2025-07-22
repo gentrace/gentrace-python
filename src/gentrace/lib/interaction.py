@@ -18,7 +18,7 @@ F = TypeVar("F", bound=Callable[..., Any])
 
 def interaction(
     *,
-    pipeline_id: str,
+    pipeline_id: Optional[str] = None,
     name: Optional[str] = None,
     attributes: Optional[Dict[str, Any]] = None,
     suppress_warnings: bool = False,
@@ -35,9 +35,10 @@ def interaction(
     and supports both synchronous and asynchronous functions.
 
     Args:
-        pipeline_id: The identifier of the pipeline this interaction belongs to.
-                     This will be added as an attribute 'gentrace.pipeline_id' to the span.
-                     Must be a valid UUID string.
+        pipeline_id: Optional. The identifier of the pipeline this interaction belongs to.
+                     If not provided, defaults to "default" which will use the organization's 
+                     default pipeline. This will be added as an attribute 'gentrace.pipeline_id' 
+                     to the span. When provided, must be a valid UUID string.
         name: Optional. A custom name for the OpenTelemetry span. If not provided,
               the name will default to the decorated function's __name__ or
               ANONYMOUS_SPAN_NAME (as handled by the underlying @traced decorator).
@@ -51,31 +52,47 @@ def interaction(
         with the interaction tracing and baggage modification logic.
 
     Usage:
-        @interaction(pipeline_id="example-pipeline")
+        # Simplest usage - uses default pipeline
+        @interaction()
         def process_data(data):
             return f"Processed {data}"
+        
+        # With custom attributes but no pipeline ID
+        @interaction(attributes={"model": "gpt-4", "temperature": 0.7})
+        def process_with_attrs(data):
+            return f"Processed {data}"
 
+        # Explicit pipeline ID (backward compatible)
+        @interaction(pipeline_id="example-pipeline")
+        def process_explicit(data):
+            return f"Processed {data}"
+
+        # Async function with custom name
         @interaction(pipeline_id="async-pipeline", name="custom_async_interaction")
         async def fetch_remote_data(url):
             # async http call
             return await fetch(url)
     """
-
-    # Validate UUID format
-    is_valid_uuid = True
-    try:
-        uuid.UUID(pipeline_id)
-    except ValueError:
-        is_valid_uuid = False
-        display_pipeline_error(pipeline_id, 'invalid-format')
     
-    # Start pipeline validation in background if UUID is valid
-    if is_valid_uuid:
+    # Use 'default' if no pipeline_id is provided
+    effective_pipeline_id = pipeline_id if pipeline_id is not None else 'default'
+
+    # Validate UUID format (skip validation for 'default')
+    is_valid_uuid = True
+    if effective_pipeline_id != 'default':
+        try:
+            uuid.UUID(effective_pipeline_id)
+        except ValueError:
+            is_valid_uuid = False
+            display_pipeline_error(effective_pipeline_id, 'invalid-format')
+    
+    # Start pipeline validation in background if UUID is valid and not 'default'
+    if is_valid_uuid and effective_pipeline_id != 'default':
         # Ensure Gentrace is initialized before validation
         ensure_initialized(suppress_warnings=suppress_warnings)
         
         # Start validation in the background
-        start_pipeline_validation(pipeline_id)
+        start_pipeline_validation(effective_pipeline_id)
 
     def decorator(func: F) -> F:
         """
@@ -86,7 +103,7 @@ def interaction(
         # Attributes for the span created by @traced
         final_span_attributes_for_traced = {
             **user_provided_span_attributes,
-            ATTR_GENTRACE_PIPELINE_ID: pipeline_id,
+            ATTR_GENTRACE_PIPELINE_ID: effective_pipeline_id,
         }
 
         configured_traced_decorator = traced(name=name, attributes=final_span_attributes_for_traced)

@@ -79,6 +79,34 @@ async def query_ai(query: str) -> str | None:
 
 Each call to a function decorated with `@interaction` (like `query_ai` above) creates a span, capturing its execution details and any associated metadata, inputs, and outputs. This span is then sent to Gentrace.
 
+#### Simplified Usage (Default Pipeline)
+
+If your organization has a default pipeline configured, you can use `@interaction` without specifying a pipeline ID:
+
+```python
+from gentrace import interaction, init
+
+init(api_key=GENTRACE_API_KEY)
+
+# Simplest usage - no pipeline ID required
+@interaction()
+def process_data(data: str) -> str:
+    return f"Processed: {data}"
+
+# With custom attributes but no pipeline ID
+@interaction(attributes={"model": "gpt-4", "temperature": 0.7})
+def analyze_data(data: str) -> dict:
+    return {"analysis": data.upper(), "length": len(data)}
+
+# Async function with custom name
+@interaction(name="Custom Analysis")
+async def async_process(data: str) -> str:
+    await asyncio.sleep(0.1)
+    return f"Async processed: {data}"
+```
+
+When no `pipeline_id` is provided, the SDK automatically uses your organization's default pipeline.
+
 ### 3. Lower-Level Tracing (`traced`)
 
 Use the `traced` decorator to wrap any function with OpenTelemetry tracing, creating a span for its execution. This is useful for instrumenting helper functions or specific blocks of code within a larger system. ([Requires OpenTelemetry](#opentelemetry-integration))
