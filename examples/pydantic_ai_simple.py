@@ -32,7 +32,7 @@ agent = Agent(
 
 @interaction(name="pydantic_ai_chat", pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
 async def chat_with_agent(prompt: str) -> str:
-    result = await agent.run(prompt)
+    result = await agent.run(prompt) # type: ignore
     return result.output
 
 
