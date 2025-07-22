@@ -783,6 +783,105 @@ def print_function_call_summary(
     console.console.print(panel)
 
 
+def generate_config_diff(previous_config: Dict[str, Any], current_config: Dict[str, Any]) -> List[str]:
+    """
+    Generate a diff between two configuration dictionaries.
+    
+    Args:
+        previous_config: The previous configuration
+        current_config: The current configuration
+        
+    Returns:
+        List of formatted diff lines showing changes
+    """
+    diff_lines: List[str] = []
+    all_keys = set(previous_config.keys()) | set(current_config.keys())
+    
+    for key in sorted(all_keys):
+        prev_value = previous_config.get(key)
+        curr_value = current_config.get(key)
+        
+        # Handle sensitive keys generically
+        display_prev = mask_sensitive_value(key, prev_value)
+        display_curr = mask_sensitive_value(key, curr_value)
+        
+        if key not in previous_config and key in current_config:
+            # Added
+            diff_lines.append(f"  {key}:")
+            diff_lines.append(f"    + {format_config_value(display_curr)}")
+        elif key in previous_config and key not in current_config:
+            # Removed
+            diff_lines.append(f"  {key}:")
+            diff_lines.append(f"    - {format_config_value(display_prev)}")
+        elif prev_value != curr_value:
+            # Changed
+            diff_lines.append(f"  {key}:")
+            diff_lines.append(f"    - {format_config_value(display_prev)} → {format_config_value(display_curr)}")
+    
+    return diff_lines
+
+
+def format_config_value(value: Any) -> str:
+    """Format a configuration value for display in diffs."""
+    if value is None:
+        return "None"
+    elif isinstance(value, str):
+        return f'"{value}"'
+    elif isinstance(value, bool):
+        return str(value)
+    elif isinstance(value, (int, float)):
+        return str(value)
+    elif callable(value):
+        return "<function>"
+    elif isinstance(value, dict):
+        # For dicts, show a summary
+        if not value:
+            return "{}"
+        value_dict = cast(Dict[Any, Any], value)
+        key_list: List[str] = [str(k) for k in value_dict.keys()]
+        if len(key_list) <= 3:
+            return f"{{ {', '.join(key_list)} }}"
+        return f"{{ {', '.join(key_list[:3])}, ... }}"
+    elif isinstance(value, list):
+        value_list = cast(List[Any], value)
+        return f"[List({len(value_list)})]"
+    else:
+        return f"<{type(value).__name__}>"
+
+
+def mask_sensitive_value(key: str, value: Any) -> Any:
+    """
+    Mask sensitive values based on key patterns.
+    
+    Args:
+        key: The configuration key name
+        value: The value to potentially mask
+        
+    Returns:
+        The masked value if sensitive, otherwise the original value
+    """
+    import re
+    
+    sensitive_patterns = [
+        re.compile(r'key', re.IGNORECASE),
+        re.compile(r'token', re.IGNORECASE),
+        re.compile(r'secret', re.IGNORECASE),
+        re.compile(r'password', re.IGNORECASE),
+        re.compile(r'auth', re.IGNORECASE),
+        re.compile(r'credential', re.IGNORECASE),
+        re.compile(r'apikey', re.IGNORECASE),
+        re.compile(r'api_key', re.IGNORECASE),
+    ]
+    
+    if isinstance(value, str) and any(pattern.search(key) for pattern in sensitive_patterns):
+        # Show first 6 chars and mask the rest
+        if len(value) > 10:
+            return f"{value[:6]}***"
+        return "***"
+    
+    return value
+
+
 __all__ = [
     "gentrace_format_otel_attributes",
     "gentrace_format_otel_value",
@@ -801,4 +900,7 @@ __all__ = [
     "print_evaluation_results",
     "print_function_call_summary",
     "display_gentrace_warning",
+    "generate_config_diff",
+    "mask_sensitive_value",
+    "format_config_value",
 ]

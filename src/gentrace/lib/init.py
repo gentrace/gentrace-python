@@ -1,10 +1,55 @@
-from typing import Any, Dict, Union, Optional, cast
+import traceback
+from typing import Any, Dict, List, Union, Optional, cast
+from datetime import datetime
 
 from gentrace import Gentrace, AsyncGentrace
 
 from .types import OtelConfigOptions
+from .utils import generate_config_diff
+from .warnings import GentraceWarnings
 from .otel_setup import setup as _setup_otel
 from .client_instance import _set_client_instances
+
+
+# Module-level variables to track initialization history
+class InitCall:
+    """Record of an init() call"""
+    def __init__(self, timestamp: datetime, options: Dict[str, Any], call_number: int, stack_trace: Optional[str] = None):
+        self.timestamp = timestamp
+        self.options = options
+        self.call_number = call_number
+        self.stack_trace = stack_trace
+
+
+_init_history: List[InitCall] = []
+_init_call_count: int = 0
+
+
+def _get_init_history() -> List[InitCall]:
+    """Get the initialization history"""
+    return _init_history
+
+
+def _add_init_call(options: Dict[str, Any]) -> InitCall:
+    """Record a new init call"""
+    global _init_call_count
+    _init_call_count += 1
+    
+    # Capture stack trace for debugging
+    stack = None
+    try:
+        stack = ''.join(traceback.format_stack()[:-1])  # Exclude this function
+    except Exception:
+        pass
+    
+    init_call = InitCall(
+        timestamp=datetime.now(),
+        options=options,
+        call_number=_init_call_count,
+        stack_trace=stack
+    )
+    _init_history.append(init_call)
+    return init_call
 
 
 def init(
@@ -66,6 +111,38 @@ def init(
         init(api_key="your-api-key", otel_setup={"service_name": "my-service", "debug": True})
         ```
     """
+    # Build the complete options for comparison
+    all_options: Dict[str, Any] = {}
+    if api_key is not None:
+        all_options["api_key"] = api_key
+    if base_url is not None:
+        all_options["base_url"] = base_url
+    all_options["otel_setup"] = otel_setup
+    all_options.update(kwargs)
+    
+    # Check initialization history
+    init_history = _get_init_history()
+    if init_history:
+        # Compare with the most recent initialization
+        previous_call = init_history[-1]
+        diff_lines = generate_config_diff(previous_call.options, all_options)
+        
+        if diff_lines:
+            # Only show warning if configuration actually changed
+            warning = GentraceWarnings.MultipleInitWarning(
+                call_number=_init_call_count + 1,
+                diff_lines=diff_lines,
+                init_history=[{
+                    'timestamp': call.timestamp,
+                    'callNumber': call.call_number
+                } for call in init_history]
+            )
+            warning.display()
+    
+    # Record this initialization
+    _add_init_call(all_options)
+    
+    # Build constructor args (without otel_setup which isn't passed to clients)
     constructor_args: Dict[str, Any] = {}
     if api_key is not None:
         constructor_args["api_key"] = api_key
@@ -100,4 +177,4 @@ def init(
         _setup_otel(**otel_config)
 
 
-__all__ = ["init"]
+__all__ = ["init", "_get_init_history", "_add_init_call"]
