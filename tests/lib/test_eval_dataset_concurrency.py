@@ -4,7 +4,7 @@
 import time
 import asyncio
 import threading
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
 from unittest.mock import MagicMock
 
 import pytest
@@ -97,7 +97,7 @@ def init_gentrace():
     init(api_key="test-key", base_url="https://gentrace.ai/api")
 
 
-def create_test_data(num_items: int) -> List[GentraceTestInput[Any]]:
+def create_test_data(num_items: int) -> List[GentraceTestInput[Mapping[str, Any]]]:
     """Create test data."""
     return [
         GentraceTestInput(inputs={"id": f"test-{i}"})

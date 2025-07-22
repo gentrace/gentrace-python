@@ -68,9 +68,6 @@ async def dataset_evaluation() -> None:
         )
     ]
     
-    # Note: You can also use TestInput without TypedDict for backward compatibility:
-    # TestInput(name="example", inputs={"prompt": "Hello", "any_field": "value"})
-    
     await eval_dataset(
         data=test_cases,
         interaction=process_ai_request,

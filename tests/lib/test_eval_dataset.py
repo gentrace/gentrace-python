@@ -41,7 +41,7 @@ def _stub_experiment_api(monkeypatch: Any) -> None:  # type: ignore
 
 
 import asyncio
-from typing import Any, Dict, Sequence
+from typing import Any, Dict, Mapping, Sequence
 
 from pytest import LogCaptureFixture
 from pydantic import BaseModel
@@ -83,14 +83,14 @@ async def async_interaction(test_case: GentraceTestCase) -> Dict[str, Any]:
 
 
 # Data Providers
-def sync_data_provider_dict() -> Sequence[GentraceTestInput[Any]]:
+def sync_data_provider_dict() -> Sequence[GentraceTestInput[Mapping[str, Any]]]:
     return [
         GentraceTestInput(name="case1", inputs={"a": "hello", "b": 1}),
         GentraceTestInput(name="case2", inputs={"a": "world", "b": 2}),
     ]
 
 
-async def async_data_provider_dict() -> Sequence[GentraceTestInput[Any]]:
+async def async_data_provider_dict() -> Sequence[GentraceTestInput[Mapping[str, Any]]]:
     await asyncio.sleep(0.01)
     return [
         GentraceTestInput(name="async_case1", inputs={"a": "hello_async", "b": 10}),
@@ -173,7 +173,7 @@ def sync_data_provider_mixed() -> Sequence[GentraceTestCase]:
     ]
 
 
-def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput[Any]]:
+def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput[Mapping[str, Any]]]:
     return [
         GentraceTestInput(name="valid_case", inputs={"a": "ok", "b": 1}),
         GentraceTestInput(name="invalid_case_missing_b", inputs={"a": "bad"}),

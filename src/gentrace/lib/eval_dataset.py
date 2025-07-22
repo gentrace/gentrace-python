@@ -56,7 +56,7 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
     def __getitem__(self, key: str) -> Any: ...
 
 
-TInputDict = TypeVar("TInputDict", bound=Mapping[str, Any])
+TInputDict = TypeVar("TInputDict", bound=Mapping[str, Any], covariant=True)
 
 class TestInput(BaseModel, Generic[TInputDict]):
     """Local test input as a Pydantic model for evaluation."""
@@ -69,11 +69,11 @@ DataProviderType: TypeAlias = Union[
     Callable[
         [],
         Union[
-            Awaitable[Sequence[Union[TestCase, TestInput[Any]]]],
-            Sequence[Union[TestCase, TestInput[Any]]],
+            Awaitable[Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]]],
+            Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]],
         ],
     ],
-    Sequence[Union[TestCase, TestInput[Any]]],
+    Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]],
 ]
 
 
@@ -324,7 +324,7 @@ async def eval_dataset(
         
         semaphore = asyncio.Semaphore(max_concurrency)
 
-    raw_test_cases: Sequence[Union[TestCase, TestInput[Any]]]
+    raw_test_cases: Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]]
     try:
         if callable(data_provider):
             data_result = data_provider()
@@ -355,7 +355,7 @@ async def eval_dataset(
             converted_test_cases.append(TestCase(
                 id=raw_case.id or "",  # Don't generate ID for local test cases
                 name=raw_case.name or "Unnamed Test",
-                inputs=raw_case.inputs,
+                inputs=dict(raw_case.inputs),  # Convert Mapping to dict
                 expectedOutputs=None,
                 # Fill required fields with sensible defaults
                 datasetId="local",
