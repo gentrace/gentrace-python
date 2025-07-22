@@ -242,8 +242,8 @@ def _convert_to_test_case(
         inputs=item.inputs,
         expectedOutputs=None,
         # Fill required fields with sensible defaults
-        datasetId="local-eval",
-        pipelineId=pipeline_id or "local-pipeline",
+        datasetId="local",
+        pipelineId=pipeline_id or "local",
         createdAt=now,
         updatedAt=now,
         archivedAt=None,

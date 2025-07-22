@@ -11,8 +11,7 @@ import pytest
 
 import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
-from gentrace import init, experiment, eval_dataset
-from gentrace import TestInput as GentraceTestInput
+from gentrace import TestInput as GentraceTestInput, init, experiment, eval_dataset
 from gentrace.types import TestCase as GentraceTestCase
 from gentrace.types.experiment import Experiment
 
