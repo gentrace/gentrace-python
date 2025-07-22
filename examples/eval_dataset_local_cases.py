@@ -1,10 +1,4 @@
-"""Simple dataset evaluation example with Gentrace using local test cases.
-
-This example demonstrates the clean new API where:
-- TestInput is a generic Pydantic model that can accept TypedDict for type safety
-- The interaction function always receives a TestCase object
-- Type-safe inputs using TypedDict
-"""
+"""Simple dataset evaluation example with Gentrace using local test cases."""
 
 import os
 import asyncio
