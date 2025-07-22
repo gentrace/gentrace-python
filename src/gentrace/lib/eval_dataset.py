@@ -1,7 +1,6 @@
 import asyncio
 import inspect
 import logging
-from datetime import datetime, timezone
 from typing import (
     Any,
     Dict,
@@ -17,6 +16,7 @@ from typing import (
     Awaitable,
     cast,
 )
+from datetime import datetime, timezone
 from contextvars import copy_context
 from typing_extensions import Protocol, TypeAlias, overload
 
@@ -242,22 +242,20 @@ def _convert_to_test_case(
     now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
     
     # Convert TestInput to TestCase
-    if isinstance(item, TestInput):
-        return TestCase(
-            id=item.id or "",  # Don't generate ID for local test cases
-            name=item.name or "Unnamed Test",
-            inputs=item.inputs,
-            expectedOutputs=None,
-            # Fill required fields with sensible defaults
-            datasetId="local-eval",
-            pipelineId=pipeline_id or "local-pipeline",
-            createdAt=now,
-            updatedAt=now,
-            archivedAt=None,
-            deletedAt=None
-        )
-    else:
-        raise ValueError(f"Unsupported test case type: {type(item)}")
+    # At this point, item must be TestInput based on the type annotation
+    return TestCase(
+        id=item.id or "",  # Don't generate ID for local test cases
+        name=item.name or "Unnamed Test",
+        inputs=item.inputs,
+        expectedOutputs=None,
+        # Fill required fields with sensible defaults
+        datasetId="local-eval",
+        pipelineId=pipeline_id or "local-pipeline",
+        createdAt=now,
+        updatedAt=now,
+        archivedAt=None,
+        deletedAt=None
+    )
 
 
 @overload

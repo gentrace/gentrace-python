@@ -16,7 +16,7 @@ init(
     base_url=os.getenv("GENTRACE_BASE_URL", "https://gentrace.ai/api"),
 )
 
-PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "26d64c23-e38c-56fd-9b45-9adc87de797b")
+PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "")
 DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
