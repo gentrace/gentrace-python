@@ -221,34 +221,6 @@ async def _run_single_test_case_for_dataset(
         otel_context.detach(token)
 
 
-def _convert_to_test_case(
-    item: Union[TestCase, TestInput], 
-    pipeline_id: Optional[str] = None
-) -> TestCase:
-    """Convert TestInput to TestCase internally."""
-    
-    # If already a TestCase, return as-is
-    if isinstance(item, TestCase):
-        return item
-    
-    # Generate values for required fields
-    now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-    
-    # Convert TestInput to TestCase
-    # At this point, item must be TestInput based on the type annotation
-    return TestCase(
-        id=item.id or "",  # Don't generate ID for local test cases
-        name=item.name or "Unnamed Test",
-        inputs=item.inputs,
-        expectedOutputs=None,
-        # Fill required fields with sensible defaults
-        datasetId="local",
-        pipelineId=pipeline_id or "local",
-        createdAt=now,
-        updatedAt=now,
-        archivedAt=None,
-        deletedAt=None
-    )
 
 
 @overload
@@ -369,9 +341,29 @@ async def eval_dataset(
     # Convert all test cases to TestCase objects
     converted_test_cases: List[TestCase] = []
     for raw_case in raw_test_cases:
-        # Try to get pipeline_id from experiment context if available
-        pipeline_id = getattr(experiment_context, 'pipeline_id', None) if experiment_context else None
-        converted_test_cases.append(_convert_to_test_case(raw_case, pipeline_id))
+        # Convert TestInput to TestCase internally
+        if isinstance(raw_case, TestCase):
+            # If already a TestCase, use as-is
+            converted_test_cases.append(raw_case)
+        else:
+            # Generate values for required fields
+            now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+            
+            # Convert TestInput to TestCase
+            # At this point, raw_case must be TestInput based on the type annotation
+            converted_test_cases.append(TestCase(
+                id=raw_case.id or "",  # Don't generate ID for local test cases
+                name=raw_case.name or "Unnamed Test",
+                inputs=raw_case.inputs,
+                expectedOutputs=None,
+                # Fill required fields with sensible defaults
+                datasetId="local",
+                pipelineId="local",
+                createdAt=now,
+                updatedAt=now,
+                archivedAt=None,
+                deletedAt=None
+            ))
 
     evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
     for i, test_case in enumerate(converted_test_cases):
