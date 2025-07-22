@@ -8,7 +8,7 @@ from typing_extensions import TypedDict
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from gentrace import TestCase, TestInput, init, experiment, interaction, eval_dataset
+from gentrace import TestCase, TestInput, init, experiment, eval_dataset
 
 load_dotenv()
 
@@ -27,7 +27,6 @@ class PromptInputs(TypedDict):
 
 
 
-@interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
     print(f"Running test case: {test_case.name}")
 
@@ -70,6 +69,7 @@ async def dataset_evaluation() -> None:
     
     await eval_dataset(
         data=test_cases,
+        schema=PromptInputs,
         interaction=process_ai_request,
     )
 
