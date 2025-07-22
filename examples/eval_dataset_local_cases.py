@@ -43,7 +43,7 @@ async def process_ai_request(test_case: TestCase) -> Dict[str, Any]:
     # Call OpenAI
     response = await openai.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
+        messages=[{"role": "user", "content": str(prompt)}],  # type: ignore[list-item]
     )
 
     result = response.choices[0].message.content
@@ -90,36 +90,8 @@ async def dataset_evaluation() -> None:
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
 
 
-@experiment(pipeline_id=PIPELINE_ID)
-async def dataset_evaluation_with_dicts() -> None:
-    """Show that dicts still work for backwards compatibility."""
-    
-    # You can still use dicts if needed (for backwards compatibility)
-    dict_test_cases = [
-        {"name": "dict_test", "inputs": {"prompt": "This is a dict-based test"}},
-        {"inputs": {"prompt": "Dict without name"}}  # name is optional
-    ]
-    
-    await eval_dataset(
-        data=dict_test_cases,
-        interaction=process_ai_request,  # Still receives TestCase objects!
-        max_concurrency=2,
-    )
-    
-    print("Dict-based evaluation completed!")
-
-
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) > 1 and sys.argv[1] == "dicts":
-        # Run with dict-based test cases
-        print("Running with dict-based test cases...")
-        result = asyncio.run(dataset_evaluation_with_dicts())
-    else:
-        # Run with TestInput objects
-        print("Running with TestInput objects...")
-        result = asyncio.run(dataset_evaluation())
+    result = asyncio.run(dataset_evaluation())
     
     if result:
         print(f"Experiment URL: {result.url}")

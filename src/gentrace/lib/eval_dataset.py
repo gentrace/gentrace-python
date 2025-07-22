@@ -1,8 +1,7 @@
 import asyncio
 import inspect
 import logging
-import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import (
     Any,
     Dict,
@@ -19,7 +18,7 @@ from typing import (
     cast,
 )
 from contextvars import copy_context
-from typing_extensions import Protocol, TypeAlias, TypedDict, overload
+from typing_extensions import Protocol, TypeAlias, overload
 
 from pydantic import BaseModel, ValidationError
 from opentelemetry import trace, baggage as otel_baggage, context as otel_context
@@ -171,18 +170,15 @@ async def _run_single_test_case_for_dataset(
                             input_dict_for_log = validated
                         
                         # Create a new test case with validated inputs
-                        if isinstance(full_test_case, dict):
-                            test_case_for_interaction = {**full_test_case, "inputs": input_dict_for_log}  # type: ignore
-                        else:
-                            # For TestCase objects, create a new dict with validated inputs
-                            test_case_dict = {
-                                "inputs": input_dict_for_log,
-                                "id": full_test_case.id,
-                                "name": full_test_case.name,
-                            }
-                            if hasattr(full_test_case, "expected_outputs") and full_test_case.expected_outputs:
-                                test_case_dict["expected_outputs"] = full_test_case.expected_outputs
-                            test_case_for_interaction = test_case_dict  # type: ignore
+                        # For TestCase objects, create a new dict with validated inputs
+                        test_case_dict = {
+                            "inputs": input_dict_for_log,
+                            "id": full_test_case.id,
+                            "name": full_test_case.name,
+                        }
+                        if hasattr(full_test_case, "expected_outputs") and full_test_case.expected_outputs:
+                            test_case_dict["expected_outputs"] = full_test_case.expected_outputs
+                        test_case_for_interaction = test_case_dict  # type: ignore
                             
                     except ValidationError as ve:
                         logger.error(
@@ -233,19 +229,19 @@ async def _run_single_test_case_for_dataset(
 
 
 def _convert_to_test_case(
-    item: Union[TestCase, TestInput, Dict[str, Any]], 
+    item: Union[TestCase, TestInput], 
     pipeline_id: Optional[str] = None
 ) -> TestCase:
-    """Convert various input types to TestCase internally."""
+    """Convert TestInput to TestCase internally."""
     
     # If already a TestCase, return as-is
     if isinstance(item, TestCase):
         return item
     
     # Generate values for required fields
-    now = datetime.utcnow().isoformat() + "Z"
+    now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
     
-    # Convert TestInput or dict to TestCase
+    # Convert TestInput to TestCase
     if isinstance(item, TestInput):
         return TestCase(
             id=item.id or "",  # Don't generate ID for local test cases
@@ -253,20 +249,6 @@ def _convert_to_test_case(
             inputs=item.inputs,
             expectedOutputs=None,
             # Fill required fields with sensible defaults
-            datasetId="local-eval",
-            pipelineId=pipeline_id or "local-pipeline",
-            createdAt=now,
-            updatedAt=now,
-            archivedAt=None,
-            deletedAt=None
-        )
-    elif isinstance(item, dict):
-        return TestCase(
-            id=item.get("id", ""),  # Don't generate ID for local test cases
-            name=item.get("name", "Unnamed Test"),
-            inputs=item.get("inputs", {}),
-            expectedOutputs=item.get("expected_outputs"),
-            # Fill required fields
             datasetId="local-eval",
             pipelineId=pipeline_id or "local-pipeline",
             createdAt=now,
@@ -334,14 +316,13 @@ async def eval_dataset(
     Args:
         data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list 
                          of test cases, or a plain list of test cases directly.
-                         Test cases can be TestCase objects, TestInput objects, or dicts with
-                         an 'inputs' key and optional 'id', 'name' keys.
+                         Test cases can be TestCase objects (from API) or TestInput objects (for local tests).
         schema (Optional[Type[pydantic.BaseModel]]): A Pydantic model to validate the `inputs`
                                                    of each TestInput. If validation fails for a
                                                    case, an error is logged to its span, and the
                                                    test case is skipped (returning None).
         interaction (Callable): The function to test for each test case.
-                               Always receives a TestCase object (TestInput and dict are converted 
+                               Always receives a TestCase object (TestInput is converted 
                                internally to TestCase).
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
@@ -379,7 +360,7 @@ async def eval_dataset(
         
         semaphore = asyncio.Semaphore(max_concurrency)
 
-    raw_test_cases: Sequence[Union[TestCase, TestInput, Dict[str, Any]]]
+    raw_test_cases: Sequence[Union[TestCase, TestInput]]
     try:
         if callable(data_provider):
             data_result = data_provider()
@@ -404,7 +385,7 @@ async def eval_dataset(
     evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
     for i, test_case in enumerate(converted_test_cases):
         # Now test_case is always a TestCase object
-        case_inputs = cast(InputPayload, test_case.inputs)
+        case_inputs = test_case.inputs
         case_id = test_case.id
         case_name_prop = test_case.name
 
@@ -420,13 +401,13 @@ async def eval_dataset(
         async def run_test_case(
             case_name: str = final_case_name,
             case_id_val: Optional[str] = case_id,
-            case_inputs_val: InputPayload = case_inputs,
+            case_inputs_val: Mapping[str, Any] = case_inputs,
             full_case: TestCase = test_case,
         ) -> Optional[TResult]:
             return await _run_single_test_case_for_dataset(
                 test_case_name=case_name,
                 test_case_id=case_id_val,
-                raw_inputs=case_inputs_val,
+                raw_inputs=case_inputs_val,  # type: ignore[arg-type]
                 full_test_case=full_case,
                 interaction_function=interaction_fn,
                 input_schema=input_schema,
