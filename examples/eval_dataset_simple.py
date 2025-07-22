@@ -7,7 +7,7 @@ from typing import List, Optional
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from gentrace import TestCase, init, experiment, interaction, eval_dataset, test_cases_async
+from gentrace import TestCase, init, experiment, eval_dataset, test_cases_async
 
 load_dotenv()
 
@@ -22,7 +22,6 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-@interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
     """Process AI request using OpenAI."""
     # Print for each test case
