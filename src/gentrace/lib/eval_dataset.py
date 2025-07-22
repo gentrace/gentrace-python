@@ -3,7 +3,6 @@ import inspect
 import logging
 from typing import (
     Any,
-    Dict,
     List,
     Type,
     Union,
@@ -57,9 +56,11 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
     def __getitem__(self, key: str) -> Any: ...
 
 
-class TestInput(BaseModel):
+TInputDict = TypeVar("TInputDict", bound=Mapping[str, Any])
+
+class TestInput(BaseModel, Generic[TInputDict]):
     """Local test input as a Pydantic model for evaluation."""
-    inputs: Dict[str, Any]
+    inputs: TInputDict
     name: Optional[str] = None
     id: Optional[str] = None
 
@@ -68,11 +69,11 @@ DataProviderType: TypeAlias = Union[
     Callable[
         [],
         Union[
-            Awaitable[Sequence[Union[TestCase, TestInput]]],
-            Sequence[Union[TestCase, TestInput]],
+            Awaitable[Sequence[Union[TestCase, TestInput[Any]]]],
+            Sequence[Union[TestCase, TestInput[Any]]],
         ],
     ],
-    Sequence[Union[TestCase, TestInput]],
+    Sequence[Union[TestCase, TestInput[Any]]],
 ]
 
 
@@ -323,7 +324,7 @@ async def eval_dataset(
         
         semaphore = asyncio.Semaphore(max_concurrency)
 
-    raw_test_cases: Sequence[Union[TestCase, TestInput]]
+    raw_test_cases: Sequence[Union[TestCase, TestInput[Any]]]
     try:
         if callable(data_provider):
             data_result = data_provider()

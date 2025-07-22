@@ -83,14 +83,14 @@ async def async_interaction(test_case: GentraceTestCase) -> Dict[str, Any]:
 
 
 # Data Providers
-def sync_data_provider_dict() -> Sequence[GentraceTestInput]:
+def sync_data_provider_dict() -> Sequence[GentraceTestInput[Any]]:
     return [
         GentraceTestInput(name="case1", inputs={"a": "hello", "b": 1}),
         GentraceTestInput(name="case2", inputs={"a": "world", "b": 2}),
     ]
 
 
-async def async_data_provider_dict() -> Sequence[GentraceTestInput]:
+async def async_data_provider_dict() -> Sequence[GentraceTestInput[Any]]:
     await asyncio.sleep(0.01)
     return [
         GentraceTestInput(name="async_case1", inputs={"a": "hello_async", "b": 10}),
@@ -173,7 +173,7 @@ def sync_data_provider_mixed() -> Sequence[GentraceTestCase]:
     ]
 
 
-def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput]:
+def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput[Any]]:
     return [
         GentraceTestInput(name="valid_case", inputs={"a": "ok", "b": 1}),
         GentraceTestInput(name="invalid_case_missing_b", inputs={"a": "bad"}),

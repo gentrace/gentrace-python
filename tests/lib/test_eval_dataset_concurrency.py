@@ -97,7 +97,7 @@ def init_gentrace():
     init(api_key="test-key", base_url="https://gentrace.ai/api")
 
 
-def create_test_data(num_items: int) -> List[GentraceTestInput]:
+def create_test_data(num_items: int) -> List[GentraceTestInput[Any]]:
     """Create test data."""
     return [
         GentraceTestInput(inputs={"id": f"test-{i}"})

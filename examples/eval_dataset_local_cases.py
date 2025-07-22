@@ -1,14 +1,15 @@
 """Simple dataset evaluation example with Gentrace using local test cases.
 
 This example demonstrates the clean new API where:
-- TestInput is a Pydantic model for creating local test cases
+- TestInput is a generic Pydantic model that can accept TypedDict for type safety
 - The interaction function always receives a TestCase object
-- No Union types or isinstance checks needed
+- Type-safe inputs using TypedDict
 """
 
 import os
 import asyncio
 from typing import Optional
+from typing_extensions import TypedDict
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
@@ -27,6 +28,10 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+class PromptInputs(TypedDict):
+    prompt: str
+
+
 
 @interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
@@ -44,27 +49,33 @@ async def process_ai_request(test_case: TestCase) -> Optional[str]:
 
 @experiment(pipeline_id=PIPELINE_ID)
 async def dataset_evaluation() -> None:
-    """Run evaluation on a dataset using local TestInput objects."""
+    """Run evaluation on a dataset using type-safe TestInput objects with TypedDict."""
 
+    # Using TestInput with TypedDict for type safety
     test_cases = [
-        TestInput(
+        TestInput[PromptInputs](
             name="greeting", 
             inputs={"prompt": "Hello! How are you doing today?"}
         ),
-        TestInput(
+        TestInput[PromptInputs](
             name="factual_question", 
             inputs={"prompt": "What is the capital of France?"}
         ),
-        TestInput(
+        TestInput[PromptInputs](
             name="math_problem", 
             inputs={"prompt": "What is 25 * 4?"}
         ),
-        TestInput(
+        TestInput[PromptInputs](
             name="creative_writing", 
             inputs={"prompt": "Write a haiku about artificial intelligence"}
         ),
-        TestInput(inputs={"prompt": "Tell me a joke"})
+        TestInput[PromptInputs](
+            inputs={"prompt": "Tell me a joke"}
+        )
     ]
+    
+    # Note: You can also use TestInput without TypedDict for backward compatibility:
+    # TestInput(name="example", inputs={"prompt": "Hello", "any_field": "value"})
     
     await eval_dataset(
         data=test_cases,
