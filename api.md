@@ -28,6 +28,18 @@ Methods:
 - <code title="post /v4/experiments/{id}">client.experiments.<a href="./src/gentrace/resources/experiments.py">update</a>(id, \*\*<a href="src/gentrace/types/experiment_update_params.py">params</a>) -> <a href="./src/gentrace/types/experiment.py">Experiment</a></code>
 - <code title="get /v4/experiments">client.experiments.<a href="./src/gentrace/resources/experiments.py">list</a>(\*\*<a href="src/gentrace/types/experiment_list_params.py">params</a>) -> <a href="./src/gentrace/types/experiment_list.py">ExperimentList</a></code>
 
+# Organizations
+
+Types:
+
+```python
+from gentrace.types import Organization
+```
+
+Methods:
+
+- <code title="get /v4/organizations/{id}">client.organizations.<a href="./src/gentrace/resources/organizations.py">retrieve</a>(id) -> <a href="./src/gentrace/types/organization.py">Organization</a></code>
+
 # Datasets
 
 Types:
