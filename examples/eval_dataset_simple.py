@@ -2,13 +2,12 @@
 
 import os
 import asyncio
-from typing import Any, Dict, List
+from typing import List, Optional
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-# Make sure you import TestCase from gentrace.types for clarity
-from gentrace import TestCase, TestInput, init, experiment, interaction, eval_dataset, test_cases_async
+from gentrace import TestCase, init, experiment, interaction, eval_dataset, test_cases_async
 
 load_dotenv()
 
@@ -23,11 +22,12 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-
 @interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
-async def process_ai_request(test_case: TestCase) -> Dict[str, Any]:
+async def process_ai_request(test_case: TestCase) -> Optional[str]:
     """Process AI request using OpenAI."""
-    # Clean API - no isinstance checks needed!
+    # Print for each test case
+    print(f"Processing test case: {test_case.name}")
+    
     prompt = test_case.inputs.get("prompt", "Hey, how are you?")
 
     # Call OpenAI
@@ -36,14 +36,8 @@ async def process_ai_request(test_case: TestCase) -> Dict[str, Any]:
         messages=[{"role": "user", "content": str(prompt)}],
     )
 
-    result = response.choices[0].message.content
+    return response.choices[0].message.content
 
-    return {
-        "result": result,
-        "metadata": {"model": response.model, "usage": response.usage.model_dump() if response.usage else None},
-    }
-
-# 2. The separate traced_process_ai_request function is no longer needed and has been removed.
 
 @experiment(pipeline_id=PIPELINE_ID)
 async def dataset_evaluation() -> None:
@@ -63,48 +57,5 @@ async def dataset_evaluation() -> None:
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
 
 
-@experiment(pipeline_id=PIPELINE_ID)
-async def local_dataset_evaluation() -> None:
-    """Run evaluation with local test cases using TestInput."""
-    
-    # Create local test cases using TestInput
-    local_test_cases = [
-        TestInput(
-            name="Simple greeting",
-            inputs={"prompt": "Hello, how are you?"}
-        ),
-        TestInput(
-            name="Technical question",
-            inputs={"prompt": "Explain quantum computing in simple terms"}
-        ),
-        TestInput(
-            name="Math problem",
-            inputs={"prompt": "What is 2 + 2?"}
-        ),
-        # Name is optional - will default to "Unnamed Test"
-        TestInput(
-            inputs={"prompt": "What's the weather like?"}
-        )
-    ]
-    
-    # Same clean API - process_ai_request receives TestCase objects
-    await eval_dataset(
-        data=local_test_cases,
-        interaction=process_ai_request,
-        max_concurrency=3,
-    )
-    
-    print("Local dataset evaluation completed!")
-
-
 if __name__ == "__main__":
-    import sys
-    
-    if len(sys.argv) > 1 and sys.argv[1] == "local":
-        # Run with local test cases
-        print("Running with local test cases...")
-        asyncio.run(local_dataset_evaluation())
-    else:
-        # Run with dataset from Gentrace
-        print("Running with dataset from Gentrace...")
-        asyncio.run(dataset_evaluation())
+    asyncio.run(dataset_evaluation())
