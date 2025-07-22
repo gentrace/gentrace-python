@@ -4,14 +4,15 @@
 import time
 import asyncio
 import threading
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 from unittest.mock import MagicMock
 
 import pytest
 
 import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
-from gentrace import TestInput as GentraceTestInput, init, experiment, eval_dataset
+from gentrace import init, experiment, eval_dataset
+from gentrace import TestInput as GentraceTestInput
 from gentrace.types import TestCase as GentraceTestCase
 from gentrace.types.experiment import Experiment
 
@@ -97,10 +98,10 @@ def init_gentrace():
     init(api_key="test-key", base_url="https://gentrace.ai/api")
 
 
-def create_test_data(num_items: int) -> List[Dict[str, Any]]:
+def create_test_data(num_items: int) -> List[GentraceTestInput]:
     """Create test data."""
     return [
-        {"inputs": {"id": f"test-{i}"}}  # type: ignore
+        GentraceTestInput(inputs={"id": f"test-{i}"})
         for i in range(num_items)
     ]
 
@@ -110,12 +111,9 @@ def create_test_data(num_items: int) -> List[Dict[str, Any]]:
 async def test_async_function_with_max_concurrency(tracker: ConcurrencyTracker) -> None:
     """Test that async functions respect max_concurrency using semaphore."""
     
-    async def async_task(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        if isinstance(test_case, GentraceTestCase):
-            inputs = test_case.inputs
-        else:
-            inputs = test_case['inputs']  # type: ignore
+        inputs = test_case.inputs
         task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
@@ -143,12 +141,9 @@ async def test_sync_function_with_max_concurrency(tracker: ConcurrencyTracker) -
     # Use a thread-safe counter for sync functions
     sync_lock = threading.Lock()
     
-    def sync_task(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    def sync_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Sync task that tracks concurrency."""
-        if isinstance(test_case, GentraceTestCase):
-            inputs = test_case.inputs
-        else:
-            inputs = test_case['inputs']  # type: ignore
+        inputs = test_case.inputs
         task_id = str(inputs.get("id", "unknown"))
         
         # Manually track concurrency for sync functions
@@ -180,12 +175,9 @@ async def test_sync_function_with_max_concurrency(tracker: ConcurrencyTracker) -
 async def test_no_max_concurrency(tracker: ConcurrencyTracker) -> None:
     """Test that without max_concurrency, all tasks run concurrently."""
     
-    async def async_task(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        if isinstance(test_case, GentraceTestCase):
-            inputs = test_case.inputs
-        else:
-            inputs = test_case['inputs']  # type: ignore
+        inputs = test_case.inputs
         task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
@@ -213,12 +205,9 @@ async def test_max_concurrency_zero() -> None:
     
     tracker = ConcurrencyTracker()
     
-    async def async_task(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        if isinstance(test_case, GentraceTestCase):
-            inputs = test_case.inputs
-        else:
-            inputs = test_case['inputs']  # type: ignore
+        inputs = test_case.inputs
         task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
@@ -246,12 +235,9 @@ async def test_max_concurrency_one() -> None:
     
     tracker = ConcurrencyTracker()
     
-    async def async_task(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        if isinstance(test_case, GentraceTestCase):
-            inputs = test_case.inputs
-        else:
-            inputs = test_case['inputs']  # type: ignore
+        inputs = test_case.inputs
         task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
@@ -277,7 +263,7 @@ async def test_max_concurrency_one() -> None:
 async def test_max_concurrency_exceeds_limit() -> None:
     """Test that max_concurrency > 30 raises ValueError."""
     
-    async def async_task(_: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+    async def async_task(_: GentraceTestCase) -> Dict[str, Any]:
         """Simple async task."""
         return {"result": "ok"}
     

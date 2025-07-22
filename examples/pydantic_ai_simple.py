@@ -25,7 +25,7 @@ init(
 
 # Create a simple Pydantic AI agent
 agent = Agent(
-    OpenAIModel("gpt-4o-mini"),
+    OpenAIModel("gpt-4.1-nano"),
     system_prompt="You are a helpful assistant that gives concise answers.",
 )
 

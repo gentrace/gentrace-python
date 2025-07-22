@@ -32,7 +32,7 @@ async def process_ai_request(test_case: TestCase) -> Optional[str]:
 
     # Call OpenAI
     response = await openai.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-4.1-nano",
         messages=[{"role": "user", "content": str(prompt)}],
     )
 
@@ -58,4 +58,5 @@ async def dataset_evaluation() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(dataset_evaluation())
+    result = asyncio.run(dataset_evaluation())
+    print(f"Experiment URL: {result.url}")

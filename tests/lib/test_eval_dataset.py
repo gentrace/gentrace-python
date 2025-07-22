@@ -41,7 +41,7 @@ def _stub_experiment_api(monkeypatch: Any) -> None:  # type: ignore
 
 
 import asyncio
-from typing import Any, Dict, Union, Sequence
+from typing import Any, Dict, Sequence
 
 from pytest import LogCaptureFixture
 from pydantic import BaseModel
@@ -71,32 +71,26 @@ def model_to_dict(model: BaseModel) -> Dict[str, Any]:
 
 
 # Interaction Functions
-def sync_interaction(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
-    if isinstance(test_case, GentraceTestCase):
-        inputs = test_case.inputs
-    else:
-        inputs = test_case['inputs']  # type: ignore
+def sync_interaction(test_case: GentraceTestCase) -> Dict[str, Any]:
+    inputs = test_case.inputs
     return {"result": f"{inputs.get('a', '')}-{inputs.get('b', 0)}"}
 
 
-async def async_interaction(test_case: Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]) -> Dict[str, Any]:
+async def async_interaction(test_case: GentraceTestCase) -> Dict[str, Any]:
     await asyncio.sleep(0.01)
-    if isinstance(test_case, GentraceTestCase):
-        inputs = test_case.inputs
-    else:
-        inputs = test_case['inputs']  # type: ignore
+    inputs = test_case.inputs
     return {"result": f"async-{inputs.get('a', '')}-{inputs.get('b', 0)}"}
 
 
 # Data Providers
-def sync_data_provider_dict() -> Sequence[GentraceTestInput[Dict[str, Any]]]:
+def sync_data_provider_dict() -> Sequence[GentraceTestInput]:
     return [
         GentraceTestInput(name="case1", inputs={"a": "hello", "b": 1}),
         GentraceTestInput(name="case2", inputs={"a": "world", "b": 2}),
     ]
 
 
-async def async_data_provider_dict() -> Sequence[GentraceTestInput[Dict[str, Any]]]:
+async def async_data_provider_dict() -> Sequence[GentraceTestInput]:
     await asyncio.sleep(0.01)
     return [
         GentraceTestInput(name="async_case1", inputs={"a": "hello_async", "b": 10}),
@@ -136,7 +130,7 @@ def sync_data_provider_testcase() -> Sequence[GentraceTestCase]:
     ]
 
 
-def sync_data_provider_mixed() -> Sequence[Union[GentraceTestCase, GentraceTestInput[Dict[str, Any]]]]:
+def sync_data_provider_mixed() -> Sequence[GentraceTestCase]:
     input1_dict = model_to_dict(InputModel(a="tc_hello", b=100))
     input4_dict = model_to_dict(InputModel(a="tc_noname", b=4))
     return [
@@ -149,8 +143,24 @@ def sync_data_provider_mixed() -> Sequence[Union[GentraceTestCase, GentraceTestI
             createdAt=DUMMY_CREATED_AT,
             updatedAt=DUMMY_UPDATED_AT,
         ),
-        GentraceTestInput(name="dict_case2", inputs={"a": "dict_world", "b": 2}),
-        GentraceTestInput(inputs={"a": "nameless_dict", "b": 3}),
+        GentraceTestCase(
+            id="tc2",
+            name="dict_case2",
+            inputs={"a": "dict_world", "b": 2},
+            pipelineId=DUMMY_PIPELINE_ID,
+            datasetId=DUMMY_DATASET_ID,
+            createdAt=DUMMY_CREATED_AT,
+            updatedAt=DUMMY_UPDATED_AT,
+        ),
+        GentraceTestCase(
+            id="tc3",
+            name="nameless_dict",
+            inputs={"a": "nameless_dict", "b": 3},
+            pipelineId=DUMMY_PIPELINE_ID,
+            datasetId=DUMMY_DATASET_ID,
+            createdAt=DUMMY_CREATED_AT,
+            updatedAt=DUMMY_UPDATED_AT,
+        ),
         GentraceTestCase(
             id="tc4_noid",
             name="tc4_noname_case",
@@ -163,7 +173,7 @@ def sync_data_provider_mixed() -> Sequence[Union[GentraceTestCase, GentraceTestI
     ]
 
 
-def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput[Dict[str, Any]]]:
+def sync_data_provider_invalid_for_schema() -> Sequence[GentraceTestInput]:
     return [
         GentraceTestInput(name="valid_case", inputs={"a": "ok", "b": 1}),
         GentraceTestInput(name="invalid_case_missing_b", inputs={"a": "bad"}),

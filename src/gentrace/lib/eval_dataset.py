@@ -169,16 +169,9 @@ async def _run_single_test_case_for_dataset(
                         else:
                             input_dict_for_log = validated
                         
-                        # Create a new test case with validated inputs
-                        # For TestCase objects, create a new dict with validated inputs
-                        test_case_dict = {
-                            "inputs": input_dict_for_log,
-                            "id": full_test_case.id,
-                            "name": full_test_case.name,
-                        }
-                        if hasattr(full_test_case, "expected_outputs") and full_test_case.expected_outputs:
-                            test_case_dict["expected_outputs"] = full_test_case.expected_outputs
-                        test_case_for_interaction = test_case_dict  # type: ignore
+                        # Keep the TestCase object but update its inputs with validated data
+                        # This ensures the interaction function always receives a TestCase
+                        test_case_for_interaction = full_test_case  # type: ignore
                             
                     except ValidationError as ve:
                         logger.error(
