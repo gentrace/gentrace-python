@@ -43,7 +43,7 @@ async def process_ai_request(test_case: TestCase) -> Dict[str, Any]:
     # Call OpenAI
     response = await openai.chat.completions.create(
         model="gpt-4o-mini",
-        messages=[{"role": "user", "content": str(prompt)}],  # type: ignore[list-item]
+        messages=[{"role": "user", "content": str(prompt)}], 
     )
 
     result = response.choices[0].message.content
