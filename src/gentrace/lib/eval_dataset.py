@@ -78,8 +78,8 @@ DataProviderType: TypeAlias = Union[
 
 
 async def _execute_interaction_function(
-    interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
-    parsed_input: Optional[TInput],
+    interaction_function: Callable[[TestCase], Union[TResult, Awaitable[TResult]]],
+    parsed_input: TestCase,
     semaphore: Optional[asyncio.Semaphore],
 ) -> TResult:
     """
@@ -115,7 +115,7 @@ async def _run_single_test_case_for_dataset(
     test_case_id: Optional[str],
     raw_inputs: Optional[InputPayload],
     full_test_case: TestCase,
-    interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
+    interaction_function: Callable[[TestCase], Union[TResult, Awaitable[TResult]]],
     input_schema: Optional[Type[BaseModel]],
     experiment_context: ExperimentContext,
     semaphore: Optional[asyncio.Semaphore],
@@ -149,8 +149,6 @@ async def _run_single_test_case_for_dataset(
                 span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
 
             try:
-                # Prepare the test case to pass to interaction function
-                test_case_for_interaction: Optional[TInput] = full_test_case  # type: ignore
                 input_dict_for_log: Any = None
 
                 if input_schema:
@@ -169,10 +167,6 @@ async def _run_single_test_case_for_dataset(
                             input_dict_for_log = validated.dict()  # type: ignore
                         else:
                             input_dict_for_log = validated
-                        
-                        # Keep the TestCase object but update its inputs with validated data
-                        # This ensures the interaction function always receives a TestCase
-                        test_case_for_interaction = full_test_case  # type: ignore
                             
                     except ValidationError as ve:
                         logger.error(
@@ -201,7 +195,7 @@ async def _run_single_test_case_for_dataset(
                 # Call the interaction function with proper concurrency control
                 result_value = await _execute_interaction_function(
                     interaction_function,
-                    test_case_for_interaction,
+                    full_test_case,
                     semaphore,
                 )
 
