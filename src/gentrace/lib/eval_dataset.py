@@ -142,7 +142,11 @@ def _validate_inputs_with_schema(
     except ValidationError as ve:
         return False, None, str(ve)
     except Exception as e:
-        return False, None, f"Validation error: {str(e)}"
+        # Handle specific Pydantic errors
+        error_msg = str(e)
+        if "Please use `typing_extensions.TypedDict`" in error_msg:
+            return False, None, "TypedDict must be imported from typing_extensions, not typing module"
+        return False, None, f"Validation error: {error_msg}"
 
 
 async def _execute_interaction_function(
@@ -228,8 +232,7 @@ async def _run_single_test_case_for_dataset(
                     
                     if not is_valid:
                         logger.error(
-                            f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
-                            exc_info=True,
+                            f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}. Error: {error_message}"
                         )
                         # Use a generic exception for error recording since we can't create ValidationError directly
                         error = Exception(f"Validation Error: {error_message}")
@@ -410,7 +413,7 @@ async def eval_dataset(
             # At this point, raw_case must be TestInput based on the type annotation
             converted_test_cases.append(TestCase(
                 id=raw_case.id or "",  # Don't generate ID for local test cases
-                name=raw_case.name or "Unnamed Test",
+                name=raw_case.name or "",  # Let the index-based naming logic handle unnamed cases
                 inputs=dict(raw_case.inputs),  # Convert Mapping to dict
                 expectedOutputs=None,
                 # Fill required fields with sensible defaults

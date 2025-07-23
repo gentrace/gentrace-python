@@ -6,6 +6,7 @@ from typing import List, Optional
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
+from pydantic import BaseModel
 
 from gentrace import TestCase, init, experiment, eval_dataset, test_cases_async
 
@@ -21,18 +22,21 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+class QueryInputs(BaseModel):
+    query: str
+
 
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
     """Process AI request using OpenAI."""
     # Print for each test case
     print(f"Processing test case: {test_case.name}")
     
-    prompt = test_case.inputs.get("prompt", "Hey, how are you?")
+    query = test_case.inputs.get("query", "Hey, how are you?")
 
     # Call OpenAI
     response = await openai.chat.completions.create(
         model="gpt-4.1-nano",
-        messages=[{"role": "user", "content": str(prompt)}],
+        messages=[{"role": "user", "content": str(query)}],
     )
 
     return response.choices[0].message.content
@@ -49,6 +53,7 @@ async def dataset_evaluation() -> None:
 
     await eval_dataset(
         data=fetch_test_cases,
+        schema=QueryInputs,
         interaction=process_ai_request,
     )
 
