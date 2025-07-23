@@ -25,7 +25,7 @@ logging.getLogger("gentrace").setLevel(logging.DEBUG)
 # so we don't have to add that boilerplate everywhere
 def pytest_collection_modifyitems(items: list[pytest.Function]) -> None:
     pytest_asyncio_tests = (item for item in items if is_async_test(item))
-    session_scope_marker = pytest.mark.asyncio(loop_scope="session")
+    session_scope_marker = pytest.mark.asyncio(loop_scope="function")
     for async_test in pytest_asyncio_tests:
         async_test.add_marker(session_scope_marker, append=False)
 
@@ -48,7 +48,7 @@ base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 api_key = "My API Key"
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def client(request: FixtureRequest) -> Iterator[Gentrace]:
     strict = getattr(request, "param", True)
     if not isinstance(strict, bool):
@@ -58,7 +58,7 @@ def client(request: FixtureRequest) -> Iterator[Gentrace]:
         yield client
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncGentrace]:
     param = getattr(request, "param", True)
 
