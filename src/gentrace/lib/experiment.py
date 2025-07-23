@@ -62,7 +62,7 @@ class ExperimentResult(Experiment):
 
 def experiment(
     *,
-    pipeline_id: str,
+    pipeline_id: Optional[str] = None,
     options: Optional[ExperimentOptions] = None,
 ) -> Callable[[Callable[P, Any]], Callable[P, Coroutine[Any, Any, ExperimentResult]]]:
     """
@@ -98,6 +98,7 @@ def experiment(
 
     Args:
         pipeline_id: The ID of the pipeline to associate with this experiment.
+                     If not provided, defaults to 'default'.
         options: Optional parameters for the Gentrace Experiment entity:
             name (Optional[str]): A name for the Gentrace Experiment. This is passed to the
                                   Gentrace API.
@@ -152,10 +153,15 @@ def experiment(
         ```
     """
 
-    try:
-        uuid.UUID(pipeline_id)
-    except ValueError as e:
-        raise ValueError(f"Invalid pipeline_id: '{pipeline_id}'. Must be a valid UUID.") from e
+    # Use 'default' if no pipeline_id is provided
+    effective_pipeline_id = pipeline_id if pipeline_id is not None else 'default'
+    
+    # Validate UUID format (skip validation for 'default')
+    if effective_pipeline_id != 'default':
+        try:
+            uuid.UUID(effective_pipeline_id)
+        except ValueError as e:
+            raise ValueError(f"Invalid pipeline_id: '{effective_pipeline_id}'. Must be a valid UUID.") from e
 
     def inner_decorator(func: Callable[P, Union[None, Awaitable[None]]]) -> Callable[P, Coroutine[Any, Any, ExperimentResult]]:
         @functools.wraps(func)
@@ -167,7 +173,7 @@ def experiment(
             experiment_obj: Optional[Experiment] = None
             try:
                 experiment_obj = await start_experiment_api(
-                    pipelineId=pipeline_id, name=exp_name_option, metadata=user_metadata
+                    pipelineId=effective_pipeline_id, name=exp_name_option, metadata=user_metadata
                 )
             except Exception as e:
                 logger.error(f"Failed to start Gentrace experiment via API. Details: {e}")
@@ -178,7 +184,7 @@ def experiment(
 
             context_data: ExperimentContext = {
                 "experiment_id": experiment_obj.id,
-                "pipeline_id": pipeline_id,
+                "pipeline_id": effective_pipeline_id,
             }
 
             token = experiment_context_var.set(context_data)
