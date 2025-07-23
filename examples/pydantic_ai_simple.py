@@ -25,14 +25,14 @@ init(
 
 # Create a simple Pydantic AI agent
 agent = Agent(
-    OpenAIModel("gpt-4o-mini"),
+    OpenAIModel("gpt-4.1-nano"),
     system_prompt="You are a helpful assistant that gives concise answers.",
 )
 
 
 @interaction(name="pydantic_ai_chat", pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
 async def chat_with_agent(prompt: str) -> str:
-    result = await agent.run(prompt)
+    result = await agent.run(prompt) # type: ignore
     return result.output
 
 

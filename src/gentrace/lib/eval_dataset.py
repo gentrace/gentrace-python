@@ -3,8 +3,10 @@ import inspect
 import logging
 from typing import (
     Any,
+    Dict,
     List,
     Type,
+    Tuple,
     Union,
     Generic,
     Mapping,
@@ -15,10 +17,19 @@ from typing import (
     Awaitable,
     cast,
 )
+from datetime import datetime, timezone
 from contextvars import copy_context
-from typing_extensions import Protocol, TypeAlias, TypedDict, overload
+from typing_extensions import Protocol, TypeAlias, overload, is_typeddict
 
 from pydantic import BaseModel, ValidationError
+
+# Conditional import for TypeAdapter (Pydantic v2 only)
+try:
+    from pydantic import TypeAdapter
+    _HAS_TYPE_ADAPTER = True
+except ImportError:
+    TypeAdapter = None  # type: ignore
+    _HAS_TYPE_ADAPTER = False  # pyright: ignore[reportConstantRedefinition]
 from opentelemetry import trace, baggage as otel_baggage, context as otel_context
 from opentelemetry.trace.status import Status, StatusCode
 
@@ -43,6 +54,7 @@ InputPayload = TypeVar("InputPayload", bound=Mapping[str, Any])  # Type of the r
 TInput = TypeVar("TInput")  # Type of the (potentially parsed) input to interaction fn
 TResult = TypeVar("TResult")  # Return type of the interaction fn
 SchemaPydanticModel = TypeVar("SchemaPydanticModel", bound=BaseModel)  # Type for Pydantic schema
+SchemaType = Union[Type[BaseModel], Any]  # Type for schema (BaseModel or TypedDict)
 
 _tracer = trace.get_tracer("gentrace.sdk")
 
@@ -55,26 +67,91 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
     def __getitem__(self, key: str) -> Any: ...
 
 
-class TestInput(TypedDict, Generic[InputPayload], total=False):
-    name: str
-    inputs: InputPayload
+TInputDict = TypeVar("TInputDict", bound=Mapping[str, Any], covariant=True)
+
+class TestInput(BaseModel, Generic[TInputDict]):
+    """Local test input as a Pydantic model for evaluation."""
+    inputs: TInputDict
+    name: Optional[str] = None
+    id: Optional[str] = None
 
 
 DataProviderType: TypeAlias = Union[
     Callable[
         [],
         Union[
-            Awaitable[Sequence[Union[TestCase, TestInput[InputPayload]]]],
-            Sequence[Union[TestCase, TestInput[InputPayload]]],
+            Awaitable[Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]]],
+            Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]],
         ],
     ],
-    Sequence[Union[TestCase, TestInput[InputPayload]]],
+    Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]],
 ]
 
 
+def _validate_inputs_with_schema(
+    inputs: Mapping[str, Any],
+    schema: SchemaType
+) -> Tuple[bool, Optional[Dict[str, Any]], Optional[str]]:
+    """
+    Validate inputs using either a Pydantic BaseModel or TypedDict.
+    
+    Returns:
+        Tuple of (is_valid, validated_data, error_message)
+    """
+    try:
+        # Check if it's a TypedDict
+        if is_typeddict(schema):
+            if _HAS_TYPE_ADAPTER and TypeAdapter is not None:
+                # Use TypeAdapter for Pydantic v2
+                adapter = TypeAdapter(schema)
+                validated = adapter.validate_python(inputs)
+                # TypeAdapter returns the validated data as a dict for TypedDict
+                validated_dict = cast(Dict[str, Any], dict(validated) if not isinstance(validated, dict) else validated)
+                return True, validated_dict, None
+            else:
+                # For Pydantic v1, we can't validate TypedDict directly
+                # Just return the inputs as-is with a warning
+                logger.warning(
+                    "TypedDict validation requires Pydantic v2. "
+                    "Inputs will be passed through without validation."
+                )
+                return True, dict(inputs), None
+        else:
+            # It's a Pydantic BaseModel
+            try:
+                if is_pydantic_v1():
+                    validated = schema.parse_obj(inputs)  # type: ignore
+                else:
+                    validated = schema.model_validate(inputs)  # type: ignore
+                
+                # Convert to dict for logging
+                dict_for_log: Dict[str, Any]
+                validated_obj = cast(BaseModel, validated)
+                if hasattr(validated_obj, "model_dump"):
+                    dict_for_log = validated_obj.model_dump()  # type: ignore
+                elif hasattr(validated_obj, "dict"):
+                    dict_for_log = validated_obj.dict()  # type: ignore
+                else:
+                    dict_for_log = dict(validated_obj) if hasattr(validated_obj, "__dict__") else dict(inputs)
+                    
+                return True, dict_for_log, None
+            except AttributeError:
+                # Not a BaseModel, just return the inputs
+                return True, dict(inputs), None
+            
+    except ValidationError as ve:
+        return False, None, str(ve)
+    except Exception as e:
+        # Handle specific Pydantic errors
+        error_msg = str(e)
+        if "Please use `typing_extensions.TypedDict`" in error_msg:
+            return False, None, "TypedDict must be imported from typing_extensions, not typing module"
+        return False, None, f"Validation error: {error_msg}"
+
+
 async def _execute_interaction_function(
-    interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
-    parsed_input: Optional[TInput],
+    interaction_function: Callable[[TestCase], Union[TResult, Awaitable[TResult]]],
+    parsed_input: TestCase,
     semaphore: Optional[asyncio.Semaphore],
 ) -> TResult:
     """
@@ -109,8 +186,9 @@ async def _run_single_test_case_for_dataset(
     test_case_name: str,
     test_case_id: Optional[str],
     raw_inputs: Optional[InputPayload],
-    interaction_function: Callable[[Optional[TInput]], Union[TResult, Awaitable[TResult]]],
-    input_schema: Optional[Type[BaseModel]],
+    full_test_case: TestCase,
+    interaction_function: Callable[[TestCase], Union[TResult, Awaitable[TResult]]],
+    input_schema: Optional[SchemaType],
     experiment_context: ExperimentContext,
     semaphore: Optional[asyncio.Semaphore],
 ) -> Optional[TResult]:
@@ -123,7 +201,7 @@ async def _run_single_test_case_for_dataset(
         test_case_id: Optional ID of the test case
         raw_inputs: The input data for the test case
         interaction_function: The function to test
-        input_schema: Optional Pydantic schema for validation
+        input_schema: Optional Pydantic BaseModel or TypedDict for validation
         experiment_context: The experiment context
         semaphore: Optional semaphore for concurrency control
     """
@@ -143,35 +221,27 @@ async def _run_single_test_case_for_dataset(
                 span.set_attribute(ATTR_GENTRACE_TEST_CASE_ID, test_case_id)
 
             try:
-                # Always pass the raw dict (or None) into the interaction fn
-                parsed_input_for_interaction: Optional[TInput] = raw_inputs  # type: ignore
                 input_dict_for_log: Any = None
 
                 if input_schema:
-                    # Validate against Pydantic but do *not* pass the model instance downstream
-                    model_schema = input_schema
-                    try:
-                        if is_pydantic_v1():
-                            validated = model_schema.parse_obj(raw_inputs)  # type: ignore
-                        else:
-                            validated = model_schema.model_validate(raw_inputs)
-
-                        # Log the dictified validated model
-                        if hasattr(validated, "model_dump"):
-                            input_dict_for_log = validated.model_dump()
-                        elif hasattr(validated, "dict"):
-                            input_dict_for_log = validated.dict()  # type: ignore
-                        else:
-                            input_dict_for_log = validated
-                    except ValidationError as ve:
+                    # Validate the inputs using either Pydantic BaseModel or TypedDict
+                    is_valid, validated_data, error_message = _validate_inputs_with_schema(
+                        raw_inputs or {},  # Ensure we pass a dict
+                        input_schema
+                    )
+                    
+                    if not is_valid:
                         logger.error(
-                            f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}",
-                            exc_info=True,
+                            f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}. Error: {error_message}"
                         )
-                        span.record_exception(ve)
+                        # Use a generic exception for error recording since we can't create ValidationError directly
+                        error = Exception(f"Validation Error: {error_message}")
+                        span.record_exception(error)
                         span.set_status(Status(StatusCode.ERROR, description="Input validation failed"))
-                        span.set_attribute("error.type", ve.__class__.__name__)
+                        span.set_attribute("error.type", "ValidationError")
                         return None
+                    
+                    input_dict_for_log = validated_data
 
                 elif raw_inputs is not None:
                     # No schema → just log the raw dict
@@ -190,7 +260,7 @@ async def _run_single_test_case_for_dataset(
                 # Call the interaction function with proper concurrency control
                 result_value = await _execute_interaction_function(
                     interaction_function,
-                    parsed_input_for_interaction,
+                    full_test_case,
                     semaphore,
                 )
 
@@ -211,12 +281,14 @@ async def _run_single_test_case_for_dataset(
         otel_context.detach(token)
 
 
+
+
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
-    schema: Type[SchemaPydanticModel],
-    interaction: Callable[[InputPayload], TResult],
+    data: DataProviderType,
+    schema: SchemaType,
+    interaction: Callable[[TestCase], TResult],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -224,9 +296,9 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
-    schema: Type[SchemaPydanticModel],
-    interaction: Callable[[InputPayload], Awaitable[TResult]],
+    data: DataProviderType,
+    schema: SchemaType,
+    interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -234,8 +306,8 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
-    interaction: Callable[[InputPayload], TResult],
+    data: DataProviderType,
+    interaction: Callable[[TestCase], TResult],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
@@ -243,16 +315,16 @@ async def eval_dataset(
 @overload
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
-    interaction: Callable[[InputPayload], Awaitable[TResult]],
+    data: DataProviderType,
+    interaction: Callable[[TestCase], Awaitable[TResult]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]: ...
 
 
 async def eval_dataset(
     *,
-    data: DataProviderType[InputPayload],
-    schema: Optional[Type[SchemaPydanticModel]] = None,
+    data: DataProviderType,
+    schema: Optional[SchemaType] = None,
     interaction: Callable[[Any], Union[TResult, Awaitable[TResult]]],
     max_concurrency: Optional[int] = None,
 ) -> Sequence[Optional[TResult]]:
@@ -266,16 +338,15 @@ async def eval_dataset(
 
     Args:
         data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list 
-                         of TestInputs, or a plain list of TestInputs directly.
-                         Each TestInput should be a dictionary-like object with an `inputs`
-                         key, and optional `id`, `name` keys. Can be either TestInputProtocol
-                         or TestInput[InputPayload].
-        schema (Optional[Type[pydantic.BaseModel]]): A Pydantic model to validate the `inputs`
-                                                   of each TestInput. If validation fails for a
-                                                   case, an error is logged to its span, and
-                                                   the exception is raised (halting that specific case).
+                         of test cases, or a plain list of test cases directly.
+                         Test cases can be TestCase objects (from API) or TestInput objects (for local tests).
+        schema (Optional[Union[Type[pydantic.BaseModel], Type[TypedDict]]]): A Pydantic BaseModel or TypedDict
+                                                   to validate the `inputs` of each test case. If validation fails
+                                                   for a case, an error is logged to its span, and the test case is 
+                                                   skipped (returning None). TypedDict validation requires Pydantic v2.
         interaction (Callable): The function to test for each test case.
-                               Receives (optionally validated) inputs.
+                               Always receives a TestCase object (TestInput is converted 
+                               internally to TestCase).
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
                                        For async functions, uses asyncio.Semaphore.
@@ -312,7 +383,7 @@ async def eval_dataset(
         
         semaphore = asyncio.Semaphore(max_concurrency)
 
-    raw_test_cases: Sequence[Union[TestCase, TestInput[InputPayload]]]
+    raw_test_cases: Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]]
     try:
         if callable(data_provider):
             data_result = data_provider()
@@ -327,22 +398,39 @@ async def eval_dataset(
         # Potentially log this with a Gentrace SDK logger if available
         raise RuntimeError(f"Failed to retrieve or process dataset from data provider: {e}") from e
 
-    evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
-    for i, test_case in enumerate(raw_test_cases):
-        case_inputs: Optional[InputPayload]
-        case_id: Optional[str]
-        case_name_prop: Optional[str]
-
-        if isinstance(test_case, dict):
-            # TypedDict case
-            case_inputs = test_case.get("inputs")
-            case_id = None
-            case_name_prop = test_case.get("name")
+    # Convert all test cases to TestCase objects
+    converted_test_cases: List[TestCase] = []
+    for raw_case in raw_test_cases:
+        # Convert TestInput to TestCase internally
+        if isinstance(raw_case, TestCase):
+            # If already a TestCase, use as-is
+            converted_test_cases.append(raw_case)
         else:
-            protocol_case = test_case
-            case_inputs = cast(InputPayload, protocol_case.inputs)
-            case_id = protocol_case.id
-            case_name_prop = protocol_case.name
+            # Generate values for required fields
+            now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
+            
+            # Convert TestInput to TestCase
+            # At this point, raw_case must be TestInput based on the type annotation
+            converted_test_cases.append(TestCase(
+                id=raw_case.id or "",  # Don't generate ID for local test cases
+                name=raw_case.name or "",  # Let the index-based naming logic handle unnamed cases
+                inputs=dict(raw_case.inputs),  # Convert Mapping to dict
+                expectedOutputs=None,
+                # Fill required fields with sensible defaults
+                datasetId="local",
+                pipelineId="local",
+                createdAt=now,
+                updatedAt=now,
+                archivedAt=None,
+                deletedAt=None
+            ))
+
+    evaluation_tasks: List[Awaitable[Optional[TResult]]] = []
+    for i, test_case in enumerate(converted_test_cases):
+        # Now test_case is always a TestCase object
+        case_inputs = test_case.inputs
+        case_id = test_case.id
+        case_name_prop = test_case.name
 
         final_case_name: str
         if case_name_prop:
@@ -356,12 +444,14 @@ async def eval_dataset(
         async def run_test_case(
             case_name: str = final_case_name,
             case_id_val: Optional[str] = case_id,
-            case_inputs_val: Optional[InputPayload] = case_inputs,
+            case_inputs_val: Mapping[str, Any] = case_inputs,
+            full_case: TestCase = test_case,
         ) -> Optional[TResult]:
             return await _run_single_test_case_for_dataset(
                 test_case_name=case_name,
                 test_case_id=case_id_val,
-                raw_inputs=case_inputs_val,
+                raw_inputs=case_inputs_val,  # type: ignore[arg-type]
+                full_test_case=full_case,
                 interaction_function=interaction_fn,
                 input_schema=input_schema,
                 experiment_context=experiment_context,
