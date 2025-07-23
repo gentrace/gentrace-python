@@ -1,15 +1,19 @@
+# pyright: reportUnknownVariableType=false, reportUnknownArgumentType=false, reportArgumentType=false, reportCallIssue=false, reportTypedDictNotRequiredAccess=false
 """Tests for eval_dataset concurrency control."""
 
 import time
 import asyncio
 import threading
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Mapping
+from unittest.mock import MagicMock
 
 import pytest
 
 import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
 from gentrace import TestInput as GentraceTestInput, init, experiment, eval_dataset
+from gentrace.types import TestCase as GentraceTestCase
+from gentrace.types.experiment import Experiment
 
 # Use same pipeline ID as other tests
 PIPELINE_ID = "76ecc73d-3419-431f-aafc-93a9d1af1b83"
@@ -18,16 +22,32 @@ PIPELINE_ID = "76ecc73d-3419-431f-aafc-93a9d1af1b83"
 # Automatically stub out experiment API calls to avoid real network interactions
 @pytest.fixture(autouse=True)
 def _stub_experiment_api(monkeypatch: Any) -> None:  # type: ignore
-    async def fake_start_experiment_api(*_: Any, **__: Any) -> str:
-        return "dummy-experiment-id"
+    async def fake_start_experiment_api(*_: Any, **__: Any) -> Experiment:
+        return Experiment(
+            id="dummy-experiment-id",
+            createdAt="2023-01-01T00:00:00Z",
+            metadata=None,
+            name=None,
+            pipelineId="dummy-pipeline-id",
+            resourcePath="/experiments/dummy-experiment-id",
+            updatedAt="2023-01-01T00:00:00Z",
+        )
 
     async def fake_finish_experiment_api(*_: Any, **__: Any) -> None:
         return None
+    
+    # Mock the client instance to return a proper base_url
+    mock_client = MagicMock()
+    mock_client.base_url = "https://gentrace.ai/api"
+    
+    def fake_get_async_client_instance():
+        return mock_client
 
     monkeypatch.setattr(exp_ctrl, "start_experiment_api", fake_start_experiment_api)
     monkeypatch.setattr(exp_mod, "start_experiment_api", fake_start_experiment_api)
     monkeypatch.setattr(exp_ctrl, "finish_experiment_api", fake_finish_experiment_api)
     monkeypatch.setattr(exp_mod, "finish_experiment_api", fake_finish_experiment_api)
+    monkeypatch.setattr(exp_mod, "_get_async_client_instance", fake_get_async_client_instance)
 
 
 class ConcurrencyTracker:
@@ -77,10 +97,10 @@ def init_gentrace():
     init(api_key="test-key", base_url="https://gentrace.ai/api")
 
 
-def create_test_data(num_items: int) -> List[GentraceTestInput[Dict[str, Any]]]:
+def create_test_data(num_items: int) -> List[GentraceTestInput[Mapping[str, Any]]]:
     """Create test data."""
     return [
-        {"inputs": {"id": f"test-{i}"}}
+        GentraceTestInput(inputs={"id": f"test-{i}"})
         for i in range(num_items)
     ]
 
@@ -90,9 +110,10 @@ def create_test_data(num_items: int) -> List[GentraceTestInput[Dict[str, Any]]]:
 async def test_async_function_with_max_concurrency(tracker: ConcurrencyTracker) -> None:
     """Test that async functions respect max_concurrency using semaphore."""
     
-    async def async_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        task_id = inputs.get("id", "unknown")
+        inputs = test_case.inputs
+        task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
         # Simulate async work
@@ -119,9 +140,10 @@ async def test_sync_function_with_max_concurrency(tracker: ConcurrencyTracker) -
     # Use a thread-safe counter for sync functions
     sync_lock = threading.Lock()
     
-    def sync_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    def sync_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Sync task that tracks concurrency."""
-        task_id = inputs.get("id", "unknown")
+        inputs = test_case.inputs
+        task_id = str(inputs.get("id", "unknown"))
         
         # Manually track concurrency for sync functions
         with sync_lock:
@@ -152,9 +174,10 @@ async def test_sync_function_with_max_concurrency(tracker: ConcurrencyTracker) -
 async def test_no_max_concurrency(tracker: ConcurrencyTracker) -> None:
     """Test that without max_concurrency, all tasks run concurrently."""
     
-    async def async_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        task_id = inputs.get("id", "unknown")
+        inputs = test_case.inputs
+        task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
         # Simulate async work
@@ -181,9 +204,10 @@ async def test_max_concurrency_zero() -> None:
     
     tracker = ConcurrencyTracker()
     
-    async def async_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        task_id = inputs.get("id", "unknown")
+        inputs = test_case.inputs
+        task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
         # Simulate async work
@@ -210,9 +234,10 @@ async def test_max_concurrency_one() -> None:
     
     tracker = ConcurrencyTracker()
     
-    async def async_task(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(test_case: GentraceTestCase) -> Dict[str, Any]:
         """Async task that tracks concurrency."""
-        task_id = inputs.get("id", "unknown")
+        inputs = test_case.inputs
+        task_id = str(inputs.get("id", "unknown"))
         current = await tracker.increment(task_id)
         
         # Simulate async work
@@ -237,7 +262,7 @@ async def test_max_concurrency_one() -> None:
 async def test_max_concurrency_exceeds_limit() -> None:
     """Test that max_concurrency > 30 raises ValueError."""
     
-    async def async_task(_: Dict[str, Any]) -> Dict[str, Any]:
+    async def async_task(_: GentraceTestCase) -> Dict[str, Any]:
         """Simple async task."""
         return {"result": "ok"}
     

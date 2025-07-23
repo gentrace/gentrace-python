@@ -1,13 +1,14 @@
-"""Simple dataset evaluation example with Gentrace."""
+"""Simple dataset evaluation example with Gentrace using local test cases."""
 
 import os
 import asyncio
-from typing import Any, Dict
+from typing import Optional
+from typing_extensions import TypedDict
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
-from gentrace import TestInput, init, experiment, interaction, eval_dataset
+from gentrace import TestCase, TestInput, init, experiment, eval_dataset
 
 load_dotenv()
 
@@ -21,52 +22,62 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+class PromptInputs(TypedDict):
+    prompt: str
 
-async def process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    """Process AI request using OpenAI."""
-    # test_case.name # throwing exception
 
-    # Extract the prompt from inputs
-    prompt = inputs.get("prompt", "Hey, how are you?")
 
-    # Call OpenAI
+async def process_ai_request(test_case: TestCase) -> Optional[str]:
+    print(f"Running test case: {test_case.name}")
+
+    prompt = test_case.inputs.get("prompt")
+
     response = await openai.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": prompt}],
+        model="gpt-4.1-nano",
+        messages=[{"role": "user", "content": str(prompt)}], 
     )
 
-    result = response.choices[0].message.content
-
-    return {
-        "result": result,
-        "metadata": {"model": response.model, "usage": response.usage.model_dump() if response.usage else None},
-    }
-
-
-@interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
-async def traced_process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
-    """Traced version of process_ai_request."""
-    return await process_ai_request(inputs)
+    return response.choices[0].message.content
 
 
 @experiment(pipeline_id=PIPELINE_ID)
 async def dataset_evaluation() -> None:
-    """Run evaluation on a dataset."""
+    """Run evaluation on a dataset using type-safe TestInput objects with TypedDict."""
 
+    # Using TestInput with TypedDict for type safety
+    test_cases = [
+        TestInput[PromptInputs](
+            name="greeting", 
+            inputs={"prompt": "Hello! How are you doing today?"}
+        ),
+        TestInput[PromptInputs](
+            name="factual_question", 
+            inputs={"prompt": "What is the capital of France?"}
+        ),
+        TestInput[PromptInputs](
+            name="math_problem", 
+            inputs={"prompt": "What is 25 * 4?"}
+        ),
+        TestInput[PromptInputs](
+            name="creative_writing", 
+            inputs={"prompt": "Write a haiku about artificial intelligence"}
+        ),
+        TestInput[PromptInputs](
+            inputs={"prompt": "Tell me a joke"}
+        )
+    ]
+    
     await eval_dataset(
-        data=[
-            TestInput(name="greeting", inputs={"prompt": "Hello! How are you doing today?"}),
-            TestInput(name="factual_question", inputs={"prompt": "What is the capital of France?"}),
-            TestInput(name="math_problem", inputs={"prompt": "What is 25 * 4?"}),
-            TestInput(name="creative_writing", inputs={"prompt": "Write a haiku about artificial intelligence"}),
-        ],
-        interaction=traced_process_ai_request,
-        max_concurrency=30,
+        data=test_cases,
+        schema=PromptInputs,
+        interaction=process_ai_request,
     )
 
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
 
 
 if __name__ == "__main__":
-    # Run the experiment
-    asyncio.run(dataset_evaluation())
+    result = asyncio.run(dataset_evaluation())
+    
+    if result:
+        print(f"Experiment URL: {result.url}")

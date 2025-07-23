@@ -60,7 +60,7 @@ async def main() -> None:
                 # Set GenAI attributes according to semantic conventions
                 span.set_attributes({
                     "gen_ai.system": "openai",
-                    "gen_ai.request.model": "gpt-4o-mini",
+                    "gen_ai.request.model": "gpt-4.1-nano",
                     "gen_ai.operation.name": "chat",
                     "service.name": "genai-semantic-example",
                 })
@@ -82,7 +82,7 @@ async def main() -> None:
                 print("Sending chat completion request...")
 
                 completion = await client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1-nano",
                     messages=[
                         {"role": "system", "content": system_message},
                         {"role": "user", "content": question},
@@ -118,7 +118,7 @@ async def main() -> None:
             try:
                 span.set_attributes({
                     "gen_ai.system": "openai",
-                    "gen_ai.request.model": "gpt-4o-mini",
+                    "gen_ai.request.model": "gpt-4.1-nano",
                     "gen_ai.operation.name": "chat",
                     "service.name": "genai-semantic-example",
                 })
@@ -187,7 +187,7 @@ async def main() -> None:
                 ]
 
                 completion = await client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1-nano",
                     messages=[
                         ChatCompletionUserMessageParam(role="user", content=user_question),
                         ChatCompletionAssistantMessageParam(
