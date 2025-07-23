@@ -17,7 +17,7 @@ The REST API documentation can be found on [gentrace.ai](https://gentrace.ai). T
 
 ```sh
 # install from PyPI
-pip install --pre gentrace-py
+pip install gentrace-py
 ```
 
 ## Usage
@@ -73,7 +73,7 @@ You can enable this by installing `aiohttp`:
 
 ```sh
 # install from PyPI
-pip install --pre gentrace-py[aiohttp]
+pip install gentrace-py[aiohttp]
 ```
 
 Then you can enable it by instantiating the client with `http_client=DefaultAioHttpClient()`:
