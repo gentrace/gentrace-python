@@ -57,4 +57,6 @@ async def dataset_evaluation() -> None:
 
 if __name__ == "__main__":
     result = asyncio.run(dataset_evaluation())
-    print(f"Experiment URL: {result.url}")
+
+    if result:
+        print(f"Experiment URL: {result.url}")
