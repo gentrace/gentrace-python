@@ -42,7 +42,7 @@ async def process_ai_request(test_case: TestCase) -> Optional[str]:
     return response.choices[0].message.content
 
 
-@experiment(pipeline_id=PIPELINE_ID)
+@experiment()
 async def dataset_evaluation() -> None:
     """Run evaluation on a dataset."""
 
