@@ -1,6 +1,6 @@
 [project]
 name = "gentrace-py"
-version = "1.0.1"
+version = "1.0.0-alpha.11"
 description = "The official Python library for the gentrace API"
 dynamic = ["readme"]
 license = "MIT"
@@ -30,7 +30,6 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
   "Operating System :: OS Independent",
   "Operating System :: POSIX",
   "Operating System :: MacOS",
@@ -45,7 +44,6 @@ Homepage = "https://github.com/gentrace/gentrace-python"
 Repository = "https://github.com/gentrace/gentrace-python"
 
 [project.optional-dependencies]
-aiohttp = ["aiohttp", "httpx_aiohttp>=0.1.6"]
 openai = [
     "openai",
     "openinference-instrumentation-openai",
@@ -82,7 +80,6 @@ dev-dependencies = [
     "langchain-openai>=0.3.27",
     "langchain>=0.3.26",
     "openinference-instrumentation-langchain>=0.1.46",
-    "pytest-xdist>=3.6.1",
 ]
 
 [tool.rye.scripts]
@@ -154,10 +151,10 @@ replacement = '[\1](https://github.com/gentrace/gentrace-python/tree/main/\g<2>)
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "--tb=short -n auto"
+addopts = "--tb=short"
 xfail_strict = true
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "session"
 filterwarnings = [
   "error"
 ]

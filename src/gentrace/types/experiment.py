@@ -25,8 +25,5 @@ class Experiment(BaseModel):
     pipeline_id: str = FieldInfo(alias="pipelineId")
     """Pipeline UUID"""
 
-    resource_path: Optional[str] = FieldInfo(alias="resourcePath", default=None)
-    """Resource path to navigate to the experiment"""
-
     updated_at: str = FieldInfo(alias="updatedAt")
     """Last update timestamp (ISO 8601)"""

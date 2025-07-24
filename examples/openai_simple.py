@@ -23,7 +23,7 @@ client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @interaction(name="chat_completion", pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
 def chat_with_openai(prompt: str) -> str:
-    response = client.chat.completions.create(model="gpt-4.1-nano", messages=[{"role": "user", "content": prompt}])
+    response = client.chat.completions.create(model="gpt-4o-mini", messages=[{"role": "user", "content": prompt}])
     return response.choices[0].message.content or ""
 
 

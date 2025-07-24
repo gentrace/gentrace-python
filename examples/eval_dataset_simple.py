@@ -2,13 +2,12 @@
 
 import os
 import asyncio
-from typing import List, Optional
+from typing import Any, Dict, List
 
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
-from pydantic import BaseModel
 
-from gentrace import TestCase, init, experiment, eval_dataset, test_cases_async
+from gentrace import TestCase, init, experiment, interaction, eval_dataset, test_cases_async
 
 load_dotenv()
 
@@ -20,32 +19,47 @@ init(
 PIPELINE_ID = os.getenv("GENTRACE_PIPELINE_ID", "")
 DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
-openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai = AsyncOpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
-class QueryInputs(BaseModel):
-    query: str
 
-
-async def process_ai_request(test_case: TestCase) -> Optional[str]:
+async def process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
     """Process AI request using OpenAI."""
-    # Print for each test case
-    print(f"Processing test case: {test_case.name}")
-    
-    query = test_case.inputs.get("query", "Hey, how are you?")
+    # test_case.name # throwing exception
 
+    # Extract the prompt from inputs
+    prompt = inputs.get("prompt", "Hello, how are you?")
+    
     # Call OpenAI
     response = await openai.chat.completions.create(
-        model="gpt-4.1-nano",
-        messages=[{"role": "user", "content": str(query)}],
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
     )
+    
+    result = response.choices[0].message.content
+    
+    return {
+        "result": result,
+        "metadata": {
+            "model": response.model,
+            "usage": response.usage.model_dump() if response.usage else None
+        }
+    }
 
-    return response.choices[0].message.content
+
+@interaction(pipeline_id=PIPELINE_ID, name="Process AI Request")
+async def traced_process_ai_request(inputs: Dict[str, Any]) -> Dict[str, Any]:
+    """Traced version of process_ai_request."""
+    return await process_ai_request(inputs)
 
 
 @experiment(pipeline_id=PIPELINE_ID)
 async def dataset_evaluation() -> None:
-    """Run evaluation on a dataset."""
 
+    """Run evaluation on a dataset."""
     async def fetch_test_cases() -> List[TestCase]:
         """Fetch test cases from the dataset."""
         test_case_list = await test_cases_async.list(dataset_id=DATASET_ID)
@@ -53,15 +67,12 @@ async def dataset_evaluation() -> None:
 
     await eval_dataset(
         data=fetch_test_cases,
-        schema=QueryInputs,
-        interaction=process_ai_request,
+        interaction=traced_process_ai_request,
     )
 
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
 
 
 if __name__ == "__main__":
-    result = asyncio.run(dataset_evaluation())
-
-    if result:
-        print(f"Experiment URL: {result.url}")
+    # Run the experiment
+    asyncio.run(dataset_evaluation())

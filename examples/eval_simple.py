@@ -44,5 +44,4 @@ async def test_response_quality() -> Dict[str, Any]:
 if __name__ == "__main__":
     import asyncio
 
-    result = asyncio.run(test_response_quality())
-    print(f"Experiment URL: {result.url}")
+    asyncio.run(test_response_quality())

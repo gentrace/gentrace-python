@@ -13,7 +13,7 @@ from rich.tree import Tree
 from rich.panel import Panel
 from rich.table import Table, Column
 from rich.syntax import Syntax
-from rich.console import Console, RenderableType
+from rich.console import Group, Console, RenderableType
 from rich.spinner import Spinner
 from opentelemetry import trace as trace_api
 from rich.markdown import Markdown
@@ -29,8 +29,6 @@ from rich.progress import (
 )
 from opentelemetry.util import types as otel_types
 from opentelemetry.sdk.trace import TracerProvider as SDKTracerProvider
-
-from .warnings import GentraceWarnings
 
 logger = logging.getLogger("gentrace")
 
@@ -371,8 +369,48 @@ def _show_auto_init_warning() -> None:
     """
     Shows a warning when Gentrace is automatically initialized from environment variables.
     """
-    warning = GentraceWarnings.AutoInitializationWarning()
-    display_gentrace_warning(warning)
+    # Check if warnings would be suppressed for our message
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Don't override filters - use whatever the user has set
+        warnings.warn(
+            "Gentrace was automatically initialized from environment variables",
+            UserWarning,
+            stacklevel=2
+        )
+        
+    # If no warning was caught, it means it's being filtered - don't show rich display
+    if not caught_warnings:
+        return
+    
+    console = get_console()
+    
+    warning_content = Group(
+        Text("Gentrace was automatically initialized from environment variables.", style="bold white"),
+        Text(),
+        Text("This likely means your init() call is not being executed, which can cause issues:", style="yellow"),
+        Text("• Custom options passed to init() won't be applied (instrumentations, debug, etc.)", style="white"),
+        Text("• Instrumentations may not work correctly", style="white"),
+        Text("• OpenTelemetry configuration may be incomplete", style="white"),
+        Text(),
+        Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning", style="cyan"),
+        Text(),
+        Text("To fix this, ensure init() is called before executing decorators.", style="yellow"),
+        Text(),
+        Text("Note: Each distinct process/service must call init() before using @interaction decorators.", style="cyan"),
+        Text(),
+        Text("To suppress this warning:", style="dim"),
+        Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim"),
+        Text("• Or: warnings.filterwarnings('ignore', message='Gentrace was automatically initialized')", style="dim"),
+    )
+    
+    # Create red bordered panel
+    warning_panel = Panel(
+        warning_content,
+        title="[bold red]⚠ Warning: Auto-Initialization [GT_AutoInitializationWarning][/bold red]",
+        border_style="red",
+        title_align="left",
+        padding=(1, 2),
+    )
     
     # Code example for proper initialization
     init_code = """  from gentrace import init, interaction
@@ -385,7 +423,9 @@ def _show_auto_init_warning() -> None:
   def my_function():
       return "Hello, world!"""
     
-    console = get_console()
+    console.console.print(warning_panel)
+    console.console.print()
+    
     console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
     console.console.print()
     
@@ -413,8 +453,40 @@ def _show_otel_warning() -> None:
     provider = trace_api.get_tracer_provider()
 
     if not isinstance(provider, SDKTracerProvider):
-        warning = GentraceWarnings.OtelNotConfiguredError()
-        display_gentrace_warning(warning)
+        # Check if warnings would be suppressed for our message
+        with warnings.catch_warnings(record=True) as caught_warnings:
+            warnings.simplefilter("always")
+            warnings.warn(
+                "OpenTelemetry SDK does not appear to be configured",
+                UserWarning,
+                stacklevel=2
+            )
+            
+        # If no warning was caught, it means it's being filtered - don't show rich display
+        if not caught_warnings:
+            _otel_config_warning_issued = True
+            return
+        
+        console = get_console()
+
+        # Create a warning panel with rich formatting
+        warning_content = Group(
+            Text("OpenTelemetry SDK does not appear to be configured. This means that Gentrace features"),
+            Text("like @interaction, @eval, @traced, and eval_dataset() will not record any data to the"),
+            Text("Gentrace UI."),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror", style="cyan"),
+            Text(),
+            Text("You have two options to fix this:"),
+        )
+
+        warning_panel = Panel(
+            warning_content,
+            title="[bold red]⚠ Gentrace Configuration Warning [GT_OtelNotConfiguredError][/bold red]",
+            border_style="red",
+            title_align="left",
+            padding=(1, 2),
+        )
 
         # Init example code (recommended)
         # Add indentation to each line for visual padding
@@ -472,7 +544,8 @@ def _show_otel_warning() -> None:
   print("OpenTelemetry SDK started – spans will be sent to Gentrace.")"""
 
         try:
-            console = get_console()
+            console.console.print(warning_panel)
+            console.console.print()  # Add spacing
 
             # Display the recommended init() approach with star emoji
             console.console.print(Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green"))
@@ -485,7 +558,7 @@ def _show_otel_warning() -> None:
                 line_numbers=False,
                 word_wrap=True,
                 background_color="default",
-                indent_guides=False,
+                indent_guides=True,
                 code_width=100,
             )
             console.console.print(syntax_init)
@@ -502,7 +575,7 @@ def _show_otel_warning() -> None:
                 line_numbers=False,
                 word_wrap=True,
                 background_color="default",
-                indent_guides=False,
+                indent_guides=True,
                 code_width=100,
             )
             console.console.print(syntax_manual)
@@ -549,17 +622,6 @@ See the documentation for the complete setup code.
         _otel_config_warning_issued = True
 
 
-
-
-def display_gentrace_warning(warning: Any) -> None:
-    """Display a Gentrace warning with consistent formatting.
-    
-    Args:
-        warning: The GentraceWarning instance to display (from warnings module)
-    """
-    warning.display()
-
-
 def display_pipeline_error(
     pipeline_id: str,
     error_type: str,
@@ -573,17 +635,104 @@ def display_pipeline_error(
         error_type: One of 'invalid-format', 'not-found', 'unauthorized', 'unknown'
         error: Optional exception object for additional context
     """
-    if error_type == 'invalid-format':
-        warning = GentraceWarnings.PipelineInvalidError(pipeline_id)
-    elif error_type == 'not-found':
-        warning = GentraceWarnings.PipelineNotFoundError(pipeline_id)
-    elif error_type == 'unauthorized':
-        warning = GentraceWarnings.PipelineUnauthorizedError(pipeline_id)
-    else:  # unknown
-        error_message = str(error) if error else None
-        warning = GentraceWarnings.PipelineError(pipeline_id, error_message)
+    # Check if warnings would be suppressed for our message
+    warning_messages = {
+        'invalid-format': f"Pipeline ID '{pipeline_id}' is not a valid UUID",
+        'not-found': f"Pipeline '{pipeline_id}' does not exist",
+        'unauthorized': f"Access denied to pipeline '{pipeline_id}'",
+        'unknown': f"Failed to validate pipeline '{pipeline_id}'"
+    }
     
-    display_gentrace_warning(warning)
+    warning_message = warning_messages.get(error_type, warning_messages['unknown'])
+    
+    # Check if the warning would be suppressed
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        # Use current warning filters
+        warnings.warn(
+            warning_message,
+            UserWarning,
+            stacklevel=3
+        )
+        
+    # If no warning was caught, it's being filtered - don't show anything
+    if not caught_warnings:
+        return
+    
+    # Warning would be shown, so show rich display instead
+    
+    console = get_console()
+    
+    # Common suppression note
+    suppression_note = Text(
+        "To suppress this warning: warnings.filterwarnings('ignore', message='Pipeline')",
+        style="dim"
+    )
+    
+    if error_type == 'invalid-format':
+        error_title = "⚠ Warning: Gentrace Invalid Pipeline ID [GT_PipelineInvalidError]"
+        error_content = Group(
+            Text(f"Pipeline ID '{pipeline_id}' is not a valid UUID.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    elif error_type == 'not-found':
+        error_title = "⚠ Warning: Gentrace Pipeline Not Found [GT_PipelineNotFoundError]"
+        error_content = Group(
+            Text(f"Pipeline '{pipeline_id}' does not exist or is not accessible.", style="yellow"),
+            Text(),
+            Text("Please verify the pipeline ID matches what's shown in the Gentrace UI.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    elif error_type == 'unauthorized':
+        error_title = "⚠ Warning: Gentrace Pipeline Unauthorized [GT_PipelineUnauthorizedError]"
+        error_content = Group(
+            Text(f"Access denied to pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text("Please check your GENTRACE_API_KEY has the correct permissions.", style="white"),
+            Text(),
+            Text("Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror", style="cyan"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    else:  # unknown
+        error_title = "⚠ Warning: Gentrace Pipeline Error"
+        error_message = error.args[0] if error and error.args else "Unknown error"
+        error_content = Group(
+            Text(f"Failed to validate pipeline '{pipeline_id}'.", style="yellow"),
+            Text(),
+            Text(f"Error: {error_message}", style="gray"),
+            Text(),
+            suppression_note,
+        )
+        border_style = "red"
+    
+    error_panel = Panel(
+        error_content,
+        title=f"[bold red]{error_title}[/bold red]",
+        border_style=border_style,
+        title_align="left",
+        padding=(1, 2),
+    )
+    
+    try:
+        console.console.print(error_panel)
+        console.console.print()
+    except Exception:
+        # Fallback to simple logging if rich formatting fails
+        logger.error(f"Gentrace Pipeline Error: {error_type} for pipeline '{pipeline_id}'")
 
 
 
@@ -783,105 +932,6 @@ def print_function_call_summary(
     console.console.print(panel)
 
 
-def generate_config_diff(previous_config: Dict[str, Any], current_config: Dict[str, Any]) -> List[str]:
-    """
-    Generate a diff between two configuration dictionaries.
-    
-    Args:
-        previous_config: The previous configuration
-        current_config: The current configuration
-        
-    Returns:
-        List of formatted diff lines showing changes
-    """
-    diff_lines: List[str] = []
-    all_keys = set(previous_config.keys()) | set(current_config.keys())
-    
-    for key in sorted(all_keys):
-        prev_value = previous_config.get(key)
-        curr_value = current_config.get(key)
-        
-        # Handle sensitive keys generically
-        display_prev = mask_sensitive_value(key, prev_value)
-        display_curr = mask_sensitive_value(key, curr_value)
-        
-        if key not in previous_config and key in current_config:
-            # Added
-            diff_lines.append(f"  {key}:")
-            diff_lines.append(f"    + {format_config_value(display_curr)}")
-        elif key in previous_config and key not in current_config:
-            # Removed
-            diff_lines.append(f"  {key}:")
-            diff_lines.append(f"    - {format_config_value(display_prev)}")
-        elif prev_value != curr_value:
-            # Changed
-            diff_lines.append(f"  {key}:")
-            diff_lines.append(f"    - {format_config_value(display_prev)} → {format_config_value(display_curr)}")
-    
-    return diff_lines
-
-
-def format_config_value(value: Any) -> str:
-    """Format a configuration value for display in diffs."""
-    if value is None:
-        return "None"
-    elif isinstance(value, str):
-        return f'"{value}"'
-    elif isinstance(value, bool):
-        return str(value)
-    elif isinstance(value, (int, float)):
-        return str(value)
-    elif callable(value):
-        return "<function>"
-    elif isinstance(value, dict):
-        # For dicts, show a summary
-        if not value:
-            return "{}"
-        value_dict = cast(Dict[Any, Any], value)
-        key_list: List[str] = [str(k) for k in value_dict.keys()]
-        if len(key_list) <= 3:
-            return f"{{ {', '.join(key_list)} }}"
-        return f"{{ {', '.join(key_list[:3])}, ... }}"
-    elif isinstance(value, list):
-        value_list = cast(List[Any], value)
-        return f"[List({len(value_list)})]"
-    else:
-        return f"<{type(value).__name__}>"
-
-
-def mask_sensitive_value(key: str, value: Any) -> Any:
-    """
-    Mask sensitive values based on key patterns.
-    
-    Args:
-        key: The configuration key name
-        value: The value to potentially mask
-        
-    Returns:
-        The masked value if sensitive, otherwise the original value
-    """
-    import re
-    
-    sensitive_patterns = [
-        re.compile(r'key', re.IGNORECASE),
-        re.compile(r'token', re.IGNORECASE),
-        re.compile(r'secret', re.IGNORECASE),
-        re.compile(r'password', re.IGNORECASE),
-        re.compile(r'auth', re.IGNORECASE),
-        re.compile(r'credential', re.IGNORECASE),
-        re.compile(r'apikey', re.IGNORECASE),
-        re.compile(r'api_key', re.IGNORECASE),
-    ]
-    
-    if isinstance(value, str) and any(pattern.search(key) for pattern in sensitive_patterns):
-        # Show first 6 chars and mask the rest
-        if len(value) > 10:
-            return f"{value[:6]}***"
-        return "***"
-    
-    return value
-
-
 __all__ = [
     "gentrace_format_otel_attributes",
     "gentrace_format_otel_value",
@@ -899,8 +949,4 @@ __all__ = [
     "print_trace_info",
     "print_evaluation_results",
     "print_function_call_summary",
-    "display_gentrace_warning",
-    "generate_config_diff",
-    "mask_sensitive_value",
-    "format_config_value",
 ]

@@ -1,11 +1,9 @@
 """Pipeline-specific validation logic for Gentrace."""
 
-import os
 from typing import Set
 
-import anyio
-
 from .utils import display_pipeline_error
+from .validation_loop import schedule_background_task
 
 # Cache for validated pipeline IDs
 _validated_pipelines: Set[str] = set()
@@ -102,43 +100,20 @@ def start_pipeline_validation(pipeline_id: str) -> None:
     Args:
         pipeline_id: The pipeline ID to validate
     """
-    # Skip validation in test environments
-    # Check multiple indicators that we're in a test environment
-    if (os.environ.get("TEST_API_BASE_URL") or 
-        os.environ.get("PYTEST_CURRENT_TEST") or
-        os.environ.get("CI") or
-        os.environ.get("GITHUB_ACTIONS")):
-        return
-    
     # Skip if already validated or invalid
     if pipeline_id in _validated_pipelines or pipeline_id in _invalid_pipelines:
         return
     
-    # Run the async validation with proper timeout
-    async def run_validation_with_timeout() -> None:
+    # Create validation coroutine
+    async def validate_task() -> None:
         try:
-            # Use anyio's timeout to ensure validation doesn't hang
-            # 5 second timeout should be plenty for a simple API check
-            with anyio.fail_after(5):
-                await validate_pipeline_access(pipeline_id)
+            await validate_pipeline_access(pipeline_id)
         except Exception:
-            # All exceptions are handled, including timeouts
+            # Error is already logged in validate_pipeline_access
             pass
     
-    # Try to use the current event loop's executor
-    import asyncio
-    try:
-        loop = asyncio.get_running_loop()
-        # We're in an async context, schedule the task
-        loop.create_task(run_validation_with_timeout())
-    except RuntimeError:
-        # No running event loop, use the default executor
-        loop = asyncio.new_event_loop()
-        # Use run_in_executor with None to use the default ThreadPoolExecutor
-        loop.run_in_executor(
-            None,
-            lambda: anyio.run(run_validation_with_timeout)
-        )
+    # Schedule the validation task in the background
+    schedule_background_task(validate_task())
 
 
 __all__ = [

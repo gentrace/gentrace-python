@@ -32,14 +32,6 @@ from .experiments import (
     ExperimentsResourceWithStreamingResponse,
     AsyncExperimentsResourceWithStreamingResponse,
 )
-from .organizations import (
-    OrganizationsResource,
-    AsyncOrganizationsResource,
-    OrganizationsResourceWithRawResponse,
-    AsyncOrganizationsResourceWithRawResponse,
-    OrganizationsResourceWithStreamingResponse,
-    AsyncOrganizationsResourceWithStreamingResponse,
-)
 
 __all__ = [
     "PipelinesResource",
@@ -54,12 +46,6 @@ __all__ = [
     "AsyncExperimentsResourceWithRawResponse",
     "ExperimentsResourceWithStreamingResponse",
     "AsyncExperimentsResourceWithStreamingResponse",
-    "OrganizationsResource",
-    "AsyncOrganizationsResource",
-    "OrganizationsResourceWithRawResponse",
-    "AsyncOrganizationsResourceWithRawResponse",
-    "OrganizationsResourceWithStreamingResponse",
-    "AsyncOrganizationsResourceWithStreamingResponse",
     "DatasetsResource",
     "AsyncDatasetsResource",
     "DatasetsResourceWithRawResponse",

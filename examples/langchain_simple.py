@@ -45,15 +45,22 @@ def main() -> None:
     # Create chain
     chain = prompt | llm | StrOutputParser()
 
-    # Create instrumented function
-    @gentrace.interaction(pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
-    def run_chain() -> str:
+    # Run the chain with pipeline tracking if GENTRACE_PIPELINE_ID is set
+    pipeline_id = os.getenv("GENTRACE_PIPELINE_ID")
+    if pipeline_id:
+        # Wrap with pipeline tracking
+        @gentrace.interaction(pipeline_id=pipeline_id)
+        def run_chain() -> str:
+            result = chain.invoke({"topic": "What is OpenTelemetry?"})
+            print(f"Response: {result}")
+            return result
+
+        run_chain()
+
+    else:
+        # Run without pipeline tracking
         result = chain.invoke({"topic": "What is OpenTelemetry?"})
         print(f"Response: {result}")
-        return result
-
-    # Run the chain with pipeline tracking
-    run_chain()
 
     print("\nCheck your Gentrace dashboard for traces!")
 

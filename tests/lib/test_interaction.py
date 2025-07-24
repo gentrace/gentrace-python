@@ -150,54 +150,6 @@ class TestInteraction(unittest.TestCase):
         self.assertIsNotNone(sync_invalid_id_func)
 
     @patch("gentrace.lib.traced.trace.get_tracer")
-    def test_interaction_no_pipeline_id_uses_default(self, mock_get_tracer: MagicMock) -> None:
-        mock_span, mock_tracer = self.common_test_setup()
-        mock_get_tracer.return_value = mock_tracer
-
-        @interaction()
-        def func_no_pipeline() -> str:
-            return "no pipeline"
-
-        result = func_no_pipeline()
-
-        self.assertEqual(result, "no pipeline")
-        mock_tracer.start_as_current_span.assert_called_once_with("func_no_pipeline")
-        mock_span.set_attributes.assert_called_once_with({ATTR_GENTRACE_PIPELINE_ID: "default"})
-
-    @patch("gentrace.lib.traced.trace.get_tracer")
-    def test_interaction_with_attrs_but_no_pipeline(self, mock_get_tracer: MagicMock) -> None:
-        mock_span, mock_tracer = self.common_test_setup()
-        mock_get_tracer.return_value = mock_tracer
-        user_attrs = {"model": "gpt-4", "temperature": 0.7}
-
-        @interaction(attributes=user_attrs)
-        def func_attrs_only() -> str:
-            return "attrs only"
-
-        result = func_attrs_only()
-
-        self.assertEqual(result, "attrs only")
-        expected_attributes = {
-            **user_attrs,
-            ATTR_GENTRACE_PIPELINE_ID: "default",
-        }
-        mock_span.set_attributes.assert_called_once_with(expected_attributes)
-
-    @patch("gentrace.lib.traced.trace.get_tracer")
-    def test_interaction_explicit_none_pipeline_uses_default(self, mock_get_tracer: MagicMock) -> None:
-        mock_span, mock_tracer = self.common_test_setup()
-        mock_get_tracer.return_value = mock_tracer
-
-        @interaction(pipeline_id=None)
-        def func_explicit_none() -> str:
-            return "explicit none"
-
-        result = func_explicit_none()
-
-        self.assertEqual(result, "explicit none")
-        mock_span.set_attributes.assert_called_once_with({ATTR_GENTRACE_PIPELINE_ID: "default"})
-
-    @patch("gentrace.lib.traced.trace.get_tracer")
     def test_interaction_baggage_propagation(self, mock_get_tracer: MagicMock) -> None:
         _mock_span, mock_tracer = self.common_test_setup()
         mock_get_tracer.return_value = mock_tracer
@@ -219,25 +171,6 @@ class TestInteraction(unittest.TestCase):
             "GENTRACE_SAMPLE_KEY_ATTR should be 'true' in baggage inside the interaction-decorated function.",
         )
         mock_tracer.start_as_current_span.assert_called_once_with("sync_check_baggage")
-
-    @patch("gentrace.lib.traced.trace.get_tracer")
-    def test_interaction_async_no_pipeline_id_uses_default(self, mock_get_tracer: MagicMock) -> None:
-        _mock_span, mock_tracer = self.common_test_setup()
-        mock_get_tracer.return_value = mock_tracer
-
-        @interaction()
-        async def async_func_no_pipeline() -> str:
-            await asyncio.sleep(0.01)
-            return "async no pipeline"
-
-        result = asyncio.run(async_func_no_pipeline())
-
-        self.assertEqual(result, "async no pipeline")
-        # For async functions, traced passes attributes directly to start_as_current_span
-        mock_tracer.start_as_current_span.assert_called_once_with(
-            "async_func_no_pipeline", 
-            attributes={ATTR_GENTRACE_PIPELINE_ID: "default"}
-        )
 
     def test_interaction_async_invalid_pipeline_id(self) -> None:
         import warnings

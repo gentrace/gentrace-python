@@ -24,13 +24,12 @@ from pydantic import ValidationError
 from gentrace import Gentrace, AsyncGentrace, APIResponseValidationError
 from gentrace._types import Omit
 from gentrace._models import BaseModel, FinalRequestOptions
+from gentrace._constants import RAW_RESPONSE_HEADER
 from gentrace._exceptions import GentraceError, APIStatusError, APITimeoutError, APIResponseValidationError
 from gentrace._base_client import (
     DEFAULT_TIMEOUT,
     HTTPX_DEFAULT_TIMEOUT,
     BaseClient,
-    DefaultHttpxClient,
-    DefaultAsyncHttpxClient,
     make_request_options,
 )
 
@@ -191,7 +190,6 @@ class TestGentrace:
             copy_param = copy_signature.parameters.get(name)
             assert copy_param is not None, f"copy() signature is missing the {name} param"
 
-    @pytest.mark.skipif(sys.version_info >= (3, 10), reason="fails because of a memory leak that started from 3.12")
     def test_copy_build_request(self) -> None:
         options = FinalRequestOptions(method="get", url="/foo")
 
@@ -464,7 +462,7 @@ class TestGentrace:
     def test_multipart_repeating_array(self, client: Gentrace) -> None:
         request = client._build_request(
             FinalRequestOptions.construct(
-                method="post",
+                method="get",
                 url="/foo",
                 headers={"Content-Type": "multipart/form-data; boundary=6b7ba517decee4a450543ea6ae821c82"},
                 json_data={"array": ["foo", "bar"]},
@@ -713,21 +711,26 @@ class TestGentrace:
 
     @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter, client: Gentrace) -> None:
+    def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            client.pipelines.with_streaming_response.list().__enter__()
+            self.client.get(
+                "/v4/pipelines", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+            )
 
         assert _get_open_connections(self.client) == 0
 
     @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter, client: Gentrace) -> None:
+    def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            client.pipelines.with_streaming_response.list().__enter__()
+            self.client.get(
+                "/v4/pipelines", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+            )
+
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
@@ -806,28 +809,6 @@ class TestGentrace:
         response = client.pipelines.with_raw_response.list(extra_headers={"x-stainless-retry-count": "42"})
 
         assert response.http_request.headers.get("x-stainless-retry-count") == "42"
-
-    def test_proxy_environment_variables(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        # Test that the proxy environment variables are set correctly
-        monkeypatch.setenv("HTTPS_PROXY", "https://example.org")
-
-        client = DefaultHttpxClient()
-
-        mounts = tuple(client._mounts.items())
-        assert len(mounts) == 1
-        assert mounts[0][0].pattern == "https://"
-
-    @pytest.mark.filterwarnings("ignore:.*deprecated.*:DeprecationWarning")
-    def test_default_client_creation(self) -> None:
-        # Ensure that the client can be initialized without any exceptions
-        DefaultHttpxClient(
-            verify=True,
-            cert=None,
-            trust_env=True,
-            http1=True,
-            http2=False,
-            limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
-        )
 
     @pytest.mark.respx(base_url=base_url)
     def test_follow_redirects(self, respx_mock: MockRouter) -> None:
@@ -992,7 +973,6 @@ class TestAsyncGentrace:
             copy_param = copy_signature.parameters.get(name)
             assert copy_param is not None, f"copy() signature is missing the {name} param"
 
-    @pytest.mark.skipif(sys.version_info >= (3, 10), reason="fails because of a memory leak that started from 3.12")
     def test_copy_build_request(self) -> None:
         options = FinalRequestOptions(method="get", url="/foo")
 
@@ -1265,7 +1245,7 @@ class TestAsyncGentrace:
     def test_multipart_repeating_array(self, async_client: AsyncGentrace) -> None:
         request = async_client._build_request(
             FinalRequestOptions.construct(
-                method="post",
+                method="get",
                 url="/foo",
                 headers={"Content-Type": "multipart/form-data; boundary=6b7ba517decee4a450543ea6ae821c82"},
                 json_data={"array": ["foo", "bar"]},
@@ -1528,25 +1508,26 @@ class TestAsyncGentrace:
 
     @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_timeout_errors_doesnt_leak(
-        self, respx_mock: MockRouter, async_client: AsyncGentrace
-    ) -> None:
+    async def test_retrying_timeout_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(side_effect=httpx.TimeoutException("Test timeout error"))
 
         with pytest.raises(APITimeoutError):
-            await async_client.pipelines.with_streaming_response.list().__aenter__()
+            await self.client.get(
+                "/v4/pipelines", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+            )
 
         assert _get_open_connections(self.client) == 0
 
     @mock.patch("gentrace._base_client.BaseClient._calculate_retry_timeout", _low_retry_timeout)
     @pytest.mark.respx(base_url=base_url)
-    async def test_retrying_status_errors_doesnt_leak(
-        self, respx_mock: MockRouter, async_client: AsyncGentrace
-    ) -> None:
+    async def test_retrying_status_errors_doesnt_leak(self, respx_mock: MockRouter) -> None:
         respx_mock.get("/v4/pipelines").mock(return_value=httpx.Response(500))
 
         with pytest.raises(APIStatusError):
-            await async_client.pipelines.with_streaming_response.list().__aenter__()
+            await self.client.get(
+                "/v4/pipelines", cast_to=httpx.Response, options={"headers": {RAW_RESPONSE_HEADER: "stream"}}
+            )
+
         assert _get_open_connections(self.client) == 0
 
     @pytest.mark.parametrize("failures_before_success", [0, 2, 4])
@@ -1673,28 +1654,6 @@ class TestAsyncGentrace:
                     raise AssertionError("calling get_platform using asyncify resulted in a hung process")
 
                 time.sleep(0.1)
-
-    async def test_proxy_environment_variables(self, monkeypatch: pytest.MonkeyPatch) -> None:
-        # Test that the proxy environment variables are set correctly
-        monkeypatch.setenv("HTTPS_PROXY", "https://example.org")
-
-        client = DefaultAsyncHttpxClient()
-
-        mounts = tuple(client._mounts.items())
-        assert len(mounts) == 1
-        assert mounts[0][0].pattern == "https://"
-
-    @pytest.mark.filterwarnings("ignore:.*deprecated.*:DeprecationWarning")
-    async def test_default_client_creation(self) -> None:
-        # Ensure that the client can be initialized without any exceptions
-        DefaultAsyncHttpxClient(
-            verify=True,
-            cert=None,
-            trust_env=True,
-            http1=True,
-            http2=False,
-            limits=httpx.Limits(max_connections=100, max_keepalive_connections=20),
-        )
 
     @pytest.mark.respx(base_url=base_url)
     async def test_follow_redirects(self, respx_mock: MockRouter) -> None:
