@@ -85,9 +85,3 @@ async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncGentrace]:
         yield client
 
 
-@pytest.fixture(autouse=True)
-def cleanup_gentrace_clients():
-    """Cleanup singleton client instances after each test to prevent resource leaks."""
-    yield
-    # Reset client instances to None after each test
-    _set_client_instances(None, None)
