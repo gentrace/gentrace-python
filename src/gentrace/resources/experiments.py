@@ -62,7 +62,8 @@ class ExperimentsResource(SyncAPIResource):
         Create a new experiment
 
         Args:
-          pipeline_id: The ID of the pipeline to create the experiment for
+          pipeline_id: The ID of the pipeline to create the experiment for, or "default" to use the
+              organization's default pipeline
 
           metadata: Optional metadata for the experiment
 
@@ -254,7 +255,8 @@ class AsyncExperimentsResource(AsyncAPIResource):
         Create a new experiment
 
         Args:
-          pipeline_id: The ID of the pipeline to create the experiment for
+          pipeline_id: The ID of the pipeline to create the experiment for, or "default" to use the
+              organization's default pipeline
 
           metadata: Optional metadata for the experiment
 
