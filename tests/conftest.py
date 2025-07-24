@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import logging
+import asyncio
 from typing import TYPE_CHECKING, Iterator, AsyncIterator
 
 import httpx
@@ -19,6 +20,15 @@ if TYPE_CHECKING:
 pytest.register_assert_rewrite("tests.utils")
 
 logging.getLogger("gentrace").setLevel(logging.DEBUG)
+
+
+# Provide a session-scoped event loop
+@pytest.fixture(scope="session")
+def event_loop():
+    """Create an instance of the default event loop for the test session."""
+    loop = asyncio.get_event_loop_policy().new_event_loop()
+    yield loop
+    loop.close()
 
 
 # automatically add `pytest.mark.asyncio()` to all of our async tests

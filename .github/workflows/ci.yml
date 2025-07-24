@@ -60,18 +60,19 @@ jobs:
       - name: Run build
         run: rye build
 
-      - name: Get GitHub OIDC Token
-        id: github-oidc
-        uses: actions/github-script@v6
-        with:
-          script: core.setOutput('github_token', await core.getIDToken());
+      # Skip upload step for non-Stainless repositories
+      # - name: Get GitHub OIDC Token
+      #   id: github-oidc
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: core.setOutput('github_token', await core.getIDToken());
 
-      - name: Upload tarball
-        env:
-          URL: https://pkg.stainless.com/s
-          AUTH: ${{ steps.github-oidc.outputs.github_token }}
-          SHA: ${{ github.sha }}
-        run: ./scripts/utils/upload-artifact.sh
+      # - name: Upload tarball
+      #   env:
+      #     URL: https://pkg.stainless.com/s
+      #     AUTH: ${{ steps.github-oidc.outputs.github_token }}
+      #     SHA: ${{ github.sha }}
+      #   run: ./scripts/utils/upload-artifact.sh
 
   test:
     timeout-minutes: 10
