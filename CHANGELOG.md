@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0 (2025-07-24)
+
+Full Changelog: [v1.0.1...v1.1.0](https://github.com/gentrace/gentrace-python/compare/v1.0.1...v1.1.0)
+
+### Features
+
+* **api:** api update ([f3de2b0](https://github.com/gentrace/gentrace-python/commit/f3de2b0bd0120e0fa365ff710bd854f08a33c972))
+* **experiment:** Make pipeline_id optional ([#353](https://github.com/gentrace/gentrace-python/issues/353)) ([008d720](https://github.com/gentrace/gentrace-python/commit/008d720a68c08bb0faf63b23a2ff3915463962ef))
+
+
+### Bug Fixes
+
+* figure out the issue with test failures ([#354](https://github.com/gentrace/gentrace-python/issues/354)) ([b7c5c99](https://github.com/gentrace/gentrace-python/commit/b7c5c99f31eb16967b0588a4040b21932547134c))
+
 ## 1.0.1 (2025-07-23)
 
 Full Changelog: [v1.0.0-alpha.13...v1.0.1](https://github.com/gentrace/gentrace-python/compare/v1.0.0-alpha.13...v1.0.1)

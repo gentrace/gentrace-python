@@ -82,3 +82,5 @@ async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncGentrace]:
         base_url=base_url, api_key=api_key, _strict_response_validation=strict, http_client=http_client
     ) as client:
         yield client
+
+
