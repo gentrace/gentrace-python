@@ -12,7 +12,10 @@ __all__ = ["ExperimentCreateParams"]
 
 class ExperimentCreateParams(TypedDict, total=False):
     pipeline_id: Required[Annotated[str, PropertyInfo(alias="pipelineId")]]
-    """The ID of the pipeline to create the experiment for"""
+    """
+    The ID of the pipeline to create the experiment for, or "default" to use the
+    organization's default pipeline
+    """
 
     metadata: Dict[str, object]
     """Optional metadata for the experiment"""
