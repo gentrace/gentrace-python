@@ -12,6 +12,7 @@ from pytest_asyncio import is_async_test
 
 from gentrace import Gentrace, AsyncGentrace, DefaultAioHttpClient
 from gentrace._utils import is_dict
+from gentrace.lib.client_instance import _set_client_instances
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest  # pyright: ignore[reportPrivateImportUsage]
@@ -82,3 +83,11 @@ async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncGentrace]:
         base_url=base_url, api_key=api_key, _strict_response_validation=strict, http_client=http_client
     ) as client:
         yield client
+
+
+@pytest.fixture(autouse=True)
+def cleanup_gentrace_clients():
+    """Cleanup singleton client instances after each test to prevent resource leaks."""
+    yield
+    # Reset client instances to None after each test
+    _set_client_instances(None, None)
