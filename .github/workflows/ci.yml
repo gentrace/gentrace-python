@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 10
     name: lint
     runs-on: ${{ github.repository == 'stainless-sdks/gentrace-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@v4
 
@@ -36,13 +36,13 @@ jobs:
         run: ./scripts/lint
 
   build:
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.repository == 'stainless-sdks/gentrace-python' && (github.event_name == 'push' || github.event.pull_request.head.repo.fork)
     timeout-minutes: 10
     name: build
     permissions:
       contents: read
       id-token: write
-    runs-on: ${{ github.repository == 'stainless-sdks/gentrace-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    runs-on: depot-ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -60,25 +60,24 @@ jobs:
       - name: Run build
         run: rye build
 
-      # Skip upload step for non-Stainless repositories
-      # - name: Get GitHub OIDC Token
-      #   id: github-oidc
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: core.setOutput('github_token', await core.getIDToken());
+      - name: Get GitHub OIDC Token
+        id: github-oidc
+        uses: actions/github-script@v6
+        with:
+          script: core.setOutput('github_token', await core.getIDToken());
 
-      # - name: Upload tarball
-      #   env:
-      #     URL: https://pkg.stainless.com/s
-      #     AUTH: ${{ steps.github-oidc.outputs.github_token }}
-      #     SHA: ${{ github.sha }}
-      #   run: ./scripts/utils/upload-artifact.sh
+      - name: Upload tarball
+        env:
+          URL: https://pkg.stainless.com/s
+          AUTH: ${{ steps.github-oidc.outputs.github_token }}
+          SHA: ${{ github.sha }}
+        run: ./scripts/utils/upload-artifact.sh
 
   test:
     timeout-minutes: 10
     name: test
     runs-on: ${{ github.repository == 'stainless-sdks/gentrace-python' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.fork
     steps:
       - uses: actions/checkout@v4
 
