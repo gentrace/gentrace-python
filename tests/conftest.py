@@ -12,7 +12,6 @@ from pytest_asyncio import is_async_test
 
 from gentrace import Gentrace, AsyncGentrace, DefaultAioHttpClient
 from gentrace._utils import is_dict
-from gentrace.lib.client_instance import _set_client_instances
 
 if TYPE_CHECKING:
     from _pytest.fixtures import FixtureRequest  # pyright: ignore[reportPrivateImportUsage]
@@ -49,7 +48,7 @@ base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 api_key = "My API Key"
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def client(request: FixtureRequest) -> Iterator[Gentrace]:
     strict = getattr(request, "param", True)
     if not isinstance(strict, bool):
@@ -59,7 +58,7 @@ def client(request: FixtureRequest) -> Iterator[Gentrace]:
         yield client
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 async def async_client(request: FixtureRequest) -> AsyncIterator[AsyncGentrace]:
     param = getattr(request, "param", True)
 
