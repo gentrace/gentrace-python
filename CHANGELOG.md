@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 (2025-07-25)
+
+Full Changelog: [v1.1.0...v1.1.1](https://github.com/gentrace/gentrace-python/compare/v1.1.0...v1.1.1)
+
+### Chores
+
+* **project:** add settings file for vscode ([c486fce](https://github.com/gentrace/gentrace-python/commit/c486fce7010044c059893d09e0a3793179858cd6))
+
 ## 1.1.0 (2025-07-24)
 
 Full Changelog: [v1.0.1...v1.1.0](https://github.com/gentrace/gentrace-python/compare/v1.0.1...v1.1.0)
