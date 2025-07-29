@@ -100,7 +100,7 @@ class GentraceWarnings:
                 "",
                 "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelineinvaliderror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -115,7 +115,7 @@ class GentraceWarnings:
                 "",
                 "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelinenotfounderror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -130,7 +130,7 @@ class GentraceWarnings:
                 "",
                 "Please check your GENTRACE_API_KEY has the correct permissions.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelineunauthorizederror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -166,7 +166,7 @@ class GentraceWarnings:
                 "1. Remove the otel_setup=False option from init() to enable automatic setup",
                 "2. Or manually configure OpenTelemetry yourself (see documentation)",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelnotconfigurederror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)"
         ))
     
@@ -187,7 +187,7 @@ class GentraceWarnings:
                 "",
                 "Note: Each **distinct** process/service must call init() before using Gentrace functions.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-autoinitializationwarning",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)"
         ))
     
@@ -208,7 +208,7 @@ class GentraceWarnings:
                 "• Invalid configuration or credentials",
                 "• Resource limits or memory constraints",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelglobalerror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelglobalerror",
             suppression_hint="To suppress OpenTelemetry errors: Use a custom error handler in setup()",
             border_color="red"
         ))
@@ -232,7 +232,7 @@ class GentraceWarnings:
                 "",
                 "Get your API key from: https://gentrace.ai/settings",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-missingapikeyerror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-missingapikeyerror",
             border_color="red"
         ))
     
