@@ -112,9 +112,11 @@ from .lib.constants import (
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
 from .lib.experiment import experiment
+from .lib.otel_setup import setup
 from .lib.interaction import interaction
 from .lib.eval_dataset import TestInput, eval_dataset
 from .lib.span_processor import GentraceSpanProcessor
+from .lib.custom_otlp_exporter import GentraceOTLPSpanExporter
 
 ### End custom Gentrace imports
 
@@ -161,6 +163,7 @@ __all__ = [
 
     # Start custom Gentrace exports
     "init",
+    "setup",
     "traced",
     "interaction",
     "experiment",
@@ -176,6 +179,7 @@ __all__ = [
     "ATTR_GENTRACE_SAMPLE_KEY",
     "GentraceSampler",
     "GentraceSpanProcessor",
+    "GentraceOTLPSpanExporter",
     "TestCase",
     "Experiment",
     "Dataset",

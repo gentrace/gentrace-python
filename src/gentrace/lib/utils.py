@@ -527,7 +527,7 @@ def _show_otel_warning() -> None:
         except Exception:  # Fallback if rich formatting/printing fails
             fallback_message = """Gentrace: OpenTelemetry SDK does not appear to be configured. This means that Gentrace features like @interaction, @eval, @traced, and eval_dataset() will not record any data to the Gentrace UI.
 
-Learn more: https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror
+Learn more: https://gentrace.ai/docs/reference/sdk-errors#gt-otelnotconfigurederror
 
 You have two options:
 

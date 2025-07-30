@@ -3,11 +3,14 @@ Centralized warning system for Gentrace Python SDK.
 Mirrors the pattern from the Node.js SDK with GT_ prefixed warning IDs.
 """
 
-from typing import Any, Dict, List, Union, Optional
+from typing import Any, Set, Dict, List, Union, Optional
 
 from rich.text import Text
 from rich.panel import Panel
 from rich.console import Group, Console
+
+# Global tracking of displayed warnings
+_displayed_warnings: Set[str] = set()
 
 
 class GentraceWarningOptions:
@@ -47,6 +50,13 @@ class GentraceWarning:
     
     def display(self) -> None:
         """Display the warning with rich formatting."""
+        # Check if this warning has already been displayed
+        if self.warning_id in _displayed_warnings:
+            return
+        
+        # Mark as displayed
+        _displayed_warnings.add(self.warning_id)
+        
         try:
             # Build content parts
             content_parts: List[Text] = []
@@ -100,7 +110,7 @@ class GentraceWarnings:
                 "",
                 "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineinvaliderror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelineinvaliderror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -115,7 +125,7 @@ class GentraceWarnings:
                 "",
                 "Please verify the pipeline ID matches what's shown in the Gentrace UI.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelinenotfounderror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelinenotfounderror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -130,7 +140,7 @@ class GentraceWarnings:
                 "",
                 "Please check your GENTRACE_API_KEY has the correct permissions.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-pipelineunauthorizederror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-pipelineunauthorizederror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)",
             border_color="red"
         ))
@@ -166,7 +176,7 @@ class GentraceWarnings:
                 "1. Remove the otel_setup=False option from init() to enable automatic setup",
                 "2. Or manually configure OpenTelemetry yourself (see documentation)",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelnotconfigurederror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelnotconfigurederror",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)"
         ))
     
@@ -187,7 +197,7 @@ class GentraceWarnings:
                 "",
                 "Note: Each **distinct** process/service must call init() before using Gentrace functions.",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-autoinitializationwarning",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-autoinitializationwarning",
             suppression_hint="To suppress this warning: @interaction(..., suppress_warnings=True)"
         ))
     
@@ -208,7 +218,7 @@ class GentraceWarnings:
                 "• Invalid configuration or credentials",
                 "• Resource limits or memory constraints",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-otelglobalerror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelglobalerror",
             suppression_hint="To suppress OpenTelemetry errors: Use a custom error handler in setup()",
             border_color="red"
         ))
@@ -232,7 +242,7 @@ class GentraceWarnings:
                 "",
                 "Get your API key from: https://gentrace.ai/settings",
             ],
-            learn_more_url="https://next.gentrace.ai/docs/sdk-reference/errors#gt-missingapikeyerror",
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-missingapikeyerror",
             border_color="red"
         ))
     
@@ -295,4 +305,24 @@ class GentraceWarnings:
             learn_more_url=None,
             suppression_hint="To suppress this warning, ensure init() is only called once",
             border_color="yellow"
+        ))
+    
+    @staticmethod
+    def OtelPartialFailureWarning(rejected_count: int, error_message: Optional[str] = None) -> GentraceWarning:
+        return GentraceWarning(GentraceWarningOptions(
+            warning_id="GT_OtelPartialFailureWarning",
+            title="Some spans were not ingested",
+            message=[
+                f"Gentrace could not ingest {rejected_count} {'span' if rejected_count == 1 else 'spans'}.",
+                "",
+                f"Reason: {error_message or ('The server rejected this span' if rejected_count == 1 else 'The server rejected these spans')}",
+                "",
+                "This may indicate:",
+                "• Invalid span data or attributes",
+                "• Rate limiting or quota issues",
+                "• Server-side validation failures",
+            ],
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelpartialfailurewarning",
+            suppression_hint="This warning will only be shown once per session",
+            border_color="red"
         ))
