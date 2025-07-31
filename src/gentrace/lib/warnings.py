@@ -339,7 +339,6 @@ class GentraceWarnings:
                 "",
                 "1. Verify GENTRACE_API_KEY environment variable is set correctly",
                 "2. Ensure the API key is valid and not revoked",
-                "3. Check the API key has the correct permissions",
                 "",
                 "Get your API key from: https://gentrace.ai/s/api-keys",
             ],
