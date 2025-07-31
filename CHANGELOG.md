@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.2.0 (2025-07-31)
+
+Full Changelog: [v1.1.0...v1.2.0](https://github.com/gentrace/gentrace-python/compare/v1.1.0...v1.2.0)
+
+### Features
+
+* **client:** support file upload requests ([7dd1eea](https://github.com/gentrace/gentrace-python/commit/7dd1eead01ea49fe486a1bf24ee05897801d549d))
+* **otlp:** show partial success issues directly in the client SDK code ([#359](https://github.com/gentrace/gentrace-python/issues/359)) ([76c0ada](https://github.com/gentrace/gentrace-python/commit/76c0ada44160a53bd0f59fb3ae374072b3640c8a))
+
+
+### Chores
+
+* **examples:** add langgraph math agent example ([#360](https://github.com/gentrace/gentrace-python/issues/360)) ([b2f4d86](https://github.com/gentrace/gentrace-python/commit/b2f4d86f8fe3376a2f3d0e0c962e957f62f1b998))
+
 ## 1.1.0 (2025-07-24)
 
 Full Changelog: [v1.0.1...v1.1.0](https://github.com/gentrace/gentrace-python/compare/v1.0.1...v1.1.0)
