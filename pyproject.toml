@@ -81,6 +81,7 @@ dev-dependencies = [
     "langchain-core>=0.3.68",
     "langchain-openai>=0.3.27",
     "langchain>=0.3.26",
+    "langgraph>=0.2.0",
     "openinference-instrumentation-langchain>=0.1.46",
     "pytest-xdist>=3.6.1",
 ]
