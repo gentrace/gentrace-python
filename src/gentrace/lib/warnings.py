@@ -240,7 +240,7 @@ class GentraceWarnings:
                 "2. Pass it directly to init():",
                 "   init(api_key=\"your-api-key\")",
                 "",
-                "Get your API key from: https://gentrace.ai/settings",
+                "Get your API key from: https://gentrace.ai/s/api-keys",
             ],
             learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-missingapikeyerror",
             border_color="red"
@@ -323,6 +323,27 @@ class GentraceWarnings:
                 "• Server-side validation failures",
             ],
             learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelpartialfailurewarning",
+            suppression_hint="This warning will only be shown once per session",
+            border_color="red"
+        ))
+    
+    @staticmethod
+    def OtelAuthenticationError() -> GentraceWarning:
+        return GentraceWarning(GentraceWarningOptions(
+            warning_id="GT_OtelAuthenticationError",
+            title="Trace Export Authentication Failed",
+            message=[
+                "Failed to export traces to Gentrace due to authentication failure (401).",
+                "",
+                "Please check your Gentrace API key:",
+                "",
+                "1. Verify GENTRACE_API_KEY environment variable is set correctly",
+                "2. Ensure the API key is valid and not revoked",
+                "3. Check the API key has the correct permissions",
+                "",
+                "Get your API key from: https://gentrace.ai/s/api-keys",
+            ],
+            learn_more_url="https://gentrace.ai/docs/reference/sdk-errors#gt-otelauthenticationerror",
             suppression_hint="This warning will only be shown once per session",
             border_color="red"
         ))

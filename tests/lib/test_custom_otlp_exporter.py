@@ -149,7 +149,7 @@ class TestCustomOTLPExporter:
                         result = exporter.export(mock_spans)
 
         assert result == SpanExportResult.FAILURE
-        assert "Failed to export batch code: 400" in caplog.text
+        assert "Failed to export traces: HTTP 400 error" in caplog.text
 
     def test_retry_behavior(
         self, exporter: GentraceOTLPSpanExporter, mock_spans: List[Mock], caplog: LogCaptureFixture
