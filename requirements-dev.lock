@@ -10,6 +10,13 @@
 #   universal: false
 
 -e file:.
+aiohappyeyeballs==2.6.1
+    # via aiohttp
+aiohttp==3.12.15
+    # via gentrace-py
+    # via httpx-aiohttp
+aiosignal==1.4.0
+    # via aiohttp
 annotated-types==0.6.0
     # via pydantic
 anthropic==0.52.2
@@ -28,7 +35,10 @@ argcomplete==3.6.2
     # via nox
     # via pydantic-ai-slim
 async-timeout==4.0.3
+    # via aiohttp
     # via langchain
+attrs==25.3.0
+    # via aiohttp
 boto3==1.39.8
     # via pydantic-ai-slim
 botocore==1.39.8
@@ -68,15 +78,18 @@ exceptiongroup==1.2.2
     # via anyio
     # via pydantic-ai-slim
     # via pytest
+execnet==2.1.1
+    # via pytest-xdist
 fasta2a==0.2.14
     # via pydantic-ai-slim
 fastavro==1.11.1
     # via cohere
-execnet==2.1.1
-    # via pytest-xdist
 filelock==3.12.4
     # via huggingface-hub
     # via virtualenv
+frozenlist==1.7.0
+    # via aiohttp
+    # via aiosignal
 fsspec==2025.5.1
     # via huggingface-hub
 google-auth==2.40.2
@@ -103,12 +116,16 @@ httpx==0.28.1
     # via gentrace-py
     # via google-genai
     # via groq
+    # via httpx-aiohttp
+    # via langgraph-sdk
     # via langsmith
     # via mistralai
     # via openai
     # via pydantic-ai-slim
     # via pydantic-graph
     # via respx
+httpx-aiohttp==0.1.8
+    # via gentrace-py
 httpx-sse==0.4.0
     # via cohere
 huggingface-hub==0.32.4
@@ -117,6 +134,7 @@ idna==3.4
     # via anyio
     # via httpx
     # via requests
+    # via yarl
 importlib-metadata==7.0.0
     # via opentelemetry-api
 iniconfig==2.0.0
@@ -137,9 +155,20 @@ langchain-core==0.3.68
     # via langchain
     # via langchain-openai
     # via langchain-text-splitters
+    # via langgraph
+    # via langgraph-checkpoint
+    # via langgraph-prebuilt
 langchain-openai==0.3.27
 langchain-text-splitters==0.3.8
     # via langchain
+langgraph==0.6.0
+langgraph-checkpoint==2.1.1
+    # via langgraph
+    # via langgraph-prebuilt
+langgraph-prebuilt==0.6.0
+    # via langgraph
+langgraph-sdk==0.2.0
+    # via langgraph
 langsmith==0.4.4
     # via langchain
     # via langchain-core
@@ -152,6 +181,9 @@ mdurl==0.1.2
     # via markdown-it-py
 mistralai==1.8.1
     # via pydantic-ai-slim
+multidict==6.6.3
+    # via aiohttp
+    # via yarl
 mypy==1.14.1
 mypy-extensions==1.0.0
     # via mypy
@@ -219,7 +251,10 @@ opentelemetry-semantic-conventions==0.53b1
     # via opentelemetry-instrumentation
     # via opentelemetry-sdk
 orjson==3.10.18
+    # via langgraph-sdk
     # via langsmith
+ormsgpack==1.10.0
+    # via langgraph-checkpoint
 packaging==23.2
     # via huggingface-hub
     # via langchain-core
@@ -233,6 +268,9 @@ pluggy==1.5.0
     # via pytest
 prompt-toolkit==3.0.51
     # via pydantic-ai-slim
+propcache==0.3.2
+    # via aiohttp
+    # via yarl
 protobuf==5.29.4
     # via googleapis-common-protos
     # via opentelemetry-proto
@@ -250,6 +288,7 @@ pydantic==2.10.3
     # via groq
     # via langchain
     # via langchain-core
+    # via langgraph
     # via langsmith
     # via mistralai
     # via openai
@@ -348,6 +387,7 @@ types-requests==2.31.0.6
 types-urllib3==1.26.25.14
     # via types-requests
 typing-extensions==4.12.2
+    # via aiosignal
     # via anthropic
     # via anyio
     # via cohere
@@ -356,6 +396,7 @@ typing-extensions==4.12.2
     # via groq
     # via huggingface-hub
     # via langchain-core
+    # via multidict
     # via mypy
     # via openai
     # via openai-agents
@@ -389,6 +430,10 @@ wrapt==1.17.2
     # via openinference-instrumentation-openai-agents
     # via opentelemetry-instrumentation
     # via opentelemetry-processor-baggage
+xxhash==3.5.0
+    # via langgraph
+yarl==1.20.1
+    # via aiohttp
 zipp==3.17.0
     # via importlib-metadata
 zstandard==0.23.0

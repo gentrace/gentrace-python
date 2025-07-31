@@ -12,12 +12,12 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from openinference.instrumentation.langchain import LangChainInstrumentor
 
-import gentrace
+from gentrace import init, interaction
 
 load_dotenv()
 
 # Initialize Gentrace with LangChain instrumentation
-gentrace.init(
+init(
     api_key=os.getenv("GENTRACE_API_KEY"),
     base_url=os.getenv("GENTRACE_BASE_URL", "https://api.gentrace.ai"),
     otel_setup={"service_name": "langchain-example", "instrumentations": [LangChainInstrumentor()]},
@@ -46,7 +46,7 @@ def main() -> None:
     chain = prompt | llm | StrOutputParser()
 
     # Create instrumented function
-    @gentrace.interaction(pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
+    @interaction(pipeline_id=os.getenv("GENTRACE_PIPELINE_ID", ""))
     def run_chain() -> str:
         result = chain.invoke({"topic": "What is OpenTelemetry?"})
         print(f"Response: {result}")
