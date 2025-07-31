@@ -96,11 +96,24 @@ class GentraceOTLPSpanExporter(OTLPSpanExporter):
                 sleep(delay)
                 continue
             else:
-                _logger.error(
-                    "Failed to export batch code: %s, reason: %s",
-                    resp.status_code,
-                    resp.text,
-                )
+                # Provide clear error messages based on status code
+                if resp.status_code == 401:
+                    # Display the authentication error warning (only once per session)
+                    warning = GentraceWarnings.OtelAuthenticationError()
+                    display_gentrace_warning(warning)
+                elif resp.status_code == 403:
+                    _logger.error(
+                        "Failed to export traces: Access forbidden (403). Your API key may not have the required permissions."
+                    )
+                elif resp.status_code == 404:
+                    _logger.error(
+                        "Failed to export traces: Endpoint not found (404). Please check your Gentrace configuration."
+                    )
+                else:
+                    _logger.error(
+                        "Failed to export traces: HTTP %s error",
+                        resp.status_code,
+                    )
                 return SpanExportResult.FAILURE
         
         return SpanExportResult.FAILURE

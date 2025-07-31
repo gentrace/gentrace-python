@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.3.0 (2025-07-31)
+
+Full Changelog: [v1.2.0...v1.3.0](https://github.com/gentrace/gentrace-python/compare/v1.2.0...v1.3.0)
+
+### Features
+
+* **otlp:** add detailed export error handling ([2536a8f](https://github.com/gentrace/gentrace-python/commit/2536a8fae47269f83662e9b8c19b2bb9e6e7ef83))
+
+
+### Bug Fixes
+
+* **warnings:** remove redundant API key permission msg ([276ca6d](https://github.com/gentrace/gentrace-python/commit/276ca6d53e0e3038ea0fa6fd2c44de70f24ddff4))
+
 ## 1.2.0 (2025-07-31)
 
 Full Changelog: [v1.1.0...v1.2.0](https://github.com/gentrace/gentrace-python/compare/v1.1.0...v1.2.0)
