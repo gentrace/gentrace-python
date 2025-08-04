@@ -2,9 +2,8 @@ import sys
 import json
 import logging
 import warnings
-from typing import Any, Set, Dict, List, Tuple, Union, Optional, cast
+from typing import Any, Set, Dict, List, Tuple, Union, Optional, Sequence, cast
 from datetime import datetime
-from collections.abc import Sequence
 
 from pydantic import BaseModel
 from rich.live import Live
@@ -750,8 +749,8 @@ def print_evaluation_results(results: Dict[str, Any], title: str = "Evaluation R
 
 def print_function_call_summary(
     function_name: str,
-    args: "tuple[Any, ...]",
-    kwargs: "dict[str, Any]",
+    args: "Tuple[Any, ...]",
+    kwargs: "Dict[str, Any]",
     result: Any = None,
     duration: Optional[float] = None,
     error: Optional[Exception] = None,
