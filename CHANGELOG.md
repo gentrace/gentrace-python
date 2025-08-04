@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.1 (2025-08-04)
+
+Full Changelog: [v1.3.0...v1.3.1](https://github.com/gentrace/gentrace-python/compare/v1.3.0...v1.3.1)
+
+### Bug Fixes
+
+* **utils:** correct type hints for args and kwargs ([#362](https://github.com/gentrace/gentrace-python/issues/362)) ([bd7a525](https://github.com/gentrace/gentrace-python/commit/bd7a52586092f75c649adbd49f35cfdbb28251de))
+
 ## 1.3.0 (2025-07-31)
 
 Full Changelog: [v1.2.0...v1.3.0](https://github.com/gentrace/gentrace-python/compare/v1.2.0...v1.3.0)
