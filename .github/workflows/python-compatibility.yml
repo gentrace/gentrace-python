@@ -62,12 +62,17 @@ jobs:
           # This mimics what happens when users do "pip install gentrace-py"
           if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
             echo "::notice::Installing core package only for Python ${{ matrix.python-version }} (no optional dependencies)"
+            # Show Python and pip versions for debugging
+            python --version
+            pip --version
             # Create a minimal virtual environment with rye
-            rye sync --no-lock --no-dev || true
+            rye sync --no-lock --no-dev || echo "::warning::rye sync failed, continuing..."
+            # Show rye's Python
+            rye run python --version || echo "::warning::rye run python failed"
             # Install just the core package as users would
-            rye run pip install --upgrade pip setuptools wheel
-            rye run pip install -e .
-            rye run pip install pytest pytest-asyncio
+            rye run pip install --upgrade pip setuptools wheel || echo "::error::Failed to upgrade pip/setuptools"
+            rye run pip install -e . || echo "::error::Failed to install package"
+            rye run pip install pytest pytest-asyncio || echo "::error::Failed to install test dependencies"
           else
             # For Python 3.9-3.12, install everything including optional dependencies
             rye sync --no-lock
