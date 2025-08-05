@@ -59,9 +59,16 @@ jobs:
         run: |
           # For Python 3.8 and 3.13, we need a different approach due to dependency conflicts
           if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            # Use pip directly without rye for these edge cases
-            pip install -e .
-            pip install pytest pytest-asyncio httpx
+            # Install only core dependencies manually
+            pip install httpx "pydantic>=1.9.0,<3" "typing-extensions>=4.10,<5" "anyio>=3.5.0,<5" "distro>=1.7.0,<2" sniffio rich "opentelemetry-sdk>=1.21.0,<1.33.0" "opentelemetry-exporter-otlp-proto-http>=1.21.0,<1.33.0" "opentelemetry-instrumentation>=0.41b0" "opentelemetry-processor-baggage>=0.45.0b0,<0.55.0"
+            # Install tomli for Python < 3.11
+            if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.10" ]]; then
+              pip install "tomli>=1.2.0"
+            fi
+            # Install the package in editable mode without dependencies
+            pip install -e . --no-deps
+            # Install test dependencies
+            pip install pytest pytest-asyncio
           else
             # For Python 3.9-3.12, use normal rye sync
             rye sync --no-lock
