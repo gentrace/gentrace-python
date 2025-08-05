@@ -57,12 +57,33 @@ jobs:
       
       - name: Install dependencies
         run: |
-          rye sync --no-lock
+          # For Python 3.8, we need a different approach due to dependency conflicts
+          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
+            # Build the package
+            rye build --wheel
+            # Install the wheel with core dependencies only
+            pip install dist/*.whl
+            # Install pytest for running tests
+            pip install pytest
+          else
+            # For Python 3.9+, use normal rye sync
+            rye sync --no-lock
+          fi
       
       - name: Run compatibility tests
         run: |
-          rye run pytest tests/lib/test_python_compatibility.py -v
+          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
+            # Run pytest directly for Python 3.8
+            pytest tests/lib/test_python_compatibility.py -v
+          else
+            # Use rye run for other versions
+            rye run pytest tests/lib/test_python_compatibility.py -v
+          fi
       
       - name: Verify import works
         run: |
-          rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
+            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          else
+            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          fi
