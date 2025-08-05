@@ -63,8 +63,8 @@ jobs:
             rye build --wheel
             # Install the wheel with core dependencies only
             pip install dist/*.whl
-            # Install pytest for running tests
-            pip install pytest
+            # Install pytest and minimal test dependencies needed by conftest.py
+            pip install pytest pytest-asyncio httpx
           else
             # For Python 3.9+, use normal rye sync
             rye sync --no-lock
