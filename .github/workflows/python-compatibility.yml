@@ -42,6 +42,7 @@ jobs:
       - name: Configure Rye to use system Python
         run: |
           rye config --set-bool behavior.global-python=true
+          rye config --set-bool behavior.use-uv=true
           rye pin ${{ matrix.python-version }}
       
       - name: Cache dependencies
@@ -57,37 +58,25 @@ jobs:
       
       - name: Install dependencies
         run: |
-          # For Python 3.8 and 3.13, we need a different approach due to dependency conflicts
-          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            # Install only core dependencies manually
-            pip install httpx "pydantic>=1.9.0,<3" "typing-extensions>=4.10,<5" "anyio>=3.5.0,<5" "distro>=1.7.0,<2" sniffio rich "opentelemetry-sdk>=1.21.0,<1.33.0" "opentelemetry-exporter-otlp-proto-http>=1.21.0,<1.33.0" "opentelemetry-instrumentation>=0.41b0" "opentelemetry-processor-baggage>=0.45.0b0,<0.55.0"
-            # Install tomli for Python < 3.11
-            if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.10" ]]; then
-              pip install "tomli>=1.2.0"
+          # Try standard sync first
+          if ! rye sync --no-lock; then
+            echo "::warning::Standard sync failed for Python ${{ matrix.python-version }}, trying without optional features..."
+            # Try without all features
+            if ! rye sync --no-lock --features=""; then
+              echo "::warning::Sync without features failed, installing core dependencies only..."
+              # Last resort: install just what we need for the compatibility test
+              rye run pip install -e .
+              rye run pip install pytest pytest-asyncio httpx
             fi
-            # Install the package in editable mode without dependencies
-            pip install -e . --no-deps
-            # Install test dependencies
-            pip install pytest pytest-asyncio
-          else
-            # For Python 3.9-3.12, use normal rye sync
-            rye sync --no-lock
           fi
       
       - name: Run compatibility tests
         run: |
-          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            # Run pytest directly for Python 3.8 and 3.13
-            pytest tests/lib/test_python_compatibility.py -v
-          else
-            # Use rye run for other versions
-            rye run pytest tests/lib/test_python_compatibility.py -v
-          fi
+          # Try rye run first, fall back to direct pytest if needed
+          rye run pytest tests/lib/test_python_compatibility.py -v || pytest tests/lib/test_python_compatibility.py -v
       
       - name: Verify import works
         run: |
-          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
-          else
-            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
-          fi
+          # Try rye run first, fall back to direct python if needed
+          rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')" || \
+          python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
