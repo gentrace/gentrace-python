@@ -58,16 +58,16 @@ jobs:
       
       - name: Install dependencies
         run: |
-          # Try standard sync first
-          if ! rye sync --no-lock; then
-            echo "::warning::Standard sync failed for Python ${{ matrix.python-version }}, trying without optional features..."
-            # Try without all features
-            if ! rye sync --no-lock --features=""; then
-              echo "::warning::Sync without features failed, installing core dependencies only..."
-              # Last resort: install just what we need for the compatibility test
-              rye run pip install -e .
-              rye run pip install pytest pytest-asyncio httpx
-            fi
+          # For Python 3.8 and 3.13, only install core package without optional dependencies
+          # This mimics what happens when users do "pip install gentrace-py"
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            echo "::notice::Installing core package only for Python ${{ matrix.python-version }} (no optional dependencies)"
+            # Install just the core package as users would
+            rye run pip install -e .
+            rye run pip install pytest pytest-asyncio
+          else
+            # For Python 3.9-3.12, install everything including optional dependencies
+            rye sync --no-lock
           fi
       
       - name: Run compatibility tests
