@@ -59,12 +59,9 @@ jobs:
         run: |
           # For Python 3.8 and 3.13, we need a different approach due to dependency conflicts
           if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            # Build the package
-            rye build --wheel
-            # Use rye run to ensure we're using the right pip in the virtualenv
-            rye run pip install dist/*.whl
-            # Install pytest and minimal test dependencies needed by conftest.py
-            rye run pip install pytest pytest-asyncio httpx
+            # Use pip directly without rye for these edge cases
+            pip install -e .
+            pip install pytest pytest-asyncio httpx
           else
             # For Python 3.9-3.12, use normal rye sync
             rye sync --no-lock
@@ -73,8 +70,8 @@ jobs:
       - name: Run compatibility tests
         run: |
           if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
-            # Run pytest through rye for Python 3.8 and 3.13
-            rye run pytest tests/lib/test_python_compatibility.py -v
+            # Run pytest directly for Python 3.8 and 3.13
+            pytest tests/lib/test_python_compatibility.py -v
           else
             # Use rye run for other versions
             rye run pytest tests/lib/test_python_compatibility.py -v
@@ -82,5 +79,8 @@ jobs:
       
       - name: Verify import works
         run: |
-          # Always use rye run to ensure we're in the right environment
-          rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          else
+            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          fi
