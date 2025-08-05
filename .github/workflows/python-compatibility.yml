@@ -62,17 +62,15 @@ jobs:
           # This mimics what happens when users do "pip install gentrace-py"
           if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
             echo "::notice::Installing core package only for Python ${{ matrix.python-version }} (no optional dependencies)"
-            # Show Python and pip versions for debugging
-            python --version
-            pip --version
-            # Create a minimal virtual environment with rye
-            rye sync --no-lock --no-dev || echo "::warning::rye sync failed, continuing..."
-            # Show rye's Python
-            rye run python --version || echo "::warning::rye run python failed"
-            # Install just the core package as users would
-            rye run pip install --upgrade pip setuptools wheel || echo "::error::Failed to upgrade pip/setuptools"
-            rye run pip install -e . || echo "::error::Failed to install package"
-            rye run pip install pytest pytest-asyncio || echo "::error::Failed to install test dependencies"
+            # For these edge versions, bypass rye's dependency resolution
+            # and install directly with pip
+            python -m venv .venv
+            source .venv/bin/activate
+            pip install --upgrade pip setuptools wheel
+            pip install -e .
+            pip install pytest pytest-asyncio
+            echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+            echo "$PWD/.venv/bin" >> $GITHUB_PATH
           else
             # For Python 3.9-3.12, install everything including optional dependencies
             rye sync --no-lock
@@ -80,11 +78,20 @@ jobs:
       
       - name: Run compatibility tests
         run: |
-          # Try rye run first, fall back to direct pytest if needed
-          rye run pytest tests/lib/test_python_compatibility.py -v || pytest tests/lib/test_python_compatibility.py -v
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            # Use the venv pytest directly
+            pytest tests/lib/test_python_compatibility.py -v
+          else
+            # Use rye for other versions
+            rye run pytest tests/lib/test_python_compatibility.py -v
+          fi
       
       - name: Verify import works
         run: |
-          # Try rye run first, fall back to direct python if needed
-          rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')" || \
-          python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            # Use the venv python directly
+            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          else
+            # Use rye for other versions
+            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          fi
