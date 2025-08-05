@@ -57,24 +57,24 @@ jobs:
       
       - name: Install dependencies
         run: |
-          # For Python 3.8, we need a different approach due to dependency conflicts
-          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
+          # For Python 3.8 and 3.13, we need a different approach due to dependency conflicts
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
             # Build the package
             rye build --wheel
-            # Install the wheel with core dependencies only
-            pip install dist/*.whl
+            # Use rye run to ensure we're using the right pip in the virtualenv
+            rye run pip install dist/*.whl
             # Install pytest and minimal test dependencies needed by conftest.py
-            pip install pytest pytest-asyncio httpx
+            rye run pip install pytest pytest-asyncio httpx
           else
-            # For Python 3.9+, use normal rye sync
+            # For Python 3.9-3.12, use normal rye sync
             rye sync --no-lock
           fi
       
       - name: Run compatibility tests
         run: |
-          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
-            # Run pytest directly for Python 3.8
-            pytest tests/lib/test_python_compatibility.py -v
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            # Run pytest through rye for Python 3.8 and 3.13
+            rye run pytest tests/lib/test_python_compatibility.py -v
           else
             # Use rye run for other versions
             rye run pytest tests/lib/test_python_compatibility.py -v
@@ -82,8 +82,5 @@ jobs:
       
       - name: Verify import works
         run: |
-          if [[ "${{ matrix.python-version }}" == "3.8" ]]; then
-            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
-          else
-            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
-          fi
+          # Always use rye run to ensure we're in the right environment
+          rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
