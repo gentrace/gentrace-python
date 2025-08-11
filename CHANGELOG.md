@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.1 (2025-08-11)
+
+Full Changelog: [v1.4.0...v1.4.1](https://github.com/gentrace/gentrace-python/compare/v1.4.0...v1.4.1)
+
+### Bug Fixes
+
+* **progress:** improve Rich progress bar display ([#367](https://github.com/gentrace/gentrace-python/issues/367)) ([db8c361](https://github.com/gentrace/gentrace-python/commit/db8c3611d597d44611affba2e5ae01c3818be813))
+
 ## 1.4.0 (2025-08-11)
 
 Full Changelog: [v1.3.1...v1.4.0](https://github.com/gentrace/gentrace-python/compare/v1.3.1...v1.4.0)

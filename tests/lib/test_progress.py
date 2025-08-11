@@ -266,101 +266,117 @@ class TestRichProgressReporter:
         assert reporter.completed_count == 0
         mock_console_class.assert_called_once_with(stderr=True)
 
+    @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
     @patch("gentrace.lib.progress.Progress")
-    def test_start(self, mock_progress_class: Any, _mock_console_class: Any) -> None:
+    def test_start(self, mock_progress_class: Any, _mock_console_class: Any, mock_live_class: Any) -> None:
         """Test starting a new evaluation run with progress bar."""
         mock_progress = Mock()
         mock_task_id = 123
         mock_progress.add_task.return_value = mock_task_id
         mock_progress_class.return_value = mock_progress
+        
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
 
         reporter = RichProgressReporter()
-        reporter.start("pipeline-123", 50)
+        
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            reporter.start("pipeline-123", 50)
 
         assert reporter.progress is mock_progress
         assert reporter.task_id == mock_task_id
         assert reporter.completed_count == 0
+        assert reporter.total_count == 50
 
-        mock_progress.start.assert_called_once()
         mock_progress.add_task.assert_called_once()
+        mock_live.start.assert_called_once()
 
         # Check that the task was created with the right parameters
         call_args = mock_progress.add_task.call_args
         assert call_args[1]["total"] == 50
         assert call_args[1]["description"] == ""  # No description in the bar itself
 
+    @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
     @patch("gentrace.lib.progress.Progress")
-    def test_update_current_test(self, mock_progress_class: Any, mock_console_class: Any) -> None:
+    def test_update_current_test(self, mock_progress_class: Any, mock_console_class: Any, mock_live_class: Any) -> None:
         """Test updating the current test display."""
         mock_progress = Mock()
         mock_progress_class.return_value = mock_progress
         mock_console = Mock()
         mock_console_class.return_value = mock_console
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
 
         reporter = RichProgressReporter()
-        reporter.start("pipeline-123", 10)
-        reporter.update_current_test("Login Test")
+        
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            reporter.start("pipeline-123", 10)
+            reporter.update_current_test("Login Test")
 
         assert reporter.current_test_name == "Login Test"
+        
+        # Verify live.update was called
+        assert mock_live.update.called
 
-        # Verify console.print was called with the test name
-        print_calls = mock_console.print.call_args_list
-        # Find the call that contains the running message
-        found_running_msg = False
-        for call in print_calls:
-            if call[0] and "Running: Login Test" in str(call[0][0]):
-                found_running_msg = True
-                break
-        assert found_running_msg
-
+    @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
     @patch("gentrace.lib.progress.Progress")
-    def test_increment(self, mock_progress_class: Any, mock_console_class: Any) -> None:
+    def test_increment(self, mock_progress_class: Any, mock_console_class: Any, mock_live_class: Any) -> None:
         """Test incrementing the progress bar."""
         mock_progress = Mock()
         mock_progress_class.return_value = mock_progress
         mock_console = Mock()
         mock_console_class.return_value = mock_console
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
 
         reporter = RichProgressReporter()
-        reporter.start("pipeline-123", 10)
-        reporter.increment("Test 1")
+        
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            reporter.start("pipeline-123", 10)
+            reporter.increment("Test 1")
 
         assert reporter.completed_count == 1
+        assert reporter.last_completed_test == "Test 1"
+        assert reporter.current_test_name == ""
 
         # Verify update was called with advance=1
         update_calls = mock_progress.update.call_args_list
         last_call = update_calls[-1]
         assert last_call[1]["advance"] == 1
+        
+        # Verify live.update was called
+        assert mock_live.update.called
 
-        # Verify console.print was called with completed message
-        print_calls = mock_console.print.call_args_list
-        found_completed_msg = False
-        for call in print_calls:
-            if call[0] and "Completed: Test 1" in str(call[0][0]):
-                found_completed_msg = True
-                break
-        assert found_completed_msg
-
+    @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
     @patch("gentrace.lib.progress.Progress")
-    def test_stop(self, mock_progress_class: Any, mock_console_class: Any) -> None:
+    def test_stop(self, mock_progress_class: Any, mock_console_class: Any, mock_live_class: Any) -> None:
         """Test stopping the progress bar."""
         mock_progress = Mock()
         mock_progress_class.return_value = mock_progress
         mock_console = Mock()
         mock_console_class.return_value = mock_console
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
 
         reporter = RichProgressReporter()
-        reporter.start("pipeline-123", 10)
-        reporter.stop()
+        
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            reporter.start("pipeline-123", 10)
+            reporter.stop()
 
         assert reporter.progress is None
         assert reporter.task_id is None
+        assert reporter.live is None
 
-        mock_progress.stop.assert_called_once()
+        mock_live.stop.assert_called_once()
 
         # Verify console.print was called with completion message
         print_calls = mock_console.print.call_args_list
@@ -371,40 +387,46 @@ class TestRichProgressReporter:
                 break
         assert found_complete_msg
 
+    @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
     @patch("gentrace.lib.progress.Progress")
-    def test_full_lifecycle(self, mock_progress_class: Any, _mock_console_class: Any) -> None:
+    def test_full_lifecycle(self, mock_progress_class: Any, _mock_console_class: Any, mock_live_class: Any) -> None:
         """Test complete lifecycle of rich progress reporting."""
         mock_progress = Mock()
         mock_task_id = 456
         mock_progress.add_task.return_value = mock_task_id
         mock_progress_class.return_value = mock_progress
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
 
         reporter = RichProgressReporter()
 
-        # Start evaluation
-        reporter.start("pipeline-123", 3)
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            # Start evaluation
+            reporter.start("pipeline-123", 3)
 
-        # Process test cases
-        reporter.update_current_test("Test 1")
-        reporter.increment("Test 1")
+            # Process test cases
+            reporter.update_current_test("Test 1")
+            reporter.increment("Test 1")
 
-        reporter.update_current_test("Test 2")
-        reporter.increment("Test 2")
+            reporter.update_current_test("Test 2")
+            reporter.increment("Test 2")
 
-        reporter.update_current_test("Test 3")
-        reporter.increment("Test 3")
+            reporter.update_current_test("Test 3")
+            reporter.increment("Test 3")
 
-        # Stop
-        reporter.stop()
+            # Stop
+            reporter.stop()
 
         # Verify lifecycle
         assert reporter.completed_count == 3
         assert reporter.progress is None
         assert reporter.task_id is None
+        assert reporter.live is None
 
-        mock_progress.start.assert_called_once()
-        mock_progress.stop.assert_called_once()
+        mock_live.start.assert_called_once()
+        mock_live.stop.assert_called_once()
 
 
 class TestProgressReporterInterface:
