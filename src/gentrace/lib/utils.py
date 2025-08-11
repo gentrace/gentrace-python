@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import logging
@@ -44,6 +45,63 @@ _otel_config_warning_issued = False
 # Default spinner style for Gentrace operations
 DEFAULT_SPINNER = "dots"
 
+
+def is_ci() -> bool:
+    """
+    Detect if code is running in a CI/CD environment.
+    
+    Note: Unlike some ecosystems (e.g., Node.js with ci-info), Python doesn't have 
+    a widely-adopted canonical library for CI detection. This implementation follows 
+    the common Python practice of checking standard environment variables that most 
+    CI systems set.
+    
+    Returns:
+        bool: True if running in a CI environment, False otherwise.
+    
+    Examples:
+        >>> import os
+        >>> os.environ['CI'] = 'true'
+        >>> is_ci()
+        True
+        >>> del os.environ['CI']
+        >>> is_ci()
+        False
+    """
+    # Check the standard CI environment variable (most common)
+    ci_env = os.environ.get('CI', '').lower()
+    if ci_env in ('true', '1', 'yes'):
+        return True
+    
+    # Check CONTINUOUS_INTEGRATION (used by some CI systems)
+    continuous_integration = os.environ.get('CONTINUOUS_INTEGRATION', '').lower()
+    if continuous_integration in ('true', '1', 'yes'):
+        return True
+    
+    # Check for specific CI platform environment variables
+    # This list covers the most common CI systems
+    ci_platform_vars = [
+        'GITHUB_ACTIONS',  # GitHub Actions
+        'GITLAB_CI',       # GitLab CI
+        'CIRCLECI',        # CircleCI
+        'TRAVIS',          # Travis CI
+        'JENKINS_URL',     # Jenkins
+        'JENKINS_HOME',    # Jenkins (alternative)
+        'BUILDKITE',       # Buildkite
+        'DRONE',           # Drone
+        'BAMBOO_BUILD_NUMBER',  # Bamboo
+        'TF_BUILD',        # Azure Pipelines
+        'TEAMCITY_VERSION',  # TeamCity
+        'BITBUCKET_BUILD_NUMBER',  # Bitbucket Pipelines
+        'SEMAPHORE',       # Semaphore CI
+        'APPVEYOR',        # AppVeyor
+        'CODEBUILD_BUILD_ID',  # AWS CodeBuild
+        'NETLIFY',         # Netlify
+        'VERCEL',          # Vercel
+        'RENDER',          # Render
+    ]
+    
+    # Return True if any CI platform variable is set
+    return any(os.environ.get(var) for var in ci_platform_vars)
 
 
 class GentraceConsole:
@@ -886,6 +944,7 @@ __all__ = [
     "gentrace_format_otel_value",
     "_gentrace_json_dumps",
     "is_pydantic_v1",
+    "is_ci",
     "ensure_initialized",
     "GentraceConsole",
     "get_console",
