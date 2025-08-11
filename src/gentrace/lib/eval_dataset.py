@@ -26,6 +26,7 @@ from pydantic import BaseModel, ValidationError
 # Conditional import for TypeAdapter (Pydantic v2 only)
 try:
     from pydantic import TypeAdapter
+
     _HAS_TYPE_ADAPTER = True
 except ImportError:
     TypeAdapter = None  # type: ignore
@@ -70,8 +71,10 @@ class TestInputProtocol(Protocol, Generic[InputPayload]):
 
 TInputDict = TypeVar("TInputDict", bound=Mapping[str, Any], covariant=True)
 
+
 class TestInput(BaseModel, Generic[TInputDict]):
     """Local test input as a Pydantic model for evaluation."""
+
     inputs: TInputDict
     name: Optional[str] = None
     id: Optional[str] = None
@@ -90,12 +93,11 @@ DataProviderType: TypeAlias = Union[
 
 
 def _validate_inputs_with_schema(
-    inputs: Mapping[str, Any],
-    schema: SchemaType
+    inputs: Mapping[str, Any], schema: SchemaType
 ) -> Tuple[bool, Optional[Dict[str, Any]], Optional[str]]:
     """
     Validate inputs using either a Pydantic BaseModel or TypedDict.
-    
+
     Returns:
         Tuple of (is_valid, validated_data, error_message)
     """
@@ -113,8 +115,7 @@ def _validate_inputs_with_schema(
                 # For Pydantic v1, we can't validate TypedDict directly
                 # Just return the inputs as-is with a warning
                 logger.warning(
-                    "TypedDict validation requires Pydantic v2. "
-                    "Inputs will be passed through without validation."
+                    "TypedDict validation requires Pydantic v2. Inputs will be passed through without validation."
                 )
                 return True, dict(inputs), None
         else:
@@ -124,7 +125,7 @@ def _validate_inputs_with_schema(
                     validated = schema.parse_obj(inputs)  # type: ignore
                 else:
                     validated = schema.model_validate(inputs)  # type: ignore
-                
+
                 # Convert to dict for logging
                 dict_for_log: Dict[str, Any]
                 validated_obj = cast(BaseModel, validated)
@@ -134,12 +135,12 @@ def _validate_inputs_with_schema(
                     dict_for_log = validated_obj.dict()  # type: ignore
                 else:
                     dict_for_log = dict(validated_obj) if hasattr(validated_obj, "__dict__") else dict(inputs)
-                    
+
                 return True, dict_for_log, None
             except AttributeError:
                 # Not a BaseModel, just return the inputs
                 return True, dict(inputs), None
-            
+
     except ValidationError as ve:
         return False, None, str(ve)
     except Exception as e:
@@ -159,6 +160,7 @@ async def _execute_interaction_function(
     Execute the interaction function with proper concurrency control.
     Handles both async and sync functions, and applies semaphore if provided.
     """
+
     async def run_function() -> TResult:
         if inspect.iscoroutinefunction(interaction_function):
             # Async function - just await it
@@ -168,13 +170,13 @@ async def _execute_interaction_function(
             # Sync function - run in thread pool to avoid blocking
             event_loop = asyncio.get_running_loop()
             ctx = copy_context()
-            
+
             def run_sync() -> Any:
                 """Run the sync function with the captured context."""
                 return ctx.run(interaction_function, parsed_input)
-            
+
             return await event_loop.run_in_executor(None, run_sync)
-    
+
     # Apply semaphore if provided
     if semaphore:
         async with semaphore:
@@ -196,7 +198,7 @@ async def _run_single_test_case_for_dataset(
     """
     Internal helper to run and trace a single test case from a dataset.
     This is similar to the logic in the @eval decorator but adapted for dataset items.
-    
+
     Args:
         test_case_name: Name of the test case for tracing
         test_case_id: Optional ID of the test case
@@ -228,9 +230,9 @@ async def _run_single_test_case_for_dataset(
                     # Validate the inputs using either Pydantic BaseModel or TypedDict
                     is_valid, validated_data, error_message = _validate_inputs_with_schema(
                         raw_inputs or {},  # Ensure we pass a dict
-                        input_schema
+                        input_schema,
                     )
-                    
+
                     if not is_valid:
                         logger.error(
                             f"Pydantic validation failed for test case {test_case_name}. Inputs: {raw_inputs}. Error: {error_message}"
@@ -241,7 +243,7 @@ async def _run_single_test_case_for_dataset(
                         span.set_status(Status(StatusCode.ERROR, description="Input validation failed"))
                         span.set_attribute("error.type", "ValidationError")
                         return None
-                    
+
                     input_dict_for_log = validated_data
 
                 elif raw_inputs is not None:
@@ -280,8 +282,6 @@ async def _run_single_test_case_for_dataset(
                 return None
     finally:
         otel_context.detach(token)
-
-
 
 
 @overload
@@ -343,15 +343,15 @@ async def eval_dataset(
     details from the experiment context and the test case itself.
 
     Args:
-        data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list 
+        data (Union[Callable, Sequence]): Either a function/coroutine function that returns a list
                          of test cases, or a plain list of test cases directly.
                          Test cases can be TestCase objects (from API) or TestInput objects (for local tests).
         schema (Optional[Union[Type[pydantic.BaseModel], Type[TypedDict]]]): A Pydantic BaseModel or TypedDict
                                                    to validate the `inputs` of each test case. If validation fails
-                                                   for a case, an error is logged to its span, and the test case is 
+                                                   for a case, an error is logged to its span, and the test case is
                                                    skipped (returning None). TypedDict validation requires Pydantic v2.
         interaction (Callable): The function to test for each test case.
-                               Always receives a TestCase object (TestInput is converted 
+                               Always receives a TestCase object (TestInput is converted
                                internally to TestCase).
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
@@ -389,8 +389,10 @@ async def eval_dataset(
         if max_concurrency > 30:
             warning = GentraceWarnings.HighConcurrencyError(max_concurrency)
             display_gentrace_warning(warning)
-            raise ValueError(f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of 30. Please use a value between 1 and 30.")
-        
+            raise ValueError(
+                f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of 30. Please use a value between 1 and 30."
+            )
+
         semaphore = asyncio.Semaphore(max_concurrency)
 
     raw_test_cases: Sequence[Union[TestCase, TestInput[Mapping[str, Any]]]]
@@ -417,23 +419,25 @@ async def eval_dataset(
             converted_test_cases.append(raw_case)
         else:
             # Generate values for required fields
-            now = datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
-            
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+
             # Convert TestInput to TestCase
             # At this point, raw_case must be TestInput based on the type annotation
-            converted_test_cases.append(TestCase(
-                id=raw_case.id or "",  # Don't generate ID for local test cases
-                name=raw_case.name or "",  # Let the index-based naming logic handle unnamed cases
-                inputs=dict(raw_case.inputs),  # Convert Mapping to dict
-                expectedOutputs=None,
-                # Fill required fields with sensible defaults
-                datasetId="local",
-                pipelineId="local",
-                createdAt=now,
-                updatedAt=now,
-                archivedAt=None,
-                deletedAt=None
-            ))
+            converted_test_cases.append(
+                TestCase(
+                    id=raw_case.id or "",  # Don't generate ID for local test cases
+                    name=raw_case.name or "",  # Let the index-based naming logic handle unnamed cases
+                    inputs=dict(raw_case.inputs),  # Convert Mapping to dict
+                    expectedOutputs=None,
+                    # Fill required fields with sensible defaults
+                    datasetId="local",
+                    pipelineId="local",
+                    createdAt=now,
+                    updatedAt=now,
+                    archivedAt=None,
+                    deletedAt=None,
+                )
+            )
 
     # Initialize progress reporter based on configuration
     use_progress_bar = show_progress_bar if show_progress_bar is not None else not is_ci()
@@ -448,8 +452,8 @@ async def eval_dataset(
         if not logger.handlers and (not parent_logger or not parent_logger.handlers):
             logging.basicConfig(
                 level=logging.INFO,
-                format='%(message)s',  # Simple format for clean output
-                force=False  # Don't override existing configuration
+                format="%(message)s",  # Simple format for clean output
+                force=False,  # Don't override existing configuration
             )
             logger.setLevel(logging.INFO)
         progress_reporter = SimpleProgressReporter(logger)
@@ -480,9 +484,9 @@ async def eval_dataset(
             full_case: TestCase = test_case,
         ) -> Optional[TResult]:
             # Update progress to show current test
-            if hasattr(progress_reporter, 'update_current_test'):
+            if hasattr(progress_reporter, "update_current_test"):
                 progress_reporter.update_current_test(case_name)
-            
+
             try:
                 result = await _run_single_test_case_for_dataset(
                     test_case_name=case_name,
@@ -498,7 +502,7 @@ async def eval_dataset(
             finally:
                 # Report progress after test completes (success or failure)
                 progress_reporter.increment(case_name)
-        
+
         evaluation_tasks.append((final_case_name, run_test_case()))
 
     try:
@@ -508,7 +512,7 @@ async def eval_dataset(
     finally:
         # Always stop the progress reporter
         progress_reporter.stop()
-    
+
     return results
 
 
