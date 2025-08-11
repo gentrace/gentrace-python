@@ -53,7 +53,6 @@ async def dataset_evaluation() -> None:
         data=fetch_test_cases,
         schema=QueryInputs,
         interaction=process_ai_request,
-        show_progress_bar=False,
     )
 
     print("Dataset evaluation completed! Check your Gentrace dashboard for results.")
