@@ -84,11 +84,35 @@ class TestCIDetection:
     
     def test_is_ci_false_with_ci_false(self, monkeypatch: Any) -> None:
         """Test CI detection when CI is explicitly 'false'."""
+        # Clear all potential CI environment variables first
+        ci_vars = [
+            "CI", "CONTINUOUS_INTEGRATION", "GITHUB_ACTIONS", "GITLAB_CI",
+            "CIRCLECI", "TRAVIS", "JENKINS_URL", "JENKINS_HOME", "BUILDKITE",
+            "DRONE", "BAMBOO_BUILD_NUMBER", "TF_BUILD", "TEAMCITY_VERSION",
+            "BITBUCKET_BUILD_NUMBER", "SEMAPHORE", "APPVEYOR", "CODEBUILD_BUILD_ID",
+            "NETLIFY", "VERCEL", "RENDER"
+        ]
+        for var in ci_vars:
+            monkeypatch.delenv(var, raising=False)
+        
+        # Now set CI to false
         monkeypatch.setenv("CI", "false")
         assert is_ci() is False
     
     def test_is_ci_false_with_ci_empty(self, monkeypatch: Any) -> None:
         """Test CI detection when CI is empty string."""
+        # Clear all potential CI environment variables first
+        ci_vars = [
+            "CI", "CONTINUOUS_INTEGRATION", "GITHUB_ACTIONS", "GITLAB_CI",
+            "CIRCLECI", "TRAVIS", "JENKINS_URL", "JENKINS_HOME", "BUILDKITE",
+            "DRONE", "BAMBOO_BUILD_NUMBER", "TF_BUILD", "TEAMCITY_VERSION",
+            "BITBUCKET_BUILD_NUMBER", "SEMAPHORE", "APPVEYOR", "CODEBUILD_BUILD_ID",
+            "NETLIFY", "VERCEL", "RENDER"
+        ]
+        for var in ci_vars:
+            monkeypatch.delenv(var, raising=False)
+        
+        # Now set CI to empty string
         monkeypatch.setenv("CI", "")
         assert is_ci() is False
 
