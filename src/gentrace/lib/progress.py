@@ -10,7 +10,9 @@ from abc import ABC, abstractmethod
 from typing import Optional
 from typing_extensions import override
 
+from rich.live import Live
 from rich.text import Text
+from rich.table import Table
 from rich.console import Console
 from rich.progress import (
     TaskID,
@@ -134,12 +136,12 @@ class RichProgressReporter(ProgressReporter):
     Creates a visual progress bar that updates in place, ideal for
     local development and interactive terminal sessions.
 
-    The test case name is displayed above the progress bar, giving the
-    bar full terminal width for better visibility on narrow screens.
+    The test case name is displayed above the progress bar in a clean,
+    non-overlapping way using Rich's Live display.
 
     Example output:
-        Running: Test Case Name
-        ████████████████░░░░ 80% | 40/50 | 0:01:23
+        Currently running: Test Case Name
+        ━━━━━━━━━━━━━━━━━━━━ 80% • 40/50 • 0:01:23
     """
 
     def __init__(self) -> None:
@@ -147,15 +149,41 @@ class RichProgressReporter(ProgressReporter):
         self.console = Console(stderr=True)
         self.progress: Optional[Progress] = None
         self.task_id: Optional[TaskID] = None
+        self.live: Optional[Live] = None
         self.current_test_name = ""
         self.completed_count = 0
-        self.description_text = Text("Starting evaluation...")
+        self.total_count = 0
+        self.last_completed_test = ""
+
+    def _create_display(self) -> Table:
+        """Create the display table with current test info and progress bar."""
+        table = Table.grid(padding=0)
+        table.add_column(style="bold")
+        
+        # Add status line
+        if self.current_test_name:
+            table.add_row(Text(f"Currently running: {self.current_test_name}", style="bold blue"))
+        elif self.last_completed_test:
+            table.add_row(Text(f"Last completed: {self.last_completed_test}", style="green"))
+        else:
+            table.add_row(Text("Starting evaluation...", style="bold blue"))
+        
+        # Add empty row for spacing
+        table.add_row()
+        
+        # Add progress bar
+        if self.progress:
+            table.add_row(self.progress)
+        
+        return table
 
     @override
     def start(self, pipeline_id: str, total: int) -> None:
         """Initialize a new progress bar for the evaluation run."""
-        # First print the initial description
-        self.console.print("[bold blue]Starting evaluation...[/bold blue]")
+        self.total_count = total
+        self.completed_count = 0
+        self.current_test_name = ""
+        self.last_completed_test = ""
 
         # Create progress bar without description in the bar itself
         self.progress = Progress(
@@ -166,42 +194,56 @@ class RichProgressReporter(ProgressReporter):
             MofNCompleteColumn(),
             TextColumn("•"),
             TimeElapsedColumn(),
-            console=self.console,
-            transient=False,  # Keep the bar visible after completion
+            console=None,  # Don't use console directly, we'll use Live
+            transient=False,
             refresh_per_second=10,
         )
 
-        self.progress.start()
         self.task_id = self.progress.add_task(
-            description="",  # No description in the bar itself
+            description="",
             total=total,
         )
-        self.completed_count = 0
+
+        # Start the live display
+        self.live = Live(
+            self._create_display(),
+            console=self.console,
+            refresh_per_second=10,
+            transient=False,
+        )
+        self.live.start()
 
     def update_current_test(self, test_name: str) -> None:
         """Update the display to show the current test case being processed."""
-        if self.progress and self.task_id is not None:
+        if self.live:
             self.current_test_name = test_name
-            # Clear previous line and print new description
-            self.console.print(f"\r[bold blue]Running: {test_name}[/bold blue]", end="")
+            self.live.update(self._create_display())
 
     @override
     def increment(self, test_name: str) -> None:
         """Report the completion of a test case and increment the progress bar."""
-        if self.progress and self.task_id is not None:
+        if self.progress and self.task_id is not None and self.live:
             self.completed_count += 1
-            # Clear the running message and show completed
-            self.console.print(f"\r[bold green]Completed: {test_name}[/bold green]", end="")
+            self.last_completed_test = test_name
+            self.current_test_name = ""  # Clear current since it's completed
             self.progress.update(self.task_id, advance=1)
+            self.live.update(self._create_display())
 
     @override
     def stop(self) -> None:
         """Finalize the progress bar and cleanup."""
-        if self.progress and self.task_id is not None:
-            # Clear any running message and show final status
-            self.console.print("\r[bold green]Evaluation complete[/bold green]")
-            # Stop the progress bar
-            self.progress.stop()
+        if self.live:
+            # Update final display
+            self.current_test_name = ""
+            self.last_completed_test = "Evaluation complete"
+            self.live.update(self._create_display())
+            self.live.stop()
+            
+            # Print final message after stopping live display
+            self.console.print("[bold green]✓ Evaluation complete[/bold green]")
+            
+            # Cleanup
+            self.live = None
             self.progress = None
             self.task_id = None
 
