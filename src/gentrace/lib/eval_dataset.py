@@ -441,6 +441,17 @@ async def eval_dataset(
     if use_progress_bar:
         progress_reporter = RichProgressReporter()
     else:
+        # Configure logging for SimpleProgressReporter if needed.
+        # Unlike normal Stainless behavior (which requires GENTRACE_LOG env var), we set up
+        # logging automatically here so progress output works without user configuration.
+        parent_logger = logger.parent
+        if not logger.handlers and (not parent_logger or not parent_logger.handlers):
+            logging.basicConfig(
+                level=logging.INFO,
+                format='%(message)s',  # Simple format for clean output
+                force=False  # Don't override existing configuration
+            )
+            logger.setLevel(logging.INFO)
         progress_reporter = SimpleProgressReporter(logger)
 
     # Start progress reporting
