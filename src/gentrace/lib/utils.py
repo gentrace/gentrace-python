@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 import logging
@@ -44,6 +45,63 @@ _otel_config_warning_issued = False
 # Default spinner style for Gentrace operations
 DEFAULT_SPINNER = "dots"
 
+
+def is_ci() -> bool:
+    """
+    Detect if code is running in a CI/CD environment.
+
+    Note: Unlike some ecosystems (e.g., Node.js with ci-info), Python doesn't have
+    a widely-adopted canonical library for CI detection. This implementation follows
+    the common Python practice of checking standard environment variables that most
+    CI systems set.
+
+    Returns:
+        bool: True if running in a CI environment, False otherwise.
+
+    Examples:
+        >>> import os
+        >>> os.environ["CI"] = "true"
+        >>> is_ci()
+        True
+        >>> del os.environ["CI"]
+        >>> is_ci()
+        False
+    """
+    # Check the standard CI environment variable (most common)
+    ci_env = os.environ.get("CI", "").lower()
+    if ci_env in ("true", "1", "yes"):
+        return True
+
+    # Check CONTINUOUS_INTEGRATION (used by some CI systems)
+    continuous_integration = os.environ.get("CONTINUOUS_INTEGRATION", "").lower()
+    if continuous_integration in ("true", "1", "yes"):
+        return True
+
+    # Check for specific CI platform environment variables
+    # This list covers the most common CI systems
+    ci_platform_vars = [
+        "GITHUB_ACTIONS",  # GitHub Actions
+        "GITLAB_CI",  # GitLab CI
+        "CIRCLECI",  # CircleCI
+        "TRAVIS",  # Travis CI
+        "JENKINS_URL",  # Jenkins
+        "JENKINS_HOME",  # Jenkins (alternative)
+        "BUILDKITE",  # Buildkite
+        "DRONE",  # Drone
+        "BAMBOO_BUILD_NUMBER",  # Bamboo
+        "TF_BUILD",  # Azure Pipelines
+        "TEAMCITY_VERSION",  # TeamCity
+        "BITBUCKET_BUILD_NUMBER",  # Bitbucket Pipelines
+        "SEMAPHORE",  # Semaphore CI
+        "APPVEYOR",  # AppVeyor
+        "CODEBUILD_BUILD_ID",  # AWS CodeBuild
+        "NETLIFY",  # Netlify
+        "VERCEL",  # Vercel
+        "RENDER",  # Render
+    ]
+
+    # Return True if any CI platform variable is set
+    return any(os.environ.get(var) for var in ci_platform_vars)
 
 
 class GentraceConsole:
@@ -325,17 +383,17 @@ def _is_otel_configured() -> bool:
 def ensure_initialized(suppress_warnings: bool = False) -> None:
     """
     Ensures Gentrace is properly initialized with OpenTelemetry configured.
-    
+
     This function:
     1. First attempts auto-initialization if environment variables are set
     2. Then checks if OpenTelemetry is configured
     3. Shows a warning if otel_setup was explicitly set to False but OTEL is not configured
-    
+
     Args:
         suppress_warnings: If True, suppresses auto-initialization warnings.
     """
     import os
-    
+
     # First, try auto-initialization if needed
     if not _is_otel_configured() and not _is_gentrace_initialized():
         api_key = os.environ.get("GENTRACE_API_KEY")
@@ -343,8 +401,9 @@ def ensure_initialized(suppress_warnings: bool = False) -> None:
             # Show warning about auto-initialization unless suppressed
             if not suppress_warnings:
                 _show_auto_init_warning()
-            
+
             from .init import init
+
             init_kwargs: Dict[str, Any] = {"api_key": api_key}
             base_url = os.environ.get("GENTRACE_BASE_URL")
             if base_url:
@@ -352,14 +411,14 @@ def ensure_initialized(suppress_warnings: bool = False) -> None:
             init(**init_kwargs)
             # After auto-init, OTEL should be configured, so we can return
             return
-    
+
     # If we reach here, either:
     # 1. OTEL is already configured (good)
     # 2. Gentrace was initialized but with otel_setup=False
     # 3. No environment variables for auto-init
-    
+
     # Only warn if otel_setup was explicitly set to False
-    otel_setup_config = getattr(sys.modules.get('gentrace'), '__gentrace_otel_setup_config', None)
+    otel_setup_config = getattr(sys.modules.get("gentrace"), "__gentrace_otel_setup_config", None)
     if otel_setup_config is False and not _is_otel_configured():
         # Show the warning (using the existing warning logic)
         if not suppress_warnings:
@@ -372,7 +431,7 @@ def _show_auto_init_warning() -> None:
     """
     warning = GentraceWarnings.AutoInitializationWarning()
     display_gentrace_warning(warning)
-    
+
     # Code example for proper initialization
     init_code = """  from gentrace import init, interaction
 
@@ -383,11 +442,11 @@ def _show_auto_init_warning() -> None:
   @interaction(pipeline_id="my-pipeline-id")
   def my_function():
       return "Hello, world!"""
-    
+
     console = get_console()
     console.console.print(Text("Recommended initialization pattern:", style="bold cyan"))
     console.console.print()
-    
+
     syntax = Syntax(
         init_code,
         "python",
@@ -474,7 +533,9 @@ def _show_otel_warning() -> None:
             console = get_console()
 
             # Display the recommended init() approach with star emoji
-            console.console.print(Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green"))
+            console.console.print(
+                Text("⭐ Option 1: Use Gentrace's automatic OpenTelemetry setup (recommended):", style="bold green")
+            )
             console.console.print()
 
             syntax_init = Syntax(
@@ -491,7 +552,9 @@ def _show_otel_warning() -> None:
             console.console.print()
 
             # Display the manual setup option
-            console.console.print(Text("Option 2: If you have otel_setup=False, manually configure OpenTelemetry:", style="gray"))
+            console.console.print(
+                Text("Option 2: If you have otel_setup=False, manually configure OpenTelemetry:", style="gray")
+            )
             console.console.print()
 
             syntax_manual = Syntax(
@@ -507,19 +570,15 @@ def _show_otel_warning() -> None:
             console.console.print(syntax_manual)
             console.console.print()
 
-            console.console.print(
-                Text("Tip: Copy the code above and add it to your application setup.", style="gray")
-            )
+            console.console.print(Text("Tip: Copy the code above and add it to your application setup.", style="gray"))
             console.console.print()
-            
+
+            console.console.print(Text("To suppress this warning:", style="dim"))
+            console.console.print(Text('• Use: @interaction(pipeline_id="...", suppress_warnings=True)', style="dim"))
             console.console.print(
-                Text("To suppress this warning:", style="dim")
-            )
-            console.console.print(
-                Text("• Use: @interaction(pipeline_id=\"...\", suppress_warnings=True)", style="dim")
-            )
-            console.console.print(
-                Text("• Or: warnings.filterwarnings('ignore', message='OpenTelemetry SDK does not appear')", style="dim")
+                Text(
+                    "• Or: warnings.filterwarnings('ignore', message='OpenTelemetry SDK does not appear')", style="dim"
+                )
             )
             console.console.print()  # Extra line break after suppression info
 
@@ -548,43 +607,35 @@ See the documentation for the complete setup code.
         _otel_config_warning_issued = True
 
 
-
-
 def display_gentrace_warning(warning: Any) -> None:
     """Display a Gentrace warning with consistent formatting.
-    
+
     Args:
         warning: The GentraceWarning instance to display (from warnings module)
     """
     warning.display()
 
 
-def display_pipeline_error(
-    pipeline_id: str,
-    error_type: str,
-    error: Optional[Exception] = None
-) -> None:
+def display_pipeline_error(pipeline_id: str, error_type: str, error: Optional[Exception] = None) -> None:
     """
     Displays a beautifully formatted pipeline error message.
-    
+
     Args:
         pipeline_id: The pipeline ID that caused the error
         error_type: One of 'invalid-format', 'not-found', 'unauthorized', 'unknown'
         error: Optional exception object for additional context
     """
-    if error_type == 'invalid-format':
+    if error_type == "invalid-format":
         warning = GentraceWarnings.PipelineInvalidError(pipeline_id)
-    elif error_type == 'not-found':
+    elif error_type == "not-found":
         warning = GentraceWarnings.PipelineNotFoundError(pipeline_id)
-    elif error_type == 'unauthorized':
+    elif error_type == "unauthorized":
         warning = GentraceWarnings.PipelineUnauthorizedError(pipeline_id)
     else:  # unknown
         error_message = str(error) if error else None
         warning = GentraceWarnings.PipelineError(pipeline_id, error_message)
-    
+
     display_gentrace_warning(warning)
-
-
 
 
 def _convert_pydantic_model_to_dict_if_applicable(obj: Any) -> Any:
@@ -785,25 +836,25 @@ def print_function_call_summary(
 def generate_config_diff(previous_config: Dict[str, Any], current_config: Dict[str, Any]) -> List[str]:
     """
     Generate a diff between two configuration dictionaries.
-    
+
     Args:
         previous_config: The previous configuration
         current_config: The current configuration
-        
+
     Returns:
         List of formatted diff lines showing changes
     """
     diff_lines: List[str] = []
     all_keys = set(previous_config.keys()) | set(current_config.keys())
-    
+
     for key in sorted(all_keys):
         prev_value = previous_config.get(key)
         curr_value = current_config.get(key)
-        
+
         # Handle sensitive keys generically
         display_prev = mask_sensitive_value(key, prev_value)
         display_curr = mask_sensitive_value(key, curr_value)
-        
+
         if key not in previous_config and key in current_config:
             # Added
             diff_lines.append(f"  {key}:")
@@ -816,7 +867,7 @@ def generate_config_diff(previous_config: Dict[str, Any], current_config: Dict[s
             # Changed
             diff_lines.append(f"  {key}:")
             diff_lines.append(f"    - {format_config_value(display_prev)} → {format_config_value(display_curr)}")
-    
+
     return diff_lines
 
 
@@ -851,33 +902,33 @@ def format_config_value(value: Any) -> str:
 def mask_sensitive_value(key: str, value: Any) -> Any:
     """
     Mask sensitive values based on key patterns.
-    
+
     Args:
         key: The configuration key name
         value: The value to potentially mask
-        
+
     Returns:
         The masked value if sensitive, otherwise the original value
     """
     import re
-    
+
     sensitive_patterns = [
-        re.compile(r'key', re.IGNORECASE),
-        re.compile(r'token', re.IGNORECASE),
-        re.compile(r'secret', re.IGNORECASE),
-        re.compile(r'password', re.IGNORECASE),
-        re.compile(r'auth', re.IGNORECASE),
-        re.compile(r'credential', re.IGNORECASE),
-        re.compile(r'apikey', re.IGNORECASE),
-        re.compile(r'api_key', re.IGNORECASE),
+        re.compile(r"key", re.IGNORECASE),
+        re.compile(r"token", re.IGNORECASE),
+        re.compile(r"secret", re.IGNORECASE),
+        re.compile(r"password", re.IGNORECASE),
+        re.compile(r"auth", re.IGNORECASE),
+        re.compile(r"credential", re.IGNORECASE),
+        re.compile(r"apikey", re.IGNORECASE),
+        re.compile(r"api_key", re.IGNORECASE),
     ]
-    
+
     if isinstance(value, str) and any(pattern.search(key) for pattern in sensitive_patterns):
         # Show first 6 chars and mask the rest
         if len(value) > 10:
             return f"{value[:6]}***"
         return "***"
-    
+
     return value
 
 
@@ -886,6 +937,7 @@ __all__ = [
     "gentrace_format_otel_value",
     "_gentrace_json_dumps",
     "is_pydantic_v1",
+    "is_ci",
     "ensure_initialized",
     "GentraceConsole",
     "get_console",

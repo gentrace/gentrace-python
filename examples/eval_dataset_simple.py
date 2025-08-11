@@ -22,15 +22,13 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+
 class QueryInputs(BaseModel):
     query: str
 
 
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
     """Process AI request using OpenAI."""
-    # Print for each test case
-    print(f"Processing test case: {test_case.name}")
-    
     query = test_case.inputs.get("query", "Hey, how are you?")
 
     # Call OpenAI
