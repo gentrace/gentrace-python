@@ -10,11 +10,10 @@ from abc import ABC, abstractmethod
 from typing import Optional
 from typing_extensions import override
 
-from rich.text import Text
-from rich.console import Console
 from rich.live import Live
+from rich.text import Text
 from rich.table import Table
-from rich.panel import Panel
+from rich.console import Console
 from rich.progress import (
     TaskID,
     Progress,
