@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.4.0 (2025-08-11)
+
+Full Changelog: [v1.3.1...v1.4.0](https://github.com/gentrace/gentrace-python/compare/v1.3.1...v1.4.0)
+
+### Features
+
+* **progress:** add progress reporting to evals ([#366](https://github.com/gentrace/gentrace-python/issues/366)) ([9b155dd](https://github.com/gentrace/gentrace-python/commit/9b155dd913c549b1d920b5ccae537389fdf1b874))
+
+
+### Chores
+
+* **ci:** add python version compatibility tests ([#364](https://github.com/gentrace/gentrace-python/issues/364)) ([afd3e2a](https://github.com/gentrace/gentrace-python/commit/afd3e2a9efed5e2c2aabab3713bd126595599067))
+* **internal:** fix ruff target version ([e63f4e8](https://github.com/gentrace/gentrace-python/commit/e63f4e83f6e74bdc3e77f48b9afdb5394ab7cfd8))
+* **internal:** update comment in script ([59722c4](https://github.com/gentrace/gentrace-python/commit/59722c4990e467136b116bca9a3d17ff1e51540b))
+* update @stainless-api/prism-cli to v5.15.0 ([34c0978](https://github.com/gentrace/gentrace-python/commit/34c097861e79cc3901b0f3583d475e6dea4cda6c))
+
 ## 1.3.1 (2025-08-04)
 
 Full Changelog: [v1.3.0...v1.3.1](https://github.com/gentrace/gentrace-python/compare/v1.3.0...v1.3.1)

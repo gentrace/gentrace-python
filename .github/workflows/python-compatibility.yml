@@ -1,0 +1,97 @@
+name: Python Compatibility
+
+on:
+  push:
+    branches-ignore:
+      - 'generated'
+      - 'codegen/**'
+      - 'integrated/**'
+      - 'stl-preview-head/**'
+      - 'stl-preview-base/**'
+  pull_request:
+    branches-ignore:
+      - 'stl-preview-head/**'
+      - 'stl-preview-base/**'
+  workflow_dispatch:
+
+jobs:
+  test-python-versions:
+    name: Test Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12', '3.13']
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      
+      - name: Install Rye
+        run: |
+          curl -sSf https://rye.astral.sh/get | bash
+          echo "$HOME/.rye/shims" >> $GITHUB_PATH
+        env:
+          RYE_VERSION: '0.44.0'
+          RYE_INSTALL_OPTION: '--yes'
+      
+      - name: Configure Rye to use system Python
+        run: |
+          rye config --set-bool behavior.global-python=true
+          rye config --set-bool behavior.use-uv=true
+          rye pin ${{ matrix.python-version }}
+      
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.rye/cache
+          key: ${{ runner.os }}-python-${{ matrix.python-version }}-${{ hashFiles('**/pyproject.toml', '**/requirements*.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-python-${{ matrix.python-version }}-
+            ${{ runner.os }}-python-
+      
+      - name: Install dependencies
+        run: |
+          # For Python 3.8 and 3.13, only install core package without optional dependencies
+          # This mimics what happens when users do "pip install gentrace-py"
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            echo "::notice::Installing core package only for Python ${{ matrix.python-version }} (no optional dependencies)"
+            # For these edge versions, bypass rye's dependency resolution
+            # and install directly with pip
+            python -m venv .venv
+            source .venv/bin/activate
+            pip install --upgrade pip setuptools wheel
+            pip install -e .
+            pip install pytest pytest-asyncio
+            echo "VIRTUAL_ENV=$PWD/.venv" >> $GITHUB_ENV
+            echo "$PWD/.venv/bin" >> $GITHUB_PATH
+          else
+            # For Python 3.9-3.12, install everything including optional dependencies
+            rye sync --no-lock
+          fi
+      
+      - name: Run compatibility tests
+        run: |
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            # Use the venv pytest directly
+            pytest tests/lib/test_python_compatibility.py -v
+          else
+            # Use rye for other versions
+            rye run pytest tests/lib/test_python_compatibility.py -v
+          fi
+      
+      - name: Verify import works
+        run: |
+          if [[ "${{ matrix.python-version }}" == "3.8" ]] || [[ "${{ matrix.python-version }}" == "3.13" ]]; then
+            # Use the venv python directly
+            python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          else
+            # Use rye for other versions
+            rye run python -c "import gentrace; import sys; print(f'✓ Successfully imported gentrace on Python {sys.version.split()[0]}')"
+          fi

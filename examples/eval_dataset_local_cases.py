@@ -22,19 +22,17 @@ DATASET_ID = os.getenv("GENTRACE_DATASET_ID", "")
 
 openai = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
+
 class PromptInputs(TypedDict):
     prompt: str
 
 
-
 async def process_ai_request(test_case: TestCase) -> Optional[str]:
-    print(f"Running test case: {test_case.name}")
-
     prompt = test_case.inputs.get("prompt")
 
     response = await openai.chat.completions.create(
         model="gpt-4.1-nano",
-        messages=[{"role": "user", "content": str(prompt)}], 
+        messages=[{"role": "user", "content": str(prompt)}],
     )
 
     return response.choices[0].message.content
@@ -46,27 +44,16 @@ async def dataset_evaluation() -> None:
 
     # Using TestInput with TypedDict for type safety
     test_cases = [
+        TestInput[PromptInputs](name="greeting", inputs={"prompt": "Hello! How are you doing today?"}),
+        TestInput[PromptInputs](name="factual_question", inputs={"prompt": "What is the capital of France?"}),
+        TestInput[PromptInputs](name="math_problem", inputs={"prompt": "What is 25 * 4?"}),
         TestInput[PromptInputs](
-            name="greeting", 
-            inputs={"prompt": "Hello! How are you doing today?"}
+            name="creative_writing",
+            inputs={"prompt": "Write a haiku about artificial intelligence"},
         ),
-        TestInput[PromptInputs](
-            name="factual_question", 
-            inputs={"prompt": "What is the capital of France?"}
-        ),
-        TestInput[PromptInputs](
-            name="math_problem", 
-            inputs={"prompt": "What is 25 * 4?"}
-        ),
-        TestInput[PromptInputs](
-            name="creative_writing", 
-            inputs={"prompt": "Write a haiku about artificial intelligence"}
-        ),
-        TestInput[PromptInputs](
-            inputs={"prompt": "Tell me a joke"}
-        )
+        TestInput[PromptInputs](inputs={"prompt": "Tell me a joke"}),
     ]
-    
+
     await eval_dataset(
         data=test_cases,
         schema=PromptInputs,
@@ -78,6 +65,6 @@ async def dataset_evaluation() -> None:
 
 if __name__ == "__main__":
     result = asyncio.run(dataset_evaluation())
-    
+
     if result:
         print(f"Experiment URL: {result.url}")
