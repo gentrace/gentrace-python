@@ -44,6 +44,7 @@ from .constants import (
     ATTR_GENTRACE_TEST_CASE_ID,
     ATTR_GENTRACE_EXPERIMENT_ID,
     ATTR_GENTRACE_TEST_CASE_NAME,
+    MAX_EVAL_DATASET_CONCURRENCY,
     ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
 )
@@ -355,6 +356,7 @@ async def eval_dataset(
                                internally to TestCase).
         max_concurrency (Optional[int]): Maximum number of test cases to run concurrently.
                                        If None (default), all test cases run concurrently.
+                                       Maximum allowed value is 100.
                                        For async functions, uses asyncio.Semaphore.
                                        For sync functions, uses ThreadPoolExecutor.
         show_progress_bar (Optional[bool]): Controls progress display during evaluation.
@@ -386,11 +388,11 @@ async def eval_dataset(
     semaphore: Optional[asyncio.Semaphore] = None
     if max_concurrency is not None and max_concurrency > 0:
         # Throw exception if max_concurrency is very high
-        if max_concurrency > 30:
+        if max_concurrency > MAX_EVAL_DATASET_CONCURRENCY:
             warning = GentraceWarnings.HighConcurrencyError(max_concurrency)
             display_gentrace_warning(warning)
             raise ValueError(
-                f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of 30. Please use a value between 1 and 30."
+                f"max_concurrency ({max_concurrency}) exceeds maximum allowed value of {MAX_EVAL_DATASET_CONCURRENCY}. Please use a value between 1 and {MAX_EVAL_DATASET_CONCURRENCY}."
             )
 
         semaphore = asyncio.Semaphore(max_concurrency)

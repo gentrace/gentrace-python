@@ -260,37 +260,37 @@ async def test_max_concurrency_one() -> None:
 @pytest.mark.asyncio
 @pytest.mark.filterwarnings("ignore:max_concurrency")
 async def test_max_concurrency_exceeds_limit() -> None:
-    """Test that max_concurrency > 30 raises ValueError."""
+    """Test that max_concurrency > 100 raises ValueError."""
     
     async def async_task(_: GentraceTestCase) -> Dict[str, Any]:
         """Simple async task."""
         return {"result": "ok"}
     
-    # Should raise ValueError when max_concurrency > 30
+    # Should raise ValueError when max_concurrency > 100
     with pytest.raises(ValueError) as exc_info:
         await eval_dataset(
             data=lambda: create_test_data(5),
             interaction=async_task,
-            max_concurrency=31,
+            max_concurrency=101,
         )
     
-    assert "exceeds maximum allowed value of 30" in str(exc_info.value)
+    assert "exceeds maximum allowed value of 100" in str(exc_info.value)
     
     # Test with a much higher value
     with pytest.raises(ValueError) as exc_info:
         await eval_dataset(
             data=lambda: create_test_data(5),
             interaction=async_task,
-            max_concurrency=100,
+            max_concurrency=150,
         )
     
-    assert "exceeds maximum allowed value of 30" in str(exc_info.value)
+    assert "exceeds maximum allowed value of 100" in str(exc_info.value)
     
-    # Verify that max_concurrency=30 is still allowed (boundary test)
+    # Verify that max_concurrency=100 is still allowed (boundary test)
     results = await eval_dataset(
         data=lambda: create_test_data(5),
         interaction=async_task,
-        max_concurrency=30,
+        max_concurrency=100,
     )
     
     assert len(results) == 5

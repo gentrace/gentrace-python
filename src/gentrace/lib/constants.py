@@ -13,6 +13,9 @@ ATTR_GENTRACE_TEST_CASE_ID = "gentrace.test_case_id"
 
 ATTR_GENTRACE_SAMPLE_KEY = "gentrace.sample"
 
+# Maximum allowed concurrency for eval_dataset
+MAX_EVAL_DATASET_CONCURRENCY = 100
+
 __all__ = [
     "ANONYMOUS_SPAN_NAME",
     "ATTR_GENTRACE_FN_ARGS_EVENT_NAME",
@@ -22,4 +25,5 @@ __all__ = [
     "ATTR_GENTRACE_TEST_CASE_ID",
     "ATTR_GENTRACE_PIPELINE_ID",
     "ATTR_GENTRACE_SAMPLE_KEY",
+    "MAX_EVAL_DATASET_CONCURRENCY",
 ]
