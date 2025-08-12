@@ -458,8 +458,9 @@ async def eval_dataset(
             logger.setLevel(logging.INFO)
         progress_reporter = SimpleProgressReporter(logger)
 
-    # Start progress reporting
-    progress_reporter.start(experiment_context["pipeline_id"], len(converted_test_cases))
+    # Start progress reporting with experiment URL if available
+    experiment_url = experiment_context.get("experiment_url")
+    progress_reporter.start(experiment_context["pipeline_id"], len(converted_test_cases), experiment_url)
 
     evaluation_tasks: List[Tuple[str, Awaitable[Optional[TResult]]]] = []
     for i, test_case in enumerate(converted_test_cases):

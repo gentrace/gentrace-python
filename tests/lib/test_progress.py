@@ -226,6 +226,20 @@ class TestSimpleProgressReporter:
 
         mock_logger.info.assert_called_once_with("Evaluation complete.")
 
+    def test_start_with_url(self) -> None:
+        """Test starting with an experiment URL."""
+        mock_logger = Mock(spec=logging.Logger)
+        reporter = SimpleProgressReporter(logger=mock_logger)
+        
+        test_url = "https://gentrace.ai/t/org/pipeline/123/experiments/abc"
+        reporter.start("pipeline-123", 5, test_url)
+        
+        # Verify both the start message and URL were logged
+        assert mock_logger.info.call_count == 2
+        calls = mock_logger.info.call_args_list
+        assert "Running experiment with 5 test cases..." in calls[0][0][0]
+        assert f"Experiment URL: {test_url}" in calls[1][0][0]
+
     def test_full_lifecycle(self) -> None:
         """Test complete lifecycle of progress reporting."""
         mock_logger = Mock(spec=logging.Logger)
@@ -386,6 +400,30 @@ class TestRichProgressReporter:
                 found_complete_msg = True
                 break
         assert found_complete_msg
+
+    @patch("gentrace.lib.progress.Live")
+    @patch("gentrace.lib.progress.Console")
+    @patch("gentrace.lib.progress.Progress")
+    def test_start_with_url(self, mock_progress_class: Any, _mock_console_class: Any, mock_live_class: Any) -> None:
+        """Test starting with an experiment URL."""
+        mock_progress = Mock()
+        mock_task_id = 999
+        mock_progress.add_task.return_value = mock_task_id
+        mock_progress_class.return_value = mock_progress
+        
+        mock_live = Mock()
+        mock_live_class.return_value = mock_live
+
+        reporter = RichProgressReporter()
+        test_url = "https://gentrace.ai/t/org/pipeline/456/experiments/def"
+        
+        # Mock _create_display to avoid rendering issues with mocked objects
+        with patch.object(reporter, '_create_display', return_value=Mock()):
+            reporter.start("pipeline-456", 10, test_url)
+
+        assert reporter.experiment_url == test_url
+        assert reporter.total_count == 10
+        mock_live.start.assert_called_once()
 
     @patch("gentrace.lib.progress.Live")
     @patch("gentrace.lib.progress.Console")
