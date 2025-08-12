@@ -34,13 +34,14 @@ class ProgressReporter(ABC):
     """
 
     @abstractmethod
-    def start(self, pipeline_id: str, total: int) -> None:
+    def start(self, pipeline_id: str, total: int, experiment_url: Optional[str] = None) -> None:
         """
         Initialize the progress reporter for a new evaluation run.
 
         Args:
             pipeline_id: The ID of the pipeline being evaluated.
             total: The total number of test cases to be executed.
+            experiment_url: Optional URL to view the experiment in the Gentrace UI.
         """
         pass
 
@@ -93,7 +94,7 @@ class SimpleProgressReporter(ProgressReporter):
         self.logger = logger if logger is not None else logging.getLogger("gentrace")
 
     @override
-    def start(self, pipeline_id: str, total: int) -> None:
+    def start(self, pipeline_id: str, total: int, experiment_url: Optional[str] = None) -> None:
         """Initialize a new evaluation run with line-by-line output."""
         self.pipeline_id = pipeline_id
         self.total = total
@@ -101,6 +102,10 @@ class SimpleProgressReporter(ProgressReporter):
 
         message = f"\nRunning experiment with {total} test {'case' if total == 1 else 'cases'}..."
         self.logger.info(message)
+        
+        # Display the experiment URL if available
+        if experiment_url:
+            self.logger.info(f"Experiment URL: {experiment_url}")
 
     def update_current_test(self, test_name: str) -> None:
         """
@@ -154,6 +159,7 @@ class RichProgressReporter(ProgressReporter):
         self.completed_count = 0
         self.total_count = 0
         self.last_completed_test = ""
+        self.experiment_url: Optional[str] = None
 
     def _create_display(self) -> Table:
         """Create the display table with current test info and progress bar."""
@@ -178,12 +184,20 @@ class RichProgressReporter(ProgressReporter):
         return table
 
     @override
-    def start(self, pipeline_id: str, total: int) -> None:
+    def start(self, pipeline_id: str, total: int, experiment_url: Optional[str] = None) -> None:
         """Initialize a new progress bar for the evaluation run."""
         self.total_count = total
         self.completed_count = 0
         self.current_test_name = ""
         self.last_completed_test = ""
+        self.experiment_url = experiment_url
+        
+        # Print the experiment URL separately before starting the Live display
+        # Using Rich's hyperlink markup for clickable links in supported terminals
+        if experiment_url:
+            # Use Rich's link markup to make the URL clickable in supported terminals
+            self.console.print(f"[bold cyan]Experiment:[/bold cyan] [link={experiment_url}]{experiment_url}[/link]", crop=False, overflow="ignore")
+            self.console.print()  # Add spacing
 
         # Create progress bar without description in the bar itself
         self.progress = Progress(

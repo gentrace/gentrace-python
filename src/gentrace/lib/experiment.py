@@ -20,12 +20,13 @@ logger = logging.getLogger("gentrace")
 class ExperimentContext(TypedDict):
     """
     Represents the context for an experiment run. This context is stored in
-    a ContextVar to make the experiment ID and pipeline ID available throughout
+    a ContextVar to make the experiment ID, pipeline ID, and URL available throughout
     the asynchronous execution flow.
     """
 
     experiment_id: str
     pipeline_id: str
+    experiment_url: Optional[str]  # URL to view the experiment in the Gentrace UI
 
 
 experiment_context_var: contextvars.ContextVar[Optional[ExperimentContext]] = contextvars.ContextVar(
@@ -182,9 +183,24 @@ def experiment(
             if not experiment_obj:
                 raise RuntimeError("Failed to obtain experiment from API.")
 
+            # Construct the experiment URL early so it can be displayed immediately
+            # Get the client to access base_url
+            client = _get_async_client_instance()
+            base_url = str(client.base_url).rstrip('/')
+            
+            # Extract hostname from base URL (remove /api suffix if present)
+            if base_url.endswith('/api'):
+                hostname = base_url[:-4]
+            else:
+                hostname = base_url
+            
+            # Construct the URL using resource_path
+            experiment_url = f"{hostname}{experiment_obj.resource_path}"
+
             context_data: ExperimentContext = {
                 "experiment_id": experiment_obj.id,
                 "pipeline_id": effective_pipeline_id,
+                "experiment_url": experiment_url,
             }
 
             token = experiment_context_var.set(context_data)
@@ -200,26 +216,13 @@ def experiment(
                 if experiment_obj:
                     await finish_experiment_api(id=experiment_obj.id)
 
-            # Get the client to access base_url
-            client = _get_async_client_instance()
-            base_url = str(client.base_url).rstrip('/')
-            
-            # Extract hostname from base URL (remove /api suffix if present)
-            if base_url.endswith('/api'):
-                hostname = base_url[:-4]
-            else:
-                hostname = base_url
-            
-            # Construct the URL using resource_path
-            url = f"{hostname}{experiment_obj.resource_path}"
-            
             # Create ExperimentResult instance with all fields from experiment plus URL
             # Use model_dump with by_alias=True to get camelCase field names
             experiment_data = experiment_obj.model_dump(by_alias=True)
             
             result = ExperimentResult(
                 **experiment_data,
-                url=url
+                url=experiment_url  # Use the URL we constructed earlier
             )
             
             return result

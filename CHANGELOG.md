@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.0 (2025-08-12)
+
+Full Changelog: [v1.4.1...v1.5.0](https://github.com/gentrace/gentrace-python/compare/v1.4.1...v1.5.0)
+
+### Features
+
+* **progress:** show experiment URL in reporters ([#369](https://github.com/gentrace/gentrace-python/issues/369)) ([5a48f44](https://github.com/gentrace/gentrace-python/commit/5a48f445af2131ceb2d758efff95826b24c8ac57))
+
 ## 1.4.1 (2025-08-11)
 
 Full Changelog: [v1.4.0...v1.4.1](https://github.com/gentrace/gentrace-python/compare/v1.4.0...v1.4.1)

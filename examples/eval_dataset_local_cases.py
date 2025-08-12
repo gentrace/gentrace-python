@@ -44,9 +44,15 @@ async def dataset_evaluation() -> None:
 
     # Using TestInput with TypedDict for type safety
     test_cases = [
-        TestInput[PromptInputs](name="greeting", inputs={"prompt": "Hello! How are you doing today?"}),
-        TestInput[PromptInputs](name="factual_question", inputs={"prompt": "What is the capital of France?"}),
-        TestInput[PromptInputs](name="math_problem", inputs={"prompt": "What is 25 * 4?"}),
+        TestInput[PromptInputs](
+            name="greeting", inputs={"prompt": "Hello! How are you doing today?"}
+        ),
+        TestInput[PromptInputs](
+            name="factual_question", inputs={"prompt": "What is the capital of France?"}
+        ),
+        TestInput[PromptInputs](
+            name="math_problem", inputs={"prompt": "What is 25 * 4?"}
+        ),
         TestInput[PromptInputs](
             name="creative_writing",
             inputs={"prompt": "Write a haiku about artificial intelligence"},
@@ -64,7 +70,4 @@ async def dataset_evaluation() -> None:
 
 
 if __name__ == "__main__":
-    result = asyncio.run(dataset_evaluation())
-
-    if result:
-        print(f"Experiment URL: {result.url}")
+    asyncio.run(dataset_evaluation())
