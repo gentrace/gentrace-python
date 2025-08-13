@@ -17,7 +17,7 @@ base_url = os.environ.get("TEST_API_BASE_URL", "http://127.0.0.1:4010")
 class TestDatasets:
     parametrize = pytest.mark.parametrize("client", [False, True], indirect=True, ids=["loose", "strict"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_create(self, client: Gentrace) -> None:
         dataset = client.datasets.create(
@@ -26,7 +26,7 @@ class TestDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_create_with_all_params(self, client: Gentrace) -> None:
         dataset = client.datasets.create(
@@ -38,7 +38,7 @@ class TestDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_raw_response_create(self, client: Gentrace) -> None:
         response = client.datasets.with_raw_response.create(
@@ -51,7 +51,7 @@ class TestDatasets:
         dataset = response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_streaming_response_create(self, client: Gentrace) -> None:
         with client.datasets.with_streaming_response.create(
@@ -66,7 +66,7 @@ class TestDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_retrieve(self, client: Gentrace) -> None:
         dataset = client.datasets.retrieve(
@@ -74,7 +74,7 @@ class TestDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_raw_response_retrieve(self, client: Gentrace) -> None:
         response = client.datasets.with_raw_response.retrieve(
@@ -86,7 +86,7 @@ class TestDatasets:
         dataset = response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_streaming_response_retrieve(self, client: Gentrace) -> None:
         with client.datasets.with_streaming_response.retrieve(
@@ -100,7 +100,7 @@ class TestDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_path_params_retrieve(self, client: Gentrace) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
@@ -108,7 +108,7 @@ class TestDatasets:
                 "",
             )
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_update(self, client: Gentrace) -> None:
         dataset = client.datasets.update(
@@ -116,7 +116,7 @@ class TestDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_update_with_all_params(self, client: Gentrace) -> None:
         dataset = client.datasets.update(
@@ -128,7 +128,7 @@ class TestDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_raw_response_update(self, client: Gentrace) -> None:
         response = client.datasets.with_raw_response.update(
@@ -140,7 +140,7 @@ class TestDatasets:
         dataset = response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_streaming_response_update(self, client: Gentrace) -> None:
         with client.datasets.with_streaming_response.update(
@@ -154,7 +154,7 @@ class TestDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_path_params_update(self, client: Gentrace) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
@@ -162,13 +162,13 @@ class TestDatasets:
                 id="",
             )
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_list(self, client: Gentrace) -> None:
         dataset = client.datasets.list()
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_method_list_with_all_params(self, client: Gentrace) -> None:
         dataset = client.datasets.list(
@@ -178,7 +178,7 @@ class TestDatasets:
         )
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_raw_response_list(self, client: Gentrace) -> None:
         response = client.datasets.with_raw_response.list()
@@ -188,7 +188,7 @@ class TestDatasets:
         dataset = response.parse()
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     def test_streaming_response_list(self, client: Gentrace) -> None:
         with client.datasets.with_streaming_response.list() as response:
@@ -206,7 +206,7 @@ class TestAsyncDatasets:
         "async_client", [False, True, {"http_client": "aiohttp"}], indirect=True, ids=["loose", "strict", "aiohttp"]
     )
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_create(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.create(
@@ -215,7 +215,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_create_with_all_params(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.create(
@@ -227,7 +227,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_raw_response_create(self, async_client: AsyncGentrace) -> None:
         response = await async_client.datasets.with_raw_response.create(
@@ -240,7 +240,7 @@ class TestAsyncDatasets:
         dataset = await response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_streaming_response_create(self, async_client: AsyncGentrace) -> None:
         async with async_client.datasets.with_streaming_response.create(
@@ -255,7 +255,7 @@ class TestAsyncDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_retrieve(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.retrieve(
@@ -263,7 +263,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_raw_response_retrieve(self, async_client: AsyncGentrace) -> None:
         response = await async_client.datasets.with_raw_response.retrieve(
@@ -275,7 +275,7 @@ class TestAsyncDatasets:
         dataset = await response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_streaming_response_retrieve(self, async_client: AsyncGentrace) -> None:
         async with async_client.datasets.with_streaming_response.retrieve(
@@ -289,7 +289,7 @@ class TestAsyncDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_path_params_retrieve(self, async_client: AsyncGentrace) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
@@ -297,7 +297,7 @@ class TestAsyncDatasets:
                 "",
             )
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_update(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.update(
@@ -305,7 +305,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_update_with_all_params(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.update(
@@ -317,7 +317,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_raw_response_update(self, async_client: AsyncGentrace) -> None:
         response = await async_client.datasets.with_raw_response.update(
@@ -329,7 +329,7 @@ class TestAsyncDatasets:
         dataset = await response.parse()
         assert_matches_type(Dataset, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_streaming_response_update(self, async_client: AsyncGentrace) -> None:
         async with async_client.datasets.with_streaming_response.update(
@@ -343,7 +343,7 @@ class TestAsyncDatasets:
 
         assert cast(Any, response.is_closed) is True
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_path_params_update(self, async_client: AsyncGentrace) -> None:
         with pytest.raises(ValueError, match=r"Expected a non-empty value for `id` but received ''"):
@@ -351,13 +351,13 @@ class TestAsyncDatasets:
                 id="",
             )
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_list(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.list()
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_method_list_with_all_params(self, async_client: AsyncGentrace) -> None:
         dataset = await async_client.datasets.list(
@@ -367,7 +367,7 @@ class TestAsyncDatasets:
         )
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_raw_response_list(self, async_client: AsyncGentrace) -> None:
         response = await async_client.datasets.with_raw_response.list()
@@ -377,7 +377,7 @@ class TestAsyncDatasets:
         dataset = await response.parse()
         assert_matches_type(DatasetList, dataset, path=["response"])
 
-    @pytest.mark.skip()
+    @pytest.mark.skip(reason="Prism tests are disabled")
     @parametrize
     async def test_streaming_response_list(self, async_client: AsyncGentrace) -> None:
         async with async_client.datasets.with_streaming_response.list() as response:
