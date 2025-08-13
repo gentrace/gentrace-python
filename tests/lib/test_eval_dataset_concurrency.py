@@ -13,6 +13,7 @@ import gentrace.lib.experiment as exp_mod
 import gentrace.lib.experiment_control as exp_ctrl
 from gentrace import TestInput as GentraceTestInput, init, experiment, eval_dataset
 from gentrace.types import TestCase as GentraceTestCase
+from gentrace.lib.constants import MAX_EVAL_DATASET_CONCURRENCY
 from gentrace.types.experiment import Experiment
 
 # Use same pipeline ID as other tests
@@ -260,37 +261,37 @@ async def test_max_concurrency_one() -> None:
 @pytest.mark.asyncio
 @pytest.mark.filterwarnings("ignore:max_concurrency")
 async def test_max_concurrency_exceeds_limit() -> None:
-    """Test that max_concurrency > 30 raises ValueError."""
+    """Test that max_concurrency > MAX_EVAL_DATASET_CONCURRENCY raises ValueError."""
     
     async def async_task(_: GentraceTestCase) -> Dict[str, Any]:
         """Simple async task."""
         return {"result": "ok"}
     
-    # Should raise ValueError when max_concurrency > 30
+    # Should raise ValueError when max_concurrency exceeds the limit
     with pytest.raises(ValueError) as exc_info:
         await eval_dataset(
             data=lambda: create_test_data(5),
             interaction=async_task,
-            max_concurrency=31,
+            max_concurrency=MAX_EVAL_DATASET_CONCURRENCY + 1,
         )
     
-    assert "exceeds maximum allowed value of 30" in str(exc_info.value)
+    assert f"exceeds maximum allowed value of {MAX_EVAL_DATASET_CONCURRENCY}" in str(exc_info.value)
     
     # Test with a much higher value
     with pytest.raises(ValueError) as exc_info:
         await eval_dataset(
             data=lambda: create_test_data(5),
             interaction=async_task,
-            max_concurrency=100,
+            max_concurrency=MAX_EVAL_DATASET_CONCURRENCY + 50,
         )
     
-    assert "exceeds maximum allowed value of 30" in str(exc_info.value)
+    assert f"exceeds maximum allowed value of {MAX_EVAL_DATASET_CONCURRENCY}" in str(exc_info.value)
     
-    # Verify that max_concurrency=30 is still allowed (boundary test)
+    # Verify that max_concurrency=MAX_EVAL_DATASET_CONCURRENCY is still allowed (boundary test)
     results = await eval_dataset(
         data=lambda: create_test_data(5),
         interaction=async_task,
-        max_concurrency=30,
+        max_concurrency=MAX_EVAL_DATASET_CONCURRENCY,
     )
     
     assert len(results) == 5

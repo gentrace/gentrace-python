@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.1 (2025-08-13)
+
+Full Changelog: [v1.5.0...v1.5.1](https://github.com/gentrace/gentrace-python/compare/v1.5.0...v1.5.1)
+
+### Bug Fixes
+
+* **eval_dataset:** raise limit to 100 concurrency ([#371](https://github.com/gentrace/gentrace-python/issues/371)) ([c7b5db8](https://github.com/gentrace/gentrace-python/commit/c7b5db838f10ead8fc2ed214dd7d3799528488b5))
+
 ## 1.5.0 (2025-08-12)
 
 Full Changelog: [v1.4.1...v1.5.0](https://github.com/gentrace/gentrace-python/compare/v1.4.1...v1.5.0)

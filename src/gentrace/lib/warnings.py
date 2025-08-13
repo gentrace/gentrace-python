@@ -9,6 +9,8 @@ from rich.text import Text
 from rich.panel import Panel
 from rich.console import Group, Console
 
+from .constants import MAX_EVAL_DATASET_CONCURRENCY
+
 # Global tracking of displayed warnings
 _displayed_warnings: Set[str] = set()
 
@@ -252,10 +254,10 @@ class GentraceWarnings:
             warning_id="GT_HighConcurrencyError",
             title="High Concurrency Error",
             message=[
-                f"max_concurrency of {max_concurrency} exceeds the maximum allowed value of 30.",
+                f"max_concurrency of {max_concurrency} exceeds the maximum allowed value of {MAX_EVAL_DATASET_CONCURRENCY}.",
                 "",
                 "Please use a lower value:",
-                f"    eval_dataset(..., max_concurrency=30)",
+                f"    eval_dataset(..., max_concurrency={MAX_EVAL_DATASET_CONCURRENCY})",
                 "",
                 "High concurrency can overwhelm your API providers and may lead to rate limiting.",
             ],
