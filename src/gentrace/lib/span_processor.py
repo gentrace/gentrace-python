@@ -6,7 +6,7 @@ from opentelemetry.trace import Span
 from opentelemetry.context import Context
 from opentelemetry.sdk.trace import ReadableSpan, SpanProcessor
 
-from gentrace.lib.constants import ATTR_GENTRACE_SAMPLE_KEY
+from gentrace.lib.constants import ATTR_GENTRACE_SAMPLE_KEY, ATTR_GENTRACE_IN_EXPERIMENT
 
 
 class GentraceSpanProcessor(SpanProcessor):
@@ -34,6 +34,11 @@ class GentraceSpanProcessor(SpanProcessor):
         if sample_value is not None:
             if isinstance(sample_value, str):
                 span.set_attribute(ATTR_GENTRACE_SAMPLE_KEY, sample_value)
+
+        in_experiment_value = baggage.get_baggage(ATTR_GENTRACE_IN_EXPERIMENT, context=parent_context)
+        if in_experiment_value is not None:
+            if isinstance(in_experiment_value, str):
+                span.set_attribute(ATTR_GENTRACE_IN_EXPERIMENT, in_experiment_value)
 
     @override
     def on_end(self, span: ReadableSpan) -> None:
