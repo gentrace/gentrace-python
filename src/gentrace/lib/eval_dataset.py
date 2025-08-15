@@ -217,7 +217,7 @@ async def _run_single_test_case_for_dataset(
     current_context = otel_context.get_current()
     context_with_modified_baggage = otel_baggage.set_baggage(ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context)
     context_with_modified_baggage = otel_baggage.set_baggage(
-        ATTR_GENTRACE_IN_EXPERIMENT, "true", context=current_context
+        ATTR_GENTRACE_IN_EXPERIMENT, "true", context=context_with_modified_baggage
     )
 
     token = otel_context.attach(context_with_modified_baggage)
