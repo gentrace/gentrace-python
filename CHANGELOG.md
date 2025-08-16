@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.5.2 (2025-08-16)
+
+Full Changelog: [v1.5.1...v1.5.2](https://github.com/gentrace/gentrace-python/compare/v1.5.1...v1.5.2)
+
+### Bug Fixes
+
+* add gentrace.in_experiment to span attributes ([#374](https://github.com/gentrace/gentrace-python/issues/374)) ([f871c76](https://github.com/gentrace/gentrace-python/commit/f871c766fc4c4be8649e7d5e6d80191265d4eb62))
+
+
+### Chores
+
+* **internal:** codegen related update ([756aba7](https://github.com/gentrace/gentrace-python/commit/756aba7d72e4358ee5b91fa207349ab098ed95fa))
+
 ## 1.5.1 (2025-08-13)
 
 Full Changelog: [v1.5.0...v1.5.1](https://github.com/gentrace/gentrace-python/compare/v1.5.0...v1.5.1)
