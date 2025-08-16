@@ -13,6 +13,7 @@ from .constants import (
     ANONYMOUS_SPAN_NAME,
     ATTR_GENTRACE_SAMPLE_KEY,
     ATTR_GENTRACE_EXPERIMENT_ID,
+    ATTR_GENTRACE_IN_EXPERIMENT,
     ATTR_GENTRACE_TEST_CASE_NAME,
     ATTR_GENTRACE_FN_ARGS_EVENT_NAME,
     ATTR_GENTRACE_FN_OUTPUT_EVENT_NAME,
@@ -89,6 +90,9 @@ def eval(
             current_context = otel_context.get_current()
             context_with_modified_baggage = otel_baggage.set_baggage(
                 ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
+            )
+            context_with_modified_baggage = otel_baggage.set_baggage(
+                ATTR_GENTRACE_IN_EXPERIMENT, "true", context=context_with_modified_baggage
             )
 
             token = otel_context.attach(context_with_modified_baggage)
