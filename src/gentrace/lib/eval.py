@@ -86,16 +86,11 @@ def eval(
 
             span_name = name
 
-            # Set up baggage context similar to @interaction()
-            current_context = otel_context.get_current()
-            context_with_modified_baggage = otel_baggage.set_baggage(
-                ATTR_GENTRACE_SAMPLE_KEY, "true", context=current_context
-            )
-            context_with_modified_baggage = otel_baggage.set_baggage(
-                ATTR_GENTRACE_IN_EXPERIMENT, "true", context=context_with_modified_baggage
-            )
+            context = otel_context.get_current()
+            context = otel_baggage.set_baggage(ATTR_GENTRACE_SAMPLE_KEY, "true", context=context)
+            context = otel_baggage.set_baggage(ATTR_GENTRACE_IN_EXPERIMENT, "true", context=context)
+            token = otel_context.attach(context)
 
-            token = otel_context.attach(context_with_modified_baggage)
             try:
                 with _tracer.start_as_current_span(span_name) as span:
                     span.set_attribute(ATTR_GENTRACE_EXPERIMENT_ID, experiment_context["experiment_id"])
