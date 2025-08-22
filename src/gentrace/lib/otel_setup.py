@@ -41,7 +41,10 @@ setup()"""
     # Create error content with rich formatting
     error_content = Group(
         Text("The setup() function was called before init().", style="red"),
-        Text("Gentrace must be initialized with your API key before setting up OpenTelemetry.", style="red"),
+        Text(
+            "Gentrace must be initialized with your API key before setting up OpenTelemetry.",
+            style="red",
+        ),
         Text(),
         Text("To fix this, call init() before setup():", style="yellow"),
     )
@@ -74,7 +77,12 @@ setup()"""
     console.console.print(syntax)
     console.console.print()
 
-    console.console.print(Text("💡 Make sure to call init() before setup() in your application.", style="bold green"))
+    console.console.print(
+        Text(
+            "💡 Make sure to call init() before setup() in your application.",
+            style="bold green",
+        )
+    )
 
 
 def _get_service_name() -> str:
@@ -101,7 +109,11 @@ def _get_service_name() -> str:
                     return name
 
             # Check for tool.poetry.name (Poetry)
-            if "tool" in data and "poetry" in data["tool"] and "name" in data["tool"]["poetry"]:
+            if (
+                "tool" in data
+                and "poetry" in data["tool"]
+                and "name" in data["tool"]["poetry"]
+            ):
                 name = data["tool"]["poetry"]["name"]  # type: ignore[assignment]
                 if isinstance(name, str):
                     return name
@@ -207,21 +219,35 @@ def setup(
         client = _get_sync_client_instance()
         # Check if the client has been properly initialized
         # The client should have a valid API key (not the default placeholder)
-        is_initialized = client and hasattr(client, "api_key") and client.api_key and client.api_key != "placeholder"
+        is_initialized = (
+            client
+            and hasattr(client, "api_key")
+            and client.api_key
+            and client.api_key != "placeholder"
+        )
 
         # Also check for the global flag set by init()
         gentrace_module = sys.modules.get("gentrace")
-        if not is_initialized or not (gentrace_module and getattr(gentrace_module, "__gentrace_initialized", False)):
+        if not is_initialized or not (
+            gentrace_module
+            and getattr(gentrace_module, "__gentrace_initialized", False)
+        ):
             raise ValueError("Gentrace not initialized")
 
     except Exception as e:
         # Display error using rich formatting
         _display_init_error()
-        raise RuntimeError("Gentrace must be initialized before calling setup().") from e
+        raise RuntimeError(
+            "Gentrace must be initialized before calling setup()."
+        ) from e
 
     # Get configuration values with smart defaults
     # Use API key from init() with higher priority than env variable
-    api_key = client.api_key if client.api_key != "placeholder" else os.getenv("GENTRACE_API_KEY")
+    api_key = (
+        client.api_key
+        if client.api_key != "placeholder"
+        else os.getenv("GENTRACE_API_KEY")
+    )
     base_url_obj = getattr(client, "base_url", None)
 
     # Convert URL object to string if needed
@@ -239,7 +265,10 @@ def setup(
     final_service_name = service_name or _get_service_name()
 
     # Build resource attributes
-    all_resource_attributes = {"service.name": final_service_name, **(resource_attributes or {})}
+    all_resource_attributes = {
+        "service.name": final_service_name,
+        **(resource_attributes or {}),
+    }
 
     # Create resource
     resource = Resource(attributes=all_resource_attributes)
@@ -309,7 +338,9 @@ def setup(
             try:
                 # All standard OpenTelemetry instrumentations inherit from BaseInstrumentor
                 # which provides the instrument() method
-                if hasattr(instrumentation, "instrument") and callable(instrumentation.instrument):
+                if hasattr(instrumentation, "instrument") and callable(
+                    instrumentation.instrument
+                ):
                     # Check if this is an OpenInference instrumentor which needs tracer_provider
                     # OpenInference instrumentors are in the openinference.instrumentation namespace
                     module_name = type(instrumentation).__module__

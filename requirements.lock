@@ -10,19 +10,22 @@
 #   universal: false
 
 -e file:.
+ag-ui-protocol==0.1.8
+    # via pydantic-ai-slim
 aiohappyeyeballs==2.6.1
     # via aiohttp
 aiohttp==3.12.15
     # via gentrace-py
     # via httpx-aiohttp
+    # via huggingface-hub
 aiosignal==1.4.0
     # via aiohttp
-annotated-types==0.6.0
+annotated-types==0.7.0
     # via pydantic
-anthropic==0.52.2
+anthropic==0.64.0
     # via gentrace-py
     # via pydantic-ai-slim
-anyio==4.9.0
+anyio==4.10.0
     # via anthropic
     # via gentrace-py
     # via google-genai
@@ -37,71 +40,70 @@ async-timeout==5.0.1
     # via aiohttp
 attrs==25.3.0
     # via aiohttp
-boto3==1.39.8
+boto3==1.40.15
     # via pydantic-ai-slim
-botocore==1.39.8
+botocore==1.40.15
     # via boto3
     # via s3transfer
 cachetools==5.5.2
     # via google-auth
-certifi==2023.7.22
+certifi==2025.8.3
     # via httpcore
     # via httpx
     # via requests
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via requests
-cohere==5.15.0
+cohere==5.17.0
     # via pydantic-ai-slim
 colorama==0.4.6
     # via griffe
-deprecated==1.2.18
-    # via opentelemetry-api
-    # via opentelemetry-exporter-otlp-proto-http
-    # via opentelemetry-semantic-conventions
-distro==1.8.0
+distro==1.9.0
     # via anthropic
     # via gentrace-py
     # via groq
     # via openai
 eval-type-backport==0.2.2
+    # via genai-prices
     # via mistralai
+    # via openinference-instrumentation-openai-agents
     # via pydantic-ai-slim
     # via pydantic-evals
-exceptiongroup==1.2.2
+exceptiongroup==1.3.0
     # via anyio
     # via pydantic-ai-slim
-fasta2a==0.2.14
-    # via pydantic-ai-slim
-fastavro==1.11.1
+fastavro==1.12.0
     # via cohere
-filelock==3.18.0
+filelock==3.19.1
     # via huggingface-hub
 frozenlist==1.7.0
     # via aiohttp
     # via aiosignal
 fsspec==2025.7.0
     # via huggingface-hub
+genai-prices==0.0.23
+    # via pydantic-ai-slim
 google-auth==2.40.3
     # via google-genai
     # via pydantic-ai-slim
-google-genai==1.26.0
+google-genai==1.31.0
     # via pydantic-ai-slim
 googleapis-common-protos==1.70.0
     # via opentelemetry-exporter-otlp-proto-http
-griffe==1.7.3
+griffe==1.12.1
     # via openai-agents
     # via pydantic-ai-slim
-groq==0.30.0
+groq==0.31.0
     # via pydantic-ai-slim
 h11==0.16.0
     # via httpcore
-hf-xet==1.1.3
+hf-xet==1.1.8
     # via huggingface-hub
 httpcore==1.0.9
     # via httpx
 httpx==0.28.1
     # via anthropic
     # via cohere
+    # via genai-prices
     # via gentrace-py
     # via google-genai
     # via groq
@@ -115,16 +117,19 @@ httpx-aiohttp==0.1.8
     # via gentrace-py
 httpx-sse==0.4.0
     # via cohere
-huggingface-hub==0.32.4
+huggingface-hub==0.34.4
+    # via pydantic-ai-slim
     # via tokenizers
-idna==3.4
+idna==3.10
     # via anyio
     # via httpx
     # via requests
     # via yarl
-importlib-metadata==8.6.1
+importlib-metadata==8.7.0
     # via opentelemetry-api
-jiter==0.9.0
+invoke==2.2.0
+    # via mistralai
+jiter==0.10.0
     # via anthropic
     # via openai
 jmespath==1.0.1
@@ -134,45 +139,46 @@ jsonpatch==1.33
     # via langchain-core
 jsonpointer==3.0.0
     # via jsonpatch
-langchain-core==0.3.68
+langchain-core==0.3.74
     # via gentrace-py
-langsmith==0.4.4
+langsmith==0.4.16
     # via langchain-core
-logfire-api==3.17.0
+logfire-api==4.3.5
     # via pydantic-evals
     # via pydantic-graph
 markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-mistralai==1.8.1
+mistralai==1.9.7
     # via pydantic-ai-slim
-multidict==6.6.3
+multidict==6.6.4
     # via aiohttp
     # via yarl
-openai==1.93.0
+nexus-rpc==1.1.0
+    # via temporalio
+openai==1.101.0
     # via gentrace-py
     # via openai-agents
     # via pydantic-ai-slim
-openai-agents==0.1.0
+openai-agents==0.2.9
     # via gentrace-py
-openinference-instrumentation==0.1.34
+openinference-instrumentation==0.1.37
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
-openinference-instrumentation-langchain==0.1.46
+openinference-instrumentation-langchain==0.1.50
     # via gentrace-py
-openinference-instrumentation-openai==0.1.30
+openinference-instrumentation-openai==0.1.31
     # via gentrace-py
-openinference-instrumentation-openai-agents==1.0.0
+openinference-instrumentation-openai-agents==1.2.0
     # via gentrace-py
 openinference-semantic-conventions==0.1.21
     # via openinference-instrumentation
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
-opentelemetry-api==1.32.1
-    # via fasta2a
+opentelemetry-api==1.36.0
     # via openinference-instrumentation
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
@@ -183,34 +189,34 @@ opentelemetry-api==1.32.1
     # via opentelemetry-sdk
     # via opentelemetry-semantic-conventions
     # via pydantic-ai-slim
-opentelemetry-exporter-otlp-proto-common==1.32.1
+opentelemetry-exporter-otlp-proto-common==1.36.0
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-exporter-otlp-proto-http==1.32.1
+opentelemetry-exporter-otlp-proto-http==1.36.0
     # via gentrace-py
-opentelemetry-instrumentation==0.53b1
+opentelemetry-instrumentation==0.57b0
     # via gentrace-py
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
-opentelemetry-processor-baggage==0.54b0
+opentelemetry-processor-baggage==0.57b0
     # via gentrace-py
-opentelemetry-proto==1.32.1
+opentelemetry-proto==1.36.0
     # via opentelemetry-exporter-otlp-proto-common
     # via opentelemetry-exporter-otlp-proto-http
-opentelemetry-sdk==1.32.1
+opentelemetry-sdk==1.36.0
     # via gentrace-py
     # via openinference-instrumentation
     # via opentelemetry-exporter-otlp-proto-http
     # via opentelemetry-processor-baggage
-opentelemetry-semantic-conventions==0.53b1
+opentelemetry-semantic-conventions==0.57b0
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
     # via opentelemetry-instrumentation
     # via opentelemetry-sdk
-orjson==3.10.18
+orjson==3.11.2
     # via langsmith
-packaging==24.2
+packaging==25.0
     # via huggingface-hub
     # via langchain-core
     # via langsmith
@@ -220,18 +226,20 @@ prompt-toolkit==3.0.51
 propcache==0.3.2
     # via aiohttp
     # via yarl
-protobuf==5.29.4
+protobuf==5.29.5
     # via googleapis-common-protos
     # via opentelemetry-proto
+    # via temporalio
 pyasn1==0.6.1
     # via pyasn1-modules
     # via rsa
 pyasn1-modules==0.4.2
     # via google-auth
-pydantic==2.10.3
+pydantic==2.11.7
+    # via ag-ui-protocol
     # via anthropic
     # via cohere
-    # via fasta2a
+    # via genai-prices
     # via gentrace-py
     # via google-genai
     # via groq
@@ -243,28 +251,32 @@ pydantic==2.10.3
     # via pydantic-ai-slim
     # via pydantic-evals
     # via pydantic-graph
-pydantic-ai==0.2.14
+pydantic-ai==0.7.4
     # via gentrace-py
-pydantic-ai-slim==0.2.14
+pydantic-ai-slim==0.7.4
     # via pydantic-ai
     # via pydantic-evals
-pydantic-core==2.27.1
+pydantic-core==2.33.2
     # via cohere
     # via pydantic
-pydantic-evals==0.2.14
+pydantic-evals==0.7.4
     # via pydantic-ai-slim
-pydantic-graph==0.2.14
+pydantic-graph==0.7.4
     # via pydantic-ai-slim
-pygments==2.19.1
+pygments==2.19.2
     # via rich
+pyperclip==1.9.0
+    # via pydantic-ai-slim
 python-dateutil==2.9.0.post0
     # via botocore
     # via mistralai
+    # via temporalio
 pyyaml==6.0.2
     # via huggingface-hub
     # via langchain-core
+    # via mistralai
     # via pydantic-evals
-requests==2.32.3
+requests==2.32.5
     # via cohere
     # via google-genai
     # via huggingface-hub
@@ -275,62 +287,73 @@ requests==2.32.3
     # via requests-toolbelt
 requests-toolbelt==1.0.0
     # via langsmith
-rich==14.0.0
+rich==14.1.0
     # via gentrace-py
     # via pydantic-ai-slim
     # via pydantic-evals
 rsa==4.9.1
     # via google-auth
-s3transfer==0.13.0
+s3transfer==0.13.1
     # via boto3
 six==1.17.0
     # via python-dateutil
-sniffio==1.3.0
+sniffio==1.3.1
     # via anthropic
     # via anyio
     # via gentrace-py
     # via groq
     # via openai
-starlette==0.47.0
-    # via fasta2a
-tenacity==8.5.0
+starlette==0.47.2
+    # via pydantic-ai-slim
+temporalio==1.15.0
+    # via pydantic-ai-slim
+tenacity==9.1.2
     # via google-genai
     # via langchain-core
-tokenizers==0.21.1
+    # via pydantic-ai-slim
+tokenizers==0.21.4
     # via cohere
 tomli==2.2.1
     # via gentrace-py
 tqdm==4.67.1
     # via huggingface-hub
     # via openai
+types-protobuf==6.30.2.20250822
+    # via temporalio
 types-requests==2.31.0.6
     # via cohere
     # via openai-agents
 types-urllib3==1.26.25.14
     # via types-requests
-typing-extensions==4.12.2
+typing-extensions==4.14.1
     # via aiosignal
     # via anthropic
     # via anyio
     # via cohere
+    # via exceptiongroup
     # via gentrace-py
     # via google-genai
     # via groq
     # via huggingface-hub
     # via langchain-core
     # via multidict
+    # via nexus-rpc
     # via openai
     # via openai-agents
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
+    # via opentelemetry-api
+    # via opentelemetry-exporter-otlp-proto-http
     # via opentelemetry-sdk
+    # via opentelemetry-semantic-conventions
     # via pydantic
     # via pydantic-core
-    # via rich
     # via starlette
+    # via temporalio
     # via typing-inspection
 typing-inspection==0.4.1
     # via mistralai
+    # via pydantic
     # via pydantic-ai-slim
     # via pydantic-graph
 urllib3==1.26.20
@@ -340,8 +363,7 @@ wcwidth==0.2.13
     # via prompt-toolkit
 websockets==15.0.1
     # via google-genai
-wrapt==1.17.2
-    # via deprecated
+wrapt==1.17.3
     # via openinference-instrumentation-langchain
     # via openinference-instrumentation-openai
     # via openinference-instrumentation-openai-agents
@@ -349,7 +371,7 @@ wrapt==1.17.2
     # via opentelemetry-processor-baggage
 yarl==1.20.1
     # via aiohttp
-zipp==3.21.0
+zipp==3.23.0
     # via importlib-metadata
-zstandard==0.23.0
+zstandard==0.24.0
     # via langsmith
