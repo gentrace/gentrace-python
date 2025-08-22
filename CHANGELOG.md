@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.1 (2025-08-22)
+
+Full Changelog: [v1.6.0...v1.6.1](https://github.com/gentrace/gentrace-python/compare/v1.6.0...v1.6.1)
+
+### Chores
+
+* sync repo ([b59d341](https://github.com/gentrace/gentrace-python/commit/b59d34192af5ebcde2442ec021fdf414333ce63a))
+
 ## 1.6.0 (2025-08-22)
 
 Full Changelog: [v1.5.2...v1.6.0](https://github.com/gentrace/gentrace-python/compare/v1.5.2...v1.6.0)
