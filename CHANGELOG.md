@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.1 (2025-08-22)
+
+Full Changelog: [v1.6.0...v1.6.1](https://github.com/gentrace/gentrace-python/compare/v1.6.0...v1.6.1)
+
+### Bug Fixes
+
+* **otel:** add stable vendored OTLP exporter ([#378](https://github.com/gentrace/gentrace-python/issues/378)) ([14895fc](https://github.com/gentrace/gentrace-python/commit/14895fc832cf4f667afa2dfbd5ce05e0dd9473dc))
+
+
+### Chores
+
+* **deps:** update opentelemetry version bounds ([54a804a](https://github.com/gentrace/gentrace-python/commit/54a804a9a57a24726571b52e0090ecdc32bbe519))
+
 ## 1.6.0 (2025-08-22)
 
 Full Changelog: [v1.5.2...v1.6.0](https://github.com/gentrace/gentrace-python/compare/v1.5.2...v1.6.0)
