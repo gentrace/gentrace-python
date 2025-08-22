@@ -1,16 +1,26 @@
-import logging
-from typing import TYPE_CHECKING, Any, Union, Iterator
-from itertools import count
-from typing_extensions import Literal, override
+"""
+Custom OTLP Span Exporter for Gentrace
 
-from opentelemetry.sdk.trace.export import SpanExportResult
-from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+This exporter wraps our vendored OTLP exporter to add Gentrace-specific
+functionality like partial success handling and custom error messages.
+By using composition instead of inheritance, we avoid brittleness across
+OpenTelemetry versions.
+"""
+
+import json
+import logging
+from typing import TYPE_CHECKING, Any, Sequence
+from typing_extensions import override
+
+from opentelemetry.sdk.trace import ReadableSpan
+from opentelemetry.sdk.trace.export import SpanExporter, SpanExportResult
 from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
     ExportTraceServiceResponse,
 )
 
 from .utils import display_gentrace_warning
 from .warnings import GentraceWarnings
+from .vendored_otlp_exporter import GentraceVendoredOTLPSpanExporter
 
 if TYPE_CHECKING:
     import requests
@@ -18,92 +28,83 @@ if TYPE_CHECKING:
 _logger = logging.getLogger(__name__)
 
 
-def _create_exp_backoff_generator(max_value: int = 0) -> Iterator[int]:
+class GentraceOTLPSpanExporter(SpanExporter):
     """
-    Creates an exponential backoff generator matching OpenTelemetry's implementation.
+    Custom OTLP Span Exporter that wraps the vendored exporter.
     
-    This is reimplemented here to avoid importing from private modules.
-    """
-    for i in count(0):
-        out = 2**i
-        yield min(out, max_value) if max_value else out
-
-
-class GentraceOTLPSpanExporter(OTLPSpanExporter):
-    """
-    Custom OTLP Span Exporter that extends the default OTLPSpanExporter
-    to handle partial success responses from the OTLP endpoint.
-
-    This exporter parses the response body even for successful (200 OK) responses
-    and logs warnings when spans are partially rejected or when the server
-    sends warning messages.
+    This exporter uses composition to wrap our vendored OTLP exporter,
+    adding Gentrace-specific functionality while maintaining stability
+    across OpenTelemetry versions.
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        """Initialize the custom exporter with the same parameters as the base class."""
-        super().__init__(*args, **kwargs)
+        """Initialize the custom exporter by creating a vendored exporter."""
+        # Create the vendored exporter with the same arguments
+        self._exporter = GentraceVendoredOTLPSpanExporter(*args, **kwargs)
+        
+        # Store original send_request method so we can intercept responses
+        self._original_send_request = self._exporter._send_request
+        self._exporter._send_request = self._intercepted_send_request  # type: ignore[method-assign]
+        
+        # Store original handle_error method so we can customize error messages
+        self._original_handle_error = self._exporter._handle_error
+        self._exporter._handle_error = self._handle_error_with_gentrace_warnings  # type: ignore[method-assign]
 
     @override
-    def _export_serialized_spans(
-        self, serialized_data: bytes
-    ) -> Union[Literal[SpanExportResult.FAILURE], Literal[SpanExportResult.SUCCESS]]:
+    def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
         """
-        Override to add partial success checking while keeping parent's retry logic.
-        
-        This is a minimal override that adds our custom logic only when needed.
+        Export spans using the vendored exporter with our customizations.
         """
-        # Use the parent's retry logic directly
-        for delay in _create_exp_backoff_generator(
-            max_value=self._MAX_RETRY_TIMEOUT
-        ):
-            if delay == self._MAX_RETRY_TIMEOUT:
-                return SpanExportResult.FAILURE
+        return self._exporter.export(spans)
 
-            resp = self._export(serialized_data)
-            
-            if resp.ok:
-                # Add our partial success check here
-                if resp.content:
-                    self._check_partial_success(resp)
-                return SpanExportResult.SUCCESS
-            elif self._retryable(resp):
-                _logger.warning(
-                    "Transient error %s encountered while exporting span batch, retrying in %ss.",
-                    resp.reason,
-                    delay,
-                )
-                from time import sleep
-                sleep(delay)
-                continue
-            else:
-                # Provide clear error messages based on status code
-                if resp.status_code == 401:
-                    # Display the authentication error warning (only once per session)
-                    warning = GentraceWarnings.OtelAuthenticationError()
-                    display_gentrace_warning(warning)
-                elif resp.status_code == 403:
-                    _logger.error(
-                        "Failed to export traces: Access forbidden (403). Your API key may not have the required permissions."
-                    )
-                elif resp.status_code == 404:
-                    _logger.error(
-                        "Failed to export traces: Endpoint not found (404). Please check your Gentrace configuration."
-                    )
-                else:
-                    _logger.error(
-                        "Failed to export traces: HTTP %s error",
-                        resp.status_code,
-                    )
-                return SpanExportResult.FAILURE
+    @override
+    def shutdown(self) -> None:
+        """Shutdown the underlying exporter."""
+        self._exporter.shutdown()
+
+    @override
+    def force_flush(self, timeout_millis: int = 30000) -> bool:
+        """Force flush the underlying exporter."""
+        return self._exporter.force_flush(timeout_millis)
+
+    def _intercepted_send_request(self, data: bytes, timeout: float) -> "requests.Response":
+        """
+        Intercept the send_request to check for partial success on 200 OK responses.
+        """
+        # Call the original send_request
+        resp = self._original_send_request(data, timeout)
         
-        return SpanExportResult.FAILURE
+        # If successful, check for partial success
+        if resp.ok and resp.content:
+            self._check_partial_success(resp)
+        
+        return resp
+
+    def _handle_error_with_gentrace_warnings(self, resp: "requests.Response") -> None:
+        """
+        Handle errors with Gentrace-specific warnings.
+        """
+        if resp.status_code == 401:
+            # Display the authentication error warning (only once per session)
+            warning = GentraceWarnings.OtelAuthenticationError()
+            display_gentrace_warning(warning)
+        elif resp.status_code == 403:
+            _logger.error(
+                "Failed to export traces: Access forbidden (403). "
+                "Your API key may not have the required permissions."
+            )
+        elif resp.status_code == 404:
+            _logger.error(
+                "Failed to export traces: Endpoint not found (404). "
+                "Please check your Gentrace configuration."
+            )
+        else:
+            # Fall back to the original error handler for other errors
+            self._original_handle_error(resp)
 
     def _check_partial_success(self, resp: "requests.Response") -> None:
         """
         Check response for partial success indicators and display warnings.
-        
-        This method is isolated from the main export logic to minimize
-        differences from the parent class.
         """
         try:
             # Check response content type
@@ -113,7 +114,6 @@ class GentraceOTLPSpanExporter(OTLPSpanExporter):
             
             if 'application/json' in content_type:
                 # Handle JSON response
-                import json
                 json_data = json.loads(resp.content.decode('utf-8'))
                 
                 # Check if this is a byte array encoded as JSON object with numeric keys
@@ -131,9 +131,13 @@ class GentraceOTLPSpanExporter(OTLPSpanExporter):
                     if 'partialSuccess' in json_data:
                         partial_success_json = json_data['partialSuccess']
                         if 'rejectedSpans' in partial_success_json:
-                            response_proto.partial_success.rejected_spans = int(partial_success_json['rejectedSpans'])
+                            response_proto.partial_success.rejected_spans = int(
+                                partial_success_json['rejectedSpans']
+                            )
                         if 'errorMessage' in partial_success_json:
-                            response_proto.partial_success.error_message = partial_success_json['errorMessage']
+                            response_proto.partial_success.error_message = (
+                                partial_success_json['errorMessage']
+                            )
             else:
                 # Handle protobuf response
                 response_proto = ExportTraceServiceResponse()
