@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.1 (2025-08-22)
+
+Full Changelog: [v1.6.0...v1.6.1](https://github.com/gentrace/gentrace-python/compare/v1.6.0...v1.6.1)
+
+### Chores
+
+* **deps:** update opentelemetry version bounds ([54a804a](https://github.com/gentrace/gentrace-python/commit/54a804a9a57a24726571b52e0090ecdc32bbe519))
+
 ## 1.6.0 (2025-08-22)
 
 Full Changelog: [v1.5.2...v1.6.0](https://github.com/gentrace/gentrace-python/compare/v1.5.2...v1.6.0)
