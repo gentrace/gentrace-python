@@ -1,10 +1,9 @@
 import logging
-from typing import TYPE_CHECKING, Dict, Union, Iterator, Optional
+from typing import TYPE_CHECKING, Any, Union, Iterator
 from itertools import count
 from typing_extensions import Literal, override
 
 from opentelemetry.sdk.trace.export import SpanExportResult
-from opentelemetry.exporter.otlp.proto.http import Compression
 from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
 from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import (
     ExportTraceServiceResponse,
@@ -40,28 +39,9 @@ class GentraceOTLPSpanExporter(OTLPSpanExporter):
     sends warning messages.
     """
 
-    def __init__(
-        self,
-        endpoint: Optional[str] = None,
-        certificate_file: Optional[str] = None,
-        client_key_file: Optional[str] = None,
-        client_certificate_file: Optional[str] = None,
-        headers: Optional[Dict[str, str]] = None,
-        timeout: Optional[int] = None,
-        compression: Optional[Compression] = None,
-        session: Optional["requests.Session"] = None,
-    ):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize the custom exporter with the same parameters as the base class."""
-        super().__init__(
-            endpoint=endpoint,
-            certificate_file=certificate_file,
-            client_key_file=client_key_file,
-            client_certificate_file=client_certificate_file,
-            headers=headers,
-            timeout=timeout,
-            compression=compression,
-            session=session,
-        )
+        super().__init__(*args, **kwargs)
 
     @override
     def _export_serialized_spans(
