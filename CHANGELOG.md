@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.6.0 (2025-08-22)
+
+Full Changelog: [v1.5.2...v1.6.0](https://github.com/gentrace/gentrace-python/compare/v1.5.2...v1.6.0)
+
+### Features
+
+* add kwargs typing patterns example guide ([5b97bb5](https://github.com/gentrace/gentrace-python/commit/5b97bb524012dd681aa90dbe8cd8e44a6e05423a))
+
+
+### Bug Fixes
+
+* Use List[str] for Python 3.8+ typing ([1301fdb](https://github.com/gentrace/gentrace-python/commit/1301fdbe21df2552c1b81923f5072b4eba52f10e))
+
+
+### Chores
+
+* clean up baggage context ([#375](https://github.com/gentrace/gentrace-python/issues/375)) ([4f4298b](https://github.com/gentrace/gentrace-python/commit/4f4298bb9ffc5a80c759e6e0d8230a9a9a1baf25))
+* update github action ([d0ccb47](https://github.com/gentrace/gentrace-python/commit/d0ccb4730b87ec91d0038501d650838ed34e555a))
+
 ## 1.5.2 (2025-08-16)
 
 Full Changelog: [v1.5.1...v1.5.2](https://github.com/gentrace/gentrace-python/compare/v1.5.1...v1.5.2)
