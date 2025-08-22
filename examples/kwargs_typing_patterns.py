@@ -10,7 +10,7 @@ Python Version: 3.8+
 """
 
 import sys
-from typing import Any, Union, TypeVar, Callable, Optional, Protocol
+from typing import Any, List, Union, TypeVar, Callable, Optional, Protocol
 
 # Python 3.8+ imports
 if sys.version_info >= (3, 8):
@@ -381,7 +381,7 @@ def to_length(s: str) -> int:
     return len(s)
 
 
-def to_words(s: str) -> list[str]:
+def to_words(s: str) -> List[str]:
     return s.split()
 
 
