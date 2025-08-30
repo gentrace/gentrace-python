@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.6.2 (2025-08-30)
+
+Full Changelog: [v1.6.1...v1.6.2](https://github.com/gentrace/gentrace-python/compare/v1.6.1...v1.6.2)
+
+### Bug Fixes
+
+* avoid newer type syntax ([5c97e72](https://github.com/gentrace/gentrace-python/commit/5c97e72a96ec52f364dbe968c9b88ab8a5ec28b3))
+
+
+### Chores
+
+* **internal:** add Sequence related utils ([520fe6e](https://github.com/gentrace/gentrace-python/commit/520fe6eb663a0c47f537f0c6035cb6865fc11aa7))
+* **internal:** change ci workflow machines ([1881af9](https://github.com/gentrace/gentrace-python/commit/1881af9f9c8006d76125a5da896048ffb8d39e32))
+* **internal:** update pyright exclude list ([84619ef](https://github.com/gentrace/gentrace-python/commit/84619ef7a2a84728936808061aa10a23fc6b81d2))
+
 ## 1.6.1 (2025-08-22)
 
 Full Changelog: [v1.6.0...v1.6.1](https://github.com/gentrace/gentrace-python/compare/v1.6.0...v1.6.1)
