@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from typing import List, Union, Optional
+from typing import Union, Optional
 from typing_extensions import Literal, Annotated, TypeAlias, TypedDict
 
+from .._types import SequenceNotStr
 from .._utils import PropertyInfo
 
 __all__ = ["PipelineListParams", "Slug", "SlugUnionMember1"]
@@ -21,7 +22,7 @@ class PipelineListParams(TypedDict, total=False):
 _SlugUnionMember1ReservedKeywords = TypedDict(
     "_SlugUnionMember1ReservedKeywords",
     {
-        "in": List[str],
+        "in": SequenceNotStr[str],
     },
     total=False,
 )
@@ -34,7 +35,7 @@ class SlugUnionMember1(_SlugUnionMember1ReservedKeywords, total=False):
 
     mode: Literal["insensitive", "default"]
 
-    not_in: Annotated[List[str], PropertyInfo(alias="notIn")]
+    not_in: Annotated[SequenceNotStr[str], PropertyInfo(alias="notIn")]
 
     search: str
 
