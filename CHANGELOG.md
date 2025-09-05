@@ -1,5 +1,27 @@
 # Changelog
 
+## 1.7.0 (2025-09-05)
+
+Full Changelog: [v1.6.1...v1.7.0](https://github.com/gentrace/gentrace-python/compare/v1.6.1...v1.7.0)
+
+### Features
+
+* improve future compat with pydantic v3 ([f7fb91f](https://github.com/gentrace/gentrace-python/commit/f7fb91faf6a805236f12e997606284dad28ae583))
+* **types:** replace List[str] with SequenceNotStr in params ([710c462](https://github.com/gentrace/gentrace-python/commit/710c462f5ef2ac4fce953a76a5c8b075d6477577))
+
+
+### Bug Fixes
+
+* avoid newer type syntax ([5c97e72](https://github.com/gentrace/gentrace-python/commit/5c97e72a96ec52f364dbe968c9b88ab8a5ec28b3))
+
+
+### Chores
+
+* **internal:** add Sequence related utils ([520fe6e](https://github.com/gentrace/gentrace-python/commit/520fe6eb663a0c47f537f0c6035cb6865fc11aa7))
+* **internal:** change ci workflow machines ([1881af9](https://github.com/gentrace/gentrace-python/commit/1881af9f9c8006d76125a5da896048ffb8d39e32))
+* **internal:** move mypy configurations to `pyproject.toml` file ([3f24a05](https://github.com/gentrace/gentrace-python/commit/3f24a05068ed1abc2e59ae366faecef31daa6e79))
+* **internal:** update pyright exclude list ([84619ef](https://github.com/gentrace/gentrace-python/commit/84619ef7a2a84728936808061aa10a23fc6b81d2))
+
 ## 1.6.1 (2025-08-22)
 
 Full Changelog: [v1.6.0...v1.6.1](https://github.com/gentrace/gentrace-python/compare/v1.6.0...v1.6.1)
