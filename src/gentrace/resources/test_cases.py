@@ -7,7 +7,7 @@ from typing import Dict
 import httpx
 
 from ..types import test_case_list_params, test_case_create_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NoneType, NotGiven
+from .._types import Body, Omit, Query, Headers, NoneType, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -52,13 +52,13 @@ class TestCasesResource(SyncAPIResource):
         dataset_id: str,
         inputs: Dict[str, object],
         name: str,
-        expected_outputs: Dict[str, object] | NotGiven = NOT_GIVEN,
+        expected_outputs: Dict[str, object] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCase:
         """
         Create a new test case
@@ -106,7 +106,7 @@ class TestCasesResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCase:
         """
         Retrieve the details of a test case by ID
@@ -135,15 +135,15 @@ class TestCasesResource(SyncAPIResource):
     def list(
         self,
         *,
-        dataset_id: str | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        dataset_id: str | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCaseList:
         """
         List test cases
@@ -191,7 +191,7 @@ class TestCasesResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
         """
         Delete a test case by ID
@@ -245,13 +245,13 @@ class AsyncTestCasesResource(AsyncAPIResource):
         dataset_id: str,
         inputs: Dict[str, object],
         name: str,
-        expected_outputs: Dict[str, object] | NotGiven = NOT_GIVEN,
+        expected_outputs: Dict[str, object] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCase:
         """
         Create a new test case
@@ -299,7 +299,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCase:
         """
         Retrieve the details of a test case by ID
@@ -328,15 +328,15 @@ class AsyncTestCasesResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        dataset_id: str | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        dataset_id: str | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> TestCaseList:
         """
         List test cases
@@ -384,7 +384,7 @@ class AsyncTestCasesResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> None:
         """
         Delete a test case by ID

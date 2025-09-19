@@ -7,7 +7,7 @@ from typing import Optional
 import httpx
 
 from ..types import pipeline_list_params, pipeline_create_params, pipeline_update_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -48,14 +48,14 @@ class PipelinesResource(SyncAPIResource):
         self,
         *,
         slug: str,
-        display_name: Optional[str] | NotGiven = NOT_GIVEN,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
+        display_name: Optional[str] | Omit = omit,
+        folder_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Create a new pipeline
@@ -100,7 +100,7 @@ class PipelinesResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Retrieve the details of a pipeline by ID
@@ -130,15 +130,15 @@ class PipelinesResource(SyncAPIResource):
         self,
         id: str,
         *,
-        display_name: Optional[str] | NotGiven = NOT_GIVEN,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_archived: bool | NotGiven = NOT_GIVEN,
+        display_name: Optional[str] | Omit = omit,
+        folder_id: Optional[str] | Omit = omit,
+        is_archived: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Update the details of a pipeline by ID
@@ -181,14 +181,14 @@ class PipelinesResource(SyncAPIResource):
     def list(
         self,
         *,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        slug: pipeline_list_params.Slug | NotGiven = NOT_GIVEN,
+        folder_id: Optional[str] | Omit = omit,
+        slug: pipeline_list_params.Slug | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> PipelineList:
         """
         List pipelines
@@ -249,14 +249,14 @@ class AsyncPipelinesResource(AsyncAPIResource):
         self,
         *,
         slug: str,
-        display_name: Optional[str] | NotGiven = NOT_GIVEN,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
+        display_name: Optional[str] | Omit = omit,
+        folder_id: Optional[str] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Create a new pipeline
@@ -301,7 +301,7 @@ class AsyncPipelinesResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Retrieve the details of a pipeline by ID
@@ -331,15 +331,15 @@ class AsyncPipelinesResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        display_name: Optional[str] | NotGiven = NOT_GIVEN,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        is_archived: bool | NotGiven = NOT_GIVEN,
+        display_name: Optional[str] | Omit = omit,
+        folder_id: Optional[str] | Omit = omit,
+        is_archived: bool | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Pipeline:
         """
         Update the details of a pipeline by ID
@@ -382,14 +382,14 @@ class AsyncPipelinesResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        folder_id: Optional[str] | NotGiven = NOT_GIVEN,
-        slug: pipeline_list_params.Slug | NotGiven = NOT_GIVEN,
+        folder_id: Optional[str] | Omit = omit,
+        slug: pipeline_list_params.Slug | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> PipelineList:
         """
         List pipelines

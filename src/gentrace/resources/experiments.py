@@ -8,7 +8,7 @@ from typing_extensions import Literal
 import httpx
 
 from ..types import experiment_list_params, experiment_create_params, experiment_update_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -49,14 +49,14 @@ class ExperimentsResource(SyncAPIResource):
         self,
         *,
         pipeline_id: str,
-        metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        metadata: Dict[str, object] | Omit = omit,
+        name: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Create a new experiment
@@ -102,7 +102,7 @@ class ExperimentsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Retrieve the details of a experiment by ID
@@ -132,15 +132,15 @@ class ExperimentsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        metadata: Optional[Dict[str, object]] | NotGiven = NOT_GIVEN,
-        name: Optional[str] | NotGiven = NOT_GIVEN,
-        status: Literal["GENERATING", "EVALUATING"] | NotGiven = NOT_GIVEN,
+        metadata: Optional[Dict[str, object]] | Omit = omit,
+        name: Optional[str] | Omit = omit,
+        status: Literal["GENERATING", "EVALUATING"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Update the details of a experiment by ID
@@ -183,13 +183,13 @@ class ExperimentsResource(SyncAPIResource):
     def list(
         self,
         *,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
+        pipeline_id: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ExperimentList:
         """
         List experiments
@@ -242,14 +242,14 @@ class AsyncExperimentsResource(AsyncAPIResource):
         self,
         *,
         pipeline_id: str,
-        metadata: Dict[str, object] | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        metadata: Dict[str, object] | Omit = omit,
+        name: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Create a new experiment
@@ -295,7 +295,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Retrieve the details of a experiment by ID
@@ -325,15 +325,15 @@ class AsyncExperimentsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        metadata: Optional[Dict[str, object]] | NotGiven = NOT_GIVEN,
-        name: Optional[str] | NotGiven = NOT_GIVEN,
-        status: Literal["GENERATING", "EVALUATING"] | NotGiven = NOT_GIVEN,
+        metadata: Optional[Dict[str, object]] | Omit = omit,
+        name: Optional[str] | Omit = omit,
+        status: Literal["GENERATING", "EVALUATING"] | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Experiment:
         """
         Update the details of a experiment by ID
@@ -376,13 +376,13 @@ class AsyncExperimentsResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
+        pipeline_id: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> ExperimentList:
         """
         List experiments

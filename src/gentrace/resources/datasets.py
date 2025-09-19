@@ -7,7 +7,7 @@ from typing import Optional
 import httpx
 
 from ..types import dataset_list_params, dataset_create_params, dataset_update_params
-from .._types import NOT_GIVEN, Body, Query, Headers, NotGiven
+from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
 from .._utils import maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
@@ -49,15 +49,15 @@ class DatasetsResource(SyncAPIResource):
         *,
         description: Optional[str],
         name: str,
-        is_golden: bool | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        is_golden: bool | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Create a new dataset
@@ -108,7 +108,7 @@ class DatasetsResource(SyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Retrieve the details of a dataset by ID
@@ -138,16 +138,16 @@ class DatasetsResource(SyncAPIResource):
         self,
         id: str,
         *,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        is_archived: bool | NotGiven = NOT_GIVEN,
-        is_golden: bool | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        description: Optional[str] | Omit = omit,
+        is_archived: bool | Omit = omit,
+        is_golden: bool | Omit = omit,
+        name: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Update the details of a dataset by ID
@@ -193,15 +193,15 @@ class DatasetsResource(SyncAPIResource):
     def list(
         self,
         *,
-        archived: bool | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        archived: bool | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DatasetList:
         """
         List datasets
@@ -266,15 +266,15 @@ class AsyncDatasetsResource(AsyncAPIResource):
         *,
         description: Optional[str],
         name: str,
-        is_golden: bool | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        is_golden: bool | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Create a new dataset
@@ -325,7 +325,7 @@ class AsyncDatasetsResource(AsyncAPIResource):
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Retrieve the details of a dataset by ID
@@ -355,16 +355,16 @@ class AsyncDatasetsResource(AsyncAPIResource):
         self,
         id: str,
         *,
-        description: Optional[str] | NotGiven = NOT_GIVEN,
-        is_archived: bool | NotGiven = NOT_GIVEN,
-        is_golden: bool | NotGiven = NOT_GIVEN,
-        name: str | NotGiven = NOT_GIVEN,
+        description: Optional[str] | Omit = omit,
+        is_archived: bool | Omit = omit,
+        is_golden: bool | Omit = omit,
+        name: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> Dataset:
         """
         Update the details of a dataset by ID
@@ -410,15 +410,15 @@ class AsyncDatasetsResource(AsyncAPIResource):
     async def list(
         self,
         *,
-        archived: bool | NotGiven = NOT_GIVEN,
-        pipeline_id: str | NotGiven = NOT_GIVEN,
-        pipeline_slug: str | NotGiven = NOT_GIVEN,
+        archived: bool | Omit = omit,
+        pipeline_id: str | Omit = omit,
+        pipeline_slug: str | Omit = omit,
         # Use the following arguments if you need to pass additional parameters to the API that aren't available via kwargs.
         # The extra values given here take precedence over values defined on the client or passed to this method.
         extra_headers: Headers | None = None,
         extra_query: Query | None = None,
         extra_body: Body | None = None,
-        timeout: float | httpx.Timeout | None | NotGiven = NOT_GIVEN,
+        timeout: float | httpx.Timeout | None | NotGiven = not_given,
     ) -> DatasetList:
         """
         List datasets
