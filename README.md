@@ -3,7 +3,7 @@
 <!-- prettier-ignore -->
 [![PyPI version](https://img.shields.io/pypi/v/gentrace-py.svg?label=pypi%20(stable))](https://pypi.org/project/gentrace-py/)
 
-The Gentrace Python library provides convenient access to the Gentrace REST API from any Python 3.8+
+The Gentrace Python library provides convenient access to the Gentrace REST API from any Python 3.9+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
@@ -356,7 +356,7 @@ print(gentrace.__version__)
 
 ## Requirements
 
-Python 3.8 or higher.
+Python 3.9 or higher.
 
 ## Contributing
 
