@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
 from typing_extensions import Self, override
 
 import httpx
@@ -20,8 +20,8 @@ from ._types import (
     not_given,
 )
 from ._utils import is_given, get_async_library
+from ._compat import cached_property
 from ._version import __version__
-from .resources import datasets, pipelines, test_cases, experiments, organizations
 from ._streaming import Stream as Stream, AsyncStream as AsyncStream
 from ._exceptions import GentraceError, APIStatusError
 from ._base_client import (
@@ -29,6 +29,14 @@ from ._base_client import (
     SyncAPIClient,
     AsyncAPIClient,
 )
+
+if TYPE_CHECKING:
+    from .resources import datasets, pipelines, test_cases, experiments, organizations
+    from .resources.datasets import DatasetsResource, AsyncDatasetsResource
+    from .resources.pipelines import PipelinesResource, AsyncPipelinesResource
+    from .resources.test_cases import TestCasesResource, AsyncTestCasesResource
+    from .resources.experiments import ExperimentsResource, AsyncExperimentsResource
+    from .resources.organizations import OrganizationsResource, AsyncOrganizationsResource
 
 __all__ = [
     "Timeout",
@@ -43,14 +51,6 @@ __all__ = [
 
 
 class Gentrace(SyncAPIClient):
-    pipelines: pipelines.PipelinesResource
-    experiments: experiments.ExperimentsResource
-    organizations: organizations.OrganizationsResource
-    datasets: datasets.DatasetsResource
-    test_cases: test_cases.TestCasesResource
-    with_raw_response: GentraceWithRawResponse
-    with_streaming_response: GentraceWithStreamedResponse
-
     # client options
     api_key: str
 
@@ -105,13 +105,43 @@ class Gentrace(SyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.pipelines = pipelines.PipelinesResource(self)
-        self.experiments = experiments.ExperimentsResource(self)
-        self.organizations = organizations.OrganizationsResource(self)
-        self.datasets = datasets.DatasetsResource(self)
-        self.test_cases = test_cases.TestCasesResource(self)
-        self.with_raw_response = GentraceWithRawResponse(self)
-        self.with_streaming_response = GentraceWithStreamedResponse(self)
+    @cached_property
+    def pipelines(self) -> PipelinesResource:
+        from .resources.pipelines import PipelinesResource
+
+        return PipelinesResource(self)
+
+    @cached_property
+    def experiments(self) -> ExperimentsResource:
+        from .resources.experiments import ExperimentsResource
+
+        return ExperimentsResource(self)
+
+    @cached_property
+    def organizations(self) -> OrganizationsResource:
+        from .resources.organizations import OrganizationsResource
+
+        return OrganizationsResource(self)
+
+    @cached_property
+    def datasets(self) -> DatasetsResource:
+        from .resources.datasets import DatasetsResource
+
+        return DatasetsResource(self)
+
+    @cached_property
+    def test_cases(self) -> TestCasesResource:
+        from .resources.test_cases import TestCasesResource
+
+        return TestCasesResource(self)
+
+    @cached_property
+    def with_raw_response(self) -> GentraceWithRawResponse:
+        return GentraceWithRawResponse(self)
+
+    @cached_property
+    def with_streaming_response(self) -> GentraceWithStreamedResponse:
+        return GentraceWithStreamedResponse(self)
 
     @property
     @override
@@ -219,14 +249,6 @@ class Gentrace(SyncAPIClient):
 
 
 class AsyncGentrace(AsyncAPIClient):
-    pipelines: pipelines.AsyncPipelinesResource
-    experiments: experiments.AsyncExperimentsResource
-    organizations: organizations.AsyncOrganizationsResource
-    datasets: datasets.AsyncDatasetsResource
-    test_cases: test_cases.AsyncTestCasesResource
-    with_raw_response: AsyncGentraceWithRawResponse
-    with_streaming_response: AsyncGentraceWithStreamedResponse
-
     # client options
     api_key: str
 
@@ -281,13 +303,43 @@ class AsyncGentrace(AsyncAPIClient):
             _strict_response_validation=_strict_response_validation,
         )
 
-        self.pipelines = pipelines.AsyncPipelinesResource(self)
-        self.experiments = experiments.AsyncExperimentsResource(self)
-        self.organizations = organizations.AsyncOrganizationsResource(self)
-        self.datasets = datasets.AsyncDatasetsResource(self)
-        self.test_cases = test_cases.AsyncTestCasesResource(self)
-        self.with_raw_response = AsyncGentraceWithRawResponse(self)
-        self.with_streaming_response = AsyncGentraceWithStreamedResponse(self)
+    @cached_property
+    def pipelines(self) -> AsyncPipelinesResource:
+        from .resources.pipelines import AsyncPipelinesResource
+
+        return AsyncPipelinesResource(self)
+
+    @cached_property
+    def experiments(self) -> AsyncExperimentsResource:
+        from .resources.experiments import AsyncExperimentsResource
+
+        return AsyncExperimentsResource(self)
+
+    @cached_property
+    def organizations(self) -> AsyncOrganizationsResource:
+        from .resources.organizations import AsyncOrganizationsResource
+
+        return AsyncOrganizationsResource(self)
+
+    @cached_property
+    def datasets(self) -> AsyncDatasetsResource:
+        from .resources.datasets import AsyncDatasetsResource
+
+        return AsyncDatasetsResource(self)
+
+    @cached_property
+    def test_cases(self) -> AsyncTestCasesResource:
+        from .resources.test_cases import AsyncTestCasesResource
+
+        return AsyncTestCasesResource(self)
+
+    @cached_property
+    def with_raw_response(self) -> AsyncGentraceWithRawResponse:
+        return AsyncGentraceWithRawResponse(self)
+
+    @cached_property
+    def with_streaming_response(self) -> AsyncGentraceWithStreamedResponse:
+        return AsyncGentraceWithStreamedResponse(self)
 
     @property
     @override
@@ -395,39 +447,151 @@ class AsyncGentrace(AsyncAPIClient):
 
 
 class GentraceWithRawResponse:
+    _client: Gentrace
+
     def __init__(self, client: Gentrace) -> None:
-        self.pipelines = pipelines.PipelinesResourceWithRawResponse(client.pipelines)
-        self.experiments = experiments.ExperimentsResourceWithRawResponse(client.experiments)
-        self.organizations = organizations.OrganizationsResourceWithRawResponse(client.organizations)
-        self.datasets = datasets.DatasetsResourceWithRawResponse(client.datasets)
-        self.test_cases = test_cases.TestCasesResourceWithRawResponse(client.test_cases)
+        self._client = client
+
+    @cached_property
+    def pipelines(self) -> pipelines.PipelinesResourceWithRawResponse:
+        from .resources.pipelines import PipelinesResourceWithRawResponse
+
+        return PipelinesResourceWithRawResponse(self._client.pipelines)
+
+    @cached_property
+    def experiments(self) -> experiments.ExperimentsResourceWithRawResponse:
+        from .resources.experiments import ExperimentsResourceWithRawResponse
+
+        return ExperimentsResourceWithRawResponse(self._client.experiments)
+
+    @cached_property
+    def organizations(self) -> organizations.OrganizationsResourceWithRawResponse:
+        from .resources.organizations import OrganizationsResourceWithRawResponse
+
+        return OrganizationsResourceWithRawResponse(self._client.organizations)
+
+    @cached_property
+    def datasets(self) -> datasets.DatasetsResourceWithRawResponse:
+        from .resources.datasets import DatasetsResourceWithRawResponse
+
+        return DatasetsResourceWithRawResponse(self._client.datasets)
+
+    @cached_property
+    def test_cases(self) -> test_cases.TestCasesResourceWithRawResponse:
+        from .resources.test_cases import TestCasesResourceWithRawResponse
+
+        return TestCasesResourceWithRawResponse(self._client.test_cases)
 
 
 class AsyncGentraceWithRawResponse:
+    _client: AsyncGentrace
+
     def __init__(self, client: AsyncGentrace) -> None:
-        self.pipelines = pipelines.AsyncPipelinesResourceWithRawResponse(client.pipelines)
-        self.experiments = experiments.AsyncExperimentsResourceWithRawResponse(client.experiments)
-        self.organizations = organizations.AsyncOrganizationsResourceWithRawResponse(client.organizations)
-        self.datasets = datasets.AsyncDatasetsResourceWithRawResponse(client.datasets)
-        self.test_cases = test_cases.AsyncTestCasesResourceWithRawResponse(client.test_cases)
+        self._client = client
+
+    @cached_property
+    def pipelines(self) -> pipelines.AsyncPipelinesResourceWithRawResponse:
+        from .resources.pipelines import AsyncPipelinesResourceWithRawResponse
+
+        return AsyncPipelinesResourceWithRawResponse(self._client.pipelines)
+
+    @cached_property
+    def experiments(self) -> experiments.AsyncExperimentsResourceWithRawResponse:
+        from .resources.experiments import AsyncExperimentsResourceWithRawResponse
+
+        return AsyncExperimentsResourceWithRawResponse(self._client.experiments)
+
+    @cached_property
+    def organizations(self) -> organizations.AsyncOrganizationsResourceWithRawResponse:
+        from .resources.organizations import AsyncOrganizationsResourceWithRawResponse
+
+        return AsyncOrganizationsResourceWithRawResponse(self._client.organizations)
+
+    @cached_property
+    def datasets(self) -> datasets.AsyncDatasetsResourceWithRawResponse:
+        from .resources.datasets import AsyncDatasetsResourceWithRawResponse
+
+        return AsyncDatasetsResourceWithRawResponse(self._client.datasets)
+
+    @cached_property
+    def test_cases(self) -> test_cases.AsyncTestCasesResourceWithRawResponse:
+        from .resources.test_cases import AsyncTestCasesResourceWithRawResponse
+
+        return AsyncTestCasesResourceWithRawResponse(self._client.test_cases)
 
 
 class GentraceWithStreamedResponse:
+    _client: Gentrace
+
     def __init__(self, client: Gentrace) -> None:
-        self.pipelines = pipelines.PipelinesResourceWithStreamingResponse(client.pipelines)
-        self.experiments = experiments.ExperimentsResourceWithStreamingResponse(client.experiments)
-        self.organizations = organizations.OrganizationsResourceWithStreamingResponse(client.organizations)
-        self.datasets = datasets.DatasetsResourceWithStreamingResponse(client.datasets)
-        self.test_cases = test_cases.TestCasesResourceWithStreamingResponse(client.test_cases)
+        self._client = client
+
+    @cached_property
+    def pipelines(self) -> pipelines.PipelinesResourceWithStreamingResponse:
+        from .resources.pipelines import PipelinesResourceWithStreamingResponse
+
+        return PipelinesResourceWithStreamingResponse(self._client.pipelines)
+
+    @cached_property
+    def experiments(self) -> experiments.ExperimentsResourceWithStreamingResponse:
+        from .resources.experiments import ExperimentsResourceWithStreamingResponse
+
+        return ExperimentsResourceWithStreamingResponse(self._client.experiments)
+
+    @cached_property
+    def organizations(self) -> organizations.OrganizationsResourceWithStreamingResponse:
+        from .resources.organizations import OrganizationsResourceWithStreamingResponse
+
+        return OrganizationsResourceWithStreamingResponse(self._client.organizations)
+
+    @cached_property
+    def datasets(self) -> datasets.DatasetsResourceWithStreamingResponse:
+        from .resources.datasets import DatasetsResourceWithStreamingResponse
+
+        return DatasetsResourceWithStreamingResponse(self._client.datasets)
+
+    @cached_property
+    def test_cases(self) -> test_cases.TestCasesResourceWithStreamingResponse:
+        from .resources.test_cases import TestCasesResourceWithStreamingResponse
+
+        return TestCasesResourceWithStreamingResponse(self._client.test_cases)
 
 
 class AsyncGentraceWithStreamedResponse:
+    _client: AsyncGentrace
+
     def __init__(self, client: AsyncGentrace) -> None:
-        self.pipelines = pipelines.AsyncPipelinesResourceWithStreamingResponse(client.pipelines)
-        self.experiments = experiments.AsyncExperimentsResourceWithStreamingResponse(client.experiments)
-        self.organizations = organizations.AsyncOrganizationsResourceWithStreamingResponse(client.organizations)
-        self.datasets = datasets.AsyncDatasetsResourceWithStreamingResponse(client.datasets)
-        self.test_cases = test_cases.AsyncTestCasesResourceWithStreamingResponse(client.test_cases)
+        self._client = client
+
+    @cached_property
+    def pipelines(self) -> pipelines.AsyncPipelinesResourceWithStreamingResponse:
+        from .resources.pipelines import AsyncPipelinesResourceWithStreamingResponse
+
+        return AsyncPipelinesResourceWithStreamingResponse(self._client.pipelines)
+
+    @cached_property
+    def experiments(self) -> experiments.AsyncExperimentsResourceWithStreamingResponse:
+        from .resources.experiments import AsyncExperimentsResourceWithStreamingResponse
+
+        return AsyncExperimentsResourceWithStreamingResponse(self._client.experiments)
+
+    @cached_property
+    def organizations(self) -> organizations.AsyncOrganizationsResourceWithStreamingResponse:
+        from .resources.organizations import AsyncOrganizationsResourceWithStreamingResponse
+
+        return AsyncOrganizationsResourceWithStreamingResponse(self._client.organizations)
+
+    @cached_property
+    def datasets(self) -> datasets.AsyncDatasetsResourceWithStreamingResponse:
+        from .resources.datasets import AsyncDatasetsResourceWithStreamingResponse
+
+        return AsyncDatasetsResourceWithStreamingResponse(self._client.datasets)
+
+    @cached_property
+    def test_cases(self) -> test_cases.AsyncTestCasesResourceWithStreamingResponse:
+        from .resources.test_cases import AsyncTestCasesResourceWithStreamingResponse
+
+        return AsyncTestCasesResourceWithStreamingResponse(self._client.test_cases)
 
 
 Client = Gentrace
