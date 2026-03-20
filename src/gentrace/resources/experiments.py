@@ -9,7 +9,7 @@ import httpx
 
 from ..types import experiment_list_params, experiment_create_params, experiment_update_params
 from .._types import Body, Omit, Query, Headers, NotGiven, omit, not_given
-from .._utils import maybe_transform, async_maybe_transform
+from .._utils import path_template, maybe_transform, async_maybe_transform
 from .._compat import cached_property
 from .._resource import SyncAPIResource, AsyncAPIResource
 from .._response import (
@@ -121,7 +121,7 @@ class ExperimentsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._get(
-            f"/v4/experiments/{id}",
+            path_template("/v4/experiments/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -165,7 +165,7 @@ class ExperimentsResource(SyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return self._post(
-            f"/v4/experiments/{id}",
+            path_template("/v4/experiments/{id}", id=id),
             body=maybe_transform(
                 {
                     "metadata": metadata,
@@ -314,7 +314,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._get(
-            f"/v4/experiments/{id}",
+            path_template("/v4/experiments/{id}", id=id),
             options=make_request_options(
                 extra_headers=extra_headers, extra_query=extra_query, extra_body=extra_body, timeout=timeout
             ),
@@ -358,7 +358,7 @@ class AsyncExperimentsResource(AsyncAPIResource):
         if not id:
             raise ValueError(f"Expected a non-empty value for `id` but received {id!r}")
         return await self._post(
-            f"/v4/experiments/{id}",
+            path_template("/v4/experiments/{id}", id=id),
             body=await async_maybe_transform(
                 {
                     "metadata": metadata,
